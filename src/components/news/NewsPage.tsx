@@ -67,7 +67,7 @@ export function NewsPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-[#FBF7ED]">
+    <div className="flex flex-col h-[calc(100vh-64px)] lg:h-screen max-h-screen bg-[#FBF7ED]">
       {/* Header */}
       <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex-shrink-0">
         <h1 className="text-[11px] font-bold uppercase tracking-widest">ข่าวตลาด · InvestMart</h1>
