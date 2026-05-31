@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { banUser, unbanUser, deleteUserPosts } from "./actions";
+import { banUser, unbanUser } from "./actions";
+import { DeletePostsButton } from "./DeletePostsButton";
 
 export const metadata = { title: "Admin" };
 
@@ -82,14 +83,7 @@ export default async function AdminPage() {
                           </button>
                         </form>
                       )}
-                      <form action={deleteUserPosts.bind(null, u.id)}>
-                        <button
-                          className="bg-yellow-100 border border-yellow-700 text-yellow-800 px-2 py-0.5 text-[10px] hover:bg-yellow-200 cursor-pointer"
-                          onClick={(e) => { if (!confirm("Delete all posts by this user?")) e.preventDefault(); }}
-                        >
-                          Del Posts
-                        </button>
-                      </form>
+                      <DeletePostsButton userId={u.id} />
                     </div>
                   </td>
                 </tr>
