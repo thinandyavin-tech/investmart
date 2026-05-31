@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /api/
+Disallow: /profile/edit
+Disallow: /settings/
+
+# Allow crawlers for SEO
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://investneet.com/sitemap.xml

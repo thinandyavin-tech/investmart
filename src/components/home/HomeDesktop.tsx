@@ -1,0 +1,258 @@
+"use client";
+
+import { useUser } from "@/lib/userContext";
+import { Card } from "@/components/Card";
+import { OffsetButton } from "@/components/OffsetButton";
+import { FeedSection } from "@/components/social/FeedSection";
+import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
+import { HotNewsSection } from "@/components/home/HotNewsSection";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export function HomeDesktop() {
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-1 gap-4 p-4 max-w-6xl mx-auto w-full">
+        {/* Left column */}
+        <aside className="w-64 flex-shrink-0">
+          <AboutCard bio={user?.bio ?? ""} />
+        </aside>
+
+        {/* Right column */}
+        <section className="flex-1 flex flex-col gap-3">
+          <MarketStatusBanner />
+          <PortfolioPanel />
+          <StatCards
+            loading={loading}
+            cashThb={user?.cashThb ?? null}
+            cashUsd={user?.cashUsd ?? null}
+            holdings={user?.holdings ?? []}
+          />
+          <div className="text-center text-xs text-[#8A8378] py-1 tracking-widest">
+            ... The InvestMart Simulator ...
+          </div>
+          <ActionButtons />
+          <HoldingsCard holdings={user?.holdings ?? []} loading={loading} />
+          {!user && !loading && (
+            <Card className="p-4 text-center flex flex-col gap-2">
+              <p className="text-xs text-[#8A8378]">
+                เข้าสู่ระบบเพื่อเริ่มเล่น simulator · เริ่มต้นด้วย ฿1,250,000
+              </p>
+              <div className="flex gap-2 justify-center">
+                <OffsetButton variant="black" onClick={() => router.push("/signin")}>
+                  เข้าสู่ระบบ
+                </OffsetButton>
+                <OffsetButton variant="lime" onClick={() => router.push("/signup")}>
+                  สมัครสมาชิก ฟรี
+                </OffsetButton>
+              </div>
+            </Card>
+          )}
+          <HotNewsSection />
+          <PostsCard />
+        </section>
+      </div>
+      <HomeFooter />
+    </div>
+  );
+}
+
+function AboutCard({ bio }: { bio: string }) {
+  return (
+    <Card className="p-4" offset="none">
+      <h2 className="text-[10px] font-bold uppercase tracking-widest mb-3 border-b border-[#1F1A14] pb-2">
+        เกี่ยวกับฉัน
+      </h2>
+      {bio ? (
+        <p className="text-xs leading-relaxed">{bio}</p>
+      ) : (
+        <>
+          <p className="text-xs italic text-[#8A8378] mb-3">
+            ยังไม่มีคำบรรยาย — เขียนแนะนำตัวเองด้วยตัวอักษรเท่านั้น (ไม่มีรูป ไม่มีอีโมจิ)
+          </p>
+          <p className="text-[10px] text-[#8A8378] leading-relaxed">
+            InvestMart เป็นโซเชียลเน็ตเวิร์คที่ใช้ตัวอักษรล้วน ไม่มีรูปโปรไฟล์ ไม่มีอีโมจิ เหมือนหนังสือที่คุยกันได้
+          </p>
+        </>
+      )}
+    </Card>
+  );
+}
+
+function PortfolioPanel() {
+  return (
+    <div className="bg-[#F3EDE0] p-3" style={{ border: "2px dashed #5B8A2A" }}>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5B8A2A]">
+          พอร์ตโฟลิโอ
+        </h2>
+        <span className="text-[9px] text-[#8A8378]">พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง</span>
+      </div>
+      <div className="h-20 flex items-center justify-center border border-dashed border-[#5B8A2A]">
+        <span className="text-[10px] text-[#8A8378]">
+          กราฟพอร์ตโฟลิโอจะแสดงเมื่อมีการซื้อขาย
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface Holding {
+  ticker:   string;
+  shares:   number;
+  avgCost:  number;
+  currency: string;
+}
+
+function StatCards({
+  loading,
+  cashThb,
+  cashUsd,
+  holdings,
+}: {
+  loading:  boolean;
+  cashThb:  number | null;
+  cashUsd:  number | null;
+  holdings: Holding[];
+}) {
+  const buyCount  = 0; // TODO: wire from trade history
+  const sellCount = 0;
+
+  const stats = [
+    {
+      label: "เงินสด (THB)",
+      value: loading ? "..." : cashThb != null ? `฿${cashThb.toLocaleString("th-TH")}` : "฿1,250,000",
+      mono:  true,
+    },
+    {
+      label: "เงินสด (USD)",
+      value: loading ? "..." : cashUsd != null ? `$${cashUsd.toFixed(2)}` : "$0",
+      mono:  true,
+    },
+    { label: "จำนวนออเดอร์ซื้อ",  value: String(buyCount)  },
+    { label: "จำนวนออเดอร์ขาย",  value: String(sellCount) },
+  ];
+
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      {stats.map(({ label, value, mono }) => (
+        <Card key={label} className="p-2 text-center">
+          <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-1 leading-tight">
+            {label}
+          </div>
+          <div
+            className="text-sm font-bold"
+            style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}
+          >
+            {value}
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function ActionButtons() {
+  const actions = [
+    { href: "/radar",       label: "เรดาร์แสกนหุ้น", icon: "📡" },
+    { href: "/market",      label: "ภาพรวมตลาด",      icon: "📈" },
+    { href: "/exchange",    label: "แลกเปลี่ยนเงิน",  icon: "💱" },
+    { href: "/history",     label: "ประวัติซื้อขาย",  icon: "📋" },
+    { href: "/leaderboard", label: "Leaderboard",       icon: "🏆" },
+  ];
+
+  return (
+    <div className="grid grid-cols-5 gap-2">
+      {actions.map(({ href, label, icon }) => (
+        <Link key={href} href={href}>
+          <OffsetButton variant="lime" size="sm" className="w-full text-center text-[9px] py-1.5 px-2">
+            <span className="mr-1">{icon}</span>{label}
+          </OffsetButton>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function HoldingsCard({ holdings, loading }: { holdings: Holding[]; loading: boolean }) {
+  return (
+    <Card className="p-3">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-[10px] font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
+        <OffsetButton variant="lime" size="sm">&gt; copy</OffsetButton>
+      </div>
+      <p className="text-[9px] text-[#8A8378] mb-3">
+        เรียงจาก % ทั้งหมดของพอร์ตเป็นหลัก พร้อมราคาต้นทุนเฉลี่ย
+      </p>
+      {loading ? (
+        <div className="text-[10px] text-[#8A8378] text-center py-3">กำลังโหลด...</div>
+      ) : holdings.length === 0 ? (
+        <div className="text-[10px] text-[#8A8378] text-center py-3">ยังไม่มีหุ้นในพอร์ต</div>
+      ) : (
+        <table className="w-full text-[10px] border-collapse">
+          <thead>
+            <tr className="border-b border-[#1F1A14]">
+              {["หุ้น", "จำนวน", "ต้นทุนเฉลี่ย"].map((h) => (
+                <th key={h} className="text-left py-1 text-[#8A8378] font-bold uppercase tracking-wide text-[9px]">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {holdings.map((h) => (
+              <tr key={h.ticker} className="border-b border-[#E8E2D4]">
+                <td className="py-1.5 font-bold">{h.ticker}</td>
+                <td className="py-1.5" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
+                <td className="py-1.5" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Card>
+  );
+}
+
+function PostsCard() {
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
+        <h2 className="text-[10px] font-bold uppercase tracking-widest">บทความและโพสต์</h2>
+      </div>
+      <FeedSection showComposer={true} />
+    </Card>
+  );
+}
+
+function HomeFooter() {
+  return (
+    <footer className="border-t border-[#1F1A14] bg-[#F3EDE0] px-6 py-4 mt-4">
+      <div className="max-w-6xl mx-auto">
+        <p className="text-[11px] text-[#1F1A14] font-bold mb-1">
+          InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+        </p>
+        <p className="text-[11px] text-[#8A8378] mb-2">
+          text based AI social · paper trading game + AI investing simulator
+        </p>
+        <div className="flex flex-wrap gap-3 text-[10px] mb-2">
+          {[
+            { href: "/",        label: "หน้าหลัก" },
+            { href: "/radar",   label: "เรดาร์แสกนหุ้น" },
+            { href: "/market",  label: "ภาพรวมตลาด" },
+            { href: "/exchange", label: "Exchange" },
+            { href: "/history", label: "ประวัติซื้อขาย" },
+          ].map(({ href, label }) => (
+            <Link key={href} href={href} className="text-[#8A8378] hover:text-[#1F1A14] underline underline-offset-2">
+              {label}
+            </Link>
+          ))}
+        </div>
+        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investneet.com</p>
+      </div>
+    </footer>
+  );
+}
