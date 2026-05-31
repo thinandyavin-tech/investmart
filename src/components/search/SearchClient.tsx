@@ -57,6 +57,8 @@ export function SearchClient() {
         marketCap,
         rsi:          50,
         volumeSurge:  1,
+        sector:       "Other",
+        isNew:        false,
         breakoutScore: 50,
         qualityScore:  50,
         momentumScore: 50,

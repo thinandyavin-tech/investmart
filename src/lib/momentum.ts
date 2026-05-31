@@ -13,6 +13,8 @@ export interface StockMetrics {
   category: "TOP100" | "DARK_HORSE" | "REVIVED" | "STRONG";
   companyName: string;
   exchange: string;
+  sector: string;
+  isNew: boolean;
 }
 
 export type CapSize = "ALL" | "SMALL" | "MID" | "BIG";

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { OffsetButton } from "@/components/OffsetButton";
 import { ScoreBadge } from "@/components/radar/ScoreBadge";
 import { LoginPromptModal } from "@/components/LoginPromptModal";
+import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { useUser } from "@/lib/userContext";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
@@ -592,6 +593,9 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           </div>
         )}
       </div>
+
+      {/* News */}
+      <StockNewsSection ticker={stock.ticker} />
     </div>
   );
 }
