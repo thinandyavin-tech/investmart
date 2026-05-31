@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { getSessionInfo } from "@/lib/getSession";
 import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 40;
@@ -20,8 +20,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 // POST /api/chat  — send a message (auth required)
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const { userId } = await getSessionInfo();
+  if (!userId) {
     return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อนส่งข้อความ" }, { status: 401 });
   }
 
@@ -38,13 +38,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // Check user is not banned
-  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { bannedAt: true } });
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { bannedAt: true } });
   if (user?.bannedAt) {
     return NextResponse.json({ error: "บัญชีนี้ถูกระงับ" }, { status: 403 });
   }
 
   const msg = await prisma.chatMessage.create({
-    data:    { content, authorId: session.user.id, isSystem: false },
+    data:    { content, authorId: userId, isSystem: false },
     include: { author: { select: { id: true, username: true, name: true } } },
   });
 

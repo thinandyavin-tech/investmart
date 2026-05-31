@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s — InvestMart",
   },
   description:
-    "พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · paper trading game · เว็บโซเชียลมีเดียหุ้นอเมริกา + text based AI social · ดู PNL ranking holdings ของเทรดเดอร์ InvestMart",
+    "เว็บโซเชียลมีเดียหุ้นอเมริกา · ดู PNL ranking holdings ของเทรดเดอร์ · วิเคราะห์หุ้นด้วย AI บน InvestMart",
   metadataBase: new URL("https://investmart.vercel.app"),
   openGraph: {
     type: "website",

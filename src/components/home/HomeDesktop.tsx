@@ -91,7 +91,7 @@ function PortfolioPanel() {
         <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5B8A2A]">
           พอร์ตโฟลิโอ
         </h2>
-        <span className="text-[9px] text-[#8A8378]">พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง</span>
+        <span className="text-[9px] text-[#8A8378]">พอร์ตจำลอง</span>
       </div>
       <div className="h-20 flex items-center justify-center border border-dashed border-[#5B8A2A]">
         <span className="text-[10px] text-[#8A8378]">
@@ -235,10 +235,7 @@ function HomeFooter() {
     <footer className="border-t border-[#1F1A14] bg-[#F3EDE0] px-6 py-4 mt-4">
       <div className="max-w-6xl mx-auto">
         <p className="text-[11px] text-[#1F1A14] font-bold mb-1">
-          InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
-        </p>
-        <p className="text-[11px] text-[#8A8378] mb-2">
-          text based AI social · paper trading game + AI investing simulator
+          InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา
         </p>
         <div className="flex flex-wrap gap-3 text-[10px] mb-2">
           {[
