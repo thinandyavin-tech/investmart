@@ -67,7 +67,7 @@ function SignInForm() {
     <div className="max-w-sm mx-auto px-4 py-8 flex flex-col gap-4">
       <div>
         <h1 className="text-xs font-bold uppercase tracking-widest">เข้าสู่ระบบ</h1>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">InvestMart — พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง</p>
+        <p className="text-[9px] text-[#8A8378] mt-0.5">InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา</p>
       </div>
 
       <Card className="p-4">
@@ -141,7 +141,7 @@ function SignInForm() {
       </p>
 
       <p className="text-[9px] text-[#8A8378] text-center">
-        พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · InvestMart
+        InvestMart
       </p>
     </div>
   );

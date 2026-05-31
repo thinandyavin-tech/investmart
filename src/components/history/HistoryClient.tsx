@@ -39,7 +39,7 @@ export function HistoryClient() {
     <div className="p-4 max-w-2xl mx-auto">
       <h1 className="text-xs font-bold uppercase tracking-widest mb-1">ประวัติซื้อขาย</h1>
       <p className="text-[10px] text-[#8A8378] mb-4">
-        รายการซื้อขายทั้งหมด · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+        รายการซื้อขายทั้งหมด
       </p>
 
       {!user && !loading && (

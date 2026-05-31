@@ -196,7 +196,7 @@ export function ExchangeClient() {
           </p>
         )}
         <p className="text-[9px] text-[#8A8378] text-center">
-          อัตราโดยประมาณ · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+          อัตราแลกเปลี่ยนโดยประมาณ
         </p>
       </Card>
 

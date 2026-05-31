@@ -216,7 +216,7 @@ export default function WatchlistPage() {
         </Card>
 
         <p className="text-[9px] text-[#8A8378] text-center">
-          ราคาจาก Finnhub · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+          ราคาจาก Finnhub
         </p>
       </div>
     </AppShell>

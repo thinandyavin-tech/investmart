@@ -146,7 +146,7 @@ export default function LeaderboardPage() {
         </Card>
 
         <p className="text-[9px] text-[#8A8378] text-center">
-          มูลค่าคำนวณจากราคาต้นทุน + เงินสด · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · InvestMart
+          มูลค่าคำนวณจากราคาต้นทุน + เงินสด · InvestMart
         </p>
       </div>
     </AppShell>

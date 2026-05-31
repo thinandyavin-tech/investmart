@@ -33,7 +33,7 @@ export function MarketPageClient() {
         </section>
 
         <p className="text-[9px] text-[#8A8378] text-center pb-2">
-          ข้อมูลอาจล่าช้า 15–20 นาที · ไม่ใช่คำแนะนำการลงทุน · พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+          ข้อมูลอาจล่าช้า 15–20 นาที · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>
     </div>

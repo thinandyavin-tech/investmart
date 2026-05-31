@@ -194,7 +194,7 @@ export default function ProfilePage() {
         )}
 
         <p className="text-[9px] text-[#8A8378] text-center pb-2">
-          พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · InvestMart
+          InvestMart
         </p>
       </div>
     </AppShell>

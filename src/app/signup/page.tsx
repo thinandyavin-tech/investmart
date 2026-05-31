@@ -173,7 +173,7 @@ export default function SignUpPage() {
         </p>
 
         <p className="text-[9px] text-[#8A8378] text-center">
-          พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · InvestMart
+          InvestMart
         </p>
       </div>
     </AppShell>

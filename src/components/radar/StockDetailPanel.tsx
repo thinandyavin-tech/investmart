@@ -455,7 +455,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           </p>
         )}
         <p className="text-[9px] text-[#8A8378] text-center">
-          พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง
+          ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>
 
