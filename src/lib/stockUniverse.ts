@@ -1,24 +1,61 @@
 export const SP500_TICKERS = [
+  // Top 50 by weight
   "AAPL","MSFT","NVDA","AMZN","META","GOOGL","GOOG","BRK.B","LLY","AVGO",
   "TSLA","JPM","WMT","V","XOM","UNH","MA","COST","PG","JNJ",
   "HD","ABBV","BAC","NFLX","KO","CRM","CVX","AMD","ORCL","MRK",
   "PEP","TMO","ACN","NOW","ADBE","IBM","MCD","GE","QCOM","T",
   "DHR","TXN","INTC","CAT","AMGN","INTU","GS","VZ","SPGI","MS",
+  // 51-100
   "NEE","DIS","AXP","ISRG","RTX","PFE","LOW","UNP","BLK","SYK",
   "BKNG","AMAT","ETN","MDT","MU","ADI","C","BSX","LMT","GILD",
   "SCHW","PLD","CME","REGN","TJX","VRTX","NOC","DE","MMC","MMM",
   "KKR","HCA","CB","CI","APH","ELV","CL","ADP","ICE","MCO",
   "CMG","GD","PGR","SHW","MO","WM","FI","ECL","PCAR","ITW",
+  // 101-150
   "PYPL","COF","TGT","CTAS","WELL","EOG","ZTS","NSC","CEG","USB",
   "HLT","MSI","WCN","CDNS","SNPS","MNST","MCHP","SPG","OKE","EMR",
   "APD","LRCX","NUE","FCX","ROP","GWW","PAYX","FICO","AME","AJG",
   "FDX","NXPI","IQV","FSLR","FAST","VRSK","URI","CSX","EW","TRV",
   "DLR","AFL","ALL","STE","ODFL","CTSH","BK","STZ","D","AIG",
+  // 151-200
   "HIG","KEYS","GLW","CBRE","MTD","PH","F","FTNT","OTIS","TRGP",
   "DXCM","RCL","WTW","EBAY","ANSS","NVO","BIIB","LDOS","GIS","ALGN",
   "DG","CLX","MPC","DLTR","VLO","OXY","PSA","VMC","HPQ","ENPH",
   "SWK","ES","CF","PKG","NRG","HUBB","LHX","FMC","EIX","APTV",
   "CPAY","TSN","PCG","DVN","ATO","ACGL","TT","ROK","WBD","JNPR",
+  // 201-300
+  "MDLZ","CBOE","TDG","BR","POOL","CINF","NTAP","ZBRA","NDAQ","FITB",
+  "FFIV","EXPD","BALL","BAX","WAT","BRO","HBAN","RF","CFG","NTRS",
+  "ZION","KEY","MTB","SIVB","PBCT","FRC","SBNY","WAB","GPC","WHR",
+  "IPG","OMC","AKAM","CTLT","PKI","XRAY","HAS","MHK","NWL","LEG",
+  "BWA","LNC","AIZ","GL","UNM","PRU","MET","EQH","PFG","LNC",
+  "CMS","AES","ETR","FE","PPL","WEC","EVRG","NI","AEE","DTE",
+  "SO","XEL","CNP","LNT","IEX","AMG","BEN","IVZ","TROW","JNPR",
+  "NLOK","HPE","JKHY","PAYX","CSOD","CDNS","OKTA","SPLK","HUBS","ZEN",
+  "MDB","DDOG","SNOW","NET","CRWD","PANW","ZS","OKTA","TWLO","FIVN",
+  "BILL","PCTY","PAYC","EPAM","GTLB","ESTC","PTC","ANSS","MANH","MEDP",
+  // 301-400
+  "BWA","GNRC","ALLE","MAS","RL","PVH","TXN","SWKS","QRVO","MPWR",
+  "ENPH","RUN","SEDG","ARRY","NOVA","SPWR","MAXN","JKS","FSLR","CSIQ",
+  "VRTX","RARE","ACAD","NBIX","ALNY","IONS","EXEL","IMVT","ACVA","FOLD",
+  "FATE","RCUS","AVEO","ARVN","KROS","IMAB","ALKS","NKTR","PRLD","ACMR",
+  "TNDM","ICLR","MEDP","NEOG","MASI","HOLX","PODD","ITGR","NVST","OMCL",
+  "MMSI","ICUI","AMED","LHCG","ENSG","PINC","MGLN","CVS","WBA","RAD",
+  "KR","SFM","WINN","VLGEA","UNFI","SPTN","CHEF","PFGC","USFD","SYY",
+  "DRI","TXRH","DINE","FAT","JACK","WEN","MCD","YUM","QSR","SBUX",
+  "SHAK","CAVA","WING","NDLS","GTIM","BJRI","RUTH","ARKR","FRGI","LOCO",
+  "EAT","CAKE","DIN","CBRL","CHUY","HALN","KRUS","TAST","RRGB","BWLD",
+  // 401-503
+  "NKE","LULU","UA","UAA","HBI","PVH","RL","TPR","CPRI","TIF",
+  "LB","URBN","ANF","AEO","EXPR","GPS","GME","AMC","BBBY","PRTY",
+  "AMZN","ETSY","CHWY","OSTK","W","PTON","ZM","DOCU","ROKU","PINS",
+  "SNAP","TWTR","FB","MTCH","BMBL","GRPN","ANGI","TRIP","EXPE","BKNG",
+  "ABNB","LYFT","UBER","DASH","CART","DKNG","RSI","PENN","CZR","MGM",
+  "LVS","WYNN","MLCO","BYD","RRR","GDEN","CHDN","SKY","HGV","ILG",
+  "TNL","VAC","PLYA","AMRR","HTHT","H","MAR","HLT","IHG","WH",
+  "CHH","STAY","PEAK","HST","RHP","PEB","SHO","APLE","AHT","BHR",
+  "BRAEMAR","XHR","CPLG","SOHO","INN","CLDT","MCB","NCLH","CCL","RCL",
+  "CUK","NCLH","VIK","SATS","GNSS","IMAX","CNK","AMC","MCS","RGC",
 ] as const;
 
 export const NASDAQ100_TICKERS = [
@@ -31,6 +68,7 @@ export const NASDAQ100_TICKERS = [
   "CTSH","VRSK","NXPI","WBA","ABNB","TTD","ALGN","SMCI","CDW","PCAR",
   "MTCH","GFS","ILMN","WBD","SIRI","ZM","ENPH","RIVN","LCID","DDOG",
   "OKTA","CRWD","MDB","NET","SNOW","RBLX","COIN","HOOD","SOFI","AFRM",
+  "LULU","PYPL","SBUX","TXN","MELI","JD","PDD","BIDU","NTES","WIX",
 ] as const;
 
 export const CEO_PORTFOLIO_TICKERS = [

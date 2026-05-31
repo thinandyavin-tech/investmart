@@ -15,7 +15,7 @@ const navItems: NavItem[] = [
   { href: "/",        label: "Home",    icon: <HomeIcon /> },
   { href: "/search",  label: "Search",  icon: <SearchIcon /> },
   { href: "/compose", label: "Plus",    icon: null, isPlus: true },
-  { href: "/likes",   label: "Likes",   icon: <HeartIcon /> },
+  { href: "/chat",    label: "แชท",     icon: <ChatIcon /> },
   { href: "/profile", label: "Profile", icon: <PersonIcon /> },
 ];
 
@@ -98,6 +98,13 @@ function PersonIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="7" r="4" />
       <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+    </svg>
+  );
+}
+function ChatIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   );
 }

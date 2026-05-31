@@ -36,6 +36,7 @@ model User {
   following    Follow[]          @relation("Follower")
   followers    Follow[]          @relation("Following")
   watchlist    WatchlistItem[]
+  chatMessages ChatMessage[]
 }
 
 model Account {
@@ -178,4 +179,14 @@ model WatchlistItem {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, ticker])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String?
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }

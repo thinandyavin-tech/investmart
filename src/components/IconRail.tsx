@@ -11,6 +11,7 @@ const ADMIN_EMAIL = "thinandyavin@gmail.com";
 const icons = [
   { href: "/", label: "หน้าหลัก", icon: <HomeIcon /> },
   { href: "/radar", label: "เรดาร์", icon: <RadarIcon /> },
+  { href: "/chat", label: "แชท", icon: <ChatIcon /> },
   { href: "/profile", label: "โปรไฟล์", icon: <PersonIcon /> },
   { href: "/mail", label: "จดหมาย", icon: <MailIcon /> },
   { href: "/exchange", label: "Exchange", icon: <ExchangeIcon /> },
@@ -171,6 +172,13 @@ function ShieldIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.25C16.5 22.15 20 17.25 20 12V6l-8-4z" />
+    </svg>
+  );
+}
+function ChatIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
