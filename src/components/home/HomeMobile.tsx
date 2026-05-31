@@ -8,6 +8,7 @@ import { BrandPillDropdown } from "@/components/BrandPillDropdown";
 import { RadarPickCard } from "@/components/home/RadarPickCard";
 import { FeedSection } from "@/components/social/FeedSection";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
+import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
 
 
@@ -90,6 +91,10 @@ export function HomeMobile() {
       />
 
       <RadarPickCard />
+
+      <div className="mx-3 mb-3">
+        <InfographicsSection />
+      </div>
 
       <div className="mx-3 mb-3">
         <HotNewsSection />

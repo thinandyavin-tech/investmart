@@ -6,6 +6,7 @@ import { OffsetButton } from "@/components/OffsetButton";
 import { FeedSection } from "@/components/social/FeedSection";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
+import { InfographicsSection } from "@/components/home/InfographicsSection";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -51,6 +52,7 @@ export function HomeDesktop() {
               </div>
             </Card>
           )}
+          <InfographicsSection />
           <HotNewsSection />
           <PostsCard />
         </section>
