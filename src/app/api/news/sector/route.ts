@@ -12,7 +12,7 @@ interface FinnhubArticle {
   summary:  string;
 }
 
-export interface SectorNewsArticle {
+interface SectorNewsArticle {
   id:       number;
   headline: string;
   source:   string;

@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { SectorNewsArticle } from "@/app/api/news/sector/route";
+
+interface SectorNewsArticle {
+  id:       number;
+  headline: string;
+  source:   string;
+  url:      string;
+  datetime: number;
+  summary:  string;
+  ticker:   string | null;
+}
 
 interface Tab {
   key:   string;
