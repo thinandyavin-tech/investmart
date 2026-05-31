@@ -25,6 +25,7 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   allowedDevOrigins: ["192.168.1.9"],
+  devIndicators: false,
   async headers() {
     return [
       {
