@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
+import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
 
 interface Article {
   id:       number;
@@ -17,75 +18,6 @@ function timeAgo(unixSecs: number): string {
   if (diff < 3600)  return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
   if (diff < 86400) return `${Math.floor(diff / 3600)} ชม.ที่แล้ว`;
   return `${Math.floor(diff / 86400)} วันที่แล้ว`;
-}
-
-interface SummarizeButtonProps {
-  article: Article;
-  ticker:  string;
-}
-
-function SummarizeButton({ article, ticker }: SummarizeButtonProps) {
-  const [summary, setSummary]   = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [open, setOpen]         = useState(false);
-
-  const handleSummarize = useCallback(async () => {
-    if (summary) { setOpen((v) => !v); return; }
-    setLoading(true);
-    setOpen(true);
-    try {
-      const res = await fetch("/api/news/summarize", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          headline: article.headline,
-          snippet:  article.summary,
-          source:   article.source,
-          ticker,
-        }),
-      });
-      const data = (await res.json()) as { summary?: string; error?: string };
-      setSummary(data.summary ?? "ไม่สามารถสรุปได้ในขณะนี้");
-    } catch {
-      setSummary("ไม่สามารถสรุปได้ในขณะนี้");
-    } finally {
-      setLoading(false);
-    }
-  }, [article, ticker, summary]);
-
-  return (
-    <div>
-      <button
-        onClick={() => void handleSummarize()}
-        disabled={loading}
-        className="text-[9px] font-bold px-2 py-0.5 border border-[#8A8378] text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors disabled:opacity-50"
-        aria-expanded={open}
-        aria-label={`สรุปข่าว ${article.headline} ด้วย AI`}
-      >
-        {loading ? "กำลังสรุป..." : open ? "ซ่อน AI" : "สรุปด้วย AI"}
-      </button>
-      {open && summary && (
-        <div
-          className="mt-1.5 px-2 py-2 text-[10px] leading-relaxed border-l-2 border-[#5B8A2A] bg-[#F3EDE0]"
-          role="region"
-          aria-label="AI summary"
-        >
-          <p className="text-[#1F1A14]">{summary}</p>
-          <p className="text-[9px] text-[#8A8378] mt-1">
-            AI สรุปจาก {article.source} · ไม่ใช่คำแนะนำการลงทุน ·{" "}
-            <a
-              href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              อ่านต้นฉบับ
-            </a>
-          </p>
-        </div>
-      )}
-    </div>
-  );
 }
 
 interface StockNewsSectionProps {
@@ -106,6 +38,8 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [ticker]);
+
+  const allHeadlines = articles.map(a => a.headline);
 
   return (
     <Card className="overflow-hidden">
@@ -146,12 +80,14 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
                   {a.headline}
                 </p>
               </a>
-              <div className="flex items-center justify-between gap-2 mt-1">
-                <p className="text-[9px] text-[#8A8378]">
-                  {a.source} · {timeAgo(a.datetime)}
-                </p>
-                <SummarizeButton article={a} ticker={ticker} />
-              </div>
+              <p className="text-[9px] text-[#8A8378] mb-1">
+                {a.source} · {timeAgo(a.datetime)}
+              </p>
+              <NewsAnalysisPanel
+                article={{ id: a.id, headline: a.headline, source: a.source, url: a.url, snippet: a.summary }}
+                ticker={ticker}
+                otherHeadlines={allHeadlines}
+              />
             </div>
           ))}
         </div>
