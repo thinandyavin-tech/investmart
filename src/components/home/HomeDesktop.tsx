@@ -251,7 +251,7 @@ function HomeFooter() {
             </Link>
           ))}
         </div>
-        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investneet.com</p>
+        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investmart.vercel.app</p>
       </div>
     </footer>
   );

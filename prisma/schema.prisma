@@ -21,6 +21,7 @@ model User {
   username      String?   @unique
   passwordHash      String?
   lastNameChangeAt  DateTime?
+  bannedAt          DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

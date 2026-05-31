@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { RetroMenu } from "@/components/RetroMenu";
+import { useUser } from "@/lib/userContext";
+
+const ADMIN_EMAIL = "thinandyavin@gmail.com";
 
 const icons = [
   { href: "/", label: "หน้าหลัก", icon: <HomeIcon /> },
@@ -18,6 +21,8 @@ const icons = [
 
 export function IconRail() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useUser();
+  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
 
   return (
     <>
@@ -43,7 +48,16 @@ export function IconRail() {
             {icon}
           </Link>
         ))}
-        <div className="mt-auto mb-1">
+        <div className="mt-auto mb-1 flex flex-col items-center gap-1">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              title="Admin"
+              className="w-9 h-9 flex items-center justify-center hover:bg-[#1F1A14] hover:text-white transition-colors text-[#1F1A14]"
+            >
+              <ShieldIcon />
+            </Link>
+          )}
           <PlusButton />
         </div>
       </nav>
@@ -150,6 +164,13 @@ function SearchIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="11" cy="11" r="8" />
       <path d="M21 21l-4.35-4.35" />
+    </svg>
+  );
+}
+function ShieldIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.25C16.5 22.15 20 17.25 20 12V6l-8-4z" />
     </svg>
   );
 }

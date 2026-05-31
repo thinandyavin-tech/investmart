@@ -231,6 +231,24 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
               </div>
             </div>
 
+            {/* Pre-market badge */}
+            {quote?.preMarket && (
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-[9px] font-bold text-[#7C3AED] uppercase tracking-wide border border-[#7C3AED] px-1.5 py-0.5">
+                  PRE-MARKET
+                </span>
+                <span className="font-mono text-[11px] font-bold">
+                  ${quote.preMarket.price.toFixed(2)}
+                </span>
+                <span
+                  className="text-[10px] font-mono font-bold"
+                  style={{ color: quote.preMarket.change >= 0 ? "#5B8A2A" : "#DC2626" }}
+                >
+                  {quote.preMarket.change >= 0 ? "+" : ""}{quote.preMarket.changePercent.toFixed(2)}%
+                </span>
+              </div>
+            )}
+
             {/* Live indicator */}
             <div className="flex items-center gap-2 mt-2">
               {isLive ? (

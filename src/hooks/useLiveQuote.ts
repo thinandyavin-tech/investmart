@@ -10,6 +10,12 @@ const FALLBACK_POLL_MS    = 15_000;
 const REDUCED_MOTION_MQ   = "(prefers-reduced-motion: reduce)";
 
 // Keep the exact same exported interface as the previous implementation
+export interface PreMarketData {
+  price:         number;
+  change:        number;
+  changePercent: number;
+}
+
 export interface LiveQuote {
   price:      number;
   prevClose:  number;
@@ -19,6 +25,7 @@ export interface LiveQuote {
   low:        number;
   open:       number;
   timestamp:  number;   // unix seconds from Finnhub
+  preMarket:  PreMarketData | null;
 }
 
 export interface LiveQuoteResult {
@@ -32,14 +39,15 @@ export interface LiveQuoteResult {
 }
 
 interface RawQuote {
-  c: number;
-  pc: number;
-  d: number;
-  dp: number;
-  h: number;
-  l: number;
-  o: number;
-  t: number;
+  c:          number;
+  pc:         number;
+  d:          number;
+  dp:         number;
+  h:          number;
+  l:          number;
+  o:          number;
+  t:          number;
+  preMarket?: PreMarketData | null;
 }
 
 interface SseTickMessage {
@@ -63,6 +71,7 @@ function parseRawQuote(raw: RawQuote): LiveQuote {
     low:       raw.l,
     open:      raw.o,
     timestamp: raw.t,
+    preMarket: raw.preMarket ?? null,
   };
 }
 
@@ -179,6 +188,7 @@ export function useLiveQuote(ticker: string | null): LiveQuoteResult {
         low:       quote ? Math.min(quote.low, tick.price) : tick.price,
         open:      quote?.open ?? tick.price,
         timestamp: Math.floor(tick.timestamp / 1000),
+        preMarket: quote?.preMarket ?? null,
       };
 
       triggerFlash(next.price);

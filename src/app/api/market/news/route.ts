@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 
-export const revalidate = 600;
+export const revalidate = 120;
 
 interface FinnhubArticle {
-  id: number;
+  id:       number;
   headline: string;
-  source: string;
-  url: string;
+  source:   string;
+  url:      string;
   datetime: number;
-  summary: string;
+  summary:  string;
 }
 
 export async function GET(): Promise<NextResponse> {
@@ -18,24 +18,42 @@ export async function GET(): Promise<NextResponse> {
   }
 
   try {
-    const res = await fetch(
-      `https://finnhub.io/api/v1/news?category=general&token=${apiKey}`,
-      { signal: AbortSignal.timeout(5000) }
-    );
-    if (!res.ok) {
-      return NextResponse.json({ articles: [] });
-    }
-    const raw = (await res.json()) as FinnhubArticle[];
-    const articles = raw.slice(0, 6).map((a) => ({
-      id:       a.id,
-      headline: a.headline,
-      source:   a.source,
-      url:      a.url,
-      datetime: a.datetime,
-    }));
+    const [generalRes, forexRes, mergerRes] = await Promise.all([
+      fetch(`https://finnhub.io/api/v1/news?category=general&minId=0&token=${apiKey}`, { signal: AbortSignal.timeout(6000) }),
+      fetch(`https://finnhub.io/api/v1/news?category=forex&minId=0&token=${apiKey}`,   { signal: AbortSignal.timeout(6000) }),
+      fetch(`https://finnhub.io/api/v1/news?category=merger&minId=0&token=${apiKey}`,  { signal: AbortSignal.timeout(6000) }),
+    ]);
+
+    const parse = async (res: Response): Promise<FinnhubArticle[]> => {
+      if (!res.ok) return [];
+      const raw = (await res.json()) as unknown;
+      return Array.isArray(raw) ? (raw as FinnhubArticle[]) : [];
+    };
+
+    const [general, forex, merger] = await Promise.all([parse(generalRes), parse(forexRes), parse(mergerRes)]);
+
+    const seen = new Set<number>();
+    const merged = [...general, ...forex, ...merger]
+      .filter(a => {
+        if (!a.id || !a.headline || !a.url) return false;
+        if (seen.has(a.id)) return false;
+        seen.add(a.id);
+        return true;
+      })
+      .sort((a, b) => b.datetime - a.datetime)
+      .slice(0, 20)
+      .map(a => ({
+        id:       a.id,
+        headline: a.headline,
+        source:   a.source,
+        url:      a.url,
+        datetime: a.datetime,
+        summary:  a.summary ?? "",
+      }));
+
     return NextResponse.json(
-      { articles },
-      { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1200" } }
+      { articles: merged },
+      { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300" } }
     );
   } catch {
     return NextResponse.json({ articles: [] });

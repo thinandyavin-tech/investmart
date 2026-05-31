@@ -28,11 +28,11 @@ export const metadata: Metadata = {
   },
   description:
     "พอร์ตหุ้นจำลอง ไม่ใช้เงินจริง · paper trading game · เว็บโซเชียลมีเดียหุ้นอเมริกา + text based AI social · ดู PNL ranking holdings ของเทรดเดอร์ InvestMart",
-  metadataBase: new URL("https://investneet.com"),
+  metadataBase: new URL("https://investmart.vercel.app"),
   openGraph: {
     type: "website",
     locale: "th_TH",
-    url: "https://investneet.com",
+    url: "https://investmart.vercel.app",
     siteName: "InvestMart",
     images: [{ url: "/og-image.jpg" }],
   },
