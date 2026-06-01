@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { FeedSection } from "@/components/social/FeedSection";
 import { useUser } from "@/lib/userContext";
@@ -32,6 +32,15 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
   const [following, setFollowing] = useState(false);
   const [follCount, setFollCount] = useState(0);
   const [busy, setBusy]           = useState(false);
+  const [copied, setCopied]       = useState(false);
+
+  const shareProfile = useCallback(() => {
+    const url = `${window.location.origin}/u/${username}`;
+    void navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [username]);
 
   useEffect(() => {
     setLoading(true);
@@ -111,28 +120,37 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
             {initial}
           </div>
 
-          {!profile.isSelf && viewer && (
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {!profile.isSelf && viewer && (
+              <button
+                onClick={toggleFollow}
+                disabled={busy}
+                className={`px-4 py-1.5 text-xs font-bold border transition-colors disabled:opacity-40 ${
+                  following
+                    ? "border-[#1F1A14] bg-[#F3EDE0] text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
+                    : "border-[#1F1A14] bg-[#1F1A14] text-white shadow-offset-lime"
+                }`}
+                aria-pressed={following}
+              >
+                {following ? "ติดตามอยู่" : "+ ติดตาม"}
+              </button>
+            )}
+            {profile.isSelf && (
+              <Link
+                href="/profile/edit"
+                className="px-4 py-1.5 text-xs font-bold border border-[#1F1A14] bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+              >
+                แก้ไขโปรไฟล์
+              </Link>
+            )}
             <button
-              onClick={toggleFollow}
-              disabled={busy}
-              className={`px-4 py-1.5 text-xs font-bold border transition-colors disabled:opacity-40 ${
-                following
-                  ? "border-[#1F1A14] bg-[#F3EDE0] text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
-                  : "border-[#1F1A14] bg-[#1F1A14] text-white shadow-offset-lime"
-              }`}
-              aria-pressed={following}
+              onClick={shareProfile}
+              className="px-3 py-1.5 text-[9px] font-bold border border-[#D0C8B8] text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors"
+              aria-label="คัดลอก link โปรไฟล์"
             >
-              {following ? "ติดตามอยู่" : "+ ติดตาม"}
+              {copied ? "✓ คัดลอกแล้ว" : "แชร์ ↗"}
             </button>
-          )}
-          {profile.isSelf && (
-            <Link
-              href="/profile/edit"
-              className="px-4 py-1.5 text-xs font-bold border border-[#1F1A14] bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
-            >
-              แก้ไขโปรไฟล์
-            </Link>
-          )}
+          </div>
         </div>
 
         <p className="text-sm font-bold">{displayName}</p>

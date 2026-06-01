@@ -33,6 +33,18 @@ export async function POST(
     await prisma.follow.delete({ where: { id: existing.id } });
   } else {
     await prisma.follow.create({ data: { followerId, followingId } });
+
+    // Notify the followed user
+    const follower = await prisma.user.findUnique({ where: { id: followerId }, select: { username: true, name: true } });
+    const from = follower?.username ?? follower?.name ?? "ผู้ใช้";
+    await prisma.notification.create({
+      data: {
+        userId:  followingId,
+        type:    "follow",
+        message: `${from} เริ่มติดตามคุณ`,
+        link:    `/u/${follower?.username ?? followerId}`,
+      },
+    });
   }
 
   const count = await prisma.follow.count({ where: { followingId } });

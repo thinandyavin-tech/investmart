@@ -6,6 +6,7 @@ import {
   CandlestickSeries,
   AreaSeries,
   HistogramSeries,
+  LineSeries,
   ColorType,
   type IChartApi,
   type UTCTimestamp,
@@ -21,6 +22,12 @@ interface Candle {
   volume: number;
 }
 
+interface MaConfig {
+  ma20?:  boolean;
+  ma50?:  boolean;
+  ma200?: boolean;
+}
+
 interface PriceChartProps {
   candles:    Candle[];
   mode:       "Price" | "Relative" | "Volume";
@@ -28,6 +35,15 @@ interface PriceChartProps {
   height?:    number;
   /** Use compact area sparkline regardless of mode (for small cards) */
   mini?:      boolean;
+  ma?:        MaConfig;
+}
+
+function computeMA(closes: number[], period: number): ({ time: UTCTimestamp; value: number } | null)[] {
+  return closes.map((_, i) => {
+    if (i < period - 1) return null;
+    const slice = closes.slice(i - period + 1, i + 1);
+    return { time: 0 as UTCTimestamp, value: slice.reduce((a, b) => a + b, 0) / period };
+  });
 }
 
 const COLORS = {
@@ -80,7 +96,7 @@ const BASE_OPTIONS = {
   },
 } as const;
 
-export function PriceChart({ candles, mode, simulated, height = 160, mini = false }: PriceChartProps) {
+export function PriceChart({ candles, mode, simulated, height = 160, mini = false, ma }: PriceChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef     = useRef<IChartApi | null>(null);
 
@@ -89,6 +105,7 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
 
   useEffect(() => {
     if (!containerRef.current || candles.length < 2) return;
+
 
     const el   = containerRef.current;
     const up   = candles[candles.length - 1].close >= candles[0].close;
@@ -225,6 +242,32 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
       }))
     );
 
+    // MA overlays
+    if (ma && candles.length >= 20) {
+      const closes = candles.map((c) => c.close);
+      const maOptions = [
+        { period: 20,  enabled: ma.ma20,  color: "#2563EB" },
+        { period: 50,  enabled: ma.ma50,  color: "#D97706" },
+        { period: 200, enabled: ma.ma200, color: "#7C3AED" },
+      ];
+      for (const { period, enabled, color } of maOptions) {
+        if (!enabled || candles.length < period) continue;
+        const maSeries = candleChart.addSeries(LineSeries, {
+          color,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        });
+        const maRaw = computeMA(closes, period);
+        maSeries.setData(
+          candles
+            .map((c, i) => (maRaw[i] ? { time: c.time as UTCTimestamp, value: maRaw[i]!.value } : null))
+            .filter((d): d is { time: UTCTimestamp; value: number } => d !== null)
+        );
+      }
+    }
+
     const volSeries = volChart.addSeries(HistogramSeries, {
       priceScaleId: "vol",
       priceFormat:  { type: "volume" },
@@ -272,7 +315,7 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
       volChart.remove();
       chartRef.current = null;
     };
-  }, [candles, mode, height, mini]);
+  }, [candles, mode, height, mini, ma]);
 
   return (
     <div className="relative border border-[#1F1A14] bg-[#F3EDE0]" style={{ height }}>

@@ -58,13 +58,27 @@ export async function POST(
     return NextResponse.json({ error: "เนื้อหาไม่ถูกต้อง" }, { status: 422 });
   }
 
-  const post = await prisma.post.findUnique({ where: { id: postId }, select: { id: true } });
+  const post = await prisma.post.findUnique({ where: { id: postId }, select: { id: true, userId: true, ticker: true } });
   if (!post) return NextResponse.json({ error: "ไม่พบโพสต์" }, { status: 404 });
 
   const comment = await prisma.comment.create({
     data:   { postId, userId, content, parentId },
     select: commentSelect,
   });
+
+  // Notify post owner
+  if (post.userId !== userId) {
+    const commenter = await prisma.user.findUnique({ where: { id: userId }, select: { username: true, name: true } });
+    const from = commenter?.username ?? commenter?.name ?? "ผู้ใช้";
+    await prisma.notification.create({
+      data: {
+        userId:  post.userId,
+        type:    "comment",
+        message: `${from} แสดงความคิดเห็นในโพสต์ของคุณ`,
+        link:    `/u/${commenter?.username ?? userId}`,
+      },
+    });
+  }
 
   return NextResponse.json(comment, { status: 201 });
 }

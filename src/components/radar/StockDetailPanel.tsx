@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { OffsetButton } from "@/components/OffsetButton";
 import { ScoreBadge } from "@/components/radar/ScoreBadge";
+import { Tooltip } from "@/components/Tooltip";
 import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { useUser } from "@/lib/userContext";
@@ -15,9 +16,24 @@ const PriceChart = dynamic(
   { ssr: false }
 );
 
-const TIMEFRAMES = ["1D", "5D", "1M", "3M", "6M", "1Y"] as const;
+const TIMEFRAMES = ["1min", "5min", "1D", "5D", "1M", "3M", "6M", "1Y"] as const;
 type Timeframe  = (typeof TIMEFRAMES)[number];
 type ChartMode  = "Price" | "Relative" | "Volume";
+
+const SCORE_TOOLTIPS = {
+  momentum: "Momentum Score (0–100): วัดแรงส่งราคาและปริมาณซื้อขาย สูงหมายถึงหุ้นมี momentum แข็งแกร่ง",
+  quality:  "Quality Score (0–100): วัดขนาดตลาดและความน่าเชื่อถือของหุ้น Large-cap ที่ซื้อขายคล่องจะได้คะแนนสูง",
+  rsi:      "RSI (Relative Strength Index): วัดความแข็งแกร่งของราคา 70+ = overbought, 30− = oversold, 40–60 = zone ปกติ",
+  volume:   "Volume Surge: ปริมาณซื้อขายปัจจุบัน ÷ ค่าเฉลี่ย เช่น 2.5x หมายถึงซื้อขายมากกว่าปกติ 2.5 เท่า",
+  beta:     "Beta: วัดความผันผวนเทียบตลาด <1 = ผันผวนน้อย, 1 = ตามตลาด, >1 = ผันผวนมาก",
+} as const;
+
+function riskLabel(beta: number | undefined): { label: string; color: string } | null {
+  if (beta === undefined) return null;
+  if (beta < 0.8)  return { label: "Conservative", color: "#2563EB" };
+  if (beta <= 1.2) return { label: "Moderate",     color: "#D97706" };
+  return               { label: "Aggressive",     color: "#DC2626" };
+}
 
 interface StockDetailPanelProps {
   stock:     StockMetrics;
@@ -274,7 +290,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             </span>
           </p>
         </div>
-        <ScoreBadge score={stock.momentumScore} />
+        <ScoreBadge score={stock.momentumScore} tooltip={SCORE_TOOLTIPS.momentum} />
       </div>
 
       {/* Description */}
@@ -354,21 +370,36 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Extra metrics */}
       {m && (
-        <div className="grid grid-cols-3 gap-1.5">
-          {[
-            { label: "52W High",  value: m["52WeekHigh"]         ? `$${m["52WeekHigh"].toFixed(2)}`          : "N/A" },
-            { label: "52W Low",   value: m["52WeekLow"]          ? `$${m["52WeekLow"].toFixed(2)}`           : "N/A" },
-            { label: "P/E TTM",   value: m.peBasicExclExtraTTM   ? m.peBasicExclExtraTTM.toFixed(1)          : "N/A" },
-            { label: "Beta",      value: m.beta                   ? m.beta.toFixed(2)                         : "N/A" },
-            { label: "RSI",       value: String(stock.rsi) },
-            { label: "SCORE",     value: `${stock.momentumScore}/100` },
-          ].map(({ label, value }) => (
-            <div key={label} className="border border-[#1F1A14] p-1.5 bg-[#F3EDE0] text-[10px]">
-              <div className="text-[9px] text-[#8A8378] uppercase tracking-wide">{label}</div>
-              <div className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+        <>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { label: "52W High",  value: m["52WeekHigh"]       ? `$${m["52WeekHigh"].toFixed(2)}`       : "N/A", tip: "ราคาสูงสุดในรอบ 52 สัปดาห์" },
+              { label: "52W Low",   value: m["52WeekLow"]        ? `$${m["52WeekLow"].toFixed(2)}`        : "N/A", tip: "ราคาต่ำสุดในรอบ 52 สัปดาห์" },
+              { label: "P/E TTM",   value: m.peBasicExclExtraTTM ? m.peBasicExclExtraTTM.toFixed(1)       : "N/A", tip: "Price/Earnings ratio (Trailing 12 months) — ราคาหุ้น ÷ กำไรต่อหุ้น" },
+              { label: "Beta",      value: m.beta                ? m.beta.toFixed(2)                      : "N/A", tip: SCORE_TOOLTIPS.beta },
+              { label: "RSI",       value: String(stock.rsi),                                                       tip: SCORE_TOOLTIPS.rsi },
+              { label: "SCORE",     value: `${stock.momentumScore}/100`,                                            tip: SCORE_TOOLTIPS.momentum },
+            ].map(({ label, value, tip }) => (
+              <Tooltip key={label} text={tip}>
+                <div className="border border-[#1F1A14] p-1.5 bg-[#F3EDE0] text-[10px] w-full">
+                  <div className="text-[9px] text-[#8A8378] uppercase tracking-wide">{label}</div>
+                  <div className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+                </div>
+              </Tooltip>
+            ))}
+          </div>
+          {m.beta !== undefined && riskLabel(m.beta) && (
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-[#8A8378]">Risk Profile:</span>
+              <span
+                className="text-[9px] px-1.5 py-0.5 font-bold border rounded-sm"
+                style={{ borderColor: riskLabel(m.beta)!.color, color: riskLabel(m.beta)!.color }}
+              >
+                {riskLabel(m.beta)!.label}
+              </span>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {/* Current holding indicator */}
@@ -455,7 +486,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           </p>
         )}
         <p className="text-[9px] text-[#8A8378] text-center">
-          ไม่ใช่คำแนะนำการลงทุน
+          จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>
 

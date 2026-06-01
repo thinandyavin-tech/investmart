@@ -36,8 +36,10 @@ model User {
   bookmarks    Bookmark[]
   following    Follow[]          @relation("Follower")
   followers    Follow[]          @relation("Following")
-  watchlist    WatchlistItem[]
-  chatMessages ChatMessage[]
+  watchlist     WatchlistItem[]
+  chatMessages  ChatMessage[]
+  priceAlerts   PriceAlert[]
+  notifications Notification[]
 }
 
 model Account {
@@ -180,6 +182,35 @@ model WatchlistItem {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, ticker])
+}
+
+model PriceAlert {
+  id         String   @id @default(cuid())
+  userId     String
+  ticker     String
+  threshold  Float
+  condition  String   // "above" | "below"
+  triggered  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  triggeredAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticker, triggered])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "like" | "comment" | "follow" | "alert"
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
 }
 
 model ChatMessage {

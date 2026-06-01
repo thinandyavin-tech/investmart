@@ -8,16 +8,19 @@ interface YahooRange {
 }
 
 const TIMEFRAME_MAP: Record<string, YahooRange> = {
-  "1D":  { range: "1d",  interval: "5m"  },
-  "5D":  { range: "5d",  interval: "15m" },
-  "1M":  { range: "1mo", interval: "1d"  },
-  "3M":  { range: "3mo", interval: "1d"  },
-  "6M":  { range: "6mo", interval: "1d"  },
-  "1Y":  { range: "1y",  interval: "1d"  },
-  "5Y":  { range: "5y",  interval: "1wk" },
+  "1min": { range: "1d",  interval: "1m"  },
+  "5min": { range: "1d",  interval: "5m"  },
+  "1D":   { range: "1d",  interval: "5m"  },
+  "5D":   { range: "5d",  interval: "15m" },
+  "1M":   { range: "1mo", interval: "1d"  },
+  "3M":   { range: "3mo", interval: "1d"  },
+  "6M":   { range: "6mo", interval: "1d"  },
+  "1Y":   { range: "1y",  interval: "1d"  },
+  "5Y":   { range: "5y",  interval: "1wk" },
 };
 
 const CACHE_SECS: Record<string, number> = {
+  "1min": 30, "5min": 60,
   "1D": 60, "5D": 300, "1M": 3600, "3M": 3600, "6M": 3600, "1Y": 3600, "5Y": 86400,
 };
 

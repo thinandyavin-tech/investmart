@@ -15,9 +15,16 @@ const PriceChart = dynamic(
 );
 
 const TICKER_RE   = /^[A-Z][A-Z.\-]{0,9}$/;
-const TIMEFRAMES  = ["1D", "5D", "1M", "3M", "6M", "1Y", "5Y"] as const;
+const TIMEFRAMES  = ["1min", "5min", "1D", "5D", "1M", "3M", "6M", "1Y", "5Y"] as const;
 type Timeframe    = (typeof TIMEFRAMES)[number];
 type ChartMode    = "Price" | "Relative" | "Volume";
+
+function riskLabel(beta: number | undefined): { label: string; color: string } {
+  if (beta === undefined) return { label: "N/A", color: "#8A8378" };
+  if (beta < 0.8)  return { label: "Conservative", color: "#2563EB" };
+  if (beta <= 1.2) return { label: "Moderate",     color: "#D97706" };
+  return               { label: "Aggressive",     color: "#DC2626" };
+}
 
 interface ProfileData {
   name?:                 string;
@@ -97,6 +104,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const [chartLoading, setChartLoading] = useState(true);
   const [timeframe, setTimeframe]   = useState<Timeframe>("3M");
   const [chartMode, setChartMode]   = useState<ChartMode>("Price");
+  const [maConfig, setMaConfig]     = useState({ ma20: false, ma50: false, ma200: false });
   const [aiOutlook, setAiOutlook]   = useState<AiOutlook | null>(null);
   const [loadingOutlook, setLoadingOutlook] = useState(false);
 
@@ -347,7 +355,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Fundamentals row */}
       {metrics && (
-        <div className="flex flex-wrap gap-3 px-1">
+        <div className="flex flex-wrap gap-3 px-1 items-center">
           {[
             { label: "Market Cap",  value: fmtCap(profile?.marketCapitalization) },
             { label: "52W High",    value: metrics["52WeekHigh"]  ? `$${metrics["52WeekHigh"].toFixed(2)}`  : "—" },
@@ -360,6 +368,14 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
               <span className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</span>
             </div>
           ))}
+          {metrics.beta !== undefined && (
+            <span
+              className="text-[9px] px-1.5 py-0.5 font-bold border rounded-sm"
+              style={{ borderColor: riskLabel(metrics.beta).color, color: riskLabel(metrics.beta).color }}
+            >
+              {riskLabel(metrics.beta).label}
+            </span>
+          )}
           {profile?.weburl && (
             <a href={profile.weburl} target="_blank" rel="noopener noreferrer"
               className="text-[10px] text-[#5B8A2A] hover:underline">
@@ -389,7 +405,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
               </button>
             ))}
           </div>
-          <div className="flex gap-1" role="tablist" aria-label="Timeframe">
+          <div className="flex gap-1 flex-wrap" role="tablist" aria-label="Timeframe">
             {TIMEFRAMES.map((tf) => (
               <button
                 key={tf}
@@ -407,11 +423,34 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             ))}
           </div>
         </div>
+        {chartMode === "Price" && (
+          <div className="px-3 py-1.5 border-b border-[#E8E2D4] flex items-center gap-3">
+            <span className="text-[9px] text-[#8A8378] uppercase tracking-wide">MA:</span>
+            {([
+              { key: "ma20",  label: "20",  color: "#2563EB" },
+              { key: "ma50",  label: "50",  color: "#D97706" },
+              { key: "ma200", label: "200", color: "#7C3AED" },
+            ] as const).map(({ key, label, color }) => (
+              <button
+                key={key}
+                onClick={() => setMaConfig((c) => ({ ...c, [key]: !c[key] }))}
+                className="text-[9px] font-bold px-1.5 py-0.5 border transition-colors"
+                style={{
+                  borderColor: color,
+                  color:       maConfig[key] ? "#fff" : color,
+                  background:  maConfig[key] ? color  : "transparent",
+                }}
+              >
+                MA{label}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="p-3">
           {chartLoading ? (
             <div className="h-48 bg-[#E8E2D4] animate-pulse rounded" />
           ) : (
-            <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} />
+            <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} ma={maConfig} />
           )}
         </div>
       </Card>
@@ -526,13 +565,19 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         )}
       </Card>
 
-      {/* Radar link */}
-      <Link
-        href={`/radar?ticker=${ticker}`}
-        className="text-center text-[10px] font-bold text-[#5B8A2A] border border-[#5B8A2A] px-4 py-2 hover:bg-[#5B8A2A] hover:text-white transition-colors"
-      >
-        วิเคราะห์ AI + ซื้อขาย {ticker} ใน Radar →
-      </Link>
+      {/* CTA: Trade */}
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/radar?ticker=${ticker}`}
+          className="text-center text-xs font-bold text-white bg-[#1F1A14] border border-[#1F1A14] px-4 py-3 hover:bg-[#333] transition-colors"
+          style={{ boxShadow: "3px 3px 0 #5B8A2A" }}
+        >
+          ซื้อ / ขาย {ticker} (Paper Trade) →
+        </Link>
+        <p className="text-[9px] text-[#8A8378] text-center">
+          จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
+        </p>
+      </div>
     </div>
   );
 }
