@@ -187,8 +187,11 @@ export function InfographicsSection() {
     setError(false);
     setLoading(true);
     fetch("/api/news/infographics")
-      .then(r => r.json())
-      .then((d: InfographicsResponse) => {
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json() as Promise<InfographicsResponse>;
+      })
+      .then((d) => {
         setCards(d.cards ?? []);
         setGenAt(d.generated_at ?? null);
       })

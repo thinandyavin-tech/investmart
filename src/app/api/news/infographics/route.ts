@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +39,36 @@ export interface InfographicsResponse {
   generated_at: number;
 }
 
-// In-memory cache: avoids calling Groq + Finnhub on every request
+const DB_CACHE_KEY   = "infographics_v1";
+const DB_STALE_MS    = CACHE_TTL_MS;
+
+// In-memory cache: avoids DB round-trip on warm invocations
 let cachedCards: InfographicCard[] | null = null;
 let cacheTime = 0;
+
+async function loadDbCache(): Promise<{ cards: InfographicCard[]; updatedAt: Date } | null> {
+  try {
+    const row = await prisma.siteCache.findUnique({ where: { key: DB_CACHE_KEY } });
+    if (!row) return null;
+    const value = row.value as { cards?: InfographicCard[] };
+    if (!value.cards?.length) return null;
+    return { cards: value.cards, updatedAt: row.updatedAt };
+  } catch {
+    return null;
+  }
+}
+
+async function saveDbCache(cards: InfographicCard[]): Promise<void> {
+  try {
+    await prisma.siteCache.upsert({
+      where:  { key: DB_CACHE_KEY },
+      update: { value: { cards } as object },
+      create: { key: DB_CACHE_KEY, value: { cards } as object },
+    });
+  } catch {
+    // non-fatal: in-memory cache still works for this warm instance
+  }
+}
 
 // ─── Finnhub types ───────────────────────────────────────────────────────────
 
@@ -163,18 +191,31 @@ async function generateCards(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function GET(): Promise<NextResponse> {
-  // Serve from cache if fresh
+  // 1. Serve in-memory cache if fresh (warm instance, most common path)
   if (cachedCards && Date.now() - cacheTime < CACHE_TTL_MS) {
     return NextResponse.json(
       { cards: cachedCards, generated_at: cacheTime } satisfies InfographicsResponse
     );
   }
 
+  // 2. On cold start, try to hydrate in-memory cache from DB
+  if (!cachedCards) {
+    const db = await loadDbCache();
+    if (db && Date.now() - db.updatedAt.getTime() < DB_STALE_MS) {
+      cachedCards = db.cards;
+      cacheTime   = db.updatedAt.getTime();
+      return NextResponse.json(
+        { cards: cachedCards, generated_at: cacheTime } satisfies InfographicsResponse
+      );
+    }
+    // DB has stale or no data — populate in-memory from DB so we have a fallback
+    if (db) { cachedCards = db.cards; cacheTime = db.updatedAt.getTime(); }
+  }
+
   const apiKey  = process.env.FINNHUB_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!apiKey || !groqKey) {
-    // Return stale cache if available, even when keys are missing
     if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
     return NextResponse.json({ error: "API not configured" }, { status: 503 });
   }
@@ -192,7 +233,6 @@ export async function GET(): Promise<NextResponse> {
       return NextResponse.json({ cards: [], generated_at: Date.now() } satisfies InfographicsResponse);
     }
 
-    // Batch-fetch quote moves for all unique, valid tickers
     const tickers = [...new Set(rawCards.map(c => c.ticker).filter((t): t is string => t !== null))];
     const moves   = await Promise.all(tickers.map(t => fetchTickerMove(t, apiKey)));
     const moveMap = Object.fromEntries(tickers.map((t, i) => [t, moves[i]]));
@@ -207,10 +247,11 @@ export async function GET(): Promise<NextResponse> {
 
     cachedCards = cards;
     cacheTime   = now;
+    void saveDbCache(cards);
 
     return NextResponse.json({ cards, generated_at: now } satisfies InfographicsResponse);
   } catch {
-    // Return stale cache on error rather than showing nothing
+    // Return stale cache (in-memory or DB) rather than showing nothing
     if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
     return NextResponse.json({ error: "generation failed" }, { status: 503 });
   }

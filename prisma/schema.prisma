@@ -213,6 +213,12 @@ model Notification {
   @@index([userId, read, createdAt])
 }
 
+model SiteCache {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
 model ChatMessage {
   id        String   @id @default(cuid())
   content   String

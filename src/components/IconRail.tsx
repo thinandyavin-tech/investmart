@@ -21,6 +21,7 @@ const icons = [
   { href: "/leaderboard", label: "Leaderboard", icon: <TrophyIcon /> },
   { href: "/search", label: "ค้นหา", icon: <SearchIcon /> },
   { href: "/watchlist", label: "Watchlist", icon: <WatchlistIcon /> },
+  { href: "/screener", label: "Screener", icon: <ScreenerIcon /> },
 ] as const;
 
 export function IconRail() {
@@ -184,6 +185,13 @@ function WatchlistIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+function ScreenerIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
     </svg>
   );
 }
