@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getPersonaById } from "@/lib/personas";
 
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
+const GEMINI_MODEL = "gemini-1.5-flash";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 const DISCLAIMER =
@@ -42,13 +42,13 @@ function isCacheStale(entry: OutlookEntry): boolean {
   return Date.now() - new Date(entry.generatedAt).getTime() > CACHE_TTL_MS;
 }
 
-let groqClient: Groq | null = null;
+let geminiClient: GoogleGenerativeAI | null = null;
 
-function getGroq(): Groq {
-  if (!groqClient) {
-    groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+function getGemini(): GoogleGenerativeAI {
+  if (!geminiClient) {
+    geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   }
-  return groqClient;
+  return geminiClient;
 }
 
 interface FinnhubQuote {
@@ -160,10 +160,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "ticker required" }, { status: 400 });
   }
 
-  const groqKey    = process.env.GROQ_API_KEY;
+  const geminiKey  = process.env.GEMINI_API_KEY;
   const finnhubKey = process.env.FINNHUB_API_KEY;
 
-  if (!groqKey || !finnhubKey) {
+  if (!geminiKey || !finnhubKey) {
     return NextResponse.json({ error: "AI or market data not configured" }, { status: 500 });
   }
 
@@ -230,18 +230,17 @@ ${metricsLines || "ไม่มีข้อมูล"}
 ${newsBlock}`;
 
   try {
-    const completion = await getGroq().chat.completions.create({
-      model:           GROQ_MODEL,
-      messages:        [
-        { role: "system", content: activePrompt },
-        { role: "user",   content: userPrompt   },
-      ],
-      max_tokens:      800,
-      temperature:     0.3,
-      response_format: { type: "json_object" },
+    const model  = getGemini().getGenerativeModel({
+      model:            GEMINI_MODEL,
+      systemInstruction: activePrompt,
+      generationConfig: {
+        responseMimeType: "application/json",
+        maxOutputTokens:  800,
+        temperature:      0.3,
+      },
     });
-
-    const raw = completion.choices[0]?.message?.content ?? "{}";
+    const result = await model.generateContent(userPrompt);
+    const raw    = result.response.text();
     const llm = JSON.parse(raw) as Partial<LlmOutlook>;
 
     const entry: OutlookEntry = {
