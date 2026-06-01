@@ -23,7 +23,7 @@ export function HomeDesktop() {
         </aside>
 
         {/* Right column */}
-        <section className="flex-1 flex flex-col gap-3">
+        <section className="flex-1 min-w-0 flex flex-col gap-3">
           <MarketStatusBanner />
           <PortfolioPanel />
           <StatCards

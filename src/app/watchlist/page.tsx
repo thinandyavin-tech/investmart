@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useUser } from "@/lib/userContext";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
+import { useLiveQuotes } from "@/hooks/useLiveQuotes";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
 interface WatchItem {
-  ticker:    string;
-  price:     number | null;
-  changePct: number | null;
-  loading:   boolean;
+  ticker: string;
 }
 
 export default function WatchlistPage() {
@@ -24,37 +22,16 @@ export default function WatchlistPage() {
   const [addMsg, setAddMsg]   = useState("");
   const [adding, setAdding]   = useState(false);
 
-  const loadPrices = useCallback(async (tickers: string[]) => {
-    if (tickers.length === 0) return;
-    await Promise.all(
-      tickers.map(async (ticker) => {
-        try {
-          const res  = await fetch(`/api/stock/quote?symbol=${ticker}`);
-          const data = (await res.json()) as { c?: number; pc?: number; dp?: number };
-          setItems((prev) =>
-            prev.map((it) =>
-              it.ticker === ticker
-                ? { ...it, price: data.c ?? null, changePct: data.dp ?? null, loading: false }
-                : it
-            )
-          );
-        } catch {
-          setItems((prev) =>
-            prev.map((it) => it.ticker === ticker ? { ...it, loading: false } : it)
-          );
-        }
-      })
-    );
-  }, []);
+  const tickers = useMemo(() => items.map((i) => i.ticker), [items]);
+  const { prices, loading: pricesLoading } = useLiveQuotes(tickers);
 
   const loadWatchlist = useCallback(async () => {
     const res  = await fetch("/api/watchlist");
     const data = (await res.json()) as { items?: { ticker: string }[] };
-    const tickers = (data.items ?? []).map((i) => i.ticker);
-    setItems(tickers.map((t) => ({ ticker: t, price: null, changePct: null, loading: true })));
+    const list = (data.items ?? []).map((i) => i.ticker);
+    setItems(list.map((t) => ({ ticker: t })));
     setLoading(false);
-    await loadPrices(tickers);
-  }, [loadPrices]);
+  }, []);
 
   useEffect(() => {
     if (!userLoading) void loadWatchlist();
@@ -75,9 +52,7 @@ export default function WatchlistPage() {
       const data = (await res.json()) as { error?: string };
       if (!res.ok) { setAddMsg(data.error ?? "เกิดข้อผิดพลาด"); return; }
       setInput("");
-      const newItem: WatchItem = { ticker, price: null, changePct: null, loading: true };
-      setItems((prev) => [newItem, ...prev]);
-      await loadPrices([ticker]);
+      setItems((prev) => [{ ticker }, ...prev]);
     } catch {
       setAddMsg("เกิดข้อผิดพลาด");
     } finally {
@@ -158,7 +133,9 @@ export default function WatchlistPage() {
           ) : (
             <div className="divide-y divide-[#E8E2D4]">
               {items.map((item) => {
-                const positive = (item.changePct ?? 0) >= 0;
+                const liveData = prices[item.ticker];
+                const positive = (liveData?.changePct ?? 0) >= 0;
+                const isPriceLoading = pricesLoading && !liveData;
                 return (
                   <div key={item.ticker} className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#EDE7D9] transition-colors">
                     <Link
@@ -168,15 +145,15 @@ export default function WatchlistPage() {
                       {item.ticker}
                     </Link>
 
-                    {item.loading ? (
+                    {isPriceLoading ? (
                       <div className="flex-1 h-3 bg-[#E8E2D4] animate-pulse rounded" />
-                    ) : item.price ? (
+                    ) : liveData ? (
                       <>
                         <span
                           className="flex-1 text-[11px] font-bold"
                           style={{ fontFamily: "var(--font-mono)" }}
                         >
-                          ${item.price.toFixed(2)}
+                          ${liveData.price.toFixed(2)}
                         </span>
                         <span
                           className="text-[10px] font-bold w-16 text-right"
@@ -185,7 +162,7 @@ export default function WatchlistPage() {
                             color: positive ? "#5B8A2A" : "#DC2626",
                           }}
                         >
-                          {positive ? "+" : ""}{(item.changePct ?? 0).toFixed(2)}%
+                          {positive ? "+" : ""}{(liveData.changePct ?? 0).toFixed(2)}%
                         </span>
                       </>
                     ) : (
@@ -216,7 +193,7 @@ export default function WatchlistPage() {
         </Card>
 
         <p className="text-[9px] text-[#8A8378] text-center">
-          ราคาจาก Finnhub
+          ราคาจาก Finnhub · อัพเดทอัตโนมัติระหว่างตลาดเปิด
         </p>
       </div>
     </AppShell>
