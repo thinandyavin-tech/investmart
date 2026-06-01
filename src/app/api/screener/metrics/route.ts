@@ -11,6 +11,22 @@ export interface MetricsRow {
   ticker: string;
   beta:   number | null;
   pe:     number | null;
+  peg:    number | null;
+}
+
+interface FinnhubMetric {
+  beta?:                     number;
+  peBasicExclExtraTTM?:      number;
+  epsGrowth3Y?:              number;
+  epsGrowth5Y?:              number;
+  revenueGrowthQuarterlyYoy?: number;
+}
+
+function computePeg(pe: number | null | undefined, epsGrowth3Y: number | null | undefined, epsGrowth5Y: number | null | undefined): number | null {
+  const pe_ = pe ?? null;
+  const growth = epsGrowth3Y ?? epsGrowth5Y ?? null;
+  if (pe_ === null || growth === null || growth <= 0) return null;
+  return pe_ / growth;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -30,15 +46,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           `https://finnhub.io/api/v1/stock/metric?symbol=${encodeURIComponent(ticker)}&metric=all&token=${apiKey}`,
           { signal: AbortSignal.timeout(3000), next: { revalidate: 3600 } }
         );
-        if (!res.ok) return { ticker, beta: null, pe: null };
-        const data = (await res.json()) as { metric?: { beta?: number; peBasicExclExtraTTM?: number } };
+        if (!res.ok) return { ticker, beta: null, pe: null, peg: null };
+        const data = (await res.json()) as { metric?: FinnhubMetric };
+        const m = data.metric;
+        const pe = m?.peBasicExclExtraTTM ?? null;
         return {
           ticker,
-          beta: data.metric?.beta           ?? null,
-          pe:   data.metric?.peBasicExclExtraTTM ?? null,
+          beta: m?.beta ?? null,
+          pe,
+          peg:  computePeg(pe, m?.epsGrowth3Y, m?.epsGrowth5Y),
         };
       } catch {
-        return { ticker, beta: null, pe: null };
+        return { ticker, beta: null, pe: null, peg: null };
       }
     })
   );

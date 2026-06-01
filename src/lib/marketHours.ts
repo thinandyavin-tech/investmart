@@ -42,9 +42,12 @@ export function getMarketInfo(now = new Date()): MarketInfo {
     return { status: "after",  statusThai: "After-hours",  minsToChange: AFTER_END - timeMin, nextEventThai: "หลังตลาดปิด" };
   }
 
-  const nextThai = (day === 5 && timeMin >= AFTER_END) || day === 6
-    ? "เปิดวันจันทร์"
-    : "เปิดพรุ่งนี้";
+  const nextThai =
+    (day === 5 && timeMin >= AFTER_END) || day === 6
+      ? "เปิดวันจันทร์"
+      : isWeekday && timeMin < PRE_START
+      ? "เปิดวันนี้ เวลา 9:30 น."
+      : "เปิดพรุ่งนี้";
 
   return { status: "closed", statusThai: "ตลาดปิด", minsToChange: null, nextEventThai: nextThai };
 }

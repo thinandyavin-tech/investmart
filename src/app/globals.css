@@ -91,6 +91,10 @@ body {
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: clip;
+}
+
 /* Monospace for prices/numbers */
 .font-price {
   font-family: "JetBrains Mono", "Courier New", monospace;

@@ -71,9 +71,30 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  // Auto-create a demo session for new visitors so posting always works.
+  // Real sign-in (Google / email) replaces the demo session.
   useEffect(() => {
-    void refreshUser();
-  }, [refreshUser]);
+    async function init() {
+      try {
+        const res  = await fetch("/api/user/me");
+        const data = (await res.json()) as { user: UserState | null };
+        if (data.user) {
+          setUser(data.user);
+          setLoading(false);
+          return;
+        }
+        await fetch("/api/demo/init", { method: "POST" });
+        const res2  = await fetch("/api/user/me");
+        const data2 = (await res2.json()) as { user: UserState | null };
+        setUser(data2.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    void init();
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, loading, refreshUser, initDemo, signOut }}>

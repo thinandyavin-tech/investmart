@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
+import type { NewsArticleInput } from "@/components/NewsAnalysisPanel";
 
 interface SectorNewsArticle {
   id:       number;
@@ -128,9 +130,12 @@ export function NewsPage() {
 
         {!loading && !error && articles.length > 0 && (
           <div className="divide-y divide-[#E8E2D4]">
-            {articles.map(a => (
-              <ArticleRow key={a.id} article={a} />
-            ))}
+            {(() => {
+              const allHeadlines = articles.map(a => a.headline);
+              return articles.map(a => (
+                <ArticleRow key={a.id} article={a} otherHeadlines={allHeadlines} />
+              ));
+            })()}
           </div>
         )}
       </div>
@@ -138,7 +143,15 @@ export function NewsPage() {
   );
 }
 
-function ArticleRow({ article: a }: { article: SectorNewsArticle }) {
+function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle; otherHeadlines: string[] }) {
+  const panelArticle: NewsArticleInput = {
+    id:      a.id,
+    headline: a.headline,
+    source:  a.source,
+    url:     a.url,
+    snippet: a.summary,
+  };
+
   return (
     <div className="px-4 py-3 hover:bg-[#F3EDE0] transition-colors">
       <a
@@ -169,6 +182,12 @@ function ArticleRow({ article: a }: { article: SectorNewsArticle }) {
           {a.summary}
         </p>
       )}
+
+      <NewsAnalysisPanel
+        article={panelArticle}
+        ticker={a.ticker ?? undefined}
+        otherHeadlines={otherHeadlines}
+      />
     </div>
   );
 }

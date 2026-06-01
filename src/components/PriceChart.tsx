@@ -78,6 +78,8 @@ const BASE_OPTIONS = {
     borderColor:   COLORS.border,
     timeVisible:   true,
     minBarSpacing: 0.5,
+    fixLeftEdge:   true,
+    fixRightEdge:  true,
   },
   crosshair: {
     vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },

@@ -7,6 +7,7 @@ import { ScoreBadge } from "@/components/radar/ScoreBadge";
 import { Tooltip } from "@/components/Tooltip";
 import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
+import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
 import { useUser } from "@/lib/userContext";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
@@ -16,7 +17,7 @@ const PriceChart = dynamic(
   { ssr: false }
 );
 
-const TIMEFRAMES = ["1min", "5min", "1D", "5D", "1M", "3M", "6M", "1Y"] as const;
+const TIMEFRAMES = ["1min", "5min", "1D", "5D", "1M", "3M", "6M", "1Y", "Max"] as const;
 type Timeframe  = (typeof TIMEFRAMES)[number];
 type ChartMode  = "Price" | "Relative" | "Volume";
 
@@ -89,21 +90,6 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   const [aiReason, setAiReason]   = useState("");
   const [loadingAi, setLoadingAi] = useState(false);
 
-  interface AiOutlook {
-    thesis:           string;
-    conviction?:      string;
-    convictionReason?: string;
-    bull:             { description: string; probability: string };
-    base:             { description: string; probability: string };
-    bear:             { description: string; probability: string };
-    drivers:          string[];
-    risk:             string;
-    invalidation:     string;
-    disclaimer:       string;
-  }
-
-  const [aiOutlook, setAiOutlook]       = useState<AiOutlook | null>(null);
-  const [loadingOutlook, setLoadingOutlook] = useState(false);
   const [shares, setShares]           = useState("1");
   const [trading, setTrading]         = useState(false);
   const [tradeMsg, setTradeMsg]       = useState("");
@@ -116,7 +102,6 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
     setProfile(null);
     setMetrics(null);
     setAiReason("");
-    setAiOutlook(null);
     setTradeMsg("");
   }, [stock.ticker]);
 
@@ -167,42 +152,6 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       setAiReason("ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้");
     } finally {
       setLoadingAi(false);
-    }
-  }
-
-  async function loadAiOutlook() {
-    if (loadingOutlook || aiOutlook) return;
-    setLoadingOutlook(true);
-    try {
-      const res  = await fetch(`/api/ai/outlook?ticker=${stock.ticker}`);
-      const data = (await res.json()) as AiOutlook & { error?: string };
-      if (data.error) {
-        setAiOutlook({
-          thesis:       `ไม่สามารถโหลดการวิเคราะห์: ${data.error}`,
-          bull:         { description: "—", probability: "—" },
-          base:         { description: "—", probability: "—" },
-          bear:         { description: "—", probability: "—" },
-          drivers:      [],
-          risk:         "—",
-          invalidation: "—",
-          disclaimer:   "—",
-        });
-      } else {
-        setAiOutlook(data);
-      }
-    } catch {
-      setAiOutlook({
-        thesis:       "ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้",
-        bull:         { description: "—", probability: "—" },
-        base:         { description: "—", probability: "—" },
-        bear:         { description: "—", probability: "—" },
-        drivers:      [],
-        risk:         "—",
-        invalidation: "—",
-        disclaimer:   "—",
-      });
-    } finally {
-      setLoadingOutlook(false);
     }
   }
 
@@ -512,118 +461,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       </div>
 
       {/* AI Full Outlook */}
-      <div className="border border-[#1F1A14] p-3 bg-[#F3EDE0]">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest">
-            วิเคราะห์แนวโน้มด้วย AI
-          </h3>
-          {!aiOutlook && (
-            <OffsetButton size="sm" onClick={() => void loadAiOutlook()} disabled={loadingOutlook}>
-              {loadingOutlook ? "กำลังวิเคราะห์..." : "เปิดการวิเคราะห์"}
-            </OffsetButton>
-          )}
-        </div>
-
-        {!aiOutlook && !loadingOutlook && (
-          <p className="text-[10px] text-[#8A8378] italic">
-            วิเคราะห์เชิงลึก: thesis, กรณี Bull/Base/Bear, ปัจจัยขับเคลื่อน, ความเสี่ยง
-          </p>
-        )}
-
-        {loadingOutlook && (
-          <div className="flex flex-col gap-1.5">
-            {[80, 60, 70, 50].map((w) => (
-              <div key={w} className="h-2 bg-[#E0D9CC] animate-pulse rounded" style={{ width: `${w}%` }} />
-            ))}
-          </div>
-        )}
-
-        {aiOutlook && (
-          <div className="flex flex-col gap-2.5 text-[10px]">
-            {/* Thesis */}
-            <p className="leading-relaxed">{aiOutlook.thesis}</p>
-
-            {/* Conviction badge */}
-            {aiOutlook.conviction && (
-              <div className="flex flex-col gap-0.5">
-                <span
-                  className="self-start px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide"
-                  style={{
-                    background:
-                      aiOutlook.conviction === "high"   ? "#5B8A2A" :
-                      aiOutlook.conviction === "medium"  ? "#D97706" : "#DC2626",
-                    color: "#fff",
-                  }}
-                >
-                  ระดับความมั่นใจ:{" "}
-                  {aiOutlook.conviction === "high"   ? "สูง" :
-                   aiOutlook.conviction === "medium" ? "กลาง" : "ต่ำ"}
-                </span>
-                {aiOutlook.convictionReason && (
-                  <p className="text-[9px] text-[#8A8378] italic">{aiOutlook.convictionReason}</p>
-                )}
-              </div>
-            )}
-
-            {/* Scenarios */}
-            <div className="grid grid-cols-3 gap-1">
-              {(
-                [
-                  { label: "Bull", data: aiOutlook.bull,  color: "#5B8A2A" },
-                  { label: "Base", data: aiOutlook.base,  color: "#1F1A14" },
-                  { label: "Bear", data: aiOutlook.bear,  color: "#E5484D" },
-                ] as const
-              ).map(({ label, data, color }) => (
-                <div key={label} className="border border-[#1F1A14] p-1.5 bg-[#FBF7ED]">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="font-bold text-[9px]" style={{ color }}>{label}</span>
-                    <span className="text-[9px] text-[#8A8378]">{data.probability}</span>
-                  </div>
-                  <p className="text-[9px] text-[#1F1A14] leading-snug">{data.description}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Drivers */}
-            {aiOutlook.drivers.length > 0 && (
-              <div>
-                <div className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-0.5">
-                  ปัจจัยขับเคลื่อน
-                </div>
-                <ul className="flex flex-col gap-0.5">
-                  {aiOutlook.drivers.map((d, i) => (
-                    <li key={i} className="text-[9px] flex gap-1">
-                      <span className="text-[#5B8A2A] flex-shrink-0">·</span>
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Risk + Invalidation */}
-            <div className="grid grid-cols-2 gap-1">
-              <div className="border border-[#1F1A14] p-1.5 bg-[#FBF7ED]">
-                <div className="text-[9px] font-bold text-[#E5484D] uppercase tracking-wide mb-0.5">
-                  ความเสี่ยง
-                </div>
-                <p className="text-[9px]">{aiOutlook.risk}</p>
-              </div>
-              <div className="border border-[#1F1A14] p-1.5 bg-[#FBF7ED]">
-                <div className="text-[9px] font-bold text-[#8A8378] uppercase tracking-wide mb-0.5">
-                  จะรู้ว่าผิดเมื่อ
-                </div>
-                <p className="text-[9px]">{aiOutlook.invalidation}</p>
-              </div>
-            </div>
-
-            {/* Disclaimer */}
-            <p className="text-[9px] text-[#8A8378] italic border-t border-[#E0D9CC] pt-1.5">
-              {aiOutlook.disclaimer}
-            </p>
-          </div>
-        )}
-      </div>
+      <AiOutlookCard ticker={stock.ticker} />
 
       {/* News */}
       <StockNewsSection ticker={stock.ticker} />

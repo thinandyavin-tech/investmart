@@ -9,7 +9,7 @@ import type { Universe } from "@/lib/stockUniverse";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type SortField = "ticker" | "change1D" | "price" | "marketCap" | "momentumScore" | "qualityScore" | "pe" | "beta";
+type SortField = "ticker" | "change1D" | "price" | "marketCap" | "momentumScore" | "qualityScore" | "pe" | "peg" | "beta";
 type SortDir   = "asc" | "desc";
 type CapSize   = "ALL" | "SMALL" | "MID" | "BIG";
 
@@ -102,11 +102,11 @@ function applySort(rows: ScreenerRow[], metrics: Map<string, MetricsRow>, field:
   const mult = dir === "asc" ? 1 : -1;
   return [...rows].sort((a, b) => {
     let av: number, bv: number;
-    if (field === "pe" || field === "beta") {
+    if (field === "pe" || field === "peg" || field === "beta") {
       const am = metrics.get(a.ticker);
       const bm = metrics.get(b.ticker);
-      av = (field === "pe" ? am?.pe : am?.beta) ?? -Infinity;
-      bv = (field === "pe" ? bm?.pe : bm?.beta) ?? -Infinity;
+      av = (field === "pe" ? am?.pe : field === "peg" ? am?.peg : am?.beta) ?? -Infinity;
+      bv = (field === "pe" ? bm?.pe : field === "peg" ? bm?.peg : bm?.beta) ?? -Infinity;
     } else if (field === "ticker") {
       return mult * a.ticker.localeCompare(b.ticker);
     } else {
@@ -439,10 +439,10 @@ export function ScreenerClient() {
               disabled={metricsLoading || loading}
               className="text-[10px] font-bold px-2 py-1 border border-[#5B8A2A] text-[#5B8A2A] hover:bg-[#5B8A2A] hover:text-white transition-colors disabled:opacity-40"
             >
-              {metricsLoading ? "กำลังโหลด..." : hasMetrics ? "รีโหลด P/E & Beta" : "โหลด P/E & Beta (top 40)"}
+              {metricsLoading ? "กำลังโหลด..." : hasMetrics ? "รีโหลด P/E, PEG & Beta" : "โหลด P/E, PEG & Beta (top 40)"}
             </button>
             {hasMetricsFilters && !hasMetrics && (
-              <span className="text-[9px] text-[#D97706]">โหลด P/E & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
+              <span className="text-[9px] text-[#D97706]">โหลด P/E, PEG & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
             )}
           </div>
         </div>
@@ -497,7 +497,8 @@ export function ScreenerClient() {
                   <SortHeader label="Quality" field="qualityScore"  current={sortField} dir={sortDir} onClick={toggleSort} />
                   {hasMetrics && (
                     <>
-                      <SortHeader label="P/E" field="pe"   current={sortField} dir={sortDir} onClick={toggleSort} />
+                      <SortHeader label="P/E"  field="pe"   current={sortField} dir={sortDir} onClick={toggleSort} />
+                      <SortHeader label="PEG"  field="peg"  current={sortField} dir={sortDir} onClick={toggleSort} />
                       <SortHeader label="Beta" field="beta" current={sortField} dir={sortDir} onClick={toggleSort} />
                     </>
                   )}
@@ -553,7 +554,10 @@ export function ScreenerClient() {
                       {hasMetrics && (
                         <>
                           <td className="px-2 py-1.5 text-[#8A8378]">
-                            {m?.pe   != null ? m.pe.toFixed(1)   : "—"}
+                            {m?.pe  != null ? m.pe.toFixed(1)  : "—"}
+                          </td>
+                          <td className="px-2 py-1.5 text-[#8A8378]">
+                            {m?.peg != null ? m.peg.toFixed(2) : "—"}
                           </td>
                           <td className="px-2 py-1.5 text-[#8A8378]">
                             {m?.beta != null ? m.beta.toFixed(2) : "—"}

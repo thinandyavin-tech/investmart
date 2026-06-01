@@ -117,7 +117,7 @@ export function SearchClient() {
   }
 
   return (
-    <div className="p-4 max-w-lg mx-auto">
+    <div className="p-4 max-w-lg mx-auto w-full overflow-x-hidden">
       <h1 className="text-xs font-bold uppercase tracking-widest mb-3">ค้นหาหุ้น</h1>
 
       <div ref={containerRef} className="relative mb-4">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import type { AnalysisResult, CredibilityRating } from "@/app/api/news/analyze/route";
 
 // Well-known reputable sources — UI hint only, not used for the AI rating
@@ -47,8 +47,7 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
   const [state, setState] = useState<State>({ phase: "idle" });
   const reputable = isReputableSource(article.source);
 
-  const analyze = useCallback(async () => {
-    // Toggle closed if already open
+  async function analyze() {
     if (state.phase === "open") {
       setState({ phase: "idle" });
       return;
@@ -56,31 +55,44 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
 
     setState({ phase: "loading" });
 
-    try {
-      const res = await fetch("/api/news/analyze", {
+    const payload = {
+      headline:       article.headline,
+      snippet:        article.snippet ?? "",
+      source:         article.source,
+      ticker:         ticker ?? "",
+      otherHeadlines: (otherHeadlines ?? []).filter(h => h !== article.headline),
+    };
+
+    async function doFetch(): Promise<Response> {
+      const r = await fetch("/api/news/analyze", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          headline:        article.headline,
-          snippet:         article.snippet ?? "",
-          source:          article.source,
-          ticker:          ticker ?? "",
-          otherHeadlines:  (otherHeadlines ?? []).filter(h => h !== article.headline),
-        }),
+        body:    JSON.stringify(payload),
       });
+      if (r.status === 429) {
+        await new Promise<void>(resolve => setTimeout(resolve, 1500));
+        return fetch("/api/news/analyze", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(payload),
+        });
+      }
+      return r;
+    }
 
+    try {
+      const res = await doFetch();
       if (!res.ok) {
         const err = (await res.json().catch(() => ({}))) as { error?: string };
         setState({ phase: "error", message: err.error ?? "AI ไม่พร้อมใช้งาน" });
         return;
       }
-
       const data = (await res.json()) as AnalysisResult & { cached?: boolean };
       setState({ phase: "open", result: data, cached: data.cached ?? false });
     } catch {
       setState({ phase: "error", message: "ไม่สามารถเชื่อมต่อได้" });
     }
-  }, [article, ticker, otherHeadlines, state.phase]);
+  }
 
   const cfg = state.phase === "open" ? RATING_CONFIG[state.result.credibility.rating] : null;
 
