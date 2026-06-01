@@ -21,6 +21,8 @@ const QUICK_ACTIONS = [
   { href: "/exchange",    label: "แลกเงิน",    icon: "💱" },
   { href: "/history",     label: "ประวัติ",    icon: "📋" },
   { href: "/leaderboard", label: "อันดับ",      icon: "🏆" },
+  { href: "/watchlist",   label: "Watchlist",  icon: "👁️" },
+  { href: "/mail",        label: "จดหมาย",    icon: "✉️" },
 ] as const;
 
 export function HomeMobile() {

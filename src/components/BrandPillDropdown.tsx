@@ -21,6 +21,8 @@ const ITEMS: DropdownItem[] = [
   { href: "/radar",    label: "เรดาร์แสกนหุ้น",  icon: <RadarIcon /> },
   { href: "/compose",  label: "โพส",               icon: <PencilIcon /> },
   { href: "/discover", label: "Discover",           icon: <DiscoverIcon />, soon: true },
+  { href: "/watchlist", label: "Watchlist",          icon: <WatchlistIcon /> },
+  { href: "/mail",      label: "จดหมาย",           icon: <MailIcon /> },
   { href: "/saved",    label: "หน้าบันทึกโพส",   icon: <BookmarkIcon /> },
   { href: "/profile",  label: "หน้าโปรไฟล์",     icon: <PersonIcon /> },
 ];
@@ -129,6 +131,20 @@ function PersonIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="7" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+    </svg>
+  );
+}
+function WatchlistIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+function MailIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="2" y="4" width="20" height="16" rx="1" /><path d="M2 7l10 7 10-7" />
     </svg>
   );
 }
