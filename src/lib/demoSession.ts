@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-const DEMO_USER_EMAIL = "demo@investmart.local";
+const DEMO_USER_EMAIL = "demo@investneet.local";
 
 export async function getOrCreateDemoUser() {
   const existing = await prisma.user.findUnique({
