@@ -115,7 +115,7 @@ export function RadarPickCard() {
       </div>
 
       <div className="px-4 pb-3">
-        <PriceChart candles={candles} mode="Price" simulated={simulated} height={100} />
+        <PriceChart candles={candles} mode="Price" simulated={simulated} height={100} mini />
       </div>
 
       <div className="flex gap-2 px-4 pb-4">

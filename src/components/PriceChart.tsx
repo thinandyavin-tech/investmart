@@ -9,6 +9,7 @@ import {
   ColorType,
   type IChartApi,
   type UTCTimestamp,
+  type LogicalRangeChangeEventHandler,
 } from "lightweight-charts";
 
 interface Candle {
@@ -25,6 +26,8 @@ interface PriceChartProps {
   mode:       "Price" | "Relative" | "Volume";
   simulated?: boolean;
   height?:    number;
+  /** Use compact area sparkline regardless of mode (for small cards) */
+  mini?:      boolean;
 }
 
 const COLORS = {
@@ -40,62 +43,60 @@ const COLORS = {
   downLight: "#E5484D22",
 } as const;
 
-function buildChart(el: HTMLDivElement, height: number): IChartApi {
-  return createChart(el, {
-    width:  el.clientWidth,
-    height,
-    layout: {
-      background: { type: ColorType.Solid, color: COLORS.bg },
-      textColor:  COLORS.text,
-      fontSize:   10,
-    },
-    grid: {
-      vertLines: { color: COLORS.grid },
-      horzLines: { color: COLORS.grid },
-    },
-    rightPriceScale: {
-      borderColor:  COLORS.border,
-      scaleMargins: { top: 0.08, bottom: 0.08 },
-      autoScale:    true,
-    },
-    timeScale: {
-      borderColor:    COLORS.border,
-      timeVisible:    true,
-      minBarSpacing:  0.5, // prevents zooming out so far that bars disappear
-      fixRightEdge:   false,
-      fixLeftEdge:    false,
-    },
-    crosshair: {
-      vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
-      horzLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
-    },
-    handleScroll: {
-      mouseWheel:        true,
-      pressedMouseMove:  true,
-      horzTouchDrag:     true,
-      vertTouchDrag:     false,
-    },
-    handleScale: {
-      mouseWheel:  true,
-      pinch:       true,
-      axisPressedMouseMove: { time: true, price: false },
-    },
-  });
-}
+const BASE_OPTIONS = {
+  layout: {
+    background: { type: ColorType.Solid, color: COLORS.bg },
+    textColor:  COLORS.text,
+    fontSize:   10,
+  },
+  grid: {
+    vertLines: { color: COLORS.grid },
+    horzLines: { color: COLORS.grid },
+  },
+  rightPriceScale: {
+    borderColor:  COLORS.border,
+    scaleMargins: { top: 0.08, bottom: 0.08 },
+    autoScale:    true,
+  },
+  timeScale: {
+    borderColor:   COLORS.border,
+    timeVisible:   true,
+    minBarSpacing: 0.5,
+  },
+  crosshair: {
+    vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
+    horzLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
+  },
+  handleScroll: {
+    mouseWheel:       true,
+    pressedMouseMove: true,
+    horzTouchDrag:    true,
+    vertTouchDrag:    false,
+  },
+  handleScale: {
+    mouseWheel: true,
+    pinch:      true,
+    axisPressedMouseMove: { time: true, price: false },
+  },
+} as const;
 
-export function PriceChart({ candles, mode, simulated, height = 160 }: PriceChartProps) {
+export function PriceChart({ candles, mode, simulated, height = 160, mini = false }: PriceChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef     = useRef<IChartApi | null>(null);
+
+  // True candlestick+volume layout only for full-size Price mode
+  const useCandlestick = mode === "Price" && !mini;
 
   useEffect(() => {
     if (!containerRef.current || candles.length < 2) return;
 
-    const el    = containerRef.current;
-    const up    = candles[candles.length - 1].close >= candles[0].close;
+    const el   = containerRef.current;
+    const up   = candles[candles.length - 1].close >= candles[0].close;
     const color = up ? COLORS.up : COLORS.down;
 
+    // ── Volume mode ──────────────────────────────────────────────────────────
     if (mode === "Volume") {
-      const chart = buildChart(el, height);
+      const chart = createChart(el, { ...BASE_OPTIONS, width: el.clientWidth, height });
       chartRef.current = chart;
 
       const vol = chart.addSeries(HistogramSeries, {
@@ -119,8 +120,9 @@ export function PriceChart({ candles, mode, simulated, height = 160 }: PriceChar
       return () => { ro.disconnect(); chart.remove(); chartRef.current = null; };
     }
 
+    // ── Relative mode ─────────────────────────────────────────────────────────
     if (mode === "Relative") {
-      const chart = buildChart(el, height);
+      const chart = createChart(el, { ...BASE_OPTIONS, width: el.clientWidth, height });
       chartRef.current = chart;
 
       const first = candles[0].close;
@@ -149,84 +151,69 @@ export function PriceChart({ candles, mode, simulated, height = 160 }: PriceChar
       return () => { ro.disconnect(); chart.remove(); chartRef.current = null; };
     }
 
-    // Price mode: candlestick + volume pane
-    const volHeight  = Math.round(height * 0.25);
-    const candleH    = height - volHeight;
+    // ── Price mode — mini sparkline (area) ────────────────────────────────────
+    if (mini) {
+      const chart = createChart(el, { ...BASE_OPTIONS, width: el.clientWidth, height });
+      chartRef.current = chart;
 
-    // Two stacked charts sharing the same time scale
-    const candleEl   = el.querySelector<HTMLDivElement>(".chart-candle")!;
-    const volEl      = el.querySelector<HTMLDivElement>(".chart-vol")!;
+      const area = chart.addSeries(AreaSeries, {
+        topColor:    color + "33",
+        bottomColor: color + "00",
+        lineColor:   color,
+        lineWidth:   2,
+        priceFormat:      { type: "price", precision: 2, minMove: 0.01 },
+        lastValueVisible: true,
+        priceLineVisible: true,
+        priceLineColor:   color,
+      });
+      area.setData(
+        candles.map((c) => ({ time: c.time as UTCTimestamp, value: c.close }))
+      );
+      chart.timeScale().fitContent();
+
+      const ro = new ResizeObserver(() => {
+        if (el) chart.applyOptions({ width: el.clientWidth });
+      });
+      ro.observe(el);
+      return () => { ro.disconnect(); chart.remove(); chartRef.current = null; };
+    }
+
+    // ── Price mode — full candlestick + volume pane ────────────────────────────
+    const volH    = Math.round(height * 0.25);
+    const candleH = height - volH;
+
+    const candleEl = el.querySelector<HTMLDivElement>(".chart-candle")!;
+    const volEl    = el.querySelector<HTMLDivElement>(".chart-vol")!;
 
     const candleChart = createChart(candleEl, {
+      ...BASE_OPTIONS,
       width:  el.clientWidth,
       height: candleH,
-      layout: {
-        background: { type: ColorType.Solid, color: COLORS.bg },
-        textColor:  COLORS.text,
-        fontSize:   10,
-      },
-      grid: {
-        vertLines: { color: COLORS.grid },
-        horzLines: { color: COLORS.grid },
-      },
-      rightPriceScale: {
-        borderColor:  COLORS.border,
-        scaleMargins: { top: 0.08, bottom: 0.08 },
-        autoScale:    true,
-      },
-      timeScale: {
-        borderColor:   COLORS.border,
-        timeVisible:   true,
-        minBarSpacing: 0.5,
-        visible:       false, // hide time axis on candle chart, show on vol
-      },
-      crosshair: {
-        vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
-        horzLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
-      },
-      handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
-      handleScale:  { mouseWheel: true, pinch: true, axisPressedMouseMove: { time: true, price: false } },
+      timeScale: { ...BASE_OPTIONS.timeScale, visible: false },
     });
 
     const volChart = createChart(volEl, {
+      ...BASE_OPTIONS,
       width:  el.clientWidth,
-      height: volHeight,
-      layout: {
-        background: { type: ColorType.Solid, color: COLORS.bg },
-        textColor:  COLORS.text,
-        fontSize:   9,
-      },
-      grid: {
-        vertLines: { color: COLORS.grid },
-        horzLines: { color: "transparent" },
-      },
-      rightPriceScale: {
-        borderColor:  COLORS.border,
-        scaleMargins: { top: 0.1, bottom: 0 },
-      },
-      timeScale: {
-        borderColor:   COLORS.border,
-        timeVisible:   true,
-        minBarSpacing: 0.5,
-      },
+      height: volH,
+      layout: { ...BASE_OPTIONS.layout, fontSize: 9 },
+      grid: { vertLines: { color: COLORS.grid }, horzLines: { color: "transparent" } },
       crosshair: {
         vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
         horzLine: { visible: false, labelVisible: false },
       },
-      handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
-      handleScale:  { mouseWheel: true, pinch: true, axisPressedMouseMove: { time: true, price: false } },
     });
 
     chartRef.current = candleChart;
 
     const candleSeries = candleChart.addSeries(CandlestickSeries, {
-      upColor:        COLORS.up,
-      downColor:      COLORS.down,
-      borderUpColor:  COLORS.up,
+      upColor:         COLORS.up,
+      downColor:       COLORS.down,
+      borderUpColor:   COLORS.up,
       borderDownColor: COLORS.down,
-      wickUpColor:    COLORS.up,
-      wickDownColor:  COLORS.down,
-      priceFormat:    { type: "price", precision: 2, minMove: 0.01 },
+      wickUpColor:     COLORS.up,
+      wickDownColor:   COLORS.down,
+      priceFormat:     { type: "price", precision: 2, minMove: 0.01 },
     });
     candleSeries.setData(
       candles.map((c) => ({
@@ -252,32 +239,40 @@ export function PriceChart({ candles, mode, simulated, height = 160 }: PriceChar
     volChart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.1, bottom: 0 } });
 
     candleChart.timeScale().fitContent();
-    // Sync time scales
-    candleChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      if (range) volChart.timeScale().setVisibleLogicalRange(range);
-    });
-    volChart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      if (range) candleChart.timeScale().setVisibleLogicalRange(range);
-    });
+
+    // Sync time scales — guard flag prevents circular updates
+    let syncing = false;
+    const onCandleRangeChange: LogicalRangeChangeEventHandler = (range) => {
+      if (syncing || !range) return;
+      syncing = true;
+      volChart.timeScale().setVisibleLogicalRange(range);
+      syncing = false;
+    };
+    const onVolRangeChange: LogicalRangeChangeEventHandler = (range) => {
+      if (syncing || !range) return;
+      syncing = true;
+      candleChart.timeScale().setVisibleLogicalRange(range);
+      syncing = false;
+    };
+    candleChart.timeScale().subscribeVisibleLogicalRangeChange(onCandleRangeChange);
+    volChart.timeScale().subscribeVisibleLogicalRangeChange(onVolRangeChange);
 
     const ro = new ResizeObserver(() => {
-      if (el) {
-        const w = el.clientWidth;
-        candleChart.applyOptions({ width: w });
-        volChart.applyOptions({ width: w });
-      }
+      const w = el.clientWidth;
+      candleChart.applyOptions({ width: w });
+      volChart.applyOptions({ width: w });
     });
     ro.observe(el);
 
     return () => {
       ro.disconnect();
+      candleChart.timeScale().unsubscribeVisibleLogicalRangeChange(onCandleRangeChange);
+      volChart.timeScale().unsubscribeVisibleLogicalRangeChange(onVolRangeChange);
       candleChart.remove();
       volChart.remove();
       chartRef.current = null;
     };
-  }, [candles, mode, height]);
-
-  const isPriceMode = mode === "Price";
+  }, [candles, mode, height, mini]);
 
   return (
     <div className="relative border border-[#1F1A14] bg-[#F3EDE0]" style={{ height }}>
@@ -294,10 +289,10 @@ export function PriceChart({ candles, mode, simulated, height = 160 }: PriceChar
           {candles.length === 0 ? "กำลังโหลด..." : "ไม่มีข้อมูลกราฟ"}
         </div>
       )}
-      {isPriceMode ? (
+      {useCandlestick ? (
         <div ref={containerRef} className="w-full h-full flex flex-col">
           <div className="chart-candle w-full" style={{ height: `${Math.round(height * 0.75)}px` }} />
-          <div className="chart-vol w-full" style={{ height: `${Math.round(height * 0.25)}px` }} />
+          <div className="chart-vol   w-full" style={{ height: `${Math.round(height * 0.25)}px` }} />
         </div>
       ) : (
         <div ref={containerRef} className="w-full h-full" />
