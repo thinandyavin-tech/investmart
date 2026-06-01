@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { z } from "zod";
 
-export const dynamic    = "force-dynamic"; // run fresh; Next.js fetch() cache handles 4h TTL internally
-export const revalidate = 14400;
+export const dynamic = "force-dynamic";
 
 const GROQ_MODEL    = "llama-3.3-70b-versatile";
 const MAX_ARTICLES  = 10;
 const MAX_CARDS     = 8;
 const TICKER_RE     = /^[A-Z]{1,5}$/;
+const CACHE_TTL_MS  = 4 * 60 * 60 * 1000; // 4 hours
 
 // ─── Zod schema ──────────────────────────────────────────────────────────────
 
@@ -37,6 +37,10 @@ export interface InfographicsResponse {
   cards:        InfographicCard[];
   generated_at: number;
 }
+
+// In-memory cache: avoids calling Groq + Finnhub on every request
+let cachedCards: InfographicCard[] | null = null;
+let cacheTime = 0;
 
 // ─── Finnhub types ───────────────────────────────────────────────────────────
 
@@ -159,22 +163,33 @@ async function generateCards(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function GET(): Promise<NextResponse> {
-  const apiKey = process.env.FINNHUB_API_KEY;
+  // Serve from cache if fresh
+  if (cachedCards && Date.now() - cacheTime < CACHE_TTL_MS) {
+    return NextResponse.json(
+      { cards: cachedCards, generated_at: cacheTime } satisfies InfographicsResponse
+    );
+  }
+
+  const apiKey  = process.env.FINNHUB_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!apiKey || !groqKey) {
+    // Return stale cache if available, even when keys are missing
+    if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
     return NextResponse.json({ error: "API not configured" }, { status: 503 });
   }
 
   try {
     const articles = await fetchNewsArticles(apiKey);
     if (articles.length === 0) {
-      return NextResponse.json({ cards: [], generated_at: Date.now() });
+      if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
+      return NextResponse.json({ cards: [], generated_at: Date.now() } satisfies InfographicsResponse);
     }
 
     const rawCards = await generateCards(articles, groqKey);
     if (rawCards.length === 0) {
-      return NextResponse.json({ cards: [], generated_at: Date.now() });
+      if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
+      return NextResponse.json({ cards: [], generated_at: Date.now() } satisfies InfographicsResponse);
     }
 
     // Batch-fetch quote moves for all unique, valid tickers
@@ -190,11 +205,13 @@ export async function GET(): Promise<NextResponse> {
       generated_at: now,
     }));
 
-    return NextResponse.json(
-      { cards, generated_at: now } satisfies InfographicsResponse,
-      { headers: { "Cache-Control": "public, s-maxage=14400, stale-while-revalidate=28800" } }
-    );
+    cachedCards = cards;
+    cacheTime   = now;
+
+    return NextResponse.json({ cards, generated_at: now } satisfies InfographicsResponse);
   } catch {
+    // Return stale cache on error rather than showing nothing
+    if (cachedCards) return NextResponse.json({ cards: cachedCards, generated_at: cacheTime });
     return NextResponse.json({ error: "generation failed" }, { status: 503 });
   }
 }

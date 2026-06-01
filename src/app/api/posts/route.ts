@@ -41,12 +41,10 @@ export async function GET(request: NextRequest) {
   const where = userParam
     ? { userId: userParam }
     : tab === "following" && userId
-      ? {
-          user: {
-            followers: { some: { followerId: userId } },
-          },
-        }
-      : {};
+      ? { user: { followers: { some: { followerId: userId } } } }
+      : tab === "liked" && userId
+        ? { likes: { some: { userId } } }
+        : {};
 
   const posts = await prisma.post.findMany({
     where,
