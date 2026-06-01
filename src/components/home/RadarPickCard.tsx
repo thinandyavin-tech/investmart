@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useUser } from "@/lib/userContext";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -32,11 +33,13 @@ interface HistoryResponse {
 }
 
 export function RadarPickCard() {
-  const [pick, setPick]           = useState<RadarPick | null>(null);
-  const [candles, setCandles]     = useState<Candle[]>([]);
-  const [simulated, setSimulated] = useState(false);
-  const [loading, setLoading]     = useState(true);
-  const [followed, setFollowed]   = useState(false);
+  const { user } = useUser();
+  const [pick, setPick]               = useState<RadarPick | null>(null);
+  const [candles, setCandles]         = useState<Candle[]>([]);
+  const [simulated, setSimulated]     = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [watched, setWatched]         = useState(false);
+  const [watchLoading, setWatchLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -58,6 +61,39 @@ export function RadarPickCard() {
     }
     void load();
   }, []);
+
+  // Check watchlist status once pick + user are known
+  useEffect(() => {
+    if (!user || !pick) return;
+    fetch("/api/watchlist")
+      .then((r) => r.json())
+      .then((d: { items?: { ticker: string }[] }) => {
+        setWatched((d.items ?? []).some((i) => i.ticker === pick.ticker));
+      })
+      .catch(() => {});
+  }, [user, pick]);
+
+  async function toggleWatch() {
+    if (!pick || !user || watchLoading) return;
+    setWatchLoading(true);
+    try {
+      if (watched) {
+        await fetch(`/api/watchlist/${pick.ticker}`, { method: "DELETE" });
+        setWatched(false);
+      } else {
+        await fetch("/api/watchlist", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ ticker: pick.ticker }),
+        });
+        setWatched(true);
+      }
+    } catch {
+      // leave state unchanged
+    } finally {
+      setWatchLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -120,11 +156,19 @@ export function RadarPickCard() {
 
       <div className="flex gap-2 px-4 pb-4">
         <button
-          className="flex-1 py-2.5 text-xs font-bold border border-[#1F1A14] bg-[#F3EDE0] shadow-offset-pink"
-          onClick={() => setFollowed((f) => !f)}
-          aria-pressed={followed}
+          className="flex-1 py-2.5 text-xs font-bold border transition-colors"
+          style={{
+            borderColor: watched ? "#5B8A2A" : "#1F1A14",
+            background:  watched ? "#F0FAE5"  : "#F3EDE0",
+            color:       watched ? "#5B8A2A"  : "#1F1A14",
+            boxShadow:   watched ? "none" : "2px 2px 0 #FF3D9A",
+          }}
+          onClick={() => void toggleWatch()}
+          disabled={watchLoading || !user}
+          aria-pressed={watched}
+          aria-label={watched ? `ลบ ${pick.ticker} จาก watchlist` : `เพิ่ม ${pick.ticker} ใน watchlist`}
         >
-          {followed ? "✓ ติดตาม" : "+ ติดตาม"}
+          {watchLoading ? "..." : watched ? "✓ ติดตามแล้ว" : "+ ติดตาม"}
         </button>
         <Link
           href={`/stock/${pick.ticker}`}
