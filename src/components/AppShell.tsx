@@ -1,5 +1,6 @@
 import { IconRail } from "@/components/IconRail";
 import { BottomNav } from "@/components/BottomNav";
+import { FloatingAssistant } from "@/components/ai/FloatingAssistant";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Phone bottom nav — hidden on desktop */}
       <BottomNav />
+      <FloatingAssistant />
     </>
   );
 }

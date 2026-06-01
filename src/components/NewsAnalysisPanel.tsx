@@ -1,27 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import type { AnalysisResult, CredibilityRating } from "@/app/api/news/analyze/route";
+import type { AnalysisResult } from "@/app/api/news/analyze/route";
 
-// Well-known reputable sources — UI hint only, not used for the AI rating
-const REPUTABLE_SOURCES = new Set([
-  "reuters", "bloomberg", "associated press", "ap", "wsj",
-  "wall street journal", "cnbc", "financial times", "ft",
-  "marketwatch", "barron's", "barrons", "fortune", "the economist",
-  "yahoo finance", "bbc", "nytimes", "new york times",
-  "washington post", "abc news", "cbs news", "nbc news",
-  "the guardian", "business insider", "benzinga",
-]);
-
-function isReputableSource(source: string): boolean {
-  return REPUTABLE_SOURCES.has(source.toLowerCase().trim());
-}
-
-const RATING_CONFIG: Record<CredibilityRating["rating"], { label: string; bg: string; text: string; border: string }> = {
+const RELIABILITY_CFG = {
   "สูง":     { label: "น่าเชื่อถือสูง",   bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
-  "ปานกลาง": { label: "น่าเชื่อถือปานกลาง", bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
+  "ปานกลาง": { label: "ปานกลาง",          bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
   "ต่ำ":     { label: "น่าเชื่อถือต่ำ",   bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
-};
+} as const;
+
+const IMPACT_CFG = {
+  "บวก":      { label: "บวก ▲",     bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
+  "ลบ":       { label: "ลบ ▼",      bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
+  "เป็นกลาง": { label: "เป็นกลาง —", bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
+} as const;
+
+const CONTENT_TYPE_CFG = {
+  "รายงานข่าว":    { label: "รายงานข่าว",    bg: "#EFF6FF", text: "#1D4ED8", border: "#3B82F6" },
+  "บทวิเคราะห์":   { label: "บทวิเคราะห์",   bg: "#F5F3FF", text: "#6D28D9", border: "#8B5CF6" },
+  "ข่าวลือ":        { label: "ข่าวลือ",        bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
+  "ประชาสัมพันธ์":  { label: "ประชาสัมพันธ์",  bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
+} as const;
+
+const CONFIDENCE_CFG = {
+  "สูง":     { label: "ความมั่นใจ: สูง",    text: "#065F46" },
+  "ปานกลาง": { label: "ความมั่นใจ: ปานกลาง", text: "#92400E" },
+  "ต่ำ":     { label: "ความมั่นใจ: ต่ำ",    text: "#991B1B" },
+} as const;
 
 export interface NewsArticleInput {
   id:       number;
@@ -40,12 +45,108 @@ interface NewsAnalysisPanelProps {
 type State =
   | { phase: "idle" }
   | { phase: "loading" }
-  | { phase: "open";   result: AnalysisResult; cached: boolean }
-  | { phase: "error";  message: string };
+  | { phase: "open";  result: AnalysisResult; cached: boolean }
+  | { phase: "error"; message: string };
+
+function Chip({
+  color,
+  title,
+  children,
+}: {
+  color:    { text: string; border: string; bg: string };
+  title?:   string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      className="text-[8px] font-bold px-2 py-0.5 border"
+      style={{ color: color.text, borderColor: color.border, background: color.bg }}
+      title={title}
+    >
+      {children}
+    </span>
+  );
+}
+
+interface ResultPanelProps {
+  result:      AnalysisResult;
+  cached:      boolean;
+  sourceLabel: string;
+  sourceUrl:   string;
+}
+
+function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProps) {
+  const relCfg  = RELIABILITY_CFG[result.reliability]           ?? RELIABILITY_CFG["ปานกลาง"];
+  const impCfg  = IMPACT_CFG[result.market_impact.direction]    ?? IMPACT_CFG["เป็นกลาง"];
+  const ctCfg   = CONTENT_TYPE_CFG[result.content_type]         ?? CONTENT_TYPE_CFG["รายงานข่าว"];
+  const confCfg = CONFIDENCE_CFG[result.confidence]             ?? CONFIDENCE_CFG["ปานกลาง"];
+
+  return (
+    <div
+      className="mt-2 border-l-2 overflow-hidden"
+      style={{ borderColor: relCfg.border }}
+      role="region"
+      aria-label="ผลการวิเคราะห์ AI"
+    >
+      {/* Chip row */}
+      <div
+        className="px-3 py-2 flex flex-wrap gap-1.5 items-center"
+        style={{ background: relCfg.bg }}
+      >
+        <Chip color={relCfg} title={result.reliability_reason_th}>{relCfg.label}</Chip>
+        <Chip color={ctCfg}>{ctCfg.label}</Chip>
+        <Chip color={impCfg} title={result.market_impact.reason_th}>{impCfg.label}</Chip>
+        <span className="text-[8px] font-bold" style={{ color: confCfg.text }}>
+          · {confCfg.label}
+        </span>
+        {cached && <span className="text-[8px] text-[#8A8378]">· แคช</span>}
+      </div>
+
+      {/* Reliability reason */}
+      <div
+        className="px-3 py-1.5 border-b border-[#E8E2D4]"
+        style={{ background: relCfg.bg }}
+      >
+        <p className="text-[9px] leading-snug" style={{ color: relCfg.text }}>
+          {result.reliability_reason_th}
+        </p>
+      </div>
+
+      {/* Market impact reason */}
+      <div className="px-3 py-1.5 bg-[#F9F7F2] border-b border-[#E8E2D4]">
+        <p className="text-[9px] leading-snug text-[#8A8378]">
+          <span className="font-bold" style={{ color: impCfg.text }}>ผลต่อหุ้น: </span>
+          {result.market_impact.reason_th}
+        </p>
+      </div>
+
+      {/* Summary */}
+      <div className="px-3 py-2 bg-[#F9F7F2]">
+        <p className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-1">สรุปข่าว</p>
+        <p className="text-[11px] leading-relaxed text-[#1F1A14]">{result.summary_th}</p>
+      </div>
+
+      {/* Footer: disclaimer + source */}
+      <div className="px-3 py-2 bg-[#F3EDE0] border-t border-[#E8E2D4]">
+        <p className="text-[9px] text-[#8A8378] leading-relaxed">{result.disclaimer_th}</p>
+        <p className="text-[9px] text-[#8A8378] mt-0.5">
+          แหล่งข่าว: {sourceLabel}{" · "}
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline font-bold text-[#1F1A14]"
+          >
+            อ่านต้นฉบับ ↗
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnalysisPanelProps) {
   const [state, setState] = useState<State>({ phase: "idle" });
-  const reputable = isReputableSource(article.source);
 
   async function analyze() {
     if (state.phase === "open") {
@@ -94,136 +195,61 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
     }
   }
 
-  const cfg = state.phase === "open" ? RATING_CONFIG[state.result.credibility.rating] : null;
-
   return (
     <div className="mt-1.5">
-      {/* Source badge + analyze button row */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {reputable && (
-          <span
-            className="text-[8px] font-bold px-1.5 py-0.5 border"
-            style={{ background: "#ECFDF5", color: "#065F46", borderColor: "#5B8A2A" }}
-            title="แหล่งข่าวที่รู้จักและน่าเชื่อถือ"
-          >
-            ✓ แหล่งข่าวรู้จัก
-          </span>
-        )}
+      <button
+        onClick={() => void analyze()}
+        disabled={state.phase === "loading"}
+        className="text-[9px] font-bold px-2 py-0.5 border transition-colors disabled:opacity-50"
+        style={{
+          borderColor: state.phase === "open" ? "#1F1A14" : "#8A8378",
+          color:       state.phase === "open" ? "#1F1A14" : "#8A8378",
+          background:  state.phase === "open" ? "#F0EBE0" : "transparent",
+        }}
+        aria-expanded={state.phase === "open"}
+        aria-label={`วิเคราะห์ข่าวด้วย AI: ${article.headline}`}
+      >
+        {state.phase === "loading" ? "กำลังวิเคราะห์..." : state.phase === "open" ? "ซ่อน AI" : "วิเคราะห์ข่าวด้วย AI"}
+      </button>
 
-        <button
-          onClick={() => void analyze()}
-          disabled={state.phase === "loading"}
-          className="text-[9px] font-bold px-2 py-0.5 border transition-colors disabled:opacity-50"
-          style={{
-            borderColor: state.phase === "open" ? "#1F1A14" : "#8A8378",
-            color:       state.phase === "open" ? "#1F1A14" : "#8A8378",
-            background:  state.phase === "open" ? "#F0EBE0" : "transparent",
-          }}
-          aria-expanded={state.phase === "open"}
-          aria-label={`ตรวจสอบความน่าเชื่อถือและสรุปข่าว: ${article.headline}`}
-        >
-          {state.phase === "loading"
-            ? "กำลังวิเคราะห์..."
-            : state.phase === "open"
-            ? "ซ่อน AI"
-            : "ตรวจสอบ + สรุปด้วย AI"}
-        </button>
-      </div>
-
-      {/* Loading skeleton */}
       {state.phase === "loading" && (
-        <div className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-[#E8E2D4] bg-[#F9F7F2]" aria-busy="true" aria-label="กำลังวิเคราะห์">
-          <div className="h-3 w-28 bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-2.5 w-full bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-2.5 w-4/5 bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-2.5 w-3/5 bg-[#E8E2D4] animate-pulse rounded" />
+        <div
+          className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-[#E8E2D4] bg-[#F9F7F2]"
+          aria-busy="true"
+          aria-label="กำลังวิเคราะห์"
+        >
+          <div className="flex gap-1.5 mb-2">
+            <div className="h-4 w-20 bg-[#E8E2D4] animate-pulse rounded" />
+            <div className="h-4 w-16 bg-[#E8E2D4] animate-pulse rounded" />
+            <div className="h-4 w-14 bg-[#E8E2D4] animate-pulse rounded" />
+          </div>
+          <div className="h-2.5 w-full  bg-[#E8E2D4] animate-pulse rounded" />
+          <div className="h-2.5 w-4/5   bg-[#E8E2D4] animate-pulse rounded" />
+          <div className="h-2.5 w-3/5   bg-[#E8E2D4] animate-pulse rounded" />
         </div>
       )}
 
-      {/* Error state */}
       {state.phase === "error" && (
-        <p className="mt-1.5 text-[9px] text-[#DC2626] px-2">
-          {state.message} ·{" "}
-          <button
-            onClick={() => setState({ phase: "idle" })}
-            className="underline"
-          >
+        <p className="mt-1.5 text-[9px] px-2" style={{ color: "#DC2626" }}>
+          {state.message}
+          {" · "}
+          <button onClick={() => void analyze()} className="underline font-bold">
+            ลองใหม่
+          </button>
+          {" · "}
+          <button onClick={() => setState({ phase: "idle" })} className="underline">
             ปิด
           </button>
         </p>
       )}
 
-      {/* Result panel */}
-      {state.phase === "open" && cfg && (
-        <div
-          className="mt-2 border-l-2 overflow-hidden"
-          style={{ borderColor: cfg.border }}
-          role="region"
-          aria-label="ผลการวิเคราะห์ AI"
-        >
-          {/* Credibility header */}
-          <div
-            className="px-3 py-2 flex items-start gap-2"
-            style={{ background: cfg.bg }}
-          >
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span
-                  className="text-[9px] font-bold px-2 py-0.5 border"
-                  style={{ color: cfg.text, borderColor: cfg.border, background: "white" }}
-                >
-                  {cfg.label}
-                </span>
-                <span className="text-[9px]" style={{ color: cfg.text }}>
-                  {state.result.credibility.rating === "สูง" ? "●" : state.result.credibility.rating === "ปานกลาง" ? "◑" : "○"}
-                  {" "}ความน่าเชื่อถือ: {state.result.credibility.rating}
-                </span>
-              </div>
-              <p className="text-[10px] mt-1 leading-relaxed" style={{ color: cfg.text }}>
-                {state.result.credibility.reason}
-              </p>
-              {state.result.credibility.caveats.length > 0 && (
-                <ul className="mt-1 space-y-0.5">
-                  {state.result.credibility.caveats.map((c, i) => (
-                    <li key={i} className="text-[9px] flex gap-1" style={{ color: cfg.text }}>
-                      <span aria-hidden="true">▸</span>
-                      <span>{c}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="px-3 py-2 bg-[#F9F7F2]">
-            <p className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-1">สรุปข่าว</p>
-            <p className="text-[11px] leading-relaxed text-[#1F1A14]">
-              {state.result.summary}
-            </p>
-          </div>
-
-          {/* Footer: disclaimer + source link */}
-          <div className="px-3 py-2 bg-[#F3EDE0] border-t border-[#E8E2D4]">
-            <p className="text-[9px] text-[#8A8378] leading-relaxed">
-              AI ประเมินความน่าเชื่อถือของแหล่งข่าว ไม่ใช่การยืนยันว่าข่าวจริงหรือเท็จ ·{" "}
-              ไม่ใช่คำแนะนำการลงทุน
-            </p>
-            <p className="text-[9px] text-[#8A8378] mt-0.5">
-              แหล่งข่าว: {article.source}
-              {state.cached && " · จากแคช"}
-              {" · "}
-              <a
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline font-bold text-[#1F1A14]"
-              >
-                อ่านต้นฉบับ ↗
-              </a>
-            </p>
-          </div>
-        </div>
+      {state.phase === "open" && (
+        <ResultPanel
+          result={state.result}
+          cached={state.cached}
+          sourceLabel={article.source}
+          sourceUrl={article.url}
+        />
       )}
     </div>
   );

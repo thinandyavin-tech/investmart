@@ -1,38 +1,41 @@
 import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { z } from "zod";
 
-const GROQ_MODEL    = "llama-3.1-8b-instant";
-const CACHE_TTL_MS  = 60 * 60 * 1000; // 1 hour
+const GROQ_MODEL   = "llama-3.3-70b-versatile";
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-let groqClient: Groq | null = null;
-function getGroq(): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return groqClient;
-}
 const MAX_HEADLINE  = 300;
 const MAX_SNIPPET   = 500;
 const MAX_SOURCE    = 80;
-const MAX_OTHER     = 10;   // max corroboration headlines to send
-const MAX_OTHER_LEN = 120;  // chars per headline
+const MAX_OTHER     = 10;
+const MAX_OTHER_LEN = 120;
+
+// Canonical disclaimer — always injected server-side, never left to the model
+const DISCLAIMER =
+  "AI ประเมินความน่าเชื่อถือของแหล่งข่าวและสรุปเนื้อหา ไม่ใช่การยืนยันว่าข่าวจริงหรือเท็จ และไม่ใช่คำแนะนำการลงทุน · อ่านต้นฉบับเพื่อตัดสินใจเอง";
+
+const AnalysisSchema = z.object({
+  summary_th:            z.string().min(1),
+  reliability:           z.enum(["สูง", "ปานกลาง", "ต่ำ"]),
+  reliability_reason_th: z.string().min(1),
+  content_type:          z.enum(["รายงานข่าว", "บทวิเคราะห์", "ข่าวลือ", "ประชาสัมพันธ์"]),
+  market_impact: z.object({
+    direction: z.enum(["บวก", "ลบ", "เป็นกลาง"]),
+    reason_th: z.string().min(1),
+  }),
+  confidence:    z.enum(["สูง", "ปานกลาง", "ต่ำ"]),
+  disclaimer_th: z.string(),
+});
+
+export type AnalysisResult = z.infer<typeof AnalysisSchema>;
 
 interface CacheEntry {
   result:   AnalysisResult;
   cachedAt: number;
 }
 
-export interface CredibilityRating {
-  rating:  "สูง" | "ปานกลาง" | "ต่ำ";
-  reason:  string;
-  caveats: string[];
-}
-
-export interface AnalysisResult {
-  credibility: CredibilityRating;
-  summary:     string;
-}
-
-// Module-level cache survives across requests within the same server instance
 const cache = new Map<string, CacheEntry>();
 
 function cacheKey(headline: string, source: string): string {
@@ -43,61 +46,35 @@ function isStale(entry: CacheEntry): boolean {
   return Date.now() - entry.cachedAt > CACHE_TTL_MS;
 }
 
-const SYSTEM_PROMPT = `คุณคือนักวิเคราะห์ข่าวการเงินสำหรับ InvestMart แอปหุ้นไทย
-
-งานของคุณมี 2 ส่วน:
-
-[1] ประเมินความน่าเชื่อถือ (ไม่ใช่ตรวจสอบข้อเท็จจริง):
-คุณ ไม่สามารถ ยืนยันว่าข่าวจริงหรือเท็จได้ ห้ามอ้างว่าทำได้
-ประเมินเฉพาะสิ่งที่ AI สามารถตัดสินได้:
-- ชื่อเสียงแหล่งข่าว: สำนักข่าวใหญ่/น่าเชื่อถือ (Reuters, Bloomberg, AP, WSJ, CNBC, Financial Times) หรือไม่รู้จัก/โปรโมท/กด release
-- ประเภทเนื้อหา: ข่าวข้อเท็จจริง vs ความเห็น/วิเคราะห์ vs การคาดเดา/ข่าวลือ vs โปรโมชั่น
-- สัญญาณเกินจริง: ภาษาเว่อร์, clickbait, คำอ้างที่ไม่มีหลักฐาน, อารมณ์เกินจริง
-- การยืนยันซ้ำ: ข่าวอื่นในรายการที่ให้มาพูดถึงเรื่องเดียวกันหรือไม่
-
-ให้คะแนน: สูง / ปานกลาง / ต่ำ พร้อมเหตุผล 1 ประโยค และข้อสังเกต 1-2 ข้อ
-ห้ามตัดสินว่า "จริง" หรือ "เท็จ" เด็ดขาด
-
-[2] สรุปข่าว:
-2-4 ประโยคภาษาไทยที่กระชับ: เกิดอะไร → ใครได้รับผลกระทบ → ทำไมสำคัญต่อหุ้น
-เป็นกลาง ไม่แนะนำซื้อขาย ไม่คาดการณ์ราคา
-ใช้คำพูดของตัวเอง ห้ามคัดลอกประโยคจากต้นฉบับ
-ถ้ามีแค่หัวข้อ ให้ระบุว่าสรุปจากข้อมูลจำกัด อย่าแต่งรายละเอียดเพิ่ม
-
-กฎ: ตอบเป็น JSON เท่านั้น ในรูปแบบ:
-{
-  "credibility": {
-    "rating": "สูง" หรือ "ปานกลาง" หรือ "ต่ำ",
-    "reason": "เหตุผล 1 ประโยค",
-    "caveats": ["ข้อสังเกต 1", "ข้อสังเกต 2"]
-  },
-  "summary": "สรุป 2-4 ประโยค"
-}`;
-
-function validateResult(raw: unknown): AnalysisResult | null {
-  if (typeof raw !== "object" || raw === null) return null;
-  const r = raw as Record<string, unknown>;
-
-  const cred = r["credibility"];
-  if (typeof cred !== "object" || cred === null) return null;
-  const c = cred as Record<string, unknown>;
-
-  const rating = c["rating"];
-  if (rating !== "สูง" && rating !== "ปานกลาง" && rating !== "ต่ำ") return null;
-
-  const reason = c["reason"];
-  if (typeof reason !== "string") return null;
-
-  const rawCaveats = c["caveats"];
-  const caveats = Array.isArray(rawCaveats)
-    ? (rawCaveats as unknown[]).filter((x): x is string => typeof x === "string").slice(0, 2)
-    : [];
-
-  const summary = r["summary"];
-  if (typeof summary !== "string") return null;
-
-  return { credibility: { rating, reason, caveats }, summary };
+let groqClient: Groq | null = null;
+function getGroq(): Groq {
+  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return groqClient;
 }
+
+const SYSTEM_PROMPT = `You are a financial-news analyst for InvestMart, a Thai stock learning platform. You receive a news article's headline, snippet, source name, ticker, and other recent headlines about the same stock. Respond ONLY with valid JSON in the exact schema below, in Thai.
+
+RULES:
+- You CANNOT verify whether the news is factually true or false. NEVER output a จริง/ปลอม (true/false) verdict. Assess only how reliable and credible the SOURCE and article appear.
+- reliability: judge source reputation (major wire/established outlet = สูง; unknown/blog/PR = ต่ำ), content type (factual reporting vs opinion vs rumor/speculation vs promotional), hype or sensationalism, and corroboration (echoed by other headlines = higher; lone source = lower). Rate สูง/ปานกลาง/ต่ำ with one concise Thai reason.
+- summary_th: 2–4 short, neutral Thai sentences IN YOUR OWN WORDS. NEVER copy or reproduce sentences from the article. Cover: what happened, who/what is affected, why it matters for the stock. If you have only a headline with no snippet, say so and reduce confidence. Do not invent details.
+- market_impact direction: บวก/ลบ/เป็นกลาง for the stock. Provide a one-line Thai reason framed as likely implication, never a price prediction or certainty.
+- confidence: lower when info is thin (headline-only), source is unknown, or content is promotional or speculative.
+- Be decisive but honest about uncertainty. Never fabricate. No investment advice.
+
+Respond with exactly this JSON structure (no extra keys, no markdown):
+{
+  "summary_th": "สรุป 2–4 ประโยคภาษาไทย",
+  "reliability": "สูง|ปานกลาง|ต่ำ",
+  "reliability_reason_th": "เหตุผลสั้น 1 ประโยค",
+  "content_type": "รายงานข่าว|บทวิเคราะห์|ข่าวลือ|ประชาสัมพันธ์",
+  "market_impact": {
+    "direction": "บวก|ลบ|เป็นกลาง",
+    "reason_th": "เหตุผล 1 ประโยค"
+  },
+  "confidence": "สูง|ปานกลาง|ต่ำ",
+  "disclaimer_th": "placeholder"
+}`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const apiKey = process.env.GROQ_API_KEY;
@@ -113,11 +90,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const raw = body as Record<string, unknown>;
-  const headline       = typeof raw["headline"]       === "string" ? raw["headline"].trim().slice(0, MAX_HEADLINE)  : "";
-  const snippet        = typeof raw["snippet"]        === "string" ? raw["snippet"].trim().slice(0, MAX_SNIPPET)    : "";
-  const source         = typeof raw["source"]         === "string" ? raw["source"].trim().slice(0, MAX_SOURCE)      : "unknown";
-  const ticker         = typeof raw["ticker"]         === "string" ? raw["ticker"].trim().slice(0, 15)              : "";
-  const otherRaw       = Array.isArray(raw["otherHeadlines"]) ? (raw["otherHeadlines"] as unknown[]) : [];
+  const headline = typeof raw["headline"] === "string"
+    ? raw["headline"].trim().slice(0, MAX_HEADLINE) : "";
+  const snippet  = typeof raw["snippet"]  === "string"
+    ? raw["snippet"].trim().slice(0, MAX_SNIPPET)   : "";
+  const source   = typeof raw["source"]   === "string"
+    ? raw["source"].trim().slice(0, MAX_SOURCE)     : "unknown";
+  const ticker   = typeof raw["ticker"]   === "string"
+    ? raw["ticker"].trim().slice(0, 15)             : "";
+  const otherRaw = Array.isArray(raw["otherHeadlines"])
+    ? (raw["otherHeadlines"] as unknown[]) : [];
   const otherHeadlines = otherRaw
     .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
     .slice(0, MAX_OTHER)
@@ -134,30 +116,30 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const corroborationBlock = otherHeadlines.length > 0
-    ? `\nหัวข่าวอื่นๆ ที่เกี่ยวข้อง (ใช้ตรวจสอบการยืนยัน):\n${otherHeadlines.map((h, i) => `${i + 1}. ${h}`).join("\n")}`
-    : "\n(ไม่มีหัวข่าวอื่นให้เปรียบเทียบ)";
+    ? `\nOther recent headlines for the same stock (use for corroboration):\n${otherHeadlines.map((h, i) => `${i + 1}. ${h}`).join("\n")}`
+    : "\n(No other headlines available for corroboration — single source)";
 
   const userMessage = [
-    `แหล่งข่าว: ${source}`,
-    ticker ? `หุ้น: $${ticker}` : "",
-    `หัวข่าว: ${headline}`,
-    snippet ? `ย่อหน้าเปิด: ${snippet}` : "(มีเฉพาะหัวข่าว ไม่มีเนื้อหา)",
+    `Source: ${source}`,
+    ticker ? `Stock: $${ticker}` : "",
+    `Headline: ${headline}`,
+    snippet ? `Snippet: ${snippet}` : "(Headline only — no article body available)",
     corroborationBlock,
   ].filter(Boolean).join("\n");
 
   try {
-    const result = await getGroq().chat.completions.create({
+    const completion = await getGroq().chat.completions.create({
       model:           GROQ_MODEL,
       messages:        [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user",   content: userMessage   },
       ],
       response_format: { type: "json_object" },
-      max_tokens:      500,
+      max_tokens:      600,
       temperature:     0.3,
     });
 
-    const text = result.choices[0]?.message?.content?.trim() ?? "";
+    const text = completion.choices[0]?.message?.content?.trim() ?? "";
     let parsed: unknown;
     try {
       parsed = JSON.parse(text);
@@ -165,15 +147,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "invalid AI response" }, { status: 502 });
     }
 
-    const validated = validateResult(parsed);
-    if (!validated) {
+    // Always inject the canonical disclaimer — never trust the model's text
+    if (typeof parsed === "object" && parsed !== null) {
+      (parsed as Record<string, unknown>)["disclaimer_th"] = DISCLAIMER;
+    }
+
+    const validated = AnalysisSchema.safeParse(parsed);
+    if (!validated.success) {
       return NextResponse.json({ error: "malformed AI response" }, { status: 502 });
     }
 
-    cache.set(key, { result: validated, cachedAt: Date.now() });
-    return NextResponse.json({ ...validated, cached: false });
+    cache.set(key, { result: validated.data, cachedAt: Date.now() });
+    return NextResponse.json({ ...validated.data, cached: false });
   } catch (err) {
     console.error("[news/analyze] Groq error:", err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง" }, { status: 503 });
+    return NextResponse.json(
+      { error: "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง" },
+      { status: 503 }
+    );
   }
 }
