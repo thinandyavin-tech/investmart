@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getPersonaById } from "@/lib/personas";
 
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.0-flash";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 const DISCLAIMER =
