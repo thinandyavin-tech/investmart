@@ -16,7 +16,7 @@ export function HomeDesktop() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-1 gap-4 p-4 max-w-6xl mx-auto w-full">
+      <div className="flex flex-1 gap-4 p-4 max-w-5xl mx-auto w-full">
         {/* Left column */}
         <aside className="w-64 flex-shrink-0">
           <AboutCard bio={user?.bio ?? ""} />
@@ -37,7 +37,7 @@ export function HomeDesktop() {
           </div>
           <ActionButtons />
           <HoldingsCard holdings={user?.holdings ?? []} loading={loading} />
-          {!user && !loading && (
+          {(!user || user.isDemo) && !loading && (
             <Card className="p-4 text-center flex flex-col gap-2">
               <p className="text-xs text-[#8A8378]">
                 เข้าสู่ระบบเพื่อเริ่มเล่น simulator · เริ่มต้นด้วย ฿1,250,000
@@ -233,7 +233,7 @@ function PostsCard() {
 function HomeFooter() {
   return (
     <footer className="border-t border-[#1F1A14] bg-[#F3EDE0] px-6 py-4 mt-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <p className="text-[11px] text-[#1F1A14] font-bold mb-1">
           InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา
         </p>

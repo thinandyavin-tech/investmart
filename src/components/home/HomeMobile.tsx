@@ -97,7 +97,7 @@ export function HomeMobile() {
         cashThb={user?.cashThb ?? 1_250_000}
         cashUsd={user?.cashUsd ?? 0}
         holdings={user?.holdings ?? []}
-        loggedIn={user !== null}
+        loggedIn={user !== null && !user.isDemo}
         noticeVisible={noticeVisible}
         onDismissNotice={() => setNoticeVisible(false)}
         onLogin={() => router.push("/signin")}

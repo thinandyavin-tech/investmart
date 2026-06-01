@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
-const GROQ_MODEL    = "llama-3.3-70b-versatile";
+const GROQ_MODEL    = "llama-3.1-8b-instant";
 const CACHE_TTL_MS  = 60 * 60 * 1000; // 1 hour
 
 let groqClient: Groq | null = null;
