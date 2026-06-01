@@ -10,6 +10,7 @@ import { FeedSection } from "@/components/social/FeedSection";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
+import { SearchIcon } from "@/components/icons/SearchIcon";
 
 
 export function HomeMobile() {
@@ -47,20 +48,29 @@ export function HomeMobile() {
             <span className="text-[10px] leading-none">{dropdownOpen ? "▴" : "▾"}</span>
           </button>
 
-          <Link
-            href="/mail"
-            className="relative w-9 h-9 flex items-center justify-center"
-            aria-label="จดหมายและแจ้งเตือน"
-          >
-            <MailIcon />
-            <span
-              className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
-              style={{ background: "#FF3D9A" }}
-              aria-label="1 ข้อความที่ยังไม่ได้อ่าน"
+          <div className="flex items-center gap-1">
+            <Link
+              href="/search"
+              className="w-9 h-9 flex items-center justify-center border border-[#1F1A14] rounded-full bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+              aria-label="ค้นหาหุ้น"
             >
-              1
-            </span>
-          </Link>
+              <SearchIcon size={18} />
+            </Link>
+            <Link
+              href="/mail"
+              className="relative w-9 h-9 flex items-center justify-center"
+              aria-label="จดหมายและแจ้งเตือน"
+            >
+              <MailIcon />
+              <span
+                className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+                style={{ background: "#FF3D9A" }}
+                aria-label="1 ข้อความที่ยังไม่ได้อ่าน"
+              >
+                1
+              </span>
+            </Link>
+          </div>
         </header>
 
         {dropdownOpen && (

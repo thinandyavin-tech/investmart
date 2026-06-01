@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { validateContent, extractCashtags } from "@/lib/postUtils";
+import { getSessionUserId } from "@/lib/getSession";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 const PAGE_SIZE = 20;
@@ -31,8 +31,7 @@ const postSelect = {
 } as const;
 
 export async function GET(request: NextRequest) {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("demo_user_id")?.value ?? null;
+  const userId = await getSessionUserId();
 
   const { searchParams } = request.nextUrl;
   const tab      = searchParams.get("tab") ?? "discover";
@@ -102,8 +101,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("demo_user_id")?.value;
+  const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ error: "ยังไม่ได้เข้าสู่ระบบ" }, { status: 401 });
   }

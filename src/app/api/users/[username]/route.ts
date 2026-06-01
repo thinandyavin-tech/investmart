@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getSessionUserId } from "@/lib/getSession";
+
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -32,8 +33,7 @@ export async function GET(
     return NextResponse.json({ error: "ไม่พบผู้ใช้" }, { status: 404 });
   }
 
-  const cookieStore = await cookies();
-  const viewerId = cookieStore.get("demo_user_id")?.value ?? null;
+  const viewerId = await getSessionUserId();
 
   let isFollowing = false;
   if (viewerId && viewerId !== user.id) {

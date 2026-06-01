@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getSessionUserId } from "@/lib/getSession";
+
 import { prisma } from "@/lib/prisma";
 
 export async function POST(
   _request: NextRequest,
   { params }: { params: Promise<{ username: string }> }
 ) {
-  const cookieStore = await cookies();
-  const followerId = cookieStore.get("demo_user_id")?.value;
+  const followerId = await getSessionUserId();
   if (!followerId) {
     return NextResponse.json({ error: "ยังไม่ได้เข้าสู่ระบบ" }, { status: 401 });
   }
