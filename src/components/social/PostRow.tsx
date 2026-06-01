@@ -2,18 +2,28 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { relativeTime } from "@/lib/postUtils";
+import { relativeTime, MAX_CONTENT } from "@/lib/postUtils";
+
+export interface QuotedPost {
+  id:        string;
+  content:   string;
+  ticker:    string | null;
+  createdAt: string;
+  author: { id: string; name: string | null; username: string | null };
+}
 
 export interface PostData {
   id:           string;
   content:      string;
   ticker:       string | null;
   topic:        string | null;
+  quoteCount?:  number;
   createdAt:    string;
   likeCount:    number;
   commentCount: number;
   liked:        boolean;
   bookmarked:   boolean;
+  quotedPost?:  QuotedPost | null;
   author: {
     id:         string;
     name:       string | null;
@@ -55,6 +65,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
   const [likeCount, setLikeCount]   = useState(post.likeCount);
   const [bookmarked, setBookmarked] = useState(post.bookmarked);
   const [busy, setBusy]             = useState(false);
+  const [quoting, setQuoting]       = useState(false);
 
   const username    = post.author.username ?? post.author.name ?? "ผู้ใช้";
   const displayId   = `#${post.author.id.slice(-4)}`;
@@ -126,6 +137,8 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             {renderContent(post.content)}
           </p>
 
+          {post.quotedPost && <QuotedPostCard post={post.quotedPost} />}
+
           {(post.ticker || post.topic) && (
             <div className="flex gap-1.5 mt-1.5 flex-wrap">
               {post.ticker && (
@@ -167,6 +180,16 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             )}
 
             <button
+              onClick={() => setQuoting((v) => !v)}
+              className={`flex items-center gap-1 text-[10px] transition-colors ${quoting ? "text-[#1F1A14]" : "text-[#8A8378] hover:text-[#1F1A14]"}`}
+              aria-label="อ้างอิงโพสต์"
+              aria-pressed={quoting}
+            >
+              <QuoteIcon />
+              <span>{(post.quoteCount ?? 0) > 0 ? post.quoteCount : ""}</span>
+            </button>
+
+            <button
               onClick={toggleBookmark}
               disabled={busy}
               className={`flex items-center gap-1 text-[10px] transition-colors ml-auto ${bookmarked ? "text-[#8B5CF6]" : "text-[#8A8378] hover:text-[#8B5CF6]"}`}
@@ -176,9 +199,91 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
               <BookmarkIcon filled={bookmarked} />
             </button>
           </div>
+
+          {quoting && (
+            <QuoteComposer
+              quotedPostId={post.id}
+              onClose={() => setQuoting(false)}
+            />
+          )}
         </div>
       </div>
     </article>
+  );
+}
+
+function QuotedPostCard({ post }: { post: QuotedPost }) {
+  const author = post.author.username ?? post.author.name ?? "ผู้ใช้";
+  return (
+    <div className="mt-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
+      <div className="flex items-center gap-1.5 mb-1">
+        <span className="text-[9px] font-bold text-[#1F1A14] truncate">{author}</span>
+        <span className="text-[8px] text-[#8A8378] flex-shrink-0">{relativeTime(new Date(post.createdAt))}</span>
+        {post.ticker && (
+          <span className="text-[8px] font-bold text-[#5B8A2A] ml-auto flex-shrink-0">${post.ticker}</span>
+        )}
+      </div>
+      <p className="text-[10px] text-[#1F1A14] leading-relaxed line-clamp-3 break-words">{post.content}</p>
+    </div>
+  );
+}
+
+function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClose: () => void }) {
+  const [content, setContent] = useState("");
+  const [submitting, setSubmit] = useState(false);
+  const [error, setError]       = useState("");
+  const remaining = MAX_CONTENT - content.length;
+
+  async function submit() {
+    if (!content.trim() || remaining < 0 || submitting) return;
+    setSubmit(true);
+    setError("");
+    try {
+      const res  = await fetch("/api/posts", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ content, quotedPostId }),
+      });
+      const data = await res.json() as { error?: string };
+      if (!res.ok) { setError(data.error ?? "เกิดข้อผิดพลาด"); return; }
+      onClose();
+    } catch {
+      setError("เชื่อมต่อไม่ได้");
+    } finally {
+      setSubmit(false);
+    }
+  }
+
+  return (
+    <div className="mt-2 p-3 bg-[#F3EDE0] border border-[#E8E2D4]">
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="เพิ่มความคิดเห็นของคุณ..."
+        rows={3}
+        maxLength={MAX_CONTENT}
+        autoFocus
+        className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
+        aria-label="ความคิดเห็นสำหรับโพสต์อ้างอิง"
+      />
+      <div className="flex items-center gap-2 mt-1.5">
+        <span className={`text-[10px] font-bold ${remaining < 0 ? "text-[#E5484D]" : "text-[#8A8378]"}`}>
+          {remaining}
+        </span>
+        <button onClick={onClose} className="ml-auto text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors">
+          ยกเลิก
+        </button>
+        <button
+          onClick={submit}
+          disabled={!content.trim() || remaining < 0 || submitting}
+          className="px-3 py-1 text-[10px] font-bold text-white bg-[#1F1A14] disabled:opacity-40 transition-opacity"
+          aria-busy={submitting}
+        >
+          {submitting ? "..." : "โพสต์"}
+        </button>
+      </div>
+      {error && <p className="text-[10px] text-[#E5484D] mt-1" role="alert">{error}</p>}
+    </div>
   );
 }
 
@@ -207,6 +312,14 @@ function BookmarkIcon({ filled }: { filled: boolean }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+function QuoteIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+      <path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
     </svg>
   );
 }

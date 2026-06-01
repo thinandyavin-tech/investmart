@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Card } from "@/components/Card";
-import { OffsetButton } from "@/components/OffsetButton";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
+import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
 import { useUser } from "@/lib/userContext";
 
 const PriceChart = dynamic(
@@ -76,19 +76,6 @@ interface StockPageClientProps {
   ticker: string;
 }
 
-interface AiOutlook {
-  thesis:           string;
-  conviction?:      string;
-  convictionReason?: string;
-  bull:             { description: string; probability: string };
-  base:             { description: string; probability: string };
-  bear:             { description: string; probability: string };
-  drivers:          string[];
-  risk:             string;
-  invalidation:     string;
-  disclaimer:       string;
-}
-
 export function StockPageClient({ ticker }: StockPageClientProps) {
   const { quote, loading: quoteLoading, error: quoteError, isLive, marketStatus, lastUpdated, flash } =
     useLiveQuote(TICKER_RE.test(ticker) ? ticker : null);
@@ -105,9 +92,6 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const [timeframe, setTimeframe]   = useState<Timeframe>("3M");
   const [chartMode, setChartMode]   = useState<ChartMode>("Price");
   const [maConfig, setMaConfig]     = useState({ ma20: false, ma50: false, ma200: false });
-  const [aiOutlook, setAiOutlook]   = useState<AiOutlook | null>(null);
-  const [loadingOutlook, setLoadingOutlook] = useState(false);
-
   // Fetch profile + metrics once
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
@@ -164,42 +148,6 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       // leave state unchanged on network error
     } finally {
       setWatchLoading(false);
-    }
-  }
-
-  async function loadAiOutlook() {
-    if (loadingOutlook || aiOutlook) return;
-    setLoadingOutlook(true);
-    try {
-      const res  = await fetch(`/api/ai/outlook?ticker=${encodeURIComponent(ticker)}`);
-      const data = (await res.json()) as AiOutlook & { error?: string };
-      if (data.error) {
-        setAiOutlook({
-          thesis:       `ไม่สามารถโหลดการวิเคราะห์: ${data.error}`,
-          bull:         { description: "—", probability: "—" },
-          base:         { description: "—", probability: "—" },
-          bear:         { description: "—", probability: "—" },
-          drivers:      [],
-          risk:         "—",
-          invalidation: "—",
-          disclaimer:   "—",
-        });
-      } else {
-        setAiOutlook(data);
-      }
-    } catch {
-      setAiOutlook({
-        thesis:       "ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้",
-        bull:         { description: "—", probability: "—" },
-        base:         { description: "—", probability: "—" },
-        bear:         { description: "—", probability: "—" },
-        drivers:      [],
-        risk:         "—",
-        invalidation: "—",
-        disclaimer:   "—",
-      });
-    } finally {
-      setLoadingOutlook(false);
     }
   }
 
@@ -461,112 +409,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       {/* News */}
       <StockNewsSection ticker={ticker} />
 
-      {/* AI Full Outlook */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">
-            วิเคราะห์แนวโน้มด้วย AI
-          </h2>
-          {!aiOutlook && (
-            <OffsetButton size="sm" onClick={() => void loadAiOutlook()} disabled={loadingOutlook}>
-              {loadingOutlook ? "กำลังวิเคราะห์..." : "เปิดการวิเคราะห์"}
-            </OffsetButton>
-          )}
-        </div>
-
-        {!aiOutlook && !loadingOutlook && (
-          <p className="text-[10px] text-[#8A8378] italic">
-            วิเคราะห์เชิงลึก: thesis, กรณี Bull/Base/Bear, ปัจจัยขับเคลื่อน, ความเสี่ยง
-          </p>
-        )}
-
-        {loadingOutlook && (
-          <div className="flex flex-col gap-2">
-            {[80, 60, 70, 50].map((w) => (
-              <div key={w} className="h-2 bg-[#E8E2D4] animate-pulse rounded" style={{ width: `${w}%` }} />
-            ))}
-          </div>
-        )}
-
-        {aiOutlook && (
-          <div className="flex flex-col gap-3 text-[11px]">
-            <p className="leading-relaxed">{aiOutlook.thesis}</p>
-
-            {aiOutlook.conviction && (
-              <div className="flex flex-col gap-0.5">
-                <span
-                  className="self-start px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide border"
-                  style={{
-                    background:
-                      aiOutlook.conviction === "high"   ? "#5B8A2A" :
-                      aiOutlook.conviction === "medium"  ? "#D97706" : "#DC2626",
-                    color:      "#fff",
-                    borderColor:
-                      aiOutlook.conviction === "high"   ? "#5B8A2A" :
-                      aiOutlook.conviction === "medium"  ? "#D97706" : "#DC2626",
-                  }}
-                >
-                  ระดับความมั่นใจ:{" "}
-                  {aiOutlook.conviction === "high"   ? "สูง" :
-                   aiOutlook.conviction === "medium" ? "กลาง" : "ต่ำ"}
-                </span>
-                {aiOutlook.convictionReason && (
-                  <p className="text-[9px] text-[#8A8378] italic">{aiOutlook.convictionReason}</p>
-                )}
-              </div>
-            )}
-
-            <div className="grid grid-cols-3 gap-2">
-              {(
-                [
-                  { label: "Bull", data: aiOutlook.bull,  color: "#5B8A2A" },
-                  { label: "Base", data: aiOutlook.base,  color: "#1F1A14" },
-                  { label: "Bear", data: aiOutlook.bear,  color: "#DC2626" },
-                ] as const
-              ).map(({ label, data, color }) => (
-                <div key={label} className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-[10px]" style={{ color }}>{label}</span>
-                    <span className="text-[9px] text-[#8A8378]">{data.probability}</span>
-                  </div>
-                  <p className="text-[9px] text-[#1F1A14] leading-snug">{data.description}</p>
-                </div>
-              ))}
-            </div>
-
-            {aiOutlook.drivers.length > 0 && (
-              <div>
-                <div className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-1">
-                  ปัจจัยขับเคลื่อน
-                </div>
-                <ul className="flex flex-col gap-0.5">
-                  {aiOutlook.drivers.map((d, i) => (
-                    <li key={i} className="text-[9px] flex gap-1">
-                      <span className="text-[#5B8A2A] flex-shrink-0">·</span>
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-2">
-              <div className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
-                <div className="text-[9px] font-bold text-[#DC2626] uppercase tracking-wide mb-0.5">ความเสี่ยง</div>
-                <p className="text-[9px]">{aiOutlook.risk}</p>
-              </div>
-              <div className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
-                <div className="text-[9px] font-bold text-[#8A8378] uppercase tracking-wide mb-0.5">จะรู้ว่าผิดเมื่อ</div>
-                <p className="text-[9px]">{aiOutlook.invalidation}</p>
-              </div>
-            </div>
-
-            <p className="text-[9px] text-[#8A8378] italic border-t border-[#E8E2D4] pt-2">
-              {aiOutlook.disclaimer}
-            </p>
-          </div>
-        )}
-      </Card>
+      {/* AI Full Outlook with persona selector */}
+      <AiOutlookCard ticker={ticker} />
 
       {/* CTA: Trade */}
       <div className="flex flex-col gap-2">

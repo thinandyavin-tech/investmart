@@ -12,9 +12,10 @@ interface PostComposerProps {
   onPublished?: (post: PostData) => void;
   placeholder?: string;
   compact?:     boolean;
+  quotePost?:   PostData;
 }
 
-export function PostComposer({ onPublished, placeholder, compact = false }: PostComposerProps) {
+export function PostComposer({ onPublished, placeholder, compact = false, quotePost }: PostComposerProps) {
   const [content, setContent]   = useState("");
   const [ticker, setTicker]     = useState("");
   const [topic, setTopic]       = useState("");
@@ -32,6 +33,7 @@ export function PostComposer({ onPublished, placeholder, compact = false }: Post
       const body: Record<string, string> = { content };
       if (ticker && TICKER_RE.test(ticker)) body.ticker = ticker;
       if (topic) body.topic = topic;
+      if (quotePost) body.quotedPostId = quotePost.id;
 
       const res  = await fetch("/api/posts", {
         method:  "POST",
@@ -62,10 +64,19 @@ export function PostComposer({ onPublished, placeholder, compact = false }: Post
         </p>
       )}
 
+      {quotePost && (
+        <div className="mb-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
+          <p className="text-[9px] font-bold text-[#8A8378] mb-0.5">
+            อ้างอิงโพสต์ของ {quotePost.author.username ?? quotePost.author.name ?? "ผู้ใช้"}
+          </p>
+          <p className="text-[10px] text-[#1F1A14] leading-relaxed line-clamp-2 break-words">{quotePost.content}</p>
+        </div>
+      )}
+
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder={placeholder ?? "แบ่งปันมุมมองการลงทุน..."}
+        placeholder={quotePost ? "เพิ่มความคิดเห็นของคุณ..." : (placeholder ?? "แบ่งปันมุมมองการลงทุน...")}
         rows={compact ? 3 : 5}
         maxLength={MAX_CONTENT}
         className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"

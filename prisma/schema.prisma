@@ -108,18 +108,22 @@ model Trade {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  userId    String
-  content   String
-  ticker    String?  // primary cashtag (e.g. "NVDA")
-  topic     String?  // optional topic tag
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  userId        String
+  content       String
+  ticker        String?
+  topic         String?
+  quotedPostId  String?
+  quoteCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likes     Like[]
-  comments  Comment[]
-  bookmarks Bookmark[]
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+  bookmarks   Bookmark[]
+  quotedPost  Post?      @relation("PostQuotes", fields: [quotedPostId], references: [id], onDelete: SetNull)
+  quotes      Post[]     @relation("PostQuotes")
 }
 
 model Like {

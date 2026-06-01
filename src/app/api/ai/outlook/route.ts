@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { getPersonaById } from "@/lib/personas";
 
 const GROQ_MODEL   = "llama-3.3-70b-versatile";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -34,7 +35,7 @@ interface LlmOutlook {
   invalidation:    string;
 }
 
-// Module-level cache keyed by ticker
+// Module-level cache keyed by "ticker:persona"
 const outlookCache = new Map<string, OutlookEntry>();
 
 function isCacheStale(entry: OutlookEntry): boolean {
@@ -150,9 +151,10 @@ const SYSTEM_PROMPT = `คุณคือนักวิเคราะห์ห
 }`;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const params  = request.nextUrl.searchParams;
-  const ticker  = params.get("ticker")?.toUpperCase().trim();
-  const refresh = params.get("refresh") === "true";
+  const params   = request.nextUrl.searchParams;
+  const ticker   = params.get("ticker")?.toUpperCase().trim();
+  const personaId = params.get("persona") ?? "general";
+  const refresh  = params.get("refresh") === "true";
 
   if (!ticker || !/^[A-Z][A-Z.\-]{0,9}$/.test(ticker)) {
     return NextResponse.json({ error: "ticker required" }, { status: 400 });
@@ -165,10 +167,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "AI or market data not configured" }, { status: 500 });
   }
 
-  const cached = outlookCache.get(ticker);
+  const cacheKey = `${ticker}:${personaId}`;
+  const cached   = outlookCache.get(cacheKey);
   if (!refresh && cached && !isCacheStale(cached)) {
     return NextResponse.json(cached);
   }
+
+  const persona       = getPersonaById(personaId);
+  const activePrompt  = persona?.systemPrompt ?? SYSTEM_PROMPT;
 
   const sevenDaysAgo = Math.floor((Date.now() - 7 * 24 * 60 * 60 * 1000) / 1000);
   const today        = Math.floor(Date.now() / 1000);
@@ -227,8 +233,8 @@ ${newsBlock}`;
     const completion = await getGroq().chat.completions.create({
       model:           GROQ_MODEL,
       messages:        [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: userPrompt    },
+        { role: "system", content: activePrompt },
+        { role: "user",   content: userPrompt   },
       ],
       max_tokens:      800,
       temperature:     0.3,
@@ -264,7 +270,7 @@ ${newsBlock}`;
       generatedAt:  new Date().toISOString(),
     };
 
-    outlookCache.set(ticker, entry);
+    outlookCache.set(cacheKey, entry);
     return NextResponse.json(entry);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";

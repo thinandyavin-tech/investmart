@@ -4,6 +4,12 @@ import Groq from "groq-sdk";
 
 const GROQ_MODEL    = "llama-3.3-70b-versatile";
 const CACHE_TTL_MS  = 60 * 60 * 1000; // 1 hour
+
+let groqClient: Groq | null = null;
+function getGroq(): Groq {
+  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return groqClient;
+}
 const MAX_HEADLINE  = 300;
 const MAX_SNIPPET   = 500;
 const MAX_SOURCE    = 80;
@@ -140,8 +146,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   ].filter(Boolean).join("\n");
 
   try {
-    const groq   = new Groq({ apiKey });
-    const result = await groq.chat.completions.create({
+    const result = await getGroq().chat.completions.create({
       model:           GROQ_MODEL,
       messages:        [
         { role: "system", content: SYSTEM_PROMPT },
@@ -167,7 +172,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     cache.set(key, { result: validated, cachedAt: Date.now() });
     return NextResponse.json({ ...validated, cached: false });
-  } catch {
-    return NextResponse.json({ error: "AI unavailable" }, { status: 503 });
+  } catch (err) {
+    console.error("[news/analyze] Groq error:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง" }, { status: 503 });
   }
 }
