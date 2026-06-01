@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
+const GEMINI_MODEL = "gemini-1.5-flash";
 const MAX_MESSAGES = 30;
 const DATA_TTL_MS  = 5 * 60 * 1000; // 5-minute live data cache
 
@@ -155,17 +155,17 @@ BOUNDARIES:
 
 // ─── Route handler ───────────────────────────────────────────────────────────
 
-let groqClient: Groq | null = null;
-function getGroq(): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return groqClient;
+let geminiClient: GoogleGenerativeAI | null = null;
+function getGemini(): GoogleGenerativeAI {
+  if (!geminiClient) geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+  return geminiClient;
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  const groqKey    = process.env.GROQ_API_KEY;
+  const geminiKey  = process.env.GEMINI_API_KEY;
   const finnhubKey = process.env.FINNHUB_API_KEY;
 
-  if (!groqKey || !finnhubKey) {
+  if (!geminiKey || !finnhubKey) {
     return Response.json({ error: "AI not configured" }, { status: 503 });
   }
 
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   const { messages, ticker: pageTicker } = parsed.data;
 
   // Collect tickers: page context + $TICKER mentions in latest user message
-  const lastUser = [...messages].reverse().find(m => m.role === "user");
+  const lastUser  = [...messages].reverse().find(m => m.role === "user");
   const mentioned = lastUser ? extractTickers(lastUser.content) : [];
   const allTickers = [...new Set([...(pageTicker ? [pageTicker] : []), ...mentioned])].slice(0, 2);
 
@@ -192,27 +192,31 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const systemPrompt = buildSystemPrompt(liveBlocks);
 
-  // Build Groq messages (keep last 20 turns to stay within context)
-  const history = messages.slice(-20).map(m => ({
-    role:    m.role as "user" | "assistant",
-    content: m.content,
-  }));
+  // Build Gemini chat history (all but the last user message)
+  const history = messages.slice(-20);
+  const lastMessage = history[history.length - 1];
+  const priorHistory = history.slice(0, -1);
 
-  // Stream the Groq response as SSE
-  const groqStream = await getGroq().chat.completions.create({
-    model:       GROQ_MODEL,
-    messages:    [{ role: "system", content: systemPrompt }, ...history],
-    stream:      true,
-    max_tokens:  1000,
-    temperature: 0.35,
+  const model = getGemini().getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: systemPrompt,
+    generationConfig: { maxOutputTokens: 1000, temperature: 0.35 },
+  });
+
+  const chat = model.startChat({
+    history: priorHistory.map(m => ({
+      role:  m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    })),
   });
 
   const readable = new ReadableStream({
     async start(controller) {
       const enc = new TextEncoder();
       try {
-        for await (const chunk of groqStream) {
-          const token = chunk.choices[0]?.delta?.content ?? "";
+        const result = await chat.sendMessageStream(lastMessage.content);
+        for await (const chunk of result.stream) {
+          const token = chunk.text();
           if (token) {
             controller.enqueue(enc.encode(`data: ${JSON.stringify({ token })}\n\n`));
           }
