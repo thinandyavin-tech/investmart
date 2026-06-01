@@ -3,7 +3,7 @@ export type MarketStatus = "open" | "pre" | "after" | "closed";
 export interface MarketInfo {
   status:        MarketStatus;
   statusThai:    string;
-  minsToChange:  number | null;
+  secsToChange:  number | null;
   nextEventThai: string;
 }
 
@@ -22,34 +22,41 @@ export function getMarketInfo(now = new Date()): MarketInfo {
     weekday:  "short",
     hour:     "2-digit",
     minute:   "2-digit",
+    second:   "2-digit",
     hour12:   false,
   }).formatToParts(now);
 
-  const weekday  = parts.find((p) => p.type === "weekday")?.value ?? "Sun";
-  const h        = parseInt(parts.find((p) => p.type === "hour")?.value ?? "0", 10) % 24;
-  const m        = parseInt(parts.find((p) => p.type === "minute")?.value ?? "0", 10);
-  const day      = DAY_MAP[weekday] ?? 0;
-  const timeMin  = h * 60 + m;
+  const weekday   = parts.find((p) => p.type === "weekday")?.value ?? "Sun";
+  const h         = parseInt(parts.find((p) => p.type === "hour")?.value   ?? "0", 10) % 24;
+  const m         = parseInt(parts.find((p) => p.type === "minute")?.value ?? "0", 10);
+  const s         = parseInt(parts.find((p) => p.type === "second")?.value ?? "0", 10);
+  const day       = DAY_MAP[weekday] ?? 0;
+  const timeSec   = h * 3600 + m * 60 + s;
   const isWeekday = day >= 1 && day <= 5;
 
-  if (isWeekday && timeMin >= MKT_OPEN && timeMin < MKT_CLOSE) {
-    return { status: "open",   statusThai: "ตลาดเปิด",    minsToChange: MKT_CLOSE - timeMin, nextEventThai: "ปิดตลาด" };
+  const PRE_START_S = PRE_START * 60;
+  const MKT_OPEN_S  = MKT_OPEN  * 60;
+  const MKT_CLOSE_S = MKT_CLOSE * 60;
+  const AFTER_END_S = AFTER_END * 60;
+
+  if (isWeekday && timeSec >= MKT_OPEN_S && timeSec < MKT_CLOSE_S) {
+    return { status: "open",   statusThai: "ตลาดเปิด",   secsToChange: MKT_CLOSE_S - timeSec, nextEventThai: "ปิดตลาด" };
   }
-  if (isWeekday && timeMin >= PRE_START && timeMin < MKT_OPEN) {
-    return { status: "pre",    statusThai: "Pre-market",   minsToChange: MKT_OPEN - timeMin,  nextEventThai: "เปิดตลาด" };
+  if (isWeekday && timeSec >= PRE_START_S && timeSec < MKT_OPEN_S) {
+    return { status: "pre",    statusThai: "Pre-market",  secsToChange: MKT_OPEN_S  - timeSec, nextEventThai: "เปิดตลาด" };
   }
-  if (isWeekday && timeMin >= MKT_CLOSE && timeMin < AFTER_END) {
-    return { status: "after",  statusThai: "After-hours",  minsToChange: AFTER_END - timeMin, nextEventThai: "หลังตลาดปิด" };
+  if (isWeekday && timeSec >= MKT_CLOSE_S && timeSec < AFTER_END_S) {
+    return { status: "after",  statusThai: "After-hours", secsToChange: AFTER_END_S - timeSec, nextEventThai: "หลังตลาดปิด" };
   }
 
   const nextThai =
-    (day === 5 && timeMin >= AFTER_END) || day === 6
+    (day === 5 && timeSec >= AFTER_END_S) || day === 6
       ? "เปิดวันจันทร์"
-      : isWeekday && timeMin < PRE_START
+      : isWeekday && timeSec < PRE_START_S
       ? "เปิดวันนี้ เวลา 9:30 น."
       : "เปิดพรุ่งนี้";
 
-  return { status: "closed", statusThai: "ตลาดปิด", minsToChange: null, nextEventThai: nextThai };
+  return { status: "closed", statusThai: "ตลาดปิด", secsToChange: null, nextEventThai: nextThai };
 }
 
 export function formatCountdown(totalSeconds: number): string {

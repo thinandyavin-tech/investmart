@@ -41,17 +41,17 @@ export function MarketStatusBanner() {
 
       <span className="text-[11px] text-[#8A8378]">ตลาดหุ้นสหรัฐ (ET)</span>
 
-      {info.minsToChange !== null && (
+      {info.secsToChange !== null && (
         <span
           className="ml-auto text-[11px] font-bold"
           style={{ fontFamily: "var(--font-mono)", color }}
         >
-          {formatCountdown(info.minsToChange * 60)}{" "}
+          {formatCountdown(info.secsToChange)}{" "}
           <span className="font-normal text-[#8A8378]">ก่อน{info.nextEventThai}</span>
         </span>
       )}
 
-      {info.minsToChange === null && (
+      {info.secsToChange === null && (
         <span className="ml-auto text-[10px] text-[#8A8378]">{info.nextEventThai}</span>
       )}
     </div>
