@@ -1,9 +1,8 @@
 import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
 import { z } from "zod";
+import { generateText } from "@/lib/aiService";
 
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 const MAX_HEADLINE  = 300;
@@ -46,12 +45,6 @@ function isStale(entry: CacheEntry): boolean {
   return Date.now() - entry.cachedAt > CACHE_TTL_MS;
 }
 
-let groqClient: Groq | null = null;
-function getGroq(): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return groqClient;
-}
-
 const SYSTEM_PROMPT = `You are a financial-news analyst for InvestMart, a Thai stock learning platform. You receive a news article's headline, snippet, source name, ticker, and other recent headlines about the same stock. Respond ONLY with valid JSON in the exact schema below, in Thai.
 
 RULES:
@@ -77,8 +70,8 @@ Respond with exactly this JSON structure (no extra keys, no markdown):
 }`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
+  if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });
   }
 
@@ -128,18 +121,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   ].filter(Boolean).join("\n");
 
   try {
-    const completion = await getGroq().chat.completions.create({
-      model:           GROQ_MODEL,
-      messages:        [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: userMessage   },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens:      600,
-      temperature:     0.3,
+    const text = await generateText(userMessage, SYSTEM_PROMPT, {
+      maxTokens:   600,
+      temperature: 0.3,
+      jsonMode:    true,
     });
-
-    const text = completion.choices[0]?.message?.content?.trim() ?? "";
     let parsed: unknown;
     try {
       parsed = JSON.parse(text);

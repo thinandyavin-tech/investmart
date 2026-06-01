@@ -1,16 +1,9 @@
 import { createHash } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
+import { generateText } from "@/lib/aiService";
 
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
 const MAX_HEADLINE = 300;
-
-let groqClient: Groq | null = null;
-function getGroq(): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return groqClient;
-}
 const MAX_SNIPPET  = 500;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -40,8 +33,8 @@ const SYSTEM_PROMPT = `คุณคือผู้สรุปข่าวกา
 6. ลงท้ายด้วย: "สรุปโดย AI · อ่านต้นฉบับเพื่อความครบถ้วน"`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
+  if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });
   }
 
@@ -81,17 +74,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 หัวข่าว: ${safeHeadline}${context}`;
 
   try {
-    const result = await getGroq().chat.completions.create({
-      model:       GROQ_MODEL,
-      messages:    [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: userMessage   },
-      ],
-      max_tokens:  250,
+    const summary = await generateText(userMessage, SYSTEM_PROMPT, {
+      maxTokens:   250,
       temperature: 0.2,
     });
-
-    const summary = result.choices[0]?.message?.content?.trim() ?? "";
     if (!summary) {
       return NextResponse.json({ error: "empty response" }, { status: 502 });
     }

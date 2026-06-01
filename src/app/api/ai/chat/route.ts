@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
-import Groq from "groq-sdk";
 import { z } from "zod";
+import { streamChat } from "@/lib/aiService";
 
 export const dynamic = "force-dynamic";
 
-const GROQ_MODEL = "llama-3.1-8b-instant";
 const MAX_MESSAGES = 30;
 const DATA_TTL_MS  = 5 * 60 * 1000; // 5-minute live data cache
 
@@ -155,17 +154,11 @@ BOUNDARIES:
 
 // ─── Route handler ───────────────────────────────────────────────────────────
 
-let groqClient: Groq | null = null;
-function getGroq(): Groq {
-  if (!groqClient) groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  return groqClient;
-}
-
 export async function POST(request: NextRequest): Promise<Response> {
-  const groqKey    = process.env.GROQ_API_KEY;
+  const hasAi      = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
   const finnhubKey = process.env.FINNHUB_API_KEY;
 
-  if (!groqKey || !finnhubKey) {
+  if (!hasAi || !finnhubKey) {
     return Response.json({ error: "AI not configured" }, { status: 503 });
   }
 
@@ -197,33 +190,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     content: m.content,
   }));
 
-  const groqStream = await getGroq().chat.completions.create({
-    model:       GROQ_MODEL,
-    messages:    [{ role: "system", content: systemPrompt }, ...history],
-    stream:      true,
-    max_tokens:  1000,
-    temperature: 0.35,
-  });
-
-  const readable = new ReadableStream({
-    async start(controller) {
-      const enc = new TextEncoder();
-      try {
-        for await (const chunk of groqStream) {
-          const token = chunk.choices[0]?.delta?.content ?? "";
-          if (token) {
-            controller.enqueue(enc.encode(`data: ${JSON.stringify({ token })}\n\n`));
-          }
-        }
-        controller.enqueue(enc.encode("data: [DONE]\n\n"));
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "stream error";
-        controller.enqueue(enc.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
-      } finally {
-        controller.close();
-      }
-    },
-  });
+  const readable = streamChat(history, systemPrompt);
 
   return new Response(readable, {
     headers: {
