@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
+import { useUser } from "@/lib/userContext";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -85,6 +86,10 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const { quote, loading: quoteLoading, error: quoteError, isLive, marketStatus, lastUpdated, flash } =
     useLiveQuote(TICKER_RE.test(ticker) ? ticker : null);
 
+  const { user } = useUser();
+  const [watched, setWatched]           = useState(false);
+  const [watchLoading, setWatchLoading] = useState(false);
+
   const [profile, setProfile]       = useState<ProfileData | null>(null);
   const [metrics, setMetrics]       = useState<MetricData["metric"] | null>(null);
   const [candles, setCandles]       = useState<Candle[]>([]);
@@ -107,6 +112,17 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       .catch(() => {});
   }, [ticker]);
 
+  // Check watchlist status once user is known
+  useEffect(() => {
+    if (!user || !TICKER_RE.test(ticker)) return;
+    fetch("/api/watchlist")
+      .then((r) => r.json())
+      .then((d: { items?: { ticker: string }[] }) => {
+        setWatched((d.items ?? []).some((i) => i.ticker === ticker));
+      })
+      .catch(() => {});
+  }, [user, ticker]);
+
   // Fetch chart candles when timeframe changes
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
@@ -120,6 +136,28 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       .catch(() => { setCandles([]); setSimulated(true); })
       .finally(() => setChartLoading(false));
   }, [ticker, timeframe]);
+
+  async function toggleWatch() {
+    if (!user || watchLoading) return;
+    setWatchLoading(true);
+    try {
+      if (watched) {
+        await fetch(`/api/watchlist/${ticker}`, { method: "DELETE" });
+        setWatched(false);
+      } else {
+        await fetch("/api/watchlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticker }),
+        });
+        setWatched(true);
+      }
+    } catch {
+      // leave state unchanged on network error
+    } finally {
+      setWatchLoading(false);
+    }
+  }
 
   async function loadAiOutlook() {
     if (loadingOutlook || aiOutlook) return;
@@ -199,6 +237,25 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     <span className="text-[9px] px-1.5 py-0.5 bg-[#E8E2D4] text-[#8A8378] font-bold uppercase tracking-wide flex-shrink-0">
                       {profile.finnhubIndustry}
                     </span>
+                  )}
+                  {user && (
+                    <button
+                      onClick={() => void toggleWatch()}
+                      disabled={watchLoading}
+                      aria-label={watched ? `ลบ ${ticker} จาก watchlist` : `เพิ่ม ${ticker} ใน watchlist`}
+                      className="flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 border transition-colors flex-shrink-0"
+                      style={{
+                        borderColor: watched ? "#5B8A2A" : "#D0C8B8",
+                        color:       watched ? "#5B8A2A" : "#8A8378",
+                        background:  watched ? "#F0FAE5" : "transparent",
+                      }}
+                    >
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill={watched ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      {watched ? "ติดตามแล้ว" : "ติดตาม"}
+                    </button>
                   )}
                 </div>
                 <p className="text-[10px] text-[#8A8378]">

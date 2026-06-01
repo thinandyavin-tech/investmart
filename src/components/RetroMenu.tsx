@@ -28,6 +28,7 @@ const menuItems: MenuItem[] = [
   { href: "/dashboard",     label: "แดชบอร์ด",           icon: "📊", soon: true },
   { href: "/profile/share", label: "แชร์โปรไฟล์",        icon: "🔗" },
   { href: "/bookmarks",     label: "บันทึกโพสต์",        icon: "🔖", soon: true },
+  { href: "/watchlist",     label: "Watchlist",             icon: "👁" },
   { href: "/exchange",      label: "Exchange",             icon: "💱" },
   { href: "/history",       label: "ประวัติซื้อขาย",     icon: "📋" },
 ];

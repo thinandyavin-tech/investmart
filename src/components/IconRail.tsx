@@ -19,6 +19,7 @@ const icons = [
   { href: "/history", label: "ประวัติ", icon: <ClipboardIcon /> },
   { href: "/leaderboard", label: "Leaderboard", icon: <TrophyIcon /> },
   { href: "/search", label: "ค้นหา", icon: <SearchIcon /> },
+  { href: "/watchlist", label: "Watchlist", icon: <WatchlistIcon /> },
 ] as const;
 
 export function IconRail() {
@@ -173,6 +174,14 @@ function ShieldIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.25C16.5 22.15 20 17.25 20 12V6l-8-4z" />
+    </svg>
+  );
+}
+function WatchlistIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
     </svg>
   );
 }
