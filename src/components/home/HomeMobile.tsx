@@ -11,6 +11,7 @@ import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
 import { SearchIcon } from "@/components/icons/SearchIcon";
+import { NotificationBell } from "@/components/NotificationBell";
 
 
 export function HomeMobile() {
@@ -56,20 +57,7 @@ export function HomeMobile() {
             >
               <SearchIcon size={18} />
             </Link>
-            <Link
-              href="/mail"
-              className="relative w-9 h-9 flex items-center justify-center"
-              aria-label="จดหมายและแจ้งเตือน"
-            >
-              <MailIcon />
-              <span
-                className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
-                style={{ background: "#FF3D9A" }}
-                aria-label="1 ข้อความที่ยังไม่ได้อ่าน"
-              >
-                1
-              </span>
-            </Link>
+            <NotificationBell size="sm" />
           </div>
         </header>
 
@@ -195,15 +183,6 @@ function RadarScanIcon() {
       <circle cx="12" cy="12" r="2" />
       <circle cx="12" cy="12" r="6" />
       <circle cx="12" cy="12" r="10" />
-    </svg>
-  );
-}
-
-function MailIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="M2 7l10 7 10-7" />
     </svg>
   );
 }

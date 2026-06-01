@@ -455,6 +455,9 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         </div>
       </Card>
 
+      {/* Price alerts */}
+      {user && <PriceAlertSection ticker={ticker} currentPrice={quote?.price} />}
+
       {/* News */}
       <StockNewsSection ticker={ticker} />
 
@@ -579,5 +582,138 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         </p>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+interface PriceAlert {
+  id:        string;
+  ticker:    string;
+  threshold: number;
+  condition: "above" | "below";
+  triggered: boolean;
+  createdAt: string;
+}
+
+interface PriceAlertSectionProps {
+  ticker:       string;
+  currentPrice: number | undefined;
+}
+
+function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
+  const [alerts, setAlerts]       = useState<PriceAlert[]>([]);
+  const [threshold, setThreshold] = useState("");
+  const [condition, setCondition] = useState<"above" | "below">("above");
+  const [saving, setSaving]       = useState(false);
+  const [error, setError]         = useState("");
+
+  const tickerAlerts = alerts.filter((a) => a.ticker === ticker && !a.triggered);
+
+  useEffect(() => {
+    fetch("/api/alerts")
+      .then((r) => r.json())
+      .then((d: { alerts?: PriceAlert[] }) => setAlerts(d.alerts ?? []))
+      .catch(() => {});
+  }, []);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const val = parseFloat(threshold);
+    if (isNaN(val) || val <= 0) { setError("ราคาไม่ถูกต้อง"); return; }
+    setError("");
+    setSaving(true);
+    try {
+      const res  = await fetch("/api/alerts", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ ticker, threshold: val, condition }),
+      });
+      const data = (await res.json()) as PriceAlert & { error?: string };
+      if (!res.ok) { setError(data.error ?? "ไม่สามารถตั้งแจ้งเตือนได้"); return; }
+      setAlerts((prev) => [data, ...prev]);
+      setThreshold("");
+    } catch {
+      setError("เกิดข้อผิดพลาด ลองใหม่อีกครั้ง");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteAlert(id: string) {
+    await fetch(`/api/alerts/${id}`, { method: "DELETE" });
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  return (
+    <Card className="p-4">
+      <h2 className="text-[11px] font-bold uppercase tracking-widest mb-3">
+        ตั้งแจ้งเตือนราคา
+      </h2>
+
+      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-2">
+        <div className="flex gap-2 items-center flex-wrap">
+          <div className="flex border border-[#1F1A14] text-[10px] font-bold">
+            {(["above", "below"] as const).map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCondition(c)}
+                className="px-2 py-1 transition-colors"
+                style={{
+                  background: condition === c ? "#1F1A14" : "#F3EDE0",
+                  color:      condition === c ? "#fff"    : "#1F1A14",
+                }}
+                aria-pressed={condition === c}
+              >
+                {c === "above" ? "สูงกว่า ▲" : "ต่ำกว่า ▼"}
+              </button>
+            ))}
+          </div>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            value={threshold}
+            onChange={(e) => setThreshold(e.target.value)}
+            placeholder={currentPrice ? `ปัจจุบัน $${currentPrice.toFixed(2)}` : "ราคา USD"}
+            className="flex-1 min-w-[120px] px-2 py-1 text-[11px] border border-[#1F1A14] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+            aria-label="ราคาเป้าหมาย"
+            style={{ fontFamily: "var(--font-mono)" }}
+          />
+          <button
+            type="submit"
+            disabled={saving || !threshold}
+            className="px-3 py-1 text-[10px] font-bold text-white bg-[#1F1A14] border border-[#1F1A14] disabled:opacity-40 hover:bg-[#333] transition-colors"
+          >
+            {saving ? "..." : "ตั้งแจ้งเตือน"}
+          </button>
+        </div>
+        {error && <p className="text-[9px] text-[#DC2626]">{error}</p>}
+      </form>
+
+      {tickerAlerts.length > 0 && (
+        <ul className="mt-3 flex flex-col gap-1" style={{ listStyle: "none", margin: "12px 0 0", padding: 0 }}>
+          {tickerAlerts.map((a) => (
+            <li
+              key={a.id}
+              className="flex items-center justify-between text-[10px] px-2 py-1.5 border border-[#E8E2D4] bg-[#F3EDE0]"
+            >
+              <span style={{ fontFamily: "var(--font-mono)" }}>
+                {a.condition === "above" ? "▲" : "▼"}{" "}
+                ${a.threshold.toFixed(2)}
+              </span>
+              <button
+                onClick={() => void deleteAlert(a.id)}
+                className="text-[9px] text-[#8A8378] hover:text-[#DC2626] transition-colors"
+                aria-label={`ลบแจ้งเตือน ${a.threshold}`}
+              >
+                ✕ ลบ
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

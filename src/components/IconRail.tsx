@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { RetroMenu } from "@/components/RetroMenu";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useUser } from "@/lib/userContext";
 
 const ADMIN_EMAIL = "thinandyavin@gmail.com";
@@ -52,6 +53,7 @@ export function IconRail() {
           </Link>
         ))}
         <div className="mt-auto mb-1 flex flex-col items-center gap-1">
+          <NotificationBell size="md" />
           {isAdmin && (
             <Link
               href="/admin"
