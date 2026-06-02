@@ -26,20 +26,21 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  holdings     Holding[]
-  tradeHistory Trade[]
-  posts        Post[]
-  likes        Like[]
-  comments     Comment[]
-  bookmarks    Bookmark[]
-  following    Follow[]          @relation("Follower")
-  followers    Follow[]          @relation("Following")
-  watchlist     WatchlistItem[]
-  chatMessages  ChatMessage[]
-  priceAlerts   PriceAlert[]
-  notifications Notification[]
+  accounts           Account[]
+  sessions           Session[]
+  holdings           Holding[]
+  tradeHistory       Trade[]
+  posts              Post[]
+  likes              Like[]
+  comments           Comment[]
+  bookmarks          Bookmark[]
+  following          Follow[]            @relation("Follower")
+  followers          Follow[]            @relation("Following")
+  watchlist          WatchlistItem[]
+  chatMessages       ChatMessage[]
+  priceAlerts        PriceAlert[]
+  notifications      Notification[]
+  portfolioSnapshots PortfolioSnapshot[]
 }
 
 model Account {
@@ -231,4 +232,15 @@ model ChatMessage {
   createdAt DateTime @default(now())
 
   author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model PortfolioSnapshot {
+  id        String   @id @default(cuid())
+  userId    String
+  valueThb  Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

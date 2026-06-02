@@ -8,6 +8,7 @@ import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
+import { PortfolioChart } from "@/components/home/PortfolioChart";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +27,7 @@ export function HomeDesktop() {
         {/* Right column */}
         <section className="flex-1 min-w-0 flex flex-col gap-3">
           <MarketStatusBanner />
-          <PortfolioPanel />
+          <PortfolioChart />
           <StatCards
             loading={loading}
             cashThb={user?.cashThb ?? null}
@@ -87,23 +88,6 @@ function AboutCard({ bio }: { bio: string }) {
   );
 }
 
-function PortfolioPanel() {
-  return (
-    <div className="bg-[#F3EDE0] p-3" style={{ border: "2px dashed #5B8A2A" }}>
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5B8A2A]">
-          พอร์ตโฟลิโอ
-        </h2>
-        <span className="text-[9px] text-[#8A8378]">พอร์ตจำลอง</span>
-      </div>
-      <div className="h-20 flex items-center justify-center border border-dashed border-[#5B8A2A]">
-        <span className="text-[10px] text-[#8A8378]">
-          กราฟพอร์ตโฟลิโอจะแสดงเมื่อมีการซื้อขาย
-        </span>
-      </div>
-    </div>
-  );
-}
 
 interface Holding {
   ticker:   string;

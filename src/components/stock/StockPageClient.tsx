@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
+import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
 
 const PriceChart = dynamic(
@@ -86,6 +87,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
   const [profile, setProfile]       = useState<ProfileData | null>(null);
   const [metrics, setMetrics]       = useState<MetricData["metric"] | null>(null);
+  const [rsi, setRsi]               = useState<number | null>(null);
   const [candles, setCandles]       = useState<Candle[]>([]);
   const [simulated, setSimulated]   = useState(false);
   const [chartLoading, setChartLoading] = useState(true);
@@ -95,6 +97,10 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   // Fetch profile + metrics once
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
+    fetch(`/api/stock/rsi?symbol=${encodeURIComponent(ticker)}`)
+      .then((r) => r.json())
+      .then((d: { rsi?: number }) => { if (d.rsi !== undefined) setRsi(d.rsi); })
+      .catch(() => {});
     fetch(`/api/stock/profile?symbol=${encodeURIComponent(ticker)}`)
       .then((r) => r.json())
       .then((d: { profile?: ProfileData; metrics?: MetricData }) => {
@@ -310,6 +316,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             { label: "52W Low",     value: metrics["52WeekLow"]   ? `$${metrics["52WeekLow"].toFixed(2)}`   : "—" },
             { label: "P/E TTM",     value: metrics.peBasicExclExtraTTM ? metrics.peBasicExclExtraTTM.toFixed(1) : "—" },
             { label: "Beta",        value: metrics.beta           ? metrics.beta.toFixed(2)                 : "—" },
+            { label: "RSI-14",      value: rsi !== null           ? String(rsi)                               : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="text-[10px]">
               <span className="text-[#8A8378]">{label} </span>
@@ -405,6 +412,9 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Price alerts */}
       {user && <PriceAlertSection ticker={ticker} currentPrice={quote?.price} />}
+
+      {/* Why is it moving */}
+      <WhyMovingCard ticker={ticker} />
 
       {/* News */}
       <StockNewsSection ticker={ticker} />

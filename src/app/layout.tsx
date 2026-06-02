@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Inter, JetBrains_Mono } from "next/font/google";
 import { UserProvider } from "@/lib/userContext";
+import { OnboardingModal } from "@/components/OnboardingModal";
 import "./globals.css";
 
 const notoSansThai = Noto_Sans_Thai({
@@ -63,6 +64,7 @@ export default function RootLayout({
       >
         <UserProvider>
           {children}
+          <OnboardingModal />
         </UserProvider>
       </body>
     </html>

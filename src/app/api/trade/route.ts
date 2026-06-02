@@ -3,6 +3,23 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
 
+const FALLBACK_FX = 35.2;
+
+async function recordSnapshot(userId: string): Promise<void> {
+  try {
+    const u = await prisma.user.findUnique({
+      where:  { id: userId },
+      select: { cashThb: true, cashUsd: true, holdings: { select: { shares: true, avgCost: true } } },
+    });
+    if (!u) return;
+    const holdingValue = u.holdings.reduce((s, h) => s + h.shares * h.avgCost * FALLBACK_FX, 0);
+    const valueThb     = u.cashThb + u.cashUsd * FALLBACK_FX + holdingValue;
+    await prisma.portfolioSnapshot.create({ data: { userId, valueThb } });
+  } catch {
+    // Non-critical; don't fail the trade if snapshot fails
+  }
+}
+
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
 const TradeSchema = z.object({
@@ -85,6 +102,7 @@ export async function POST(request: NextRequest) {
       return [u, updated] as const;
     });
 
+    void recordSnapshot(userId);
     return NextResponse.json({
       cashUsd: updatedUser.cashUsd,
       cashThb: updatedUser.cashThb,
@@ -126,6 +144,7 @@ export async function POST(request: NextRequest) {
     return [u] as const;
   });
 
+  void recordSnapshot(userId);
   return NextResponse.json({
     cashUsd: updatedUser.cashUsd,
     cashThb: updatedUser.cashThb,

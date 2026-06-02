@@ -8,6 +8,7 @@ import { Tooltip } from "@/components/Tooltip";
 import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
+import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
@@ -460,6 +461,9 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           </p>
         )}
       </div>
+
+      {/* Why is it moving */}
+      <WhyMovingCard ticker={stock.ticker} />
 
       {/* AI Full Outlook */}
       <AiOutlookCard ticker={stock.ticker} />
