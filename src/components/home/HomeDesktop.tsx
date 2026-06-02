@@ -17,7 +17,7 @@ export function HomeDesktop() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       <div className="flex flex-1 gap-4 p-4 max-w-5xl mx-auto w-full">
         {/* Left column */}
         <aside className="w-64 flex-shrink-0">
@@ -35,14 +35,14 @@ export function HomeDesktop() {
             holdings={user?.holdings ?? []}
             tradeCount={user?.tradeCount ?? 0}
           />
-          <div className="text-center text-xs text-[#8A8378] py-1 tracking-widest">
+          <div className="text-center text-xs text-slate-400 py-1 tracking-widest">
             ... The InvestMart Simulator ...
           </div>
           <ActionButtons />
           <HoldingsCard holdings={user?.holdings ?? []} loading={loading} />
           {(!user || user.isDemo) && !loading && (
             <Card className="p-4 text-center flex flex-col gap-2">
-              <p className="text-xs text-[#8A8378]">
+              <p className="text-xs text-slate-500">
                 เข้าสู่ระบบเพื่อเริ่มเล่น simulator · เริ่มต้นด้วย ฿1,250,000
               </p>
               <div className="flex gap-2 justify-center">
@@ -68,18 +68,18 @@ export function HomeDesktop() {
 
 function AboutCard({ bio }: { bio: string }) {
   return (
-    <Card className="p-4" offset="none">
-      <h2 className="text-[10px] font-bold uppercase tracking-widest mb-3 border-b border-[#1F1A14] pb-2">
+    <Card className="p-4">
+      <h2 className="text-[10px] font-semibold uppercase tracking-widest mb-3 border-b border-slate-100 pb-2 text-slate-500">
         เกี่ยวกับฉัน
       </h2>
       {bio ? (
-        <p className="text-xs leading-relaxed">{bio}</p>
+        <p className="text-xs leading-relaxed text-slate-700">{bio}</p>
       ) : (
         <>
-          <p className="text-xs italic text-[#8A8378] mb-3">
+          <p className="text-xs italic text-slate-400 mb-3">
             ยังไม่มีคำบรรยาย — เขียนแนะนำตัวเองด้วยตัวอักษรเท่านั้น (ไม่มีรูป ไม่มีอีโมจิ)
           </p>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed">
+          <p className="text-[10px] text-slate-400 leading-relaxed">
             InvestMart เป็นโซเชียลเน็ตเวิร์คที่ใช้ตัวอักษรล้วน ไม่มีรูปโปรไฟล์ ไม่มีอีโมจิ เหมือนหนังสือที่คุยกันได้
           </p>
         </>
@@ -128,11 +128,11 @@ function StatCards({
     <div className="grid grid-cols-4 gap-2">
       {stats.map(({ label, value, mono }) => (
         <Card key={label} className="p-2 text-center">
-          <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-1 leading-tight">
+          <div className="text-[9px] text-slate-500 uppercase tracking-wide mb-1 leading-tight">
             {label}
           </div>
           <div
-            className="text-sm font-bold"
+            className="text-sm font-bold text-slate-900"
             style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}
           >
             {value}
@@ -169,22 +169,22 @@ function HoldingsCard({ holdings, loading }: { holdings: Holding[]; loading: boo
   return (
     <Card className="p-3">
       <div className="flex items-center justify-between mb-1">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">หุ้นที่ถืออยู่</h2>
         <OffsetButton variant="lime" size="sm">&gt; copy</OffsetButton>
       </div>
-      <p className="text-[9px] text-[#8A8378] mb-3">
+      <p className="text-[9px] text-slate-400 mb-3">
         เรียงจาก % ทั้งหมดของพอร์ตเป็นหลัก พร้อมราคาต้นทุนเฉลี่ย
       </p>
       {loading ? (
-        <div className="text-[10px] text-[#8A8378] text-center py-3">กำลังโหลด...</div>
+        <div className="text-[10px] text-slate-400 text-center py-3">กำลังโหลด...</div>
       ) : holdings.length === 0 ? (
-        <div className="text-[10px] text-[#8A8378] text-center py-3">ยังไม่มีหุ้นในพอร์ต</div>
+        <div className="text-[10px] text-slate-400 text-center py-3">ยังไม่มีหุ้นในพอร์ต</div>
       ) : (
         <table className="w-full text-[10px] border-collapse">
           <thead>
-            <tr className="border-b border-[#1F1A14]">
+            <tr className="border-b border-slate-200">
               {["หุ้น", "จำนวน", "ต้นทุนเฉลี่ย"].map((h) => (
-                <th key={h} className="text-left py-1 text-[#8A8378] font-bold uppercase tracking-wide text-[9px]">
+                <th key={h} className="text-left py-1 text-slate-500 font-semibold uppercase tracking-wide text-[9px]">
                   {h}
                 </th>
               ))}
@@ -192,10 +192,10 @@ function HoldingsCard({ holdings, loading }: { holdings: Holding[]; loading: boo
           </thead>
           <tbody>
             {holdings.map((h) => (
-              <tr key={h.ticker} className="border-b border-[#E8E2D4]">
-                <td className="py-1.5 font-bold">{h.ticker}</td>
-                <td className="py-1.5" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
-                <td className="py-1.5" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+              <tr key={h.ticker} className="border-b border-slate-100">
+                <td className="py-1.5 font-bold text-slate-900">{h.ticker}</td>
+                <td className="py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
+                <td className="py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -208,8 +208,8 @@ function HoldingsCard({ holdings, loading }: { holdings: Holding[]; loading: boo
 function PostsCard() {
   return (
     <Card className="overflow-hidden">
-      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest">บทความและโพสต์</h2>
+      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-slate-100">
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">บทความและโพสต์</h2>
       </div>
       <FeedSection showComposer={true} />
     </Card>
@@ -218,9 +218,9 @@ function PostsCard() {
 
 function HomeFooter() {
   return (
-    <footer className="border-t border-[#1F1A14] bg-[#F3EDE0] px-6 py-4 mt-4">
+    <footer className="border-t border-slate-200 bg-white px-6 py-4 mt-4">
       <div className="max-w-5xl mx-auto">
-        <p className="text-[11px] text-[#1F1A14] font-bold mb-1">
+        <p className="text-[11px] text-slate-900 font-semibold mb-1">
           InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา
         </p>
         <div className="flex flex-wrap gap-3 text-[10px] mb-2">
@@ -234,12 +234,12 @@ function HomeFooter() {
             { href: "/privacy",   label: "ความเป็นส่วนตัว" },
             { href: "/terms",     label: "ข้อกำหนด" },
           ].map(({ href, label }) => (
-            <Link key={href} href={href} className="text-[#8A8378] hover:text-[#1F1A14] underline underline-offset-2">
+            <Link key={href} href={href} className="text-slate-400 hover:text-slate-700 underline underline-offset-2">
               {label}
             </Link>
           ))}
         </div>
-        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investmart.vercel.app · ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
+        <p className="text-[10px] text-slate-400">© 2026 InvestMart · investmart.vercel.app · ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
       </div>
     </footer>
   );

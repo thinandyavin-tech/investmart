@@ -24,7 +24,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-[#F3EDE0] border-t border-[#1F1A14] flex items-center z-40 lg:hidden"
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center z-40 lg:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="แถบนำทางล่าง"
     >
@@ -39,7 +39,7 @@ export function BottomNav() {
               aria-label={label}
             >
               <span
-                className="w-11 h-11 flex items-center justify-center border-2 border-[#1F1A14]"
+                className="w-11 h-11 flex items-center justify-center rounded-full border border-slate-200"
                 style={{
                   background:
                     "linear-gradient(135deg, #FF3D9A 0%, #8B5CF6 50%, #06B6D4 100%)",
@@ -55,12 +55,12 @@ export function BottomNav() {
             key={href}
             href={href}
             className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-[10px] transition-colors ${
-              active ? "text-[#1F1A14] font-bold" : "text-[#8A8378]"
+              active ? "text-green-600 font-semibold" : "text-slate-400"
             }`}
             aria-label={label}
             aria-current={active ? "page" : undefined}
           >
-            <span className={active ? "text-[#1F1A14]" : "text-[#8A8378]"}>
+            <span className={active ? "text-green-600" : "text-slate-400"}>
               {icon}
             </span>
             <span>{label}</span>

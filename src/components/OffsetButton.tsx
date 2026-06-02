@@ -3,7 +3,7 @@
 import { ButtonHTMLAttributes } from "react";
 
 interface OffsetButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "lime" | "pink" | "black";
+  variant?: "lime" | "pink" | "black" | "white";
   size?: "sm" | "md" | "lg";
 }
 
@@ -14,29 +14,25 @@ export function OffsetButton({
   children,
   ...props
 }: OffsetButtonProps) {
-  const shadowClass =
+  const variantClass =
     variant === "lime"
-      ? "shadow-offset-lime"
+      ? "bg-[#16A34A] text-white hover:bg-[#15803D]"
       : variant === "pink"
-        ? "shadow-offset-pink"
-        : "shadow-offset-black";
+        ? "bg-[#EC4899] text-white hover:bg-[#DB2777]"
+        : variant === "white"
+          ? "bg-white text-[#0F172A] border border-slate-200 hover:bg-slate-50"
+          : "bg-[#0F172A] text-white hover:bg-[#1E293B]";
 
   const sizeClass =
     size === "sm"
-      ? "px-3 py-1 text-xs"
+      ? "px-3 py-1.5 text-xs"
       : size === "lg"
-        ? "px-6 py-3 text-sm font-bold"
-        : "px-4 py-2 text-xs";
+        ? "px-6 py-3 text-sm font-semibold"
+        : "px-4 py-2 text-sm";
 
   return (
     <button
-      className={`
-        bg-[#1F1A14] text-white border border-[#1F1A14]
-        font-bold tracking-wide uppercase
-        active:translate-x-[3px] active:translate-y-[3px] active:shadow-none
-        transition-transform cursor-pointer
-        ${shadowClass} ${sizeClass} ${className}
-      `}
+      className={`rounded-lg font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${variantClass} ${sizeClass} ${className}`}
       {...props}
     >
       {children}

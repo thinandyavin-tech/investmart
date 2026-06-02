@@ -27,7 +27,7 @@ export function IconRail() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useUser();
   const pathname = usePathname();
-  const isAdmin  = user?.isAdmin === true;
+  const isAdmin = user?.isAdmin === true;
 
   function isActive(href: string): boolean {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -36,26 +36,26 @@ export function IconRail() {
   return (
     <>
       <nav
-        className="fixed left-0 top-0 h-full w-12 bg-[#F3EDE0] border-r border-[#1F1A14] flex flex-col items-center py-2 gap-1 z-40"
+        className="fixed left-0 top-0 h-full w-12 bg-white border-r border-slate-200 flex flex-col items-center py-2 gap-1 z-40"
         aria-label="แถบนำทางหลัก"
       >
         <button
           onClick={() => setMenuOpen(true)}
-          className="w-9 h-9 flex items-center justify-center hover:bg-[#1F1A14] hover:text-white transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
           aria-label="เปิดเมนู"
         >
           <Logo size={20} />
         </button>
-        <div className="w-full h-px bg-[#1F1A14] my-1" />
+        <div className="w-full h-px bg-slate-200 my-1" />
         {icons.map(({ href, label, icon }) => (
           <Link
             key={href}
             href={href}
             title={label}
-            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+            className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${
               isActive(href)
-                ? "bg-[#1F1A14] text-white"
-                : "text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
+                ? "bg-green-50 text-green-700"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             }`}
             aria-current={isActive(href) ? "page" : undefined}
           >
@@ -68,7 +68,7 @@ export function IconRail() {
             <Link
               href="/admin"
               title="Admin"
-              className="w-9 h-9 flex items-center justify-center hover:bg-[#1F1A14] hover:text-white transition-colors text-[#1F1A14]"
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors text-slate-500"
             >
               <ShieldIcon />
             </Link>
@@ -85,14 +85,13 @@ function PlusButton() {
   return (
     <Link
       href="/compose"
-      className="w-9 h-9 flex items-center justify-center border border-[#1F1A14] text-[#1F1A14]"
+      className="w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200"
       style={{
         background:
           "linear-gradient(135deg, #FF3D9A 0%, #8B5CF6 50%, #06B6D4 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
-        border: "1px solid #1F1A14",
       }}
       title="เขียนโพสต์"
     >

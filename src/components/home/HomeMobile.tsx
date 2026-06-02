@@ -29,9 +29,9 @@ const QUICK_ACTIONS = [
 export function HomeMobile() {
   const { user, loading } = useUser();
   const router = useRouter();
-  const [dropdownOpen, setDropdownOpen]     = useState(false);
-  const [noticeVisible, setNoticeVisible]   = useState(true);
-  const [holdingsOpen, setHoldingsOpen]     = useState(false);
+  const [dropdownOpen, setDropdownOpen]   = useState(false);
+  const [noticeVisible, setNoticeVisible] = useState(true);
+  const [holdingsOpen, setHoldingsOpen]   = useState(false);
 
   const initial     = user ? ((user.name?.[0] ?? "D").toUpperCase()) : "N";
   const displayName = user
@@ -39,20 +39,20 @@ export function HomeMobile() {
     : "เด็กฝึกหุ้น #----";
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBF7ED]">
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       {/* Sticky header */}
       <div className="sticky top-0 z-30 relative">
-        <header className="bg-[#FBF7ED] border-b border-[#E8E2D4] flex items-center justify-between px-4 py-2.5">
+        <header className="bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2.5">
           <Link
             href="/radar"
-            className="w-9 h-9 flex items-center justify-center border border-[#1F1A14] rounded-full bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
             aria-label="เปิดเรดาร์แสกนหุ้น"
           >
             <RadarScanIcon />
           </Link>
 
           <button
-            className="flex items-center gap-1.5 px-4 py-1.5 border border-[#1F1A14] bg-[#1F1A14] text-white text-xs font-bold tracking-widest rounded-full"
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#0F172A] text-white text-xs font-bold tracking-widest rounded-full"
             onClick={() => setDropdownOpen((v) => !v)}
             aria-expanded={dropdownOpen}
             aria-haspopup="menu"
@@ -64,7 +64,7 @@ export function HomeMobile() {
           <div className="flex items-center gap-1">
             <Link
               href="/search"
-              className="w-9 h-9 flex items-center justify-center border border-[#1F1A14] rounded-full bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
               aria-label="ค้นหาหุ้น"
             >
               <SearchIcon size={18} />
@@ -118,11 +118,11 @@ export function HomeMobile() {
           <Link
             key={href}
             href={href}
-            className="flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2 border border-[#E8E2D4] bg-white text-center hover:border-[#1F1A14] transition-colors"
+            className="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-xs text-slate-700 hover:border-slate-400 whitespace-nowrap flex-shrink-0 flex flex-col items-center gap-0.5 transition-colors"
             style={{ minWidth: "56px" }}
           >
             <span className="text-base leading-none" aria-hidden="true">{icon}</span>
-            <span className="text-[8px] font-bold text-[#1F1A14] whitespace-nowrap">{label}</span>
+            <span className="text-[8px] font-semibold whitespace-nowrap">{label}</span>
           </Link>
         ))}
       </div>
@@ -139,7 +139,7 @@ export function HomeMobile() {
       </div>
 
       {/* Feed with composer enabled */}
-      <div className="border-t border-[#E8E2D4] mt-1">
+      <div className="border-t border-slate-200 mt-1">
         <FeedSection showComposer compact />
       </div>
     </div>
@@ -176,10 +176,10 @@ function ProfileSection({
     <div className="px-4 pt-4 pb-3 flex flex-col gap-3">
       {/* Avatar + name row */}
       <div className="flex items-center gap-3">
-        <div className="w-14 h-14 rounded-full border-2 border-dashed border-[#5B8A2A] p-0.5 flex-shrink-0">
+        <div className="w-14 h-14 rounded-full border-2 border-green-500 p-0.5 flex-shrink-0">
           <div
             className="w-full h-full rounded-full flex items-center justify-center text-white text-xl font-bold"
-            style={{ background: "#5B8A2A" }}
+            style={{ background: "#16A34A" }}
             aria-hidden="true"
           >
             {loading ? "…" : initial}
@@ -187,14 +187,14 @@ function ProfileSection({
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold truncate">{loading ? "กำลังโหลด..." : displayName}</p>
-          <p className="text-[9px] text-[#8A8378] mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
+          <p className="text-sm font-bold truncate text-slate-900">{loading ? "กำลังโหลด..." : displayName}</p>
+          <p className="text-[9px] text-slate-500 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
         </div>
 
         {loggedIn && (
           <Link
             href="/u/me"
-            className="flex-shrink-0 text-[9px] font-bold border border-[#E8E2D4] px-2 py-1 text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors"
+            className="flex-shrink-0 text-[9px] font-semibold border border-slate-200 rounded-lg px-2 py-1 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors"
           >
             โปรไฟล์
           </Link>
@@ -207,28 +207,28 @@ function ProfileSection({
         <StatChip label="เงินสด ($)" value={loading ? "..." : `$${cashUsd.toFixed(0)}`}         mono />
         <button
           onClick={onToggleHoldings}
-          className="flex flex-col items-center justify-center p-2 border border-[#E8E2D4] bg-white text-center hover:border-[#1F1A14] transition-colors"
+          className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl text-center hover:border-slate-400 transition-colors"
           aria-expanded={holdingsOpen}
         >
-          <span className="text-[9px] text-[#8A8378] uppercase tracking-wide leading-tight">ถือหุ้น</span>
-          <span className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-tight">ถือหุ้น</span>
+          <span className="text-xs font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
             {loading ? "..." : holdings.length}
           </span>
-          <span className="text-[8px] text-[#8A8378]">{holdingsOpen ? "▴" : "▾"}</span>
+          <span className="text-[8px] text-slate-400">{holdingsOpen ? "▴" : "▾"}</span>
         </button>
       </div>
 
       {/* Collapsible holdings list */}
       {holdingsOpen && !loading && (
-        <div className="border border-[#E8E2D4] bg-white">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
           {holdings.length === 0 ? (
-            <p className="text-[10px] text-[#8A8378] text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
+            <p className="text-[10px] text-slate-500 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
           ) : (
             <table className="w-full text-[10px] border-collapse">
               <thead>
-                <tr className="border-b border-[#E8E2D4]">
+                <tr className="border-b border-slate-100">
                   {["หุ้น", "หุ้น", "ต้นทุน"].map((h, i) => (
-                    <th key={i} className="text-left px-2 py-1.5 text-[8px] text-[#8A8378] font-bold uppercase tracking-wide">
+                    <th key={i} className="text-left px-2 py-1.5 text-[8px] text-slate-500 font-semibold uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -236,12 +236,12 @@ function ProfileSection({
               </thead>
               <tbody>
                 {holdings.map((h) => (
-                  <tr key={h.ticker} className="border-b border-[#E8E2D4] last:border-0">
-                    <td className="px-2 py-1.5 font-bold">
+                  <tr key={h.ticker} className="border-b border-slate-100 last:border-0">
+                    <td className="px-2 py-1.5 font-bold text-slate-900">
                       <Link href={`/stock/${h.ticker}`} className="hover:underline">{h.ticker}</Link>
                     </td>
-                    <td className="px-2 py-1.5" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
-                    <td className="px-2 py-1.5" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+                    <td className="px-2 py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
+                    <td className="px-2 py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -253,8 +253,7 @@ function ProfileSection({
       {/* Login CTA */}
       {!loggedIn && !loading && (
         <button
-          className="w-full py-2.5 text-xs font-bold text-white bg-[#1F1A14] border border-[#1F1A14] uppercase tracking-wide"
-          style={{ boxShadow: "2px 2px 0 #5B8A2A" }}
+          className="w-full py-2.5 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-lg transition-colors"
           onClick={onLogin}
         >
           ▶ เข้าสู่ระบบเพื่อเริ่มเล่น simulator
@@ -262,13 +261,13 @@ function ProfileSection({
       )}
 
       {!loggedIn && !loading && noticeVisible && (
-        <div className="flex items-center justify-between px-3 py-2 text-[10px] border border-[#E8E2D4] bg-[#F3EDE0]">
-          <span className="text-[#8A8378]">
-            <span className="font-bold text-[#1F1A14]">ใหม่!</span>{" "}
+        <div className="flex items-center justify-between px-3 py-2 text-[10px] border border-slate-200 bg-white rounded-xl">
+          <span className="text-slate-500">
+            <span className="font-bold text-slate-900">ใหม่!</span>{" "}
             คุณกำลังใช้งานไอดีแบบไม่ได้ล็อกอินอยู่
           </span>
           <button
-            className="ml-2 text-[#8A8378] font-bold hover:text-[#1F1A14] flex-shrink-0"
+            className="ml-2 text-slate-400 font-bold hover:text-slate-700 flex-shrink-0"
             onClick={onDismissNotice}
             aria-label="ปิดประกาศ"
           >
@@ -282,9 +281,9 @@ function ProfileSection({
 
 function StatChip({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center p-2 border border-[#E8E2D4] bg-white text-center">
-      <span className="text-[9px] text-[#8A8378] uppercase tracking-wide leading-tight">{label}</span>
-      <span className="text-xs font-bold mt-0.5" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
+    <div className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl text-center">
+      <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-tight">{label}</span>
+      <span className="text-xs font-bold mt-0.5 text-slate-900" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
         {value}
       </span>
     </div>

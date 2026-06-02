@@ -2,22 +2,22 @@
 
 @theme inline {
   /* Brand palette */
-  --color-background:    #FBF7ED;
-  --color-paper:         #F3EDE0;
-  --color-text-primary:  #1F1A14;
+  --color-background:    #F8FAFC;
+  --color-paper:         #FFFFFF;
+  --color-text-primary:  #0F172A;
   --color-accent:        #8B5CF6;
-  --color-link:          #8A8378;
+  --color-link:          #64748B;
   --color-radar-primary: #302938;
   --color-radar-accent:  #1F1A14;
 
   /* Functional colors */
-  --color-gain:          #5B8A2A;
-  --color-gain-mark:     #9BE15D;
+  --color-gain:          #16A34A;
+  --color-gain-mark:     #86EFAC;
   --color-pink:          #FF3D9A;
   --color-pink-soft:     #FFD9E8;
   --color-pink-text:     #D6336C;
-  --color-sell:          #E5484D;
-  --color-buy:           #3FA34D;
+  --color-sell:          #DC2626;
+  --color-buy:           #16A34A;
   --color-titlebar:      #000080;
 
   /* Typography */
@@ -26,47 +26,42 @@
 }
 
 :root {
-  --background:    #FBF7ED;
-  --paper:         #F3EDE0;
-  --text-primary:  #1F1A14;
+  --background:    #F8FAFC;
+  --paper:         #FFFFFF;
+  --text-primary:  #0F172A;
   --accent:        #8B5CF6;
-  --link:          #8A8378;
+  --link:          #64748B;
   --radar-primary: #302938;
   --radar-accent:  #1F1A14;
-  --green:         #5B8A2A;
-  --green-mark:    #9BE15D;
+  --green:         #16A34A;
+  --green-mark:    #86EFAC;
   --pink:          #FF3D9A;
   --pink-soft:     #FFD9E8;
   --pink-text:     #D6336C;
-  --sell-red:      #E5484D;
-  --buy-green:     #3FA34D;
+  --sell-red:      #DC2626;
+  --buy-green:     #16A34A;
   --titlebar:      #000080;
 }
 
-/* No dark mode override — intentional warm-paper aesthetic */
-
 body {
-  background: var(--background);
-  color: var(--text-primary);
+  background: #F8FAFC;
+  color: #0F172A;
 }
 
-/* Offset shadow primitives */
-.shadow-offset-lime {
-  box-shadow: 3px 3px 0 #9BE15D;
+/* Card shadow primitives — replaces retro offset shadows */
+.shadow-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
 }
-.shadow-offset-pink {
-  box-shadow: 3px 3px 0 #FF3D9A;
-}
-.shadow-offset-black {
-  box-shadow: 3px 3px 0 #1F1A14;
+.shadow-card-hover {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
 }
 
 /* Buy/Sell hatch fills */
 .hatch-buy {
   background: repeating-linear-gradient(
     45deg,
-    #3FA34D 0px,
-    #3FA34D 3px,
+    #16A34A 0px,
+    #16A34A 3px,
     transparent 3px,
     transparent 8px
   );
@@ -74,8 +69,8 @@ body {
 .hatch-sell {
   background: repeating-linear-gradient(
     45deg,
-    #E5484D 0px,
-    #E5484D 3px,
+    #DC2626 0px,
+    #DC2626 3px,
     transparent 3px,
     transparent 8px
   );
