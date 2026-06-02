@@ -114,6 +114,7 @@ export function ExchangeClient() {
             <input
               id="from-amount"
               type="number"
+              inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-2 py-1.5 text-sm font-bold"

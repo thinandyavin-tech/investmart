@@ -100,3 +100,25 @@ html {
   font-family: "JetBrains Mono", "Courier New", monospace;
   font-variant-numeric: tabular-nums;
 }
+
+/* Phone bottom nav safe-area clearance — adds iPhone home-bar padding */
+.shell-main {
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .shell-main {
+    padding-bottom: 0;
+  }
+}
+
+/* Full-bleed page height (chat, news) accounting for phone bottom nav + safe area */
+.page-fullheight {
+  height: calc(100vh - 4rem - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100vh - 4rem - env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .page-fullheight {
+    height: 100vh;
+    max-height: 100vh;
+  }
+}

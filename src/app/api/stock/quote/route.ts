@@ -45,9 +45,9 @@ function isDST(date: Date): boolean {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const symbol = request.nextUrl.searchParams.get("symbol");
-  if (!symbol) {
-    return NextResponse.json({ error: "symbol required" }, { status: 400 });
+  const symbol = request.nextUrl.searchParams.get("symbol")?.toUpperCase().trim();
+  if (!symbol || !/^[A-Z][A-Z.\-]{0,9}$/.test(symbol)) {
+    return NextResponse.json({ error: "invalid symbol" }, { status: 400 });
   }
 
   const apiKey = process.env.FINNHUB_API_KEY;

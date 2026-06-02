@@ -20,6 +20,8 @@ interface UserState {
   cashUsd:          number;
   holdings:         Holding[];
   isDemo:           boolean;
+  isAdmin:          boolean;
+  tradeCount:       number;
   lastNameChangeAt: string | null; // ISO string
 }
 

@@ -9,6 +9,7 @@ import { RadarPickCard } from "@/components/home/RadarPickCard";
 import { FeedSection } from "@/components/social/FeedSection";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
+import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
 import { SearchIcon } from "@/components/icons/SearchIcon";
@@ -126,6 +127,7 @@ export function HomeMobile() {
         ))}
       </div>
 
+      <DailyDigestCard />
       <RadarPickCard />
 
       <div className="mx-3 mb-3">

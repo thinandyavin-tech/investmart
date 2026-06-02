@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { RetroMenu } from "@/components/RetroMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useUser } from "@/lib/userContext";
-
-const ADMIN_EMAIL = "thinandyavin@gmail.com";
 
 const icons = [
   { href: "/", label: "หน้าหลัก", icon: <HomeIcon /> },
@@ -27,7 +26,12 @@ const icons = [
 export function IconRail() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useUser();
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const pathname = usePathname();
+  const isAdmin  = user?.isAdmin === true;
+
+  function isActive(href: string): boolean {
+    return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  }
 
   return (
     <>
@@ -48,7 +52,12 @@ export function IconRail() {
             key={href}
             href={href}
             title={label}
-            className="w-9 h-9 flex items-center justify-center hover:bg-[#1F1A14] hover:text-white transition-colors text-[#1F1A14]"
+            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+              isActive(href)
+                ? "bg-[#1F1A14] text-white"
+                : "text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
+            }`}
+            aria-current={isActive(href) ? "page" : undefined}
           >
             {icon}
           </Link>

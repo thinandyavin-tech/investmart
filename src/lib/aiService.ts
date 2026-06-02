@@ -132,12 +132,15 @@ export function streamChat(
 
         try {
           // GenerateContentRequest shape required by SDK v0.24+
-          const result = await model.generateContentStream({
-            contents: messages.map(m => ({
-              role:  m.role === "assistant" ? "model" : "user",
-              parts: [{ text: m.content }],
-            })),
-          });
+          const result = await model.generateContentStream(
+            {
+              contents: messages.map(m => ({
+                role:  m.role === "assistant" ? "model" : "user",
+                parts: [{ text: m.content }],
+              })),
+            },
+            { signal: abortCtrl.signal },
+          );
 
           for await (const chunk of result.stream) {
             const token = chunk.text();
@@ -232,7 +235,7 @@ export async function generateText(
     const timer     = setTimeout(() => abortCtrl.abort(), GEMINI_TIMEOUT_MS);
 
     try {
-      const result = await model.generateContent(prompt);
+      const result = await model.generateContent(prompt, { signal: abortCtrl.signal });
       return result.response.text().trim();
     } finally {
       clearTimeout(timer);

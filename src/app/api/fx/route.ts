@@ -16,15 +16,10 @@ export async function GET() {
   }
 
   try {
-    const pairs = ["OANDA:USD_THB", "OANDA:THB_USD"];
-    const results = await Promise.all(
-      pairs.map((p) =>
-        fetch(`https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`, {
-          next: { revalidate: 300 },
-        }).then((r) => r.json())
-      )
-    );
-    const first = results[0] as { quote?: Record<string, number> };
+    const res   = await fetch(`https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`, {
+      next: { revalidate: 300 },
+    });
+    const first = (await res.json()) as { quote?: Record<string, number> };
     const rates: Record<string, number> = {};
     if (first?.quote) {
       for (const [k, v] of Object.entries(first.quote)) {

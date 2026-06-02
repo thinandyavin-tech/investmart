@@ -36,9 +36,16 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const hasMore   = bookmarks.length > PAGE_SIZE;
-  const items     = hasMore ? bookmarks.slice(0, PAGE_SIZE) : bookmarks;
+  const hasMore    = bookmarks.length > PAGE_SIZE;
+  const items      = hasMore ? bookmarks.slice(0, PAGE_SIZE) : bookmarks;
   const nextCursor = hasMore ? items[items.length - 1].id : null;
+
+  const postIds  = items.map((b) => b.post.id);
+  const likes    = await prisma.like.findMany({
+    where:  { userId, postId: { in: postIds } },
+    select: { postId: true },
+  });
+  const likedSet = new Set(likes.map((l) => l.postId));
 
   return NextResponse.json({
     data: items.map((b) => ({
@@ -50,7 +57,7 @@ export async function GET(request: NextRequest) {
       createdAt:    b.post.createdAt.toISOString(),
       likeCount:    b.post._count.likes,
       commentCount: b.post._count.comments,
-      liked:        false,
+      liked:        likedSet.has(b.post.id),
       bookmarked:   true,
       author: {
         id:       b.post.user.id,

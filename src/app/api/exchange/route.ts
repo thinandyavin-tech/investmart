@@ -3,14 +3,31 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
 
-const SUPPORTED = ["THB", "USD"] as const;
+const SUPPORTED      = ["THB", "USD"] as const;
+const FALLBACK_USDTHB = 35.2;
 
 const ExchangeSchema = z.object({
   fromCurrency: z.enum(SUPPORTED),
   toCurrency:   z.enum(SUPPORTED),
   amount:       z.number().positive().finite().max(100_000_000),
-  rate:         z.number().positive().finite().max(10_000),
 });
+
+async function fetchUsdThbRate(): Promise<number> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return FALLBACK_USDTHB;
+  try {
+    const res  = await fetch(
+      `https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`,
+      { signal: AbortSignal.timeout(3000) },
+    );
+    if (!res.ok) return FALLBACK_USDTHB;
+    const data = (await res.json()) as { quote?: Record<string, number> };
+    const rate = data.quote?.["THB"];
+    return typeof rate === "number" && rate > 0 ? rate : FALLBACK_USDTHB;
+  } catch {
+    return FALLBACK_USDTHB;
+  }
+}
 
 export async function POST(request: NextRequest) {
   const userId = await getSessionUserId();
@@ -23,11 +40,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "ข้อมูลไม่ถูกต้อง" }, { status: 422 });
   }
 
-  const { fromCurrency, toCurrency, amount, rate } = parseResult.data;
+  const { fromCurrency, toCurrency, amount } = parseResult.data;
 
   if (fromCurrency === toCurrency) {
     return NextResponse.json({ error: "สกุลเงินต้องต่างกัน" }, { status: 400 });
   }
+
+  const usdThbRate   = await fetchUsdThbRate();
+  const rate         = fromCurrency === "THB" ? 1 / usdThbRate : usdThbRate;
+  const resultAmount = amount * rate;
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
@@ -40,8 +61,6 @@ export async function POST(request: NextRequest) {
   if (fromCurrency === "USD" && user.cashUsd < amount) {
     return NextResponse.json({ error: "เงิน USD ไม่พอ" }, { status: 400 });
   }
-
-  const resultAmount = amount * rate;
 
   const updated = await prisma.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: userId } });
@@ -63,5 +82,9 @@ export async function POST(request: NextRequest) {
     });
   });
 
-  return NextResponse.json({ cashThb: updated.cashThb, cashUsd: updated.cashUsd });
+  return NextResponse.json({
+    cashThb: updated.cashThb,
+    cashUsd: updated.cashUsd,
+    rateUsed: rate,
+  });
 }

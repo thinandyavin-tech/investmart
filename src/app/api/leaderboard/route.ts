@@ -30,9 +30,8 @@ export async function GET(): Promise<NextResponse> {
       const startThb  = 1_250_000;
       const pnl       = totalThb - startThb;
       return {
-        id:         u.id.slice(-6),
-        fullId:     u.id,
-        name:       u.name ?? "นักลงทุน",
+        id:       u.id.slice(-6),
+        name:     u.name ?? "นักลงทุน",
         username:   u.username,
         totalThb,
         pnl,

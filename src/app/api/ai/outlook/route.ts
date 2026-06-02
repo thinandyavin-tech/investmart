@@ -1,38 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getPersonaById } from "@/lib/personas";
+import { generateText } from "@/lib/aiService";
 
-const GEMINI_MODEL = "gemini-2.0-flash";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 const DISCLAIMER =
   "นี่คือการวิเคราะห์ AI เพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตลาดมีความไม่แน่นอนเสมอ";
 
 interface OutlookEntry {
-  ticker:          string;
-  thesis:          string;
-  conviction:      "low" | "medium" | "high";
+  ticker:           string;
+  thesis:           string;
+  conviction:       "low" | "medium" | "high";
   convictionReason: string;
-  bull:            { description: string; probability: string };
-  base:            { description: string; probability: string };
-  bear:            { description: string; probability: string };
-  drivers:         string[];
-  risk:            string;
-  invalidation:    string;
-  disclaimer:      string;
-  generatedAt:     string;
+  bull:             { description: string; probability: string };
+  base:             { description: string; probability: string };
+  bear:             { description: string; probability: string };
+  drivers:          string[];
+  risk:             string;
+  invalidation:     string;
+  disclaimer:       string;
+  generatedAt:      string;
 }
 
 interface LlmOutlook {
-  thesis:          string;
-  conviction:      string;
+  thesis:           string;
+  conviction:       string;
   convictionReason: string;
-  bull:            { description: string; probability: string };
-  base:            { description: string; probability: string };
-  bear:            { description: string; probability: string };
-  drivers:         string[];
-  risk:            string;
-  invalidation:    string;
+  bull:             { description: string; probability: string };
+  base:             { description: string; probability: string };
+  bear:             { description: string; probability: string };
+  drivers:          string[];
+  risk:             string;
+  invalidation:     string;
 }
 
 // Module-level cache keyed by "ticker:persona"
@@ -42,53 +41,24 @@ function isCacheStale(entry: OutlookEntry): boolean {
   return Date.now() - new Date(entry.generatedAt).getTime() > CACHE_TTL_MS;
 }
 
-let geminiClient: GoogleGenerativeAI | null = null;
-
-function getGemini(): GoogleGenerativeAI {
-  if (!geminiClient) {
-    geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-  }
-  return geminiClient;
-}
-
-interface FinnhubQuote {
-  c:  number;
-  d:  number;
-  dp: number;
-  h:  number;
-  l:  number;
-  o:  number;
-  pc: number;
-}
-
-interface FinnhubNewsItem {
-  headline: string;
-  summary:  string;
-  datetime: number;
-  source:   string;
-}
-
+interface FinnhubQuote  { c: number; d: number; dp: number; h: number; l: number; o: number; pc: number }
+interface FinnhubNewsItem { headline: string; summary: string; datetime: number; source: string }
 interface FinnhubMetrics {
   metric?: {
-    "52WeekHigh"?:                  number;
-    "52WeekLow"?:                   number;
-    peBasicExclExtraTTM?:           number;
-    beta?:                          number;
-    "10DayAverageTradingVolume"?:   number;
-    revenueGrowthQuarterlyYoy?:     number;
-    epsNormalizedAnnual?:           number;
-    marketCapitalization?:          number;
+    "52WeekHigh"?:                number;
+    "52WeekLow"?:                 number;
+    peBasicExclExtraTTM?:         number;
+    beta?:                        number;
+    "10DayAverageTradingVolume"?: number;
+    revenueGrowthQuarterlyYoy?:   number;
+    epsNormalizedAnnual?:         number;
+    marketCapitalization?:        number;
   };
 }
-
 interface FinnhubRecommendation {
-  buy:        number;
-  hold:       number;
-  sell:       number;
-  strongBuy:  number;
-  strongSell: number;
-  period:     string;
-  symbol:     string;
+  buy: number; hold: number; sell: number;
+  strongBuy: number; strongSell: number;
+  period: string; symbol: string;
 }
 
 async function fetchFinnhubJson<T>(url: string): Promise<T | null> {
@@ -106,10 +76,10 @@ function normalizeConviction(raw: unknown): "low" | "medium" | "high" {
   return "low";
 }
 
-function fallbackOutlook(ticker: string, errorMsg: string): OutlookEntry {
+function fallbackOutlook(ticker: string): OutlookEntry {
   return {
     ticker,
-    thesis:           `ไม่สามารถสร้างการวิเคราะห์สำหรับ ${ticker} ได้: ${errorMsg}`,
+    thesis:           `ไม่สามารถสร้างการวิเคราะห์สำหรับ ${ticker} ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง`,
     conviction:       "low",
     convictionReason: "ไม่มีข้อมูล",
     bull:             { description: "—", probability: "—" },
@@ -123,7 +93,7 @@ function fallbackOutlook(ticker: string, errorMsg: string): OutlookEntry {
   };
 }
 
-const SYSTEM_PROMPT = `คุณคือนักวิเคราะห์หุ้นมืออาชีพสำหรับ InvestMart แพลตฟอร์มเรียนรู้การลงทุนไทย
+const DEFAULT_SYSTEM_PROMPT = `คุณคือนักวิเคราะห์หุ้นมืออาชีพสำหรับ InvestMart แพลตฟอร์มเรียนรู้การลงทุนไทย
 
 วิธีคิดของคุณ:
 1. สังเคราะห์ข้อมูลที่ได้รับ — ใช้เฉพาะสิ่งที่ให้มา ถ้าขาด ระบุและลด conviction
@@ -138,33 +108,23 @@ const SYSTEM_PROMPT = `คุณคือนักวิเคราะห์ห
 - ผลบวกของ probability ≈ 100%
 
 ตอบ JSON เท่านั้น:
-{
-  "thesis": "1-2 ประโยค: setup ปัจจุบัน momentum/fundamental ชี้ทางไหน",
-  "conviction": "low|medium|high",
-  "convictionReason": "เหตุผลระดับ conviction",
-  "bull": {"description":"เงื่อนไขและผลลัพธ์กรณีดี","probability":"XX%"},
-  "base": {"description":"กรณีน่าจะเป็น","probability":"XX%"},
-  "bear": {"description":"เงื่อนไขและผลลัพธ์กรณีแย่","probability":"XX%"},
-  "drivers": ["ปัจจัย 1 (source: news/metric/price)","ปัจจัย 2","ปัจจัย 3"],
-  "risk": "ความเสี่ยงสำคัญสุด",
-  "invalidation": "ระดับราคา/เหตุการณ์ที่พิสูจน์ว่าวิเคราะห์ผิด"
-}`;
+{"thesis":"1-2 ประโยค","conviction":"low|medium|high","convictionReason":"เหตุผล","bull":{"description":"...","probability":"XX%"},"base":{"description":"...","probability":"XX%"},"bear":{"description":"...","probability":"XX%"},"drivers":["ปัจจัย 1","ปัจจัย 2","ปัจจัย 3"],"risk":"ความเสี่ยงสำคัญ","invalidation":"เงื่อนไขที่พิสูจน์ว่าวิเคราะห์ผิด"}`;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const params   = request.nextUrl.searchParams;
-  const ticker   = params.get("ticker")?.toUpperCase().trim();
+  const params    = request.nextUrl.searchParams;
+  const ticker    = params.get("ticker")?.toUpperCase().trim();
   const personaId = params.get("persona") ?? "general";
-  const refresh  = params.get("refresh") === "true";
+  const refresh   = params.get("refresh") === "true";
 
   if (!ticker || !/^[A-Z][A-Z.\-]{0,9}$/.test(ticker)) {
     return NextResponse.json({ error: "ticker required" }, { status: 400 });
   }
 
-  const geminiKey  = process.env.GEMINI_API_KEY;
+  const hasAi      = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
   const finnhubKey = process.env.FINNHUB_API_KEY;
 
-  if (!geminiKey || !finnhubKey) {
-    return NextResponse.json({ error: "AI or market data not configured" }, { status: 500 });
+  if (!hasAi || !finnhubKey) {
+    return NextResponse.json({ error: "AI or market data not configured" }, { status: 503 });
   }
 
   const cacheKey = `${ticker}:${personaId}`;
@@ -173,8 +133,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(cached);
   }
 
-  const persona       = getPersonaById(personaId);
-  const activePrompt  = persona?.systemPrompt ?? SYSTEM_PROMPT;
+  const persona      = getPersonaById(personaId);
+  const systemPrompt = persona?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
 
   const sevenDaysAgo = Math.floor((Date.now() - 7 * 24 * 60 * 60 * 1000) / 1000);
   const today        = Math.floor(Date.now() / 1000);
@@ -210,42 +170,31 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const metricsLines = [
     quote   ? `ราคาปัจจุบัน: $${quote.c.toFixed(2)}, เปลี่ยน: ${quote.dp?.toFixed(2) ?? "?"}%` : null,
-    metrics?.["52WeekHigh"]                 ? `52W High: $${metrics["52WeekHigh"].toFixed(2)}`                                     : null,
-    metrics?.["52WeekLow"]                  ? `52W Low: $${metrics["52WeekLow"].toFixed(2)}`                                       : null,
-    metrics?.peBasicExclExtraTTM            ? `P/E TTM: ${metrics.peBasicExclExtraTTM.toFixed(1)}`                                 : null,
-    metrics?.beta                           ? `Beta: ${metrics.beta.toFixed(2)}`                                                   : null,
-    metrics?.["10DayAverageTradingVolume"]  ? `10D Avg Volume: ${(metrics["10DayAverageTradingVolume"] * 1000).toLocaleString()}`  : null,
-    metrics?.revenueGrowthQuarterlyYoy      ? `Revenue Growth QoQ: ${metrics.revenueGrowthQuarterlyYoy.toFixed(1)}%`               : null,
-    metrics?.epsNormalizedAnnual            ? `EPS (normalized): ${metrics.epsNormalizedAnnual.toFixed(2)}`                        : null,
-    metrics?.marketCapitalization           ? `Market Cap: $${(metrics.marketCapitalization / 1000).toFixed(1)}B`                  : null,
+    metrics?.["52WeekHigh"]                ? `52W High: $${metrics["52WeekHigh"].toFixed(2)}`                                     : null,
+    metrics?.["52WeekLow"]                 ? `52W Low: $${metrics["52WeekLow"].toFixed(2)}`                                       : null,
+    metrics?.peBasicExclExtraTTM           ? `P/E TTM: ${metrics.peBasicExclExtraTTM.toFixed(1)}`                                 : null,
+    metrics?.beta                          ? `Beta: ${metrics.beta.toFixed(2)}`                                                   : null,
+    metrics?.["10DayAverageTradingVolume"] ? `10D Avg Volume: ${(metrics["10DayAverageTradingVolume"] * 1000).toLocaleString()}`  : null,
+    metrics?.revenueGrowthQuarterlyYoy     ? `Revenue Growth QoQ: ${metrics.revenueGrowthQuarterlyYoy.toFixed(1)}%`               : null,
+    metrics?.epsNormalizedAnnual           ? `EPS (normalized): ${metrics.epsNormalizedAnnual.toFixed(2)}`                        : null,
+    metrics?.marketCapitalization          ? `Market Cap: $${(metrics.marketCapitalization / 1000).toFixed(1)}B`                  : null,
     recommendationBlock,
   ].filter(Boolean).join("\n");
 
-  const userPrompt = `วิเคราะห์หุ้น ${ticker}
-
-ข้อมูลตลาด:
-${metricsLines || "ไม่มีข้อมูล"}
-
-ข่าวล่าสุด 7 วัน:
-${newsBlock}`;
+  const userPrompt = `วิเคราะห์หุ้น ${ticker}\n\nข้อมูลตลาด:\n${metricsLines || "ไม่มีข้อมูล"}\n\nข่าวล่าสุด 7 วัน:\n${newsBlock}`;
 
   try {
-    const model  = getGemini().getGenerativeModel({
-      model:            GEMINI_MODEL,
-      systemInstruction: activePrompt,
-      generationConfig: {
-        responseMimeType: "application/json",
-        maxOutputTokens:  800,
-        temperature:      0.3,
-      },
+    const raw = await generateText(userPrompt, systemPrompt, {
+      maxTokens:   800,
+      temperature: 0.3,
+      jsonMode:    true,
     });
-    const result = await model.generateContent(userPrompt);
-    const raw    = result.response.text();
+
     const llm = JSON.parse(raw) as Partial<LlmOutlook>;
 
     const entry: OutlookEntry = {
       ticker,
-      thesis:           typeof llm.thesis === "string"          ? llm.thesis          : "—",
+      thesis:           typeof llm.thesis === "string"           ? llm.thesis           : "—",
       conviction:       normalizeConviction(llm.conviction),
       convictionReason: typeof llm.convictionReason === "string" ? llm.convictionReason : "—",
       bull: {
@@ -272,7 +221,7 @@ ${newsBlock}`;
     outlookCache.set(cacheKey, entry);
     return NextResponse.json(entry);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "unknown";
-    return NextResponse.json(fallbackOutlook(ticker, msg), { status: 500 });
+    console.error("[ai/outlook] generation failed:", err instanceof Error ? err.message : err);
+    return NextResponse.json(fallbackOutlook(ticker), { status: 503 });
   }
 }

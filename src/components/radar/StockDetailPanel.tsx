@@ -384,6 +384,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
                 <input
                   id="shares-input"
                   type="number"
+                  inputMode="decimal"
                   value={shares}
                   min="0.001"
                   step="1"

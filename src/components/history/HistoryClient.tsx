@@ -160,7 +160,8 @@ export function HistoryClient() {
 
           {/* Trade history table */}
           <Card className="overflow-hidden">
-            <table className="w-full text-xs border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full text-xs border-collapse min-w-[420px]">
               <thead>
                 <tr className="bg-[#1F1A14] text-[#F3EDE0]">
                   {["วันที่", "หุ้น", "ซื้อ/ขาย", "จำนวน", "ราคา", "รวม"].map((h) => (
@@ -206,6 +207,7 @@ export function HistoryClient() {
                 ))}
               </tbody>
             </table>
+            </div>
           </Card>
         </>
       )}

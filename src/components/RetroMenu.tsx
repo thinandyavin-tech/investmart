@@ -21,7 +21,7 @@ const menuItems: MenuItem[] = [
   { href: "/market",        label: "ภาพรวมตลาด",         icon: "📈" },
   { href: "/leaderboard",   label: "Leaderboard",          icon: "🏆" },
   { href: "/profile",       label: "โปรไฟล์",            icon: "👤" },
-  { href: "/discover",      label: "Discover",             icon: "🔭", soon: true },
+  { href: "/discover",      label: "Discover",             icon: "🔭" },
   { href: "/mail",          label: "จดหมาย / แจ้งเตือน", icon: "✉️" },
   { href: "/profile/edit",  label: "แก้ไขโปรไฟล์",      icon: "✏️" },
   { href: "/settings/id",   label: "ตั้งค่าไอดี",        icon: "🔑" },
@@ -31,6 +31,8 @@ const menuItems: MenuItem[] = [
   { href: "/watchlist",     label: "Watchlist",             icon: "👁" },
   { href: "/exchange",      label: "Exchange",             icon: "💱" },
   { href: "/history",       label: "ประวัติซื้อขาย",     icon: "📋" },
+  { href: "/about",         label: "เกี่ยวกับ",          icon: "ℹ️" },
+  { href: "/glossary",      label: "คำศัพท์หุ้น",        icon: "📖" },
 ];
 
 export function RetroMenu({ onClose }: RetroMenuProps) {

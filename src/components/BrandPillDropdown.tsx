@@ -16,15 +16,16 @@ interface DropdownItem {
 }
 
 const ITEMS: DropdownItem[] = [
-  { href: "/",         label: "หน้าหลัก",        icon: <HomeIcon /> },
-  { href: "/market",   label: "ภาพรวมตลาด",       icon: <ChartIcon /> },
-  { href: "/radar",    label: "เรดาร์แสกนหุ้น",  icon: <RadarIcon /> },
-  { href: "/compose",  label: "โพส",               icon: <PencilIcon /> },
-  { href: "/discover", label: "Discover",           icon: <DiscoverIcon />, soon: true },
+  { href: "/",          label: "หน้าหลัก",       icon: <HomeIcon /> },
+  { href: "/market",    label: "ภาพรวมตลาด",      icon: <ChartIcon /> },
+  { href: "/radar",     label: "เรดาร์แสกนหุ้น", icon: <RadarIcon /> },
+  { href: "/compose",   label: "โพส",              icon: <PencilIcon /> },
+  { href: "/discover",  label: "Discover",          icon: <DiscoverIcon /> },
   { href: "/watchlist", label: "Watchlist",          icon: <WatchlistIcon /> },
-  { href: "/mail",      label: "จดหมาย",           icon: <MailIcon /> },
-  { href: "/saved",    label: "หน้าบันทึกโพส",   icon: <BookmarkIcon /> },
-  { href: "/profile",  label: "หน้าโปรไฟล์",     icon: <PersonIcon /> },
+  { href: "/mail",      label: "จดหมาย",          icon: <MailIcon /> },
+  { href: "/saved",     label: "หน้าบันทึกโพส",  icon: <BookmarkIcon /> },
+  { href: "/profile",   label: "หน้าโปรไฟล์",    icon: <PersonIcon /> },
+  { href: "/about",     label: "เกี่ยวกับ",       icon: <InfoIcon /> },
 ];
 
 export function BrandPillDropdown({ onClose }: BrandPillDropdownProps) {
@@ -145,6 +146,13 @@ function MailIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="2" y="4" width="20" height="16" rx="1" /><path d="M2 7l10 7 10-7" />
+    </svg>
+  );
+}
+function InfoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
     </svg>
   );
 }

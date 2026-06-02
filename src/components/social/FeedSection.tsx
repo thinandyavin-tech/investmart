@@ -24,6 +24,8 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
   const [loading, setLoading]   = useState(true);
   const [hasMore, setHasMore]   = useState(false);
   const [loadingMore, setMore]  = useState(false);
+  const [error, setError]       = useState<string | null>(null);
+  const [retryCount, setRetry]  = useState(0);
 
   const fetchPosts = useCallback(async (nextTab: FeedTab, nextCursor: string | null) => {
     const params = new URLSearchParams({ tab: nextTab });
@@ -38,15 +40,16 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
     setLoading(true);
     setPosts([]);
     setCursor(null);
+    setError(null);
     fetchPosts(tab, null)
       .then(({ data, nextCursor }) => {
         setPosts(data);
         setCursor(nextCursor);
         setHasMore(!!nextCursor);
       })
-      .catch(() => {})
+      .catch(() => setError("ไม่สามารถโหลดโพสต์ได้ กรุณาลองใหม่"))
       .finally(() => setLoading(false));
-  }, [tab, fetchPosts]);
+  }, [tab, fetchPosts, retryCount]);
 
   async function loadMore() {
     if (!cursor || loadingMore) return;
@@ -96,6 +99,16 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
 
       {loading ? (
         <FeedSkeleton />
+      ) : error ? (
+        <div className="flex flex-col items-center py-12 gap-2 px-4">
+          <p className="text-xs font-bold text-red-600 text-center">{error}</p>
+          <button
+            onClick={() => setRetry((c) => c + 1)}
+            className="text-[10px] underline text-[#8A8378] hover:text-[#1F1A14]"
+          >
+            ลองใหม่
+          </button>
+        </div>
       ) : posts.length === 0 ? (
         <FeedEmpty tab={tab} />
       ) : (

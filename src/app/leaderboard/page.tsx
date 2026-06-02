@@ -6,14 +6,14 @@ import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 
 interface LeaderboardEntry {
-  rank:        number;
-  username:    string | null;
-  name:        string | null;
-  totalThb:    number;
-  cashThb:     number;
-  cashUsd:     number;
-  trades:      number;
-  fullId:      string;
+  rank:     number;
+  id:       string;
+  username: string | null;
+  name:     string | null;
+  totalThb: number;
+  pnl:      number;
+  trades:   number;
+  holdings: number;
 }
 
 const RANK_ICONS: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
@@ -32,8 +32,8 @@ export default function LeaderboardPage() {
     void (async () => {
       try {
         const res  = await fetch("/api/leaderboard");
-        const data = (await res.json()) as { entries?: LeaderboardEntry[] };
-        setEntries(data.entries ?? []);
+        const data = (await res.json()) as { leaderboard?: LeaderboardEntry[] };
+        setEntries(data.leaderboard ?? []);
       } catch {
         setError(true);
       } finally {
@@ -93,16 +93,14 @@ export default function LeaderboardPage() {
               )}
 
               {!loading && !error && entries.map((e) => {
-                const isMe       = !userLoading && user?.id === e.fullId;
-                const displayName = e.name ?? e.username ?? `#${e.fullId.slice(-6)}`;
-                const handle      = e.username ? `@${e.username}` : `#${e.fullId.slice(-6)}`;
+                const isMe        = !userLoading && user?.username != null && user.username === e.username;
+                const displayName = e.name ?? e.username ?? `#${e.id}`;
+                const handle      = e.username ? `@${e.username}` : `#${e.id}`;
                 const rankIcon    = RANK_ICONS[e.rank];
-                const baseline    = 1_250_000;
-                const pnl         = e.totalThb - baseline;
 
                 return (
                   <tr
-                    key={e.fullId}
+                    key={e.id}
                     className="border-b border-[#E8E2D4] last:border-0"
                     style={{ background: isMe ? "#F5FAEE" : undefined }}
                   >
@@ -129,9 +127,9 @@ export default function LeaderboardPage() {
                       <div className="font-bold text-[11px]">{formatTHB(e.totalThb)}</div>
                       <div
                         className="text-[9px]"
-                        style={{ color: pnl >= 0 ? "#5B8A2A" : "#DC2626" }}
+                        style={{ color: e.pnl >= 0 ? "#5B8A2A" : "#DC2626" }}
                       >
-                        {pnl >= 0 ? "+" : ""}{formatTHB(pnl)}
+                        {e.pnl >= 0 ? "+" : ""}{formatTHB(e.pnl)}
                       </div>
                     </td>
                     <td className="px-3 py-2.5 text-right text-[10px] text-[#8A8378] hidden sm:table-cell"

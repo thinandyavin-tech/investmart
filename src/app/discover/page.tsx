@@ -1,16 +1,13 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { AppShell } from "@/components/AppShell";
-import { ComingSoon } from "@/components/ComingSoon";
+import { DiscoverClient } from "@/components/discover/DiscoverClient";
 
-export const metadata: Metadata = { title: "Discover" };
+export const metadata: Metadata = { title: "Discover — InvestMart" };
 
 export default function DiscoverPage() {
   return (
     <AppShell>
-      <ComingSoon
-        titleThai="Discover — ค้นพบหุ้นและผู้เทรด"
-        descThai="เร็วๆ นี้: ดูโพสต์ยอดนิยม, ผู้เทรดที่น่าติดตาม, และหุ้นที่ถูกพูดถึงมากที่สุด"
-      />
+      <DiscoverClient />
     </AppShell>
   );
 }

@@ -7,6 +7,7 @@ import { FeedSection } from "@/components/social/FeedSection";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
+import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -31,6 +32,7 @@ export function HomeDesktop() {
             cashThb={user?.cashThb ?? null}
             cashUsd={user?.cashUsd ?? null}
             holdings={user?.holdings ?? []}
+            tradeCount={user?.tradeCount ?? 0}
           />
           <div className="text-center text-xs text-[#8A8378] py-1 tracking-widest">
             ... The InvestMart Simulator ...
@@ -52,6 +54,7 @@ export function HomeDesktop() {
               </div>
             </Card>
           )}
+          <DailyDigestCard />
           <InfographicsSection />
           <HotNewsSection />
           <PostsCard />
@@ -114,15 +117,14 @@ function StatCards({
   cashThb,
   cashUsd,
   holdings,
+  tradeCount,
 }: {
-  loading:  boolean;
-  cashThb:  number | null;
-  cashUsd:  number | null;
-  holdings: Holding[];
+  loading:    boolean;
+  cashThb:    number | null;
+  cashUsd:    number | null;
+  holdings:   Holding[];
+  tradeCount: number;
 }) {
-  const buyCount  = 0; // TODO: wire from trade history
-  const sellCount = 0;
-
   const stats = [
     {
       label: "เงินสด (THB)",
@@ -134,8 +136,8 @@ function StatCards({
       value: loading ? "..." : cashUsd != null ? `$${cashUsd.toFixed(2)}` : "$0",
       mono:  true,
     },
-    { label: "จำนวนออเดอร์ซื้อ",  value: String(buyCount)  },
-    { label: "จำนวนออเดอร์ขาย",  value: String(sellCount) },
+    { label: "จำนวนหุ้น",      value: loading ? "..." : String(holdings.length) },
+    { label: "คำสั่งซื้อขาย",  value: loading ? "..." : String(tradeCount)      },
   ];
 
   return (
@@ -239,18 +241,21 @@ function HomeFooter() {
         </p>
         <div className="flex flex-wrap gap-3 text-[10px] mb-2">
           {[
-            { href: "/",        label: "หน้าหลัก" },
-            { href: "/radar",   label: "เรดาร์แสกนหุ้น" },
-            { href: "/market",  label: "ภาพรวมตลาด" },
-            { href: "/exchange", label: "Exchange" },
-            { href: "/history", label: "ประวัติซื้อขาย" },
+            { href: "/",          label: "หน้าหลัก" },
+            { href: "/radar",     label: "เรดาร์แสกนหุ้น" },
+            { href: "/market",    label: "ภาพรวมตลาด" },
+            { href: "/exchange",  label: "Exchange" },
+            { href: "/history",   label: "ประวัติซื้อขาย" },
+            { href: "/about",     label: "เกี่ยวกับ" },
+            { href: "/privacy",   label: "ความเป็นส่วนตัว" },
+            { href: "/terms",     label: "ข้อกำหนด" },
           ].map(({ href, label }) => (
             <Link key={href} href={href} className="text-[#8A8378] hover:text-[#1F1A14] underline underline-offset-2">
               {label}
             </Link>
           ))}
         </div>
-        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investmart.vercel.app</p>
+        <p className="text-[10px] text-[#8A8378]">© 2026 InvestMart · investmart.vercel.app · ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
       </div>
     </footer>
   );

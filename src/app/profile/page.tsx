@@ -6,6 +6,9 @@ import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 
+const STARTING_THB = 1_250_000;
+const FALLBACK_FX  = 35.2;
+
 function Avatar({ initial }: { initial: string }) {
   return (
     <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#5B8A2A] p-1 flex-shrink-0">
@@ -22,6 +25,14 @@ export default function ProfilePage() {
   const initial     = user ? (user.name?.[0] ?? user.username?.[0] ?? "D").toUpperCase() : "?";
   const displayName = user?.name ?? user?.username ?? "นักลงทุน";
   const handle      = user?.username ? `@${user.username}` : `#${user?.id.slice(-6) ?? "------"}`;
+
+  const costBasis   = user?.holdings.reduce((s, h) => s + h.shares * h.avgCost, 0) ?? 0;
+  const totalThb    = user
+    ? user.cashThb + user.cashUsd * FALLBACK_FX + costBasis * FALLBACK_FX
+    : 0;
+  const pnl      = totalThb - STARTING_THB;
+  const pnlPct   = (pnl / STARTING_THB) * 100;
+  const pnlPos   = pnl >= 0;
 
   return (
     <AppShell>
@@ -74,21 +85,52 @@ export default function ProfilePage() {
           </div>
         </Card>
 
-        {/* Balances */}
-        <div className="grid grid-cols-2 gap-2">
-          <Card className="p-3 text-center">
-            <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5">เงินสด THB</div>
-            <div className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)" }}>
-              {loading ? "..." : user ? `฿${user.cashThb.toLocaleString("th-TH")}` : "฿1,250,000"}
+        {/* Portfolio Summary */}
+        {!loading && user && (
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">มูลค่าพอร์ต (cost basis)</h2>
+              <span className="text-[9px] text-[#8A8378]">เทรดทั้งหมด {user.tradeCount} ครั้ง</span>
             </div>
-          </Card>
-          <Card className="p-3 text-center">
-            <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5">เงินสด USD</div>
-            <div className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)" }}>
-              {loading ? "..." : user ? `$${user.cashUsd.toFixed(2)}` : "$0.00"}
+            <div className="flex items-end gap-3 mb-3">
+              <div>
+                <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+                  ฿{Math.round(totalThb).toLocaleString("th-TH")}
+                </div>
+                <div
+                  className="text-[11px] font-bold mt-0.5"
+                  style={{ color: pnlPos ? "#5B8A2A" : "#DC2626" }}
+                >
+                  {pnlPos ? "+" : ""}{Math.round(pnl).toLocaleString("th-TH")} ({pnlPos ? "+" : ""}{pnlPct.toFixed(2)}%)
+                </div>
+              </div>
+              <div className="text-[9px] text-[#8A8378] mb-0.5">เทียบกับ ฿1,250,000 เริ่มต้น</div>
             </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">Cash THB</div>
+                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                  ฿{Math.round(user.cashThb).toLocaleString("th-TH")}
+                </div>
+              </div>
+              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">Cash USD</div>
+                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                  ${user.cashUsd.toFixed(2)}
+                </div>
+              </div>
+              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">หุ้น ({user.holdings.length})</div>
+                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                  ${costBasis.toFixed(0)}
+                </div>
+              </div>
+            </div>
+            <p className="text-[8px] text-[#8A8378] mt-2">
+              ราคาต้นทุน (cost basis) · ไม่ใช่ราคาตลาดปัจจุบัน · FX ≈ {FALLBACK_FX} THB/USD
+            </p>
           </Card>
-        </div>
+        )}
 
         {/* Holdings */}
         {!loading && user && user.holdings.length > 0 && (
@@ -96,30 +138,35 @@ export default function ProfilePage() {
             <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
               <h2 className="text-[10px] font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
             </div>
-            <table className="w-full text-[10px]">
-              <thead>
-                <tr className="border-b border-[#E8E2D4]">
-                  {["หุ้น", "จำนวน", "ต้นทุน/หุ้น"].map((h) => (
-                    <th key={h} className="text-left px-3 py-1.5 text-[9px] text-[#8A8378] uppercase tracking-wide font-bold">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {user.holdings.map((h) => (
-                  <tr key={h.ticker} className="border-b border-[#E8E2D4] last:border-0">
-                    <td className="px-3 py-2">
-                      <Link href={`/stock/${h.ticker}`} className="font-bold hover:underline text-[#5B8A2A]">
-                        {h.ticker}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
-                    <td className="px-3 py-2" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[10px] min-w-[280px]">
+                <thead>
+                  <tr className="border-b border-[#E8E2D4]">
+                    {["หุ้น", "จำนวน", "ต้นทุน/หุ้น", "มูลค่า USD"].map((h) => (
+                      <th key={h} className="text-left px-3 py-1.5 text-[9px] text-[#8A8378] uppercase tracking-wide font-bold">
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {user.holdings.map((h) => (
+                    <tr key={h.ticker} className="border-b border-[#E8E2D4] last:border-0">
+                      <td className="px-3 py-2">
+                        <Link href={`/stock/${h.ticker}`} className="font-bold hover:underline text-[#5B8A2A]">
+                          {h.ticker}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
+                      <td className="px-3 py-2" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+                      <td className="px-3 py-2 font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+                        ${(h.shares * h.avgCost).toFixed(0)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
         )}
 
@@ -127,12 +174,12 @@ export default function ProfilePage() {
         <Card className="p-3">
           <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2">เครื่องมือ Simulator</h2>
           {[
-            { href: "/radar",      label: "เรดาร์แสกนหุ้น",  icon: "📡" },
-            { href: "/market",     label: "ภาพรวมตลาด",       icon: "📈" },
-            { href: "/exchange",   label: "แลกเปลี่ยนเงิน",  icon: "💱" },
-            { href: "/history",    label: "ประวัติซื้อขาย",  icon: "📋" },
-            { href: "/watchlist",  label: "Watchlist",          icon: "👁" },
-            { href: "/leaderboard",label: "Leaderboard",         icon: "🏆" },
+            { href: "/radar",       label: "เรดาร์แสกนหุ้น", icon: "📡" },
+            { href: "/market",      label: "ภาพรวมตลาด",      icon: "📈" },
+            { href: "/exchange",    label: "แลกเปลี่ยนเงิน", icon: "💱" },
+            { href: "/history",     label: "ประวัติซื้อขาย", icon: "📋" },
+            { href: "/watchlist",   label: "Watchlist",         icon: "👁" },
+            { href: "/leaderboard", label: "Leaderboard",        icon: "🏆" },
           ].map(({ href, label, icon }) => (
             <Link
               key={href}
@@ -141,7 +188,7 @@ export default function ProfilePage() {
             >
               <span>{icon}</span>
               <span className="font-bold">{label}</span>
-              <span className="ml-auto text-[#8A8378] group-hover:text-white">›</span>
+              <span className="ml-auto text-[#8A8378]">›</span>
             </Link>
           ))}
         </Card>
@@ -194,7 +241,9 @@ export default function ProfilePage() {
         )}
 
         <p className="text-[9px] text-[#8A8378] text-center pb-2">
-          InvestMart
+          InvestMart · <Link href="/about" className="hover:underline">เกี่ยวกับ</Link>{" "}·{" "}
+          <Link href="/privacy" className="hover:underline">ความเป็นส่วนตัว</Link>{" "}·{" "}
+          <Link href="/terms" className="hover:underline">ข้อกำหนด</Link>
         </p>
       </div>
     </AppShell>

@@ -20,14 +20,18 @@ export async function GET() {
       holdings: {
         select: { ticker: true, shares: true, avgCost: true, currency: true },
       },
+      _count: { select: { tradeHistory: true } },
     },
   });
   if (!user) return NextResponse.json({ user: null });
 
+  const { _count, ...rest } = user;
   return NextResponse.json({
     user: {
-      ...user,
+      ...rest,
       lastNameChangeAt: user.lastNameChangeAt?.toISOString() ?? null,
+      isAdmin:    user.email === (process.env.ADMIN_EMAIL ?? ""),
+      tradeCount: _count.tradeHistory,
       isDemo,
     },
   });

@@ -15,7 +15,7 @@ export function AppShell({ children }: AppShellProps) {
       </div>
 
       {/* Main content — left-padded on desktop for the rail */}
-      <main className="lg:pl-12 pb-16 lg:pb-0 min-h-screen">
+      <main className="lg:pl-12 min-h-screen shell-main">
         {children}
       </main>
 

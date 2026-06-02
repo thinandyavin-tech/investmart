@@ -25,6 +25,7 @@ export function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 bg-[#F3EDE0] border-t border-[#1F1A14] flex items-center z-40 lg:hidden"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="แถบนำทางล่าง"
     >
       {navItems.map(({ href, label, icon, isPlus }) => {
@@ -34,7 +35,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex-1 flex items-center justify-center py-2"
+              className="flex-1 flex items-center justify-center min-h-[44px]"
               aria-label={label}
             >
               <span
@@ -53,7 +54,7 @@ export function BottomNav() {
           <Link
             key={href}
             href={href}
-            className={`flex-1 flex flex-col items-center py-2 gap-0.5 text-[10px] transition-colors ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-[10px] transition-colors ${
               active ? "text-[#1F1A14] font-bold" : "text-[#8A8378]"
             }`}
             aria-label={label}

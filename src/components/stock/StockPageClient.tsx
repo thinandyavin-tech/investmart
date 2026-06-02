@@ -516,6 +516,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
           </div>
           <input
             type="number"
+            inputMode="decimal"
             step="0.01"
             min="0.01"
             value={threshold}
