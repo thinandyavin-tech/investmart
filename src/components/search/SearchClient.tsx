@@ -7,7 +7,7 @@ import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
 import type { StockMetrics } from "@/lib/momentum";
 
 interface QuoteData { c: number; pc: number; v: number; }
-interface Suggestion { ticker: string; name: string; }
+interface Suggestion { ticker: string; name: string; type?: string; }
 
 function useDebounce<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -108,7 +108,12 @@ export function SearchClient() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    void search(query);
+    // If there's a suggestion available, use the first one (handles "Apple" → "AAPL")
+    if (suggestions.length > 0) {
+      void search(suggestions[0].ticker);
+    } else {
+      void search(query.toUpperCase().trim());
+    }
   }
 
   function handleSuggestionClick(ticker: string) {
@@ -128,17 +133,15 @@ export function SearchClient() {
               type="text"
               value={query}
               onChange={(e) => {
-                setQuery(e.target.value.replace(/[^a-zA-Z]/g, "").toUpperCase());
+                setQuery(e.target.value);
                 setShowSugg(true);
               }}
               onFocus={() => suggestions.length > 0 && setShowSugg(true)}
-              placeholder="AAPL, MSFT, NVDA..."
-              maxLength={10}
+              placeholder="พิมพ์ชื่อหุ้น หรือ ticker เช่น Apple, AAPL..."
+              maxLength={40}
               autoComplete="off"
-              autoCapitalize="characters"
               className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-sm placeholder:text-[#8A8378] focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
-              style={{ fontFamily: "var(--font-mono)" }}
-              aria-label="ค้นหาหุ้น"
+              aria-label="ค้นหาหุ้นด้วยชื่อบริษัทหรือ ticker"
               aria-autocomplete="list"
               aria-expanded={showSugg && suggestions.length > 0}
             />
@@ -176,14 +179,19 @@ export function SearchClient() {
                 className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-[#1F1A14] hover:text-white transition-colors group"
               >
                 <span
-                  className="text-[11px] font-bold w-12 flex-shrink-0"
+                  className="text-[11px] font-bold w-14 flex-shrink-0"
                   style={{ fontFamily: "var(--font-mono)", color: "inherit" }}
                 >
                   {s.ticker}
                 </span>
-                <span className="text-[10px] text-[#8A8378] truncate group-hover:text-[#ccc]">
-                  {s.name}
-                </span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[11px] text-[#1F1A14] truncate group-hover:text-white leading-tight">
+                    {s.name}
+                  </span>
+                  {s.type && s.type !== "Common Stock" && (
+                    <span className="text-[8px] text-[#8A8378] group-hover:text-[#aaa]">{s.type}</span>
+                  )}
+                </div>
                 <Link
                   href={`/stock/${s.ticker}`}
                   onMouseDown={(e) => e.stopPropagation()}

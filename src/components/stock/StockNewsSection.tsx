@@ -30,13 +30,16 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
   const [error, setError]       = useState(false);
 
   useEffect(() => {
+    setArticles([]);
     setLoading(true);
     setError(false);
+    let cancelled = false;
     fetch(`/api/stock/news?symbol=${encodeURIComponent(ticker)}`)
       .then((r) => r.json())
-      .then((d: { articles?: Article[] }) => setArticles(d.articles ?? []))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .then((d: { articles?: Article[] }) => { if (!cancelled) setArticles(d.articles ?? []); })
+      .catch(() => { if (!cancelled) setError(true); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [ticker]);
 
   const allHeadlines = articles.map(a => a.headline);
