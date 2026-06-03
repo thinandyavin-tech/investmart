@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { getMarketInfo, formatCountdown, MarketInfo } from "@/lib/marketHours";
 
 const STATUS_COLORS: Record<MarketInfo["status"], string> = {
-  open:   "#5B8A2A",
+  open:   "#16A34A",
   pre:    "#D97706",
   after:  "#1D4ED8",
-  closed: "#8A8378",
+  closed: "#64748B",
 };
 
 export function MarketStatusBanner() {
@@ -22,14 +22,14 @@ export function MarketStatusBanner() {
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E8E2D4] bg-[#F3EDE0]"
+      className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-200 bg-white"
       role="status"
       aria-live="polite"
       aria-atomic="true"
     >
       <span
-        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-bold tracking-widest uppercase"
-        style={{ background: color, color: "#fff" }}
+        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase text-white"
+        style={{ background: color }}
       >
         <span
           className="inline-block w-1.5 h-1.5 rounded-full bg-white"
@@ -39,7 +39,7 @@ export function MarketStatusBanner() {
         {info.statusThai}
       </span>
 
-      <span className="text-[11px] text-[#8A8378]">ตลาดหุ้นสหรัฐ (ET)</span>
+      <span className="text-[11px] text-slate-500">ตลาดหุ้นสหรัฐ (ET)</span>
 
       {info.secsToChange !== null && (
         <span
@@ -47,12 +47,12 @@ export function MarketStatusBanner() {
           style={{ fontFamily: "var(--font-mono)", color }}
         >
           {formatCountdown(info.secsToChange)}{" "}
-          <span className="font-normal text-[#8A8378]">ก่อน{info.nextEventThai}</span>
+          <span className="font-normal text-slate-500">ก่อน{info.nextEventThai}</span>
         </span>
       )}
 
       {info.secsToChange === null && (
-        <span className="ml-auto text-[10px] text-[#8A8378]">{info.nextEventThai}</span>
+        <span className="ml-auto text-[10px] text-slate-500">{info.nextEventThai}</span>
       )}
     </div>
   );

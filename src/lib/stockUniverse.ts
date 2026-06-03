@@ -39,11 +39,11 @@ export const SP500_TICKERS = [
   "GE","HON","CAT","DE","UPS","FDX","RTX","LMT","NOC","GD",
   "BA","MMM","ETN","EMR","AME","ROK","PH","ITW","GWW","PCAR",
   "OTIS","CTAS","CSX","UNP","NSC","FAST","ODFL","URI","WCN","WM",
-  "LHX","HUBB","TT","CPRT","TDG","TDY","HII","AXON","LDOS","SAIC",
+  "LHX","HUBB","TT","TDG","TDY","HII","AXON","LDOS","SAIC",
   "BAH","PNR","GNRC","ALLE","MAS","DOV","IEX","EXPD","XPO","CHRW",
   "JBHT","WAB","CARR","TRMB","FTV","NDSN","CGNX","RBC","HWM","SWK",
-  "SNAP","EFX","GPN","VRSK","INFO","IQVIA","CPRT","RSG","CWST","CLH",
-  "GFL","SRCL","RXO","UBER","LYFT","DASH","ABNB","BURL","WDAY","ZI",
+  "EFX","VRSK","RSG","CWST","CLH","GFL","SRCL","RXO","UBER","LYFT",
+  "DASH","BURL","WDAY","ZI",
   // Information Technology (63)
   "AAPL","MSFT","NVDA","AVGO","AMD","QCOM","TXN","MU","LRCX","AMAT",
   "KLAC","MCHP","ADI","ON","NXPI","SWKS","QRVO","MPWR","ACN","IBM",
@@ -66,30 +66,33 @@ export const SP500_TICKERS = [
   "CMS","NRG","AWK","XEL","PNW","AES","BKH","OTTR","NFG","SR","UTL",
 ] as const;
 
-// NASDAQ 100 + NASDAQ Next Generation 100 (~200 most significant NASDAQ stocks)
+// Nasdaq-100 Index (NDX) constituents — ~103 components including dual share classes.
+// Source: https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index
+// Last reviewed: 2025-Q2. Rebalances quarterly in December; also check for special rebalances.
 export const NASDAQ100_TICKERS = [
-  // NASDAQ 100 (largest 100 non-financial NASDAQ companies)
+  // Top 10 by index weight
   "AAPL","MSFT","NVDA","AMZN","META","GOOGL","GOOG","TSLA","AVGO","COST",
-  "NFLX","AMD","ADBE","QCOM","PEP","INTU","CSCO","AMGN","TXN","ISRG",
-  "CMCSA","VRTX","AMAT","ADP","MU","REGN","LRCX","KLAC","PANW","SNPS",
-  "CDNS","MCHP","ADI","ASML","FTNT","BKNG","KDP","MRVL","ORLY","ROST",
-  "WDAY","CTAS","PAYX","ODFL","DXCM","FANG","CEG","TEAM","CPRT","ON",
-  "IDXX","EXC","MRNA","BIIB","FAST","CTSH","VRSK","NXPI","WBA","ABNB",
-  "TTD","ALGN","CDW","PCAR","GFS","ILMN","DLTR","MNST","EA","ENPH",
-  "GILD","SMCI","CRWD","DDOG","GEHC","KHC","ZS","MELI","HON","AEP",
-  "LULU","PYPL","SBUX","MDLZ","LCID","RIVN","PDD","JD","BIDU","NTES",
-  "WIX","BKNG","OKTA","NET","SNOW","MDB","ZM","RBLX","COIN","HOOD",
-  // NASDAQ Next Generation 100 (101–200)
-  "AFRM","SOFI","UPST","OPEN","LMND","ROOT","HI","CARG","CARS","TRUE",
-  "ANGI","TRIP","EXPE","ABNB","PCTY","PAYC","BILL","HUBS","DOMO","APPN",
-  "VEEV","TWLO","COUP","SMAR","PLAN","BOX","DOCN","DBX","ESTC","GTLB",
-  "DDOG","FIVN","NICE","NICE","TNET","AYX","CLDR","PSTG","NTAP","VIAV",
-  "LPSN","BAND","OOMA","FSLY","AKAM","EQIX","NET","CFLT","MNDY","SMMT",
-  "CELH","KVYO","TOST","DUOL","NUVL","RXRX","ARQT","ACVA","STEP","PRME",
-  "IONQ","ARQQ","QBTS","RGTI","QUBT","QLYS","VNET","WB","IQ","BILI",
-  "FUTU","LQDT","TIGR","AMTD","COFS","EDU","TAL","NEW","NIO","LI",
-  "XPEV","RIVN","LCID","FSR","GOEV","WKHS","RIDE","REE","AYRO","SEV",
-  "HIMS","CLOV","OCEA","SKLZ","DMYQ","PTLO","SMAR","MAPS","BARK","FRPT",
+  // Technology — semiconductors & hardware
+  "NFLX","ADBE","AMD","QCOM","INTU","CSCO","TXN","AMAT","MU","LRCX",
+  "KLAC","SNPS","CDNS","MCHP","ADI","ASML","FTNT","MRVL","PANW","CRWD",
+  // Technology — software & cloud
+  "WDAY","ZS","DDOG","ABNB","TEAM","ON","GFS","TTD","ANSS","SMCI",
+  // Healthcare & biotech
+  "AMGN","ISRG","VRTX","REGN","BIIB","GILD","IDXX","DXCM","MRNA","GEHC",
+  // Consumer
+  "ORLY","ROST","BKNG","SBUX","LULU","DLTR","MNST","PEP","MDLZ","KHC",
+  // Business services & industrials
+  "ADP","PAYX","CTAS","ODFL","FAST","CPRT","PCAR","CTSH","VRSK","CDW",
+  // Communications & media
+  "CMCSA","EA","TTWO","TMUS",
+  // Energy & utilities
+  "CEG","EXC","FANG",
+  // Fintech & payments
+  "PYPL",
+  // Recent additions & emerging large-caps
+  "PLTR","APP","AXON","MSTR","COIN",
+  // International ADRs (Nasdaq-listed)
+  "MELI","PDD","NXPI","ILMN","SIRI","BIDU","JD","NTES",
 ] as const;
 
 export const CEO_PORTFOLIO_TICKERS = [

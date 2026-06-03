@@ -9,22 +9,21 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  bio           String?   @default("")
-  cashThb       Float     @default(1250000)
-  cashUsd       Float     @default(0)
-  username      String?   @unique
-  passwordHash      String?
-  lastNameChangeAt  DateTime?
-  bannedAt          DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  bio              String?   @default("")
+  cashThb          Float     @default(1250000)
+  cashUsd          Float     @default(0)
+  username         String?   @unique
+  passwordHash     String?
+  lastNameChangeAt DateTime?
+  bannedAt         DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   accounts           Account[]
   sessions           Session[]
@@ -80,14 +79,14 @@ model VerificationToken {
 }
 
 model Holding {
-  id         String   @id @default(cuid())
-  userId     String
-  ticker     String
-  shares     Float
-  avgCost    Float
-  currency   String   @default("USD")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  ticker    String
+  shares    Float
+  avgCost   Float
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -98,7 +97,7 @@ model Trade {
   id        String   @id @default(cuid())
   userId    String
   ticker    String
-  side      String   // "BUY" | "SELL"
+  side      String // "BUY" | "SELL"
   shares    Float
   price     Float
   total     Float
@@ -109,22 +108,22 @@ model Trade {
 }
 
 model Post {
-  id            String   @id @default(cuid())
-  userId        String
-  content       String
-  ticker        String?
-  topic         String?
-  quotedPostId  String?
-  quoteCount    Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  userId       String
+  content      String
+  ticker       String?
+  topic        String?
+  quotedPostId String?
+  quoteCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likes       Like[]
-  comments    Comment[]
-  bookmarks   Bookmark[]
-  quotedPost  Post?      @relation("PostQuotes", fields: [quotedPostId], references: [id], onDelete: SetNull)
-  quotes      Post[]     @relation("PostQuotes")
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes      Like[]
+  comments   Comment[]
+  bookmarks  Bookmark[]
+  quotedPost Post?      @relation("PostQuotes", fields: [quotedPostId], references: [id], onDelete: SetNull)
+  quotes     Post[]     @relation("PostQuotes")
 }
 
 model Like {
@@ -160,7 +159,7 @@ model Follow {
   followingId String
   createdAt   DateTime @default(now())
 
-  follower  User @relation("Follower",  fields: [followerId],  references: [id], onDelete: Cascade)
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
@@ -190,13 +189,13 @@ model WatchlistItem {
 }
 
 model PriceAlert {
-  id         String   @id @default(cuid())
-  userId     String
-  ticker     String
-  threshold  Float
-  condition  String   // "above" | "below"
-  triggered  Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id          String    @id @default(cuid())
+  userId      String
+  ticker      String
+  threshold   Float
+  condition   String // "above" | "below"
+  triggered   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
   triggeredAt DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -207,7 +206,7 @@ model PriceAlert {
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  type      String   // "like" | "comment" | "follow" | "alert"
+  type      String // "like" | "comment" | "follow" | "alert"
   message   String
   link      String?
   read      Boolean  @default(false)
@@ -231,7 +230,7 @@ model ChatMessage {
   isSystem  Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model PortfolioSnapshot {
@@ -243,4 +242,15 @@ model PortfolioSnapshot {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+// Pre-computed radar scan results — one row per universe (SP500 / NASDAQ100 / CEO).
+// Written by the /api/cron/radar-precompute job; read by /api/radar/scan on every request.
+// Keyed on universe string so upsert is always a single-row update.
+model RadarScan {
+  universe  String   @id
+  results   Json
+  total     Int
+  scannedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

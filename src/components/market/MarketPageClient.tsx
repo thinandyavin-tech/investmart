@@ -8,7 +8,7 @@ import { MarketNewsCard }     from "@/components/market/MarketNewsCard";
 
 export function MarketPageClient() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBF7ED]">
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       <MarketStatusBanner />
 
       <div className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 flex flex-col gap-4">
@@ -32,7 +32,7 @@ export function MarketPageClient() {
           <MarketNewsCard />
         </section>
 
-        <p className="text-[9px] text-[#8A8378] text-center pb-2">
+        <p className="text-[9px] text-slate-400 text-center pb-2">
           ข้อมูลอาจล่าช้า 15–20 นาที · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>

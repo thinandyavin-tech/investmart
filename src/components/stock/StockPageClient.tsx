@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
+import { ReverseDCF }   from "@/components/stock/ReverseDCF";
 import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
 
@@ -21,10 +22,10 @@ type Timeframe    = (typeof TIMEFRAMES)[number];
 type ChartMode    = "Price" | "Relative" | "Volume";
 
 function riskLabel(beta: number | undefined): { label: string; color: string } {
-  if (beta === undefined) return { label: "N/A", color: "#8A8378" };
-  if (beta < 0.8)  return { label: "Conservative", color: "#2563EB" };
-  if (beta <= 1.2) return { label: "Moderate",     color: "#D97706" };
-  return               { label: "Aggressive",     color: "#DC2626" };
+  if (beta === undefined) return { label: "N/A",          color: "#64748B" };
+  if (beta < 0.8)         return { label: "Conservative", color: "#2563EB" };
+  if (beta <= 1.2)        return { label: "Moderate",     color: "#D97706" };
+  return                         { label: "Aggressive",   color: "#DC2626" };
 }
 
 interface ProfileData {
@@ -70,7 +71,7 @@ function LastUpdated({ date }: { date: Date | null }) {
     return () => clearInterval(id);
   }, [date]);
   if (!date) return null;
-  return <span className="text-[9px] text-[#8A8378]">อัพเดทเมื่อ {display}</span>;
+  return <span className="text-[9px] text-slate-400">อัพเดทเมื่อ {display}</span>;
 }
 
 interface StockPageClientProps {
@@ -78,23 +79,23 @@ interface StockPageClientProps {
 }
 
 export function StockPageClient({ ticker }: StockPageClientProps) {
-  const { quote, loading: quoteLoading, error: quoteError, isLive, marketStatus, lastUpdated, flash } =
+  const { quote, loading: quoteLoading, error: quoteError, isLive, lastUpdated, flash } =
     useLiveQuote(TICKER_RE.test(ticker) ? ticker : null);
 
   const { user } = useUser();
   const [watched, setWatched]           = useState(false);
   const [watchLoading, setWatchLoading] = useState(false);
 
-  const [profile, setProfile]       = useState<ProfileData | null>(null);
-  const [metrics, setMetrics]       = useState<MetricData["metric"] | null>(null);
-  const [rsi, setRsi]               = useState<number | null>(null);
-  const [candles, setCandles]       = useState<Candle[]>([]);
-  const [simulated, setSimulated]   = useState(false);
+  const [profile, setProfile]           = useState<ProfileData | null>(null);
+  const [metrics, setMetrics]           = useState<MetricData["metric"] | null>(null);
+  const [rsi, setRsi]                   = useState<number | null>(null);
+  const [candles, setCandles]           = useState<Candle[]>([]);
+  const [simulated, setSimulated]       = useState(false);
   const [chartLoading, setChartLoading] = useState(true);
-  const [timeframe, setTimeframe]   = useState<Timeframe>("3M");
-  const [chartMode, setChartMode]   = useState<ChartMode>("Price");
-  const [maConfig, setMaConfig]     = useState({ ma20: false, ma50: false, ma200: false });
-  // Fetch profile + metrics once
+  const [timeframe, setTimeframe]       = useState<Timeframe>("3M");
+  const [chartMode, setChartMode]       = useState<ChartMode>("Price");
+  const [maConfig, setMaConfig]         = useState({ ma20: false, ma50: false, ma200: false });
+
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
     fetch(`/api/stock/rsi?symbol=${encodeURIComponent(ticker)}`)
@@ -110,7 +111,6 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       .catch(() => {});
   }, [ticker]);
 
-  // Check watchlist status once user is known
   useEffect(() => {
     if (!user || !TICKER_RE.test(ticker)) return;
     fetch("/api/watchlist")
@@ -121,7 +121,6 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       .catch(() => {});
   }, [user, ticker]);
 
-  // Fetch chart candles when timeframe changes
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
     setChartLoading(true);
@@ -160,8 +159,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   if (!TICKER_RE.test(ticker)) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6 text-center">
-        <p className="text-xs text-[#8A8378]">Ticker "{ticker}" ไม่ถูกต้อง</p>
-        <Link href="/" className="text-[10px] text-[#5B8A2A] hover:underline mt-2 block">← หน้าหลัก</Link>
+        <p className="text-xs text-slate-500">Ticker "{ticker}" ไม่ถูกต้อง</p>
+        <Link href="/" className="text-[10px] text-green-600 hover:underline mt-2 block">← หน้าหลัก</Link>
       </div>
     );
   }
@@ -169,14 +168,13 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const companyName = profile?.name ?? ticker;
   const positive    = (quote?.changePct ?? 0) >= 0;
 
-  // Flash colors for live price update
   const flashBg =
-    flash === "up"   ? "bg-[#5B8A2A]/10" :
-    flash === "down" ? "bg-[#DC2626]/10" : "";
+    flash === "up"   ? "bg-green-500/10" :
+    flash === "down" ? "bg-red-500/10"   : "";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
-      <Link href="/" className="text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors">
+      <Link href="/" className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors">
         ← กลับหน้าหลัก
       </Link>
 
@@ -184,19 +182,19 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       <Card className={`p-4 transition-colors duration-300 ${flashBg}`}>
         {quoteLoading ? (
           <div className="flex flex-col gap-2">
-            <div className="h-4 w-32 bg-[#E8E2D4] animate-pulse rounded" />
-            <div className="h-8 w-40 bg-[#E8E2D4] animate-pulse rounded" />
+            <div className="h-4 w-32 bg-slate-200 animate-pulse rounded-md" />
+            <div className="h-8 w-40 bg-slate-200 animate-pulse rounded-md" />
           </div>
         ) : quoteError ? (
-          <p className="text-xs text-[#8A8378]">ไม่พบข้อมูล "{ticker}"</p>
+          <p className="text-xs text-slate-500">ไม่พบข้อมูล "{ticker}"</p>
         ) : (
           <>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                  <h1 className="text-sm font-bold truncate">{companyName}</h1>
+                  <h1 className="text-sm font-bold truncate text-slate-900">{companyName}</h1>
                   {profile?.finnhubIndustry && (
-                    <span className="text-[9px] px-1.5 py-0.5 bg-[#E8E2D4] text-[#8A8378] font-bold uppercase tracking-wide flex-shrink-0">
+                    <span className="text-[9px] px-1.5 py-0.5 bg-slate-100 text-slate-500 font-semibold uppercase tracking-wide rounded-md flex-shrink-0">
                       {profile.finnhubIndustry}
                     </span>
                   )}
@@ -205,11 +203,11 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                       onClick={() => void toggleWatch()}
                       disabled={watchLoading}
                       aria-label={watched ? `ลบ ${ticker} จาก watchlist` : `เพิ่ม ${ticker} ใน watchlist`}
-                      className="flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 border transition-colors flex-shrink-0"
+                      className="flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors flex-shrink-0"
                       style={{
-                        borderColor: watched ? "#5B8A2A" : "#D0C8B8",
-                        color:       watched ? "#5B8A2A" : "#8A8378",
-                        background:  watched ? "#F0FAE5" : "transparent",
+                        borderColor: watched ? "#16A34A" : "#CBD5E1",
+                        color:       watched ? "#16A34A" : "#64748B",
+                        background:  watched ? "#F0FDF4" : "transparent",
                       }}
                     >
                       <svg width="10" height="10" viewBox="0 0 24 24" fill={watched ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
@@ -220,7 +218,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-[#8A8378]">
+                <p className="text-[10px] text-slate-500">
                   {ticker}
                   {profile?.exchange && ` · ${profile.exchange}`}
                   {profile?.country  && ` · ${profile.country}`}
@@ -231,37 +229,37 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                 {quote ? (
                   <>
                     <div
-                      className="text-2xl font-bold"
+                      className="text-2xl font-bold text-slate-900"
                       style={{ fontFamily: "var(--font-mono)" }}
                     >
                       ${quote.price.toFixed(2)}
                     </div>
                     <div
                       className="text-[11px] font-bold"
-                      style={{ fontFamily: "var(--font-mono)", color: positive ? "#5B8A2A" : "#DC2626" }}
+                      style={{ fontFamily: "var(--font-mono)", color: positive ? "#16A34A" : "#DC2626" }}
                     >
                       {positive ? "+" : ""}{quote.changePct.toFixed(2)}%
                       {" "}({positive ? "+" : ""}${quote.change.toFixed(2)})
                     </div>
                   </>
                 ) : (
-                  <div className="text-[10px] text-[#8A8378]">—</div>
+                  <div className="text-[10px] text-slate-400">—</div>
                 )}
               </div>
             </div>
 
             {/* Pre-market badge */}
             {quote?.preMarket && (
-              <div className="mt-1 flex items-center gap-2">
-                <span className="text-[9px] font-bold text-[#7C3AED] uppercase tracking-wide border border-[#7C3AED] px-1.5 py-0.5">
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-[9px] font-semibold text-violet-600 uppercase tracking-wide border border-violet-300 bg-violet-50 px-1.5 py-0.5 rounded-md">
                   PRE-MARKET
                 </span>
-                <span className="font-mono text-[11px] font-bold">
+                <span className="font-mono text-[11px] font-bold text-slate-900">
                   ${quote.preMarket.price.toFixed(2)}
                 </span>
                 <span
                   className="text-[10px] font-mono font-bold"
-                  style={{ color: quote.preMarket.change >= 0 ? "#5B8A2A" : "#DC2626" }}
+                  style={{ color: quote.preMarket.change >= 0 ? "#16A34A" : "#DC2626" }}
                 >
                   {quote.preMarket.change >= 0 ? "+" : ""}{quote.preMarket.changePercent.toFixed(2)}%
                 </span>
@@ -271,16 +269,16 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             {/* Live indicator */}
             <div className="flex items-center gap-2 mt-2">
               {isLive ? (
-                <span className="flex items-center gap-1 text-[9px] text-[#5B8A2A] font-bold">
+                <span className="flex items-center gap-1 text-[9px] text-green-600 font-semibold">
                   <span
-                    className="inline-block w-1.5 h-1.5 rounded-full bg-[#5B8A2A]"
+                    className="inline-block w-1.5 h-1.5 rounded-full bg-green-500"
                     style={{ animation: "pulse 1.5s ease-in-out infinite" }}
                     aria-hidden="true"
                   />
                   LIVE
                 </span>
               ) : (
-                <span className="text-[9px] text-[#8A8378] font-bold uppercase tracking-wide">
+                <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wide">
                   ตลาดปิด
                 </span>
               )}
@@ -300,8 +298,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             { label: "ปิดเมื่อวาน", value: `$${quote.prevClose.toFixed(2)}` },
           ].map(({ label, value }) => (
             <Card key={label} className="p-2 text-center">
-              <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5 leading-tight">{label}</div>
-              <div className="text-[11px] font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+              <div className="text-[9px] text-slate-500 uppercase tracking-wide mb-0.5 leading-tight">{label}</div>
+              <div className="text-[11px] font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
             </Card>
           ))}
         </div>
@@ -319,13 +317,13 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             { label: "RSI-14",      value: rsi !== null           ? String(rsi)                               : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="text-[10px]">
-              <span className="text-[#8A8378]">{label} </span>
-              <span className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</span>
+              <span className="text-slate-500">{label} </span>
+              <span className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>{value}</span>
             </div>
           ))}
           {metrics.beta !== undefined && (
             <span
-              className="text-[9px] px-1.5 py-0.5 font-bold border rounded-sm"
+              className="text-[9px] px-1.5 py-0.5 font-semibold border rounded-md"
               style={{ borderColor: riskLabel(metrics.beta).color, color: riskLabel(metrics.beta).color }}
             >
               {riskLabel(metrics.beta).label}
@@ -333,7 +331,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           )}
           {profile?.weburl && (
             <a href={profile.weburl} target="_blank" rel="noopener noreferrer"
-              className="text-[10px] text-[#5B8A2A] hover:underline">
+              className="text-[10px] text-green-600 hover:underline">
               เว็บไซต์ ↗
             </a>
           )}
@@ -342,19 +340,19 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Chart */}
       <Card className="overflow-hidden">
-        <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4] flex items-center justify-between flex-wrap gap-2">
-          <div className="flex gap-1" role="tablist" aria-label="Chart mode">
+        <div className="px-3 pt-3 pb-2 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5" role="tablist" aria-label="Chart mode">
             {(["Price", "Relative", "Volume"] as const).map((m) => (
               <button
                 key={m}
                 role="tab"
                 aria-selected={chartMode === m}
                 onClick={() => setChartMode(m)}
-                className="px-2 py-0.5 text-[9px] border border-[#1F1A14] font-bold transition-colors"
-                style={{
-                  background: chartMode === m ? "#1F1A14" : "#F3EDE0",
-                  color:      chartMode === m ? "#fff"    : "#8A8378",
-                }}
+                className={`px-2 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
+                  chartMode === m
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
               >
                 {m}
               </button>
@@ -367,11 +365,11 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                 role="tab"
                 aria-selected={timeframe === tf}
                 onClick={() => setTimeframe(tf)}
-                className="px-1.5 py-0.5 text-[9px] border border-[#1F1A14] font-bold transition-colors"
-                style={{
-                  background: timeframe === tf ? "#1F1A14" : "#F3EDE0",
-                  color:      timeframe === tf ? "#fff"    : "#8A8378",
-                }}
+                className={`px-1.5 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
+                  timeframe === tf
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                }`}
               >
                 {tf}
               </button>
@@ -379,8 +377,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           </div>
         </div>
         {chartMode === "Price" && (
-          <div className="px-3 py-1.5 border-b border-[#E8E2D4] flex items-center gap-3">
-            <span className="text-[9px] text-[#8A8378] uppercase tracking-wide">MA:</span>
+          <div className="px-3 py-1.5 border-b border-slate-100 flex items-center gap-3">
+            <span className="text-[9px] text-slate-400 uppercase tracking-wide">MA:</span>
             {([
               { key: "ma20",  label: "20",  color: "#2563EB" },
               { key: "ma50",  label: "50",  color: "#D97706" },
@@ -389,7 +387,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
               <button
                 key={key}
                 onClick={() => setMaConfig((c) => ({ ...c, [key]: !c[key] }))}
-                className="text-[9px] font-bold px-1.5 py-0.5 border transition-colors"
+                className="text-[9px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors"
                 style={{
                   borderColor: color,
                   color:       maConfig[key] ? "#fff" : color,
@@ -403,7 +401,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         )}
         <div className="p-3">
           {chartLoading ? (
-            <div className="h-48 bg-[#E8E2D4] animate-pulse rounded" />
+            <div className="h-48 bg-slate-100 animate-pulse rounded-lg" />
           ) : (
             <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} ma={maConfig} />
           )}
@@ -422,16 +420,18 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       {/* AI Full Outlook with persona selector */}
       <AiOutlookCard ticker={ticker} />
 
+      {/* Reverse DCF — Expectations Gauge */}
+      <ReverseDCF ticker={ticker} />
+
       {/* CTA: Trade */}
       <div className="flex flex-col gap-2">
         <Link
           href={`/radar?ticker=${ticker}`}
-          className="text-center text-xs font-bold text-white bg-[#1F1A14] border border-[#1F1A14] px-4 py-3 hover:bg-[#333] transition-colors"
-          style={{ boxShadow: "3px 3px 0 #5B8A2A" }}
+          className="text-center text-sm font-bold text-white bg-[#16A34A] rounded-xl px-4 py-3 hover:bg-[#15803D] transition-colors"
         >
           ซื้อ / ขาย {ticker} (Paper Trade) →
         </Link>
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-[9px] text-slate-400 text-center">
           จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>
@@ -501,23 +501,23 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
 
   return (
     <Card className="p-4">
-      <h2 className="text-[11px] font-bold uppercase tracking-widest mb-3">
+      <h2 className="text-[11px] font-bold uppercase tracking-widest mb-3 text-slate-700">
         ตั้งแจ้งเตือนราคา
       </h2>
 
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-2">
         <div className="flex gap-2 items-center flex-wrap">
-          <div className="flex border border-[#1F1A14] text-[10px] font-bold">
+          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold">
             {(["above", "below"] as const).map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setCondition(c)}
-                className="px-2 py-1 transition-colors"
-                style={{
-                  background: condition === c ? "#1F1A14" : "#F3EDE0",
-                  color:      condition === c ? "#fff"    : "#1F1A14",
-                }}
+                className={`px-2 py-1.5 transition-colors ${
+                  condition === c
+                    ? "bg-slate-900 text-white"
+                    : "bg-white text-slate-600 hover:bg-slate-50"
+                }`}
                 aria-pressed={condition === c}
               >
                 {c === "above" ? "สูงกว่า ▲" : "ต่ำกว่า ▼"}
@@ -532,35 +532,35 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
             value={threshold}
             onChange={(e) => setThreshold(e.target.value)}
             placeholder={currentPrice ? `ปัจจุบัน $${currentPrice.toFixed(2)}` : "ราคา USD"}
-            className="flex-1 min-w-[120px] px-2 py-1 text-[11px] border border-[#1F1A14] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+            className="flex-1 min-w-[120px] px-2 py-1.5 text-[11px] border border-slate-200 bg-white rounded-lg outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
             aria-label="ราคาเป้าหมาย"
             style={{ fontFamily: "var(--font-mono)" }}
           />
           <button
             type="submit"
             disabled={saving || !threshold}
-            className="px-3 py-1 text-[10px] font-bold text-white bg-[#1F1A14] border border-[#1F1A14] disabled:opacity-40 hover:bg-[#333] transition-colors"
+            className="px-3 py-1.5 text-[10px] font-semibold text-white bg-[#16A34A] rounded-lg disabled:opacity-40 hover:bg-[#15803D] transition-colors"
           >
             {saving ? "..." : "ตั้งแจ้งเตือน"}
           </button>
         </div>
-        {error && <p className="text-[9px] text-[#DC2626]">{error}</p>}
+        {error && <p className="text-[9px] text-red-600">{error}</p>}
       </form>
 
       {tickerAlerts.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1" style={{ listStyle: "none", margin: "12px 0 0", padding: 0 }}>
+        <ul className="mt-3 flex flex-col gap-1.5" style={{ listStyle: "none", margin: "12px 0 0", padding: 0 }}>
           {tickerAlerts.map((a) => (
             <li
               key={a.id}
-              className="flex items-center justify-between text-[10px] px-2 py-1.5 border border-[#E8E2D4] bg-[#F3EDE0]"
+              className="flex items-center justify-between text-[10px] px-2.5 py-1.5 border border-slate-100 bg-slate-50 rounded-lg"
             >
-              <span style={{ fontFamily: "var(--font-mono)" }}>
+              <span className="text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>
                 {a.condition === "above" ? "▲" : "▼"}{" "}
                 ${a.threshold.toFixed(2)}
               </span>
               <button
                 onClick={() => void deleteAlert(a.id)}
-                className="text-[9px] text-[#8A8378] hover:text-[#DC2626] transition-colors"
+                className="text-[9px] text-slate-400 hover:text-red-600 transition-colors"
                 aria-label={`ลบแจ้งเตือน ${a.threshold}`}
               >
                 ✕ ลบ

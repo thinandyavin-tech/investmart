@@ -27,17 +27,17 @@ const TAB_LABELS: Record<Tab, string> = {
 
 function MoverRow({ mover }: { mover: Mover }) {
   const positive     = mover.change >= 0;
-  const changeColor  = positive ? "#5B8A2A" : "#DC2626";
+  const changeColor  = positive ? "#16A34A" : "#DC2626";
   const volumeMillions = (mover.volume / 1_000_000).toFixed(1);
 
   return (
     <Link
       href={`/radar?ticker=${mover.ticker}`}
-      className="flex items-center justify-between px-3 py-2 hover:bg-[#EDE7D9] transition-colors"
+      className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 transition-colors"
     >
       <span className="text-[11px] font-bold w-14 flex-shrink-0">{mover.ticker}</span>
       <span
-        className="text-[10px] text-[#8A8378] flex-1"
+        className="text-[10px] text-slate-500 flex-1"
         style={{ fontFamily: "var(--font-mono)" }}
       >
         {volumeMillions}M
@@ -75,22 +75,22 @@ export function TopMoversCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-0 border-b border-[#E8E2D4]">
+      <div className="px-3 pt-3 pb-0 border-b border-slate-100">
         <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2">
           หุ้นที่เคลื่อนไหวมาก
         </h2>
-        <div className="flex gap-0" role="tablist">
+        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg w-fit mb-2" role="tablist">
           {(["gainers", "losers", "active"] as Tab[]).map((t) => (
             <button
               key={t}
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className="px-3 py-1.5 text-[9px] font-bold uppercase tracking-wide border-t border-x border-[#1F1A14] -mb-px transition-colors"
-              style={{
-                background: tab === t ? "#1F1A14" : "#F3EDE0",
-                color:      tab === t ? "#fff"     : "#8A8378",
-              }}
+              className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wide rounded-md transition-colors ${
+                tab === t
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
             >
               {TAB_LABELS[t]}
             </button>
@@ -99,20 +99,20 @@ export function TopMoversCard() {
       </div>
 
       {loading ? (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-slate-100">
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center justify-between px-3 py-2">
-              <div className="h-3 w-12 bg-[#E8E2D4] animate-pulse rounded" />
-              <div className="h-3 w-16 bg-[#E8E2D4] animate-pulse rounded" />
+              <div className="h-3 w-12 bg-slate-200 animate-pulse rounded" />
+              <div className="h-3 w-16 bg-slate-200 animate-pulse rounded" />
             </div>
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-[#8A8378] text-center">
+        <p className="px-3 py-4 text-[10px] text-slate-500 text-center">
           ไม่มีข้อมูล
         </p>
       ) : (
-        <div className="divide-y divide-[#E8E2D4]" role="tabpanel">
+        <div className="divide-y divide-slate-100" role="tabpanel">
           {rows.map((m) => (
             <MoverRow key={m.ticker} mover={m} />
           ))}

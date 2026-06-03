@@ -20,7 +20,8 @@ const icons = [
   { href: "/leaderboard", label: "Leaderboard", icon: <TrophyIcon /> },
   { href: "/search", label: "ค้นหา", icon: <SearchIcon /> },
   { href: "/watchlist", label: "Watchlist", icon: <WatchlistIcon /> },
-  { href: "/screener", label: "Screener", icon: <ScreenerIcon /> },
+  { href: "/screener",  label: "Screener",  icon: <ScreenerIcon /> },
+  { href: "/personas",  label: "Personas",  icon: <PersonasIcon /> },
 ] as const;
 
 export function IconRail() {
@@ -200,6 +201,16 @@ function ScreenerIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+    </svg>
+  );
+}
+function PersonasIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="9" cy="7" r="3" />
+      <path d="M3 21v-1a6 6 0 0 1 6-6h0" />
+      <circle cx="17" cy="9" r="2.5" />
+      <path d="M21 21v-1a4.5 4.5 0 0 0-4.5-4.5h-1" />
     </svg>
   );
 }
