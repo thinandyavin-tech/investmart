@@ -3,8 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ─── Model constants ──────────────────────────────────────────────────────────
 // Change models here only; not scattered across routes.
-export const GROQ_CHAT_MODEL     = "llama-3.1-8b-instant";    // 500k TPD free tier
-export const GROQ_ANALYSIS_MODEL = "llama-3.1-8b-instant";    // 500k TPD — 70b hits 100k limit too fast
+export const GROQ_CHAT_MODEL     = "llama-3.3-70b-versatile";    // Higher quality streaming chat; ~6k req/day
+export const GROQ_ANALYSIS_MODEL = "llama-3.3-70b-versatile";   // Higher quality for stock analysis; ~6k req/day limit
 export const GEMINI_MODEL        = "gemini-2.0-flash";        // Fallback for all operations
 
 // ─── Retry / timeout config ───────────────────────────────────────────────────

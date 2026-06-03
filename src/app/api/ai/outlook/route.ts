@@ -60,6 +60,10 @@ interface FinnhubRecommendation {
   strongBuy: number; strongSell: number;
   period: string; symbol: string;
 }
+interface FinnhubProfile {
+  name?: string; finnhubIndustry?: string; marketCapitalization?: number;
+  description?: string; country?: string; exchange?: string;
+}
 
 async function fetchFinnhubJson<T>(url: string): Promise<T | null> {
   try {
@@ -93,22 +97,26 @@ function fallbackOutlook(ticker: string): OutlookEntry {
   };
 }
 
-const DEFAULT_SYSTEM_PROMPT = `คุณคือนักวิเคราะห์หุ้นมืออาชีพสำหรับ InvestMart แพลตฟอร์มเรียนรู้การลงทุนไทย
+const DEFAULT_SYSTEM_PROMPT = `คุณคือนักวิเคราะห์หุ้นมืออาชีพระดับ buy-side ที่ทำงานให้กับ InvestMart แพลตฟอร์มเรียนรู้การลงทุนสำหรับนักลงทุนไทย (การวิเคราะห์นี้เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำลงทุน)
 
-วิธีคิดของคุณ:
-1. สังเคราะห์ข้อมูลที่ได้รับ — ใช้เฉพาะสิ่งที่ให้มา ถ้าขาด ระบุและลด conviction
-2. สร้าง bull case และ bear case ที่แข็งแกร่งที่สุดจากข้อมูล
-3. ชั่งน้ำหนักและมีจุดยืนชัดเจน — decisive แต่ซื่อสัตย์ว่าเป็นความน่าจะเป็น ไม่ใช่ความแน่นอน
-4. ให้ conviction (low/medium/high) และเหตุผล
+กระบวนการวิเคราะห์ที่เคร่งครัด:
+1. อ่านและจัดหมวดหมู่ข้อมูลที่ได้รับ — แยกแยะระหว่างข้อมูลที่มีและที่ขาดหาย
+2. วิเคราะห์ Valuation: ราคาอยู่ที่ไหนใน 52W range? P/E สมเหตุผลไหมเทียบ growth และ sector?
+3. วิเคราะห์ Momentum & Sentiment: ทิศทางราคาล่าสุด + analyst consensus ชี้อะไร?
+4. วิเคราะห์ Catalysts: ข่าวล่าสุดมี catalyst บวกหรือลบที่ชัดเจนไหม?
+5. สร้าง Bull / Base / Bear case ที่แข็งแกร่งและน่าเชื่อถือจากข้อมูลที่มีจริง
+6. กำหนด conviction ตาม: ความครบถ้วนของข้อมูล + ความชัดเจนของทิศทาง + ความสอดคล้องของสัญญาณ
 
-กฎเหล็ก:
-- ห้ามสร้างตัวเลข ราคาเป้าหมาย หรือข้อมูลที่ไม่ได้ให้มา
-- ห้ามพูดว่าหุ้นจะขึ้นหรือลงแน่นอน ใช้ "มีโอกาส" "ชี้ว่า" "ขึ้นอยู่กับ"
-- conviction = high ต้องการ: ข้อมูลครบ + ทิศทางชัด + ไม่ขัดแย้ง
-- ผลบวกของ probability ≈ 100%
+กฎวิชาชีพที่ต้องปฏิบัติเคร่งครัด:
+- ใช้เฉพาะข้อมูลที่ได้รับ ห้ามสร้างตัวเลข ราคาเป้าหมาย หรือสถิติที่ไม่มีในข้อมูล
+- ห้ามใช้ภาษาที่แน่นอน เช่น "จะขึ้น" "จะลง" — ใช้ "มีแนวโน้ม" "ชี้ให้เห็น" "อาจส่งผล" เสมอ
+- conviction = "high" ต้องการครบ 3 เงื่อนไข: ข้อมูล quantitative ครบ + ทิศทางชัดเจน + ข่าวและตัวเลขสอดคล้องกัน
+- conviction = "low" เมื่อ: ข้อมูลน้อยกว่า 3 ตัวเลขสำคัญ, สัญญาณขัดแย้ง, หรือความไม่แน่นอนสูง
+- probability ทั้ง 3 scenarios ต้องรวมกัน = 100% พอดี
+- invalidation ต้องระบุเงื่อนไขที่วัดได้จริง ไม่ใช่ความเป็นไปได้คลุมเครือ
 
-ตอบ JSON เท่านั้น:
-{"thesis":"1-2 ประโยค","conviction":"low|medium|high","convictionReason":"เหตุผล","bull":{"description":"...","probability":"XX%"},"base":{"description":"...","probability":"XX%"},"bear":{"description":"...","probability":"XX%"},"drivers":["ปัจจัย 1","ปัจจัย 2","ปัจจัย 3"],"risk":"ความเสี่ยงสำคัญ","invalidation":"เงื่อนไขที่พิสูจน์ว่าวิเคราะห์ผิด"}`;
+ตอบ JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown:
+{"thesis":"สรุปมุมมองรวม 1-2 ประโยคที่มีจุดยืนชัดเจน","conviction":"low|medium|high","convictionReason":"เหตุผลเฉพาะที่กำหนด conviction ระดับนี้ อ้างอิงข้อมูลที่ให้มา","bull":{"description":"สถานการณ์ที่ดีที่สุดที่น่าจะเป็นไปได้ พร้อมกลไกที่จะทำให้เกิดขึ้น","probability":"XX%"},"base":{"description":"สถานการณ์กลางที่น่าจะเป็นที่สุด พร้อมกลไกหลัก","probability":"XX%"},"bear":{"description":"สถานการณ์ที่แย่ที่สุดที่เป็นไปได้ พร้อมกลไกที่จะทำให้เกิดขึ้น","probability":"XX%"},"drivers":["ปัจจัยขับเคลื่อนสำคัญที่สุดในขณะนี้","ปัจจัยที่ 2 ที่มีน้ำหนัก","ปัจจัยที่ 3 ที่ต้องติดตาม"],"risk":"ความเสี่ยงหลักที่สำคัญที่สุดที่นักลงทุนต้องติดตาม","invalidation":"เงื่อนไขที่วัดได้ซึ่งถ้าเกิดขึ้นจะพิสูจน์ว่า thesis นี้ผิด"}`;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const params    = request.nextUrl.searchParams;
@@ -141,7 +149,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const fromDate     = new Date(sevenDaysAgo * 1000).toISOString().split("T")[0];
   const toDate       = new Date(today * 1000).toISOString().split("T")[0];
 
-  const [quote, newsItems, metricsData, recommendations] = await Promise.all([
+  const [quote, newsItems, metricsData, recommendations, profileData] = await Promise.all([
     fetchFinnhubJson<FinnhubQuote>(
       `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${finnhubKey}`
     ),
@@ -154,39 +162,55 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     fetchFinnhubJson<FinnhubRecommendation[]>(
       `https://finnhub.io/api/v1/stock/recommendation?symbol=${encodeURIComponent(ticker)}&token=${finnhubKey}`
     ),
+    fetchFinnhubJson<FinnhubProfile>(
+      `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(ticker)}&token=${finnhubKey}`
+    ),
   ]);
 
-  const topNews   = (newsItems ?? []).slice(0, 5);
+  const topNews   = (newsItems ?? []).slice(0, 7);
   const metrics   = metricsData?.metric;
   const latestRec = recommendations?.[0];
+  const profile   = profileData;
 
   const newsBlock = topNews.length > 0
-    ? topNews.map((n) => `- ${n.headline}`).join("\n")
+    ? topNews.map((n, i) => `${i + 1}. ${n.headline}${n.summary ? ` — ${n.summary.slice(0, 150)}` : ""}`).join("\n")
     : "ไม่มีข่าวล่าสุดใน 7 วัน";
 
-  const recommendationBlock = latestRec
-    ? `Analyst Consensus (${latestRec.period}): Strong Buy ${latestRec.strongBuy}, Buy ${latestRec.buy}, Hold ${latestRec.hold}, Sell ${latestRec.sell}, Strong Sell ${latestRec.strongSell}`
-    : null;
+  const companyLine = [
+    profile?.name,
+    profile?.finnhubIndustry && `อุตสาหกรรม: ${profile.finnhubIndustry}`,
+    profile?.exchange         && `ตลาด: ${profile.exchange}`,
+    profile?.country          && `ประเทศ: ${profile.country}`,
+  ].filter(Boolean).join(" · ");
 
   const metricsLines = [
-    quote   ? `ราคาปัจจุบัน: $${quote.c.toFixed(2)}, เปลี่ยน: ${quote.dp?.toFixed(2) ?? "?"}%` : null,
-    metrics?.["52WeekHigh"]                ? `52W High: $${metrics["52WeekHigh"].toFixed(2)}`                                     : null,
-    metrics?.["52WeekLow"]                 ? `52W Low: $${metrics["52WeekLow"].toFixed(2)}`                                       : null,
-    metrics?.peBasicExclExtraTTM           ? `P/E TTM: ${metrics.peBasicExclExtraTTM.toFixed(1)}`                                 : null,
-    metrics?.beta                          ? `Beta: ${metrics.beta.toFixed(2)}`                                                   : null,
-    metrics?.["10DayAverageTradingVolume"] ? `10D Avg Volume: ${(metrics["10DayAverageTradingVolume"] * 1000).toLocaleString()}`  : null,
-    metrics?.revenueGrowthQuarterlyYoy     ? `Revenue Growth QoQ: ${metrics.revenueGrowthQuarterlyYoy.toFixed(1)}%`               : null,
-    metrics?.epsNormalizedAnnual           ? `EPS (normalized): ${metrics.epsNormalizedAnnual.toFixed(2)}`                        : null,
-    metrics?.marketCapitalization          ? `Market Cap: $${(metrics.marketCapitalization / 1000).toFixed(1)}B`                  : null,
-    recommendationBlock,
+    quote   ? `ราคา: $${quote.c.toFixed(2)}, เปลี่ยนวันนี้: ${(quote.dp ?? 0) >= 0 ? "+" : ""}${(quote.dp ?? 0).toFixed(2)}% ($${(quote.d ?? 0) >= 0 ? "+" : ""}${(quote.d ?? 0).toFixed(2)})` : null,
+    quote   ? `OHLC: เปิด $${quote.o.toFixed(2)} | สูง $${quote.h.toFixed(2)} | ต่ำ $${quote.l.toFixed(2)} | ปิดเมื่อวาน $${quote.pc.toFixed(2)}` : null,
+    metrics?.["52WeekHigh"]                ? `52W High: $${metrics["52WeekHigh"].toFixed(2)}`                                      : null,
+    metrics?.["52WeekLow"]                 ? `52W Low: $${metrics["52WeekLow"].toFixed(2)}`                                        : null,
+    metrics?.peBasicExclExtraTTM           ? `P/E TTM: ${metrics.peBasicExclExtraTTM.toFixed(1)}`                                  : null,
+    metrics?.beta                          ? `Beta: ${metrics.beta.toFixed(2)}`                                                    : null,
+    metrics?.["10DayAverageTradingVolume"] ? `10D Avg Volume: ${(metrics["10DayAverageTradingVolume"] * 1000).toLocaleString()}`   : null,
+    metrics?.revenueGrowthQuarterlyYoy     ? `Revenue Growth YoY (quarterly): ${metrics.revenueGrowthQuarterlyYoy.toFixed(1)}%`    : null,
+    metrics?.epsNormalizedAnnual           ? `EPS normalized (annual): $${metrics.epsNormalizedAnnual.toFixed(2)}`                 : null,
+    metrics?.marketCapitalization          ? `Market Cap: $${(metrics.marketCapitalization / 1000).toFixed(1)}B`                   : null,
+    latestRec
+      ? `Analyst Consensus (${latestRec.period}): Strong Buy ${latestRec.strongBuy} · Buy ${latestRec.buy} · Hold ${latestRec.hold} · Sell ${latestRec.sell} · Strong Sell ${latestRec.strongSell}`
+      : null,
   ].filter(Boolean).join("\n");
 
-  const userPrompt = `วิเคราะห์หุ้น ${ticker}\n\nข้อมูลตลาด:\n${metricsLines || "ไม่มีข้อมูล"}\n\nข่าวล่าสุด 7 วัน:\n${newsBlock}`;
+  const userPrompt = `# วิเคราะห์หุ้น ${ticker}${companyLine ? `\n${companyLine}` : ""}
+
+## ข้อมูลเชิงปริมาณ
+${metricsLines || "ไม่มีข้อมูลตัวเลข"}
+
+## ข่าวสำคัญ 7 วันล่าสุด
+${newsBlock}`.trim();
 
   try {
     const raw = await generateText(userPrompt, systemPrompt, {
-      maxTokens:   800,
-      temperature: 0.3,
+      maxTokens:   1200,
+      temperature: 0.2,
       jsonMode:    true,
     });
 

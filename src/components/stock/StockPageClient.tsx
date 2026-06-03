@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Card } from "@/components/Card";
@@ -10,6 +10,7 @@ import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
 import { ReverseDCF }   from "@/components/stock/ReverseDCF";
 import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
+import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -120,6 +121,18 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       })
       .catch(() => {});
   }, [user, ticker]);
+
+  // Lazy alert check — fire once when we get a live price, non-blocking
+  const alertCheckedRef = useRef(false);
+  useEffect(() => {
+    if (!user || !quote?.price || alertCheckedRef.current) return;
+    alertCheckedRef.current = true;
+    void fetch("/api/alerts/check-lazy", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ ticker, price: quote.price }),
+    }).catch(() => {});
+  }, [user, ticker, quote?.price]);
 
   useEffect(() => {
     if (!TICKER_RE.test(ticker)) return;
@@ -501,9 +514,12 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
 
   return (
     <Card className="p-4">
-      <h2 className="text-[11px] font-bold uppercase tracking-widest mb-3 text-slate-700">
-        ตั้งแจ้งเตือนราคา
-      </h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-700">
+          ตั้งแจ้งเตือนราคา
+        </h2>
+        <PushNotificationSetup compact />
+      </div>
 
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-2">
         <div className="flex gap-2 items-center flex-wrap">

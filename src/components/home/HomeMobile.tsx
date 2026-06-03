@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/userContext";
@@ -128,6 +128,7 @@ export function HomeMobile() {
       </div>
 
       <DailyDigestCard />
+      <TrendingTickerBar />
       <RadarPickCard />
 
       <div className="mx-3 mb-3">
@@ -145,6 +146,45 @@ export function HomeMobile() {
     </div>
   );
 }
+
+// ── Trending Ticker Bar ────────────────────────────────────────────────────────
+
+interface TickerCount { ticker: string; count: number; }
+
+function TrendingTickerBar() {
+  const [tickers, setTickers] = useState<TickerCount[]>([]);
+
+  useEffect(() => {
+    fetch("/api/discover")
+      .then((r) => r.json() as Promise<{ trendingTickers?: TickerCount[] }>)
+      .then((d) => setTickers(d.trendingTickers?.slice(0, 8) ?? []))
+      .catch(() => {});
+  }, []);
+
+  if (tickers.length === 0) return null;
+
+  return (
+    <div className="mx-3 mb-3">
+      <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+        หุ้นถูกพูดถึงมากสุด
+      </p>
+      <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        {tickers.map(({ ticker, count }) => (
+          <Link
+            key={ticker}
+            href={`/stock/${ticker}`}
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 rounded-full text-[9px] font-bold text-slate-700 hover:border-slate-400 transition-colors"
+          >
+            <span className="text-green-600">${ticker}</span>
+            <span className="text-slate-400 font-normal">{count}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 
 interface Holding {
   ticker:  string;
