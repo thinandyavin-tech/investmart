@@ -12,6 +12,7 @@ import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
+import type { MaConfig } from "@/components/PriceChart";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -43,28 +44,17 @@ interface StockDetailPanelProps {
 }
 
 interface Candle {
-  time:   number;
-  open:   number;
-  high:   number;
-  low:    number;
-  close:  number;
-  volume: number;
+  time: number; open: number; high: number; low: number; close: number; volume: number;
 }
 
 interface ProfileData {
-  description?:      string;
-  name?:             string;
-  exchange?:         string;
-  finnhubIndustry?:  string;
-  marketCapitalization?: number;
+  description?: string; name?: string; exchange?: string;
+  finnhubIndustry?: string; marketCapitalization?: number;
 }
 
 interface MetricData {
-  "52WeekHigh"?:            number;
-  "52WeekLow"?:             number;
-  marketCapitalization?:    number;
-  peBasicExclExtraTTM?:     number;
-  beta?:                    number;
+  "52WeekHigh"?: number; "52WeekLow"?: number;
+  marketCapitalization?: number; peBasicExclExtraTTM?: number; beta?: number;
 }
 
 function formatCap(capM: number): string {
@@ -76,14 +66,18 @@ function formatCap(capM: number): string {
 
 export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPanelProps) {
   const { user, refreshUser } = useUser();
-  const { quote, flash, isLive }        = useLiveQuote(stock.ticker);
+  const { quote, flash, isLive } = useLiveQuote(stock.ticker);
 
   const livePrice     = quote?.price     ?? stock.price;
   const liveChangePct = quote?.changePct ?? stock.change1D;
-  const flashBg       = flash === "up" ? "rgba(91,138,42,0.12)" : flash === "down" ? "rgba(229,72,77,0.12)" : undefined;
+  const flashBg       =
+    flash === "up"   ? "rgba(22,163,74,0.08)" :
+    flash === "down" ? "rgba(220,38,38,0.08)" : undefined;
 
   const [timeframe, setTimeframe] = useState<Timeframe>(initialTf);
   const [chartMode, setChartMode] = useState<ChartMode>("Price");
+  const [showRsi, setShowRsi]     = useState(false);
+  const [maConfig, setMaConfig]   = useState<MaConfig>({ ma20: false, ma50: false, ma200: false });
   const [candles, setCandles]     = useState<Candle[]>([]);
   const [simulated, setSimulated] = useState(false);
   const [profile, setProfile]     = useState<ProfileData | null>(null);
@@ -91,12 +85,11 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   const [aiReason, setAiReason]   = useState("");
   const [loadingAi, setLoadingAi] = useState(false);
 
-  const [shares, setShares]           = useState("1");
-  const [trading, setTrading]         = useState(false);
-  const [tradeMsg, setTradeMsg]       = useState("");
+  const [shares, setShares]                   = useState("1");
+  const [trading, setTrading]                 = useState(false);
+  const [tradeMsg, setTradeMsg]               = useState("");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  // Reset when stock changes
   useEffect(() => {
     setCandles([]);
     setSimulated(false);
@@ -106,7 +99,6 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
     setTradeMsg("");
   }, [stock.ticker]);
 
-  // Fetch history
   useEffect(() => {
     async function load() {
       try {
@@ -122,20 +114,14 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
     void load();
   }, [stock.ticker, timeframe]);
 
-  // Fetch profile + metrics (lazy)
   useEffect(() => {
     async function load() {
       try {
         const res  = await fetch(`/api/stock/profile?symbol=${stock.ticker}`);
-        const data = (await res.json()) as {
-          profile: ProfileData;
-          metrics: { metric?: MetricData };
-        };
+        const data = (await res.json()) as { profile: ProfileData; metrics: { metric?: MetricData } };
         setProfile(data.profile ?? null);
         setMetrics(data.metrics?.metric ?? null);
-      } catch {
-        /* non-fatal */
-      }
+      } catch { /* non-fatal */ }
     }
     void load();
   }, [stock.ticker]);
@@ -157,16 +143,9 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   }
 
   async function executeTrade(side: "BUY" | "SELL") {
-    if (!user) {
-      setShowLoginPrompt(true);
-      return;
-    }
+    if (!user) { setShowLoginPrompt(true); return; }
     const sharesNum = parseFloat(shares);
-    if (isNaN(sharesNum) || sharesNum <= 0) {
-      setTradeMsg("กรุณากรอกจำนวนหุ้น");
-      return;
-    }
-
+    if (isNaN(sharesNum) || sharesNum <= 0) { setTradeMsg("กรุณากรอกจำนวนหุ้น"); return; }
     setTrading(true);
     setTradeMsg("");
     try {
@@ -197,41 +176,35 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   const m = metrics;
 
   return (
-    <div className="p-3 flex flex-col gap-3 text-[#1F1A14]">
+    <div className="p-4 flex flex-col gap-3 text-slate-900">
       {showLoginPrompt && (
         <LoginPromptModal
           message="เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง · เริ่มต้นด้วย ฿1,250,000"
           onClose={() => setShowLoginPrompt(false)}
         />
       )}
+
       {/* Header */}
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3" style={{ background: flashBg, transition: "background 0.3s" }}>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[10px] text-[#8A8378] uppercase tracking-wide truncate">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide truncate">
               {profile?.name ?? stock.companyName} · {stock.exchange}
             </p>
             {isLive && (
-              <span
-                className="text-[8px] font-bold px-1 py-0.5 rounded-sm flex-shrink-0"
-                style={{ background: "#9BE15D", color: "#1F1A14" }}
-              >
+              <span className="text-[8px] font-semibold px-1.5 py-0.5 rounded-md bg-green-100 text-green-700 flex-shrink-0">
                 LIVE
               </span>
             )}
           </div>
-          <h1
-            className="text-3xl font-bold leading-none"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
+          <h1 className="text-3xl font-bold leading-none text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
             {stock.ticker}
           </h1>
           <p
             className="text-lg font-bold mt-1 transition-colors duration-300"
             style={{
               fontFamily: "var(--font-mono)",
-              color:      liveChangePct >= 0 ? "#5B8A2A" : "#E5484D",
-              background: flashBg,
+              color: liveChangePct >= 0 ? "#16A34A" : "#DC2626",
             }}
           >
             ${livePrice.toFixed(2)}{" "}
@@ -245,39 +218,38 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-[10px] text-[#8A8378] leading-relaxed border border-[#1F1A14] p-2 bg-[#F3EDE0] line-clamp-3">
+        <p className="text-[10px] text-slate-600 leading-relaxed border border-slate-100 rounded-lg p-3 bg-slate-50 line-clamp-3">
           {profile.description}
         </p>
       )}
 
-      {/* Chart mode tabs */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {(["Price", "Relative", "Volume"] as const).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => setChartMode(mode)}
-            className="px-3 py-0.5 text-[10px] border border-[#1F1A14] font-bold transition-colors"
-            style={{
-              background: chartMode === mode ? "#1F1A14" : "#F3EDE0",
-              color:      chartMode === mode ? "#F3EDE0" : "#1F1A14",
-            }}
-          >
-            {mode}
-          </button>
-        ))}
-        <button className="px-3 py-0.5 text-[10px] border border-[#1F1A14] font-bold text-[#8A8378]">
-          PEG
-        </button>
-        <div className="ml-auto flex gap-1">
+      {/* Chart controls */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex rounded-lg bg-slate-100 p-0.5 gap-0.5">
+          {(["Price", "Relative", "Volume"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setChartMode(mode)}
+              className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                chartMode === mode
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+        <div className="ml-auto flex gap-1 flex-wrap">
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
-              className="px-1.5 py-0.5 text-[9px] border border-[#1F1A14] font-bold"
-              style={{
-                background: timeframe === tf ? "#1F1A14" : "#F3EDE0",
-                color:      timeframe === tf ? "#F3EDE0" : "#1F1A14",
-              }}
+              className={`px-1.5 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
+                timeframe === tf
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-500 hover:bg-slate-100"
+              }`}
             >
               {tf}
             </button>
@@ -285,33 +257,73 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
         </div>
       </div>
 
+      {/* Indicator toggles (MA + RSI) — only shown for Price mode */}
+      {chartMode === "Price" && (
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {(
+            [
+              { key: "ma20"  as const, label: "MA20",  color: "#2563EB" },
+              { key: "ma50"  as const, label: "MA50",  color: "#D97706" },
+              { key: "ma200" as const, label: "MA200", color: "#7C3AED" },
+            ] as const
+          ).map(({ key, label, color }) => (
+            <button
+              key={key}
+              onClick={() => setMaConfig((prev) => ({ ...prev, [key]: !prev[key] }))}
+              className={`px-2 py-0.5 text-[9px] font-bold rounded-md border transition-colors ${
+                maConfig[key]
+                  ? "text-white border-transparent"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+              }`}
+              style={maConfig[key] ? { backgroundColor: color, borderColor: color } : undefined}
+            >
+              {label}
+            </button>
+          ))}
+          <button
+            onClick={() => setShowRsi((v) => !v)}
+            className={`px-2 py-0.5 text-[9px] font-bold rounded-md border transition-colors ${
+              showRsi
+                ? "bg-violet-500 text-white border-violet-500"
+                : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+            }`}
+          >
+            RSI
+          </button>
+        </div>
+      )}
+
       {/* Price chart */}
-      <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={160} />
+      <PriceChart
+        candles={candles}
+        mode={chartMode}
+        simulated={simulated}
+        height={showRsi && chartMode === "Price" ? 300 : 200}
+        ma={maConfig}
+        showRsi={showRsi && chartMode === "Price"}
+      />
 
       {/* Metric cards */}
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-4 gap-2">
         {[
           {
             label: "MOMENTUM",
             value: `${liveChangePct >= 0 ? "+" : ""}${liveChangePct.toFixed(1)}%`,
-            color: liveChangePct >= 0 ? "#5B8A2A" : "#E5484D",
+            color: liveChangePct >= 0 ? "#16A34A" : "#DC2626",
           },
-          { label: "VOLUME SURGE", value: `${stock.volumeSurge.toFixed(1)}x`,   color: "#1F1A14" },
-          { label: "QUALITY",      value: String(stock.qualityScore),             color: "#1F1A14" },
+          { label: "VOL SURGE", value: `${stock.volumeSurge.toFixed(1)}x`,   color: "#0F172A" },
+          { label: "QUALITY",   value: String(stock.qualityScore),             color: "#0F172A" },
           {
             label: "MARKET CAP",
             value: m?.marketCapitalization
               ? formatCap(m.marketCapitalization)
               : formatCap(stock.marketCap / 1_000_000),
-            color: "#1F1A14",
+            color: "#0F172A",
           },
         ].map(({ label, value, color }) => (
-          <div key={label} className="border border-[#1F1A14] p-2 text-center bg-[#F3EDE0]">
-            <div className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5">{label}</div>
-            <div
-              className="text-sm font-bold"
-              style={{ fontFamily: "var(--font-mono)", color }}
-            >
+          <div key={label} className="border border-slate-100 rounded-xl p-2 text-center bg-white shadow-card">
+            <div className="text-[9px] text-slate-500 uppercase tracking-wide mb-0.5">{label}</div>
+            <div className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color }}>
               {value}
             </div>
           </div>
@@ -321,7 +333,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       {/* Extra metrics */}
       {m && (
         <>
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-3 gap-2">
             {[
               { label: "52W High",  value: m["52WeekHigh"]       ? `$${m["52WeekHigh"].toFixed(2)}`       : "N/A", tip: "ราคาสูงสุดในรอบ 52 สัปดาห์" },
               { label: "52W Low",   value: m["52WeekLow"]        ? `$${m["52WeekLow"].toFixed(2)}`        : "N/A", tip: "ราคาต่ำสุดในรอบ 52 สัปดาห์" },
@@ -331,18 +343,18 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
               { label: "SCORE",     value: `${stock.momentumScore}/100`,                                            tip: SCORE_TOOLTIPS.momentum },
             ].map(({ label, value, tip }) => (
               <Tooltip key={label} text={tip}>
-                <div className="border border-[#1F1A14] p-1.5 bg-[#F3EDE0] text-[10px] w-full">
-                  <div className="text-[9px] text-[#8A8378] uppercase tracking-wide">{label}</div>
-                  <div className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+                <div className="border border-slate-100 rounded-xl p-2 bg-white w-full shadow-card">
+                  <div className="text-[9px] text-slate-500 uppercase tracking-wide">{label}</div>
+                  <div className="font-bold text-slate-900 text-[11px]" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
                 </div>
               </Tooltip>
             ))}
           </div>
           {m.beta !== undefined && riskLabel(m.beta) && (
             <div className="flex items-center gap-2">
-              <span className="text-[9px] text-[#8A8378]">Risk Profile:</span>
+              <span className="text-[9px] text-slate-500">Risk Profile:</span>
               <span
-                className="text-[9px] px-1.5 py-0.5 font-bold border rounded-sm"
+                className="text-[9px] px-1.5 py-0.5 font-semibold border rounded-md"
                 style={{ borderColor: riskLabel(m.beta)!.color, color: riskLabel(m.beta)!.color }}
               >
                 {riskLabel(m.beta)!.label}
@@ -352,14 +364,13 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
         </>
       )}
 
-      {/* Current holding indicator */}
+      {/* Current holding */}
       {holding && (
-        <div className="border border-[#5B8A2A] p-2 bg-[#F3EDE0] text-[10px]">
-          <span className="font-bold text-[#5B8A2A]">ถืออยู่:</span>{" "}
-          <span style={{ fontFamily: "var(--font-mono)" }}>
-            {holding.shares} หุ้น · ต้นทุนเฉลี่ย ${holding.avgCost.toFixed(2)} ·{" "}
-            P/L{" "}
-            <span style={{ color: livePrice >= holding.avgCost ? "#5B8A2A" : "#E5484D" }}>
+        <div className="border border-green-200 rounded-xl p-3 bg-green-50 text-[10px]">
+          <span className="font-semibold text-green-700">ถืออยู่:</span>{" "}
+          <span className="text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>
+            {holding.shares} หุ้น · ต้นทุนเฉลี่ย ${holding.avgCost.toFixed(2)} · P/L{" "}
+            <span style={{ color: livePrice >= holding.avgCost ? "#16A34A" : "#DC2626" }}>
               {((livePrice - holding.avgCost) / holding.avgCost * 100).toFixed(1)}%
             </span>
           </span>
@@ -367,19 +378,19 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       )}
 
       {/* Trade panel */}
-      <div className="border border-[#1F1A14] p-3 bg-[#F3EDE0] flex flex-col gap-2">
+      <div className="border border-slate-200 rounded-xl p-4 bg-white flex flex-col gap-3">
         {!user ? (
           <div className="text-center">
-            <p className="text-[10px] text-[#8A8378] mb-2">เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง</p>
+            <p className="text-[10px] text-slate-500 mb-2">เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง</p>
             <OffsetButton variant="lime" onClick={() => setShowLoginPrompt(true)}>
               เข้าสู่ระบบ
             </OffsetButton>
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-[9px] text-[#8A8378] uppercase tracking-wide block mb-0.5" htmlFor="shares-input">
+                <label className="text-[9px] text-slate-500 uppercase tracking-wide block mb-1" htmlFor="shares-input">
                   จำนวนหุ้น
                 </label>
                 <input
@@ -390,61 +401,54 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
                   min="0.001"
                   step="1"
                   onChange={(e) => setShares(e.target.value)}
-                  className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-2 py-1 text-xs font-bold"
+                  className="w-full border border-slate-200 rounded-lg bg-white px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
                   style={{ fontFamily: "var(--font-mono)" }}
                 />
               </div>
               <div className="text-right text-[10px]">
-                <div className="text-[#8A8378]">ราคา</div>
-                <div className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+                <div className="text-slate-500">ราคา</div>
+                <div className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
                   ${livePrice.toFixed(2)}
                 </div>
-                <div className="text-[9px] text-[#8A8378]">
+                <div className="text-[9px] text-slate-400">
                   รวม ${(parseFloat(shares || "0") * livePrice).toFixed(2)}
                 </div>
               </div>
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => executeTrade("BUY")}
+                onClick={() => void executeTrade("BUY")}
                 disabled={trading}
-                className="flex-1 py-2 border-2 border-[#1F1A14] font-bold text-xs uppercase tracking-wide text-[#1F1A14] hatch-buy disabled:opacity-50"
-                style={{ boxShadow: "2px 2px 0 #9BE15D" }}
+                className="flex-1 py-2.5 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-xs uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
               >
                 BUY
               </button>
               <button
-                onClick={() => executeTrade("SELL")}
+                onClick={() => void executeTrade("SELL")}
                 disabled={trading}
-                className="flex-1 py-2 border-2 border-[#1F1A14] font-bold text-xs uppercase tracking-wide text-white hatch-sell disabled:opacity-50"
-                style={{ boxShadow: "2px 2px 0 #E5484D" }}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
               >
                 SELL
               </button>
             </div>
-            <div className="text-[9px] flex justify-between text-[#8A8378]">
-              <span>USD: <span className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>${user.cashUsd.toFixed(2)}</span></span>
-              <span>THB: <span className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>฿{user.cashThb.toLocaleString()}</span></span>
+            <div className="text-[9px] flex justify-between text-slate-500">
+              <span>USD: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>${user.cashUsd.toFixed(2)}</span></span>
+              <span>THB: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>฿{user.cashThb.toLocaleString()}</span></span>
             </div>
           </>
         )}
         {tradeMsg && (
-          <p
-            className="text-[10px] font-bold text-center"
-            style={{ color: tradeMsg.includes("✓") ? "#5B8A2A" : "#E5484D" }}
-          >
+          <p className="text-[10px] font-bold text-center" style={{ color: tradeMsg.includes("✓") ? "#16A34A" : "#DC2626" }}>
             {tradeMsg}
           </p>
         )}
-        <p className="text-[9px] text-[#8A8378] text-center">
-          จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
-        </p>
+        <p className="text-[9px] text-slate-400 text-center">จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน</p>
       </div>
 
       {/* AI Reasons */}
-      <div className="border border-[#1F1A14] p-3 bg-[#F3EDE0]">
+      <div className="border border-slate-100 rounded-xl p-4 bg-white">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-700">
             เหตุผลที่ติดเรดาร์
           </h3>
           {!aiReason && (
@@ -454,21 +458,16 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           )}
         </div>
         {aiReason ? (
-          <p className="text-[10px] leading-relaxed whitespace-pre-line">{aiReason}</p>
+          <p className="text-[10px] leading-relaxed whitespace-pre-line text-slate-700">{aiReason}</p>
         ) : (
-          <p className="text-[10px] text-[#8A8378] italic">
+          <p className="text-[10px] text-slate-400 italic">
             กดปุ่มเพื่อให้ AI วิเคราะห์ว่าหุ้นนี้ติดเรดาร์เพราะอะไร (เครื่องมือวิจัย ไม่ใช่การทำนาย)
           </p>
         )}
       </div>
 
-      {/* Why is it moving */}
       <WhyMovingCard ticker={stock.ticker} />
-
-      {/* AI Full Outlook */}
       <AiOutlookCard ticker={stock.ticker} />
-
-      {/* News */}
       <StockNewsSection ticker={stock.ticker} />
     </div>
   );

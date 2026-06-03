@@ -6,6 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { PortfolioChart } from "@/components/home/PortfolioChart";
+import { AiPortfolioCard } from "@/components/profile/AiPortfolioCard";
 
 const STARTING_THB = 1_250_000;
 const FALLBACK_FX  = 35.2;
@@ -173,6 +174,9 @@ export default function ProfilePage() {
             </div>
           </Card>
         )}
+
+        {/* AI Portfolio Analysis */}
+        {!loading && user && <AiPortfolioCard />}
 
         {/* Actions */}
         <Card className="p-3">

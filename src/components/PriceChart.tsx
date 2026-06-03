@@ -7,6 +7,7 @@ import {
   AreaSeries,
   HistogramSeries,
   LineSeries,
+  LineStyle,
   ColorType,
   type IChartApi,
   type UTCTimestamp,
@@ -22,7 +23,7 @@ interface Candle {
   volume: number;
 }
 
-interface MaConfig {
+export interface MaConfig {
   ma20?:  boolean;
   ma50?:  boolean;
   ma200?: boolean;
@@ -33,9 +34,10 @@ interface PriceChartProps {
   mode:       "Price" | "Relative" | "Volume";
   simulated?: boolean;
   height?:    number;
-  /** Use compact area sparkline regardless of mode (for small cards) */
+  /** Compact area sparkline regardless of mode (for small cards) */
   mini?:      boolean;
   ma?:        MaConfig;
+  showRsi?:   boolean;
 }
 
 function computeMA(closes: number[], period: number): ({ time: UTCTimestamp; value: number } | null)[] {
@@ -46,17 +48,44 @@ function computeMA(closes: number[], period: number): ({ time: UTCTimestamp; val
   });
 }
 
+function computeRSISeries(closes: number[], period = 14): (number | null)[] {
+  if (closes.length <= period) return closes.map(() => null);
+
+  const result: (number | null)[] = Array(period).fill(null);
+  const changes = closes.slice(1).map((c, i) => c - closes[i]);
+
+  let avgGain = 0, avgLoss = 0;
+  for (let i = 0; i < period; i++) {
+    if (changes[i] > 0) avgGain += changes[i];
+    else avgLoss -= changes[i];
+  }
+  avgGain /= period;
+  avgLoss /= period;
+
+  result.push(avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss));
+
+  for (let i = period; i < changes.length; i++) {
+    const gain = Math.max(0, changes[i]);
+    const loss = Math.max(0, -changes[i]);
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+    result.push(avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss));
+  }
+
+  return result;
+}
+
 const COLORS = {
-  bg:        "#F3EDE0",
-  grid:      "#E8E2D4",
-  border:    "#1F1A14",
-  text:      "#8A8378",
-  up:        "#5B8A2A",
-  down:      "#E5484D",
-  upFill:    "#5B8A2A44",
-  downFill:  "#E5484D44",
-  upLight:   "#5B8A2A22",
-  downLight: "#E5484D22",
+  bg:        "#FFFFFF",
+  grid:      "#F1F5F9",
+  border:    "#E2E8F0",
+  text:      "#64748B",
+  up:        "#16A34A",
+  down:      "#DC2626",
+  upFill:    "#16A34A44",
+  downFill:  "#DC262644",
+  upLight:   "#16A34A22",
+  downLight: "#DC262622",
 } as const;
 
 const BASE_OPTIONS = {
@@ -82,8 +111,8 @@ const BASE_OPTIONS = {
     fixRightEdge:  true,
   },
   crosshair: {
-    vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
-    horzLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
+    vertLine: { color: COLORS.text, labelBackgroundColor: "#1E293B" },
+    horzLine: { color: COLORS.text, labelBackgroundColor: "#1E293B" },
   },
   handleScroll: {
     mouseWheel:       true,
@@ -98,19 +127,30 @@ const BASE_OPTIONS = {
   },
 } as const;
 
-export function PriceChart({ candles, mode, simulated, height = 160, mini = false, ma }: PriceChartProps) {
+export function PriceChart({
+  candles,
+  mode,
+  simulated,
+  height = 160,
+  mini = false,
+  ma,
+  showRsi = false,
+}: PriceChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef     = useRef<IChartApi | null>(null);
 
-  // True candlestick+volume layout only for full-size Price mode
   const useCandlestick = mode === "Price" && !mini;
+
+  // Height splits (only meaningful for the candlestick layout)
+  const rsiPaneH    = showRsi && useCandlestick ? Math.round(height * 0.28) : 0;
+  const volPaneH    = Math.round(height * (showRsi && useCandlestick ? 0.17 : 0.25));
+  const candlePaneH = height - volPaneH - rsiPaneH;
 
   useEffect(() => {
     if (!containerRef.current || candles.length < 2) return;
 
-
-    const el   = containerRef.current;
-    const up   = candles[candles.length - 1].close >= candles[0].close;
+    const el    = containerRef.current;
+    const up    = candles[candles.length - 1].close >= candles[0].close;
     const color = up ? COLORS.up : COLORS.down;
 
     // ── Volume mode ──────────────────────────────────────────────────────────
@@ -197,28 +237,27 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
       return () => { ro.disconnect(); chart.remove(); chartRef.current = null; };
     }
 
-    // ── Price mode — full candlestick + volume pane ────────────────────────────
-    const volH    = Math.round(height * 0.25);
-    const candleH = height - volH;
-
+    // ── Price mode — full candlestick + volume [+ RSI] panes ──────────────────
     const candleEl = el.querySelector<HTMLDivElement>(".chart-candle")!;
     const volEl    = el.querySelector<HTMLDivElement>(".chart-vol")!;
+    const rsiEl    = showRsi ? el.querySelector<HTMLDivElement>(".chart-rsi") : null;
 
     const candleChart = createChart(candleEl, {
       ...BASE_OPTIONS,
       width:  el.clientWidth,
-      height: candleH,
+      height: candlePaneH,
       timeScale: { ...BASE_OPTIONS.timeScale, visible: false },
     });
 
     const volChart = createChart(volEl, {
       ...BASE_OPTIONS,
       width:  el.clientWidth,
-      height: volH,
+      height: volPaneH,
       layout: { ...BASE_OPTIONS.layout, fontSize: 9 },
-      grid: { vertLines: { color: COLORS.grid }, horzLines: { color: "transparent" } },
+      grid:   { vertLines: { color: COLORS.grid }, horzLines: { color: "transparent" } },
+      timeScale: { ...BASE_OPTIONS.timeScale, visible: !showRsi },
       crosshair: {
-        vertLine: { color: COLORS.text, labelBackgroundColor: COLORS.border },
+        vertLine: { color: COLORS.text, labelBackgroundColor: "#1E293B" },
         horzLine: { visible: false, labelVisible: false },
       },
     });
@@ -246,19 +285,19 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
 
     // MA overlays
     if (ma && candles.length >= 20) {
-      const closes = candles.map((c) => c.close);
+      const closes    = candles.map((c) => c.close);
       const maOptions = [
         { period: 20,  enabled: ma.ma20,  color: "#2563EB" },
         { period: 50,  enabled: ma.ma50,  color: "#D97706" },
         { period: 200, enabled: ma.ma200, color: "#7C3AED" },
       ];
-      for (const { period, enabled, color } of maOptions) {
+      for (const { period, enabled, color: maColor } of maOptions) {
         if (!enabled || candles.length < period) continue;
         const maSeries = candleChart.addSeries(LineSeries, {
-          color,
+          color: maColor,
           lineWidth: 1,
-          priceLineVisible: false,
-          lastValueVisible: false,
+          priceLineVisible:       false,
+          lastValueVisible:       false,
           crosshairMarkerVisible: false,
         });
         const maRaw = computeMA(closes, period);
@@ -285,27 +324,81 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
 
     candleChart.timeScale().fitContent();
 
-    // Sync time scales — guard flag prevents circular updates
+    // RSI pane
+    let rsiChart: IChartApi | null = null;
+    if (showRsi && rsiEl) {
+      rsiChart = createChart(rsiEl, {
+        ...BASE_OPTIONS,
+        width:  el.clientWidth,
+        height: rsiPaneH,
+        layout: { ...BASE_OPTIONS.layout, fontSize: 9 },
+        grid:   { vertLines: { color: COLORS.grid }, horzLines: { color: COLORS.grid } },
+        rightPriceScale: { ...BASE_OPTIONS.rightPriceScale, scaleMargins: { top: 0.1, bottom: 0.1 } },
+        crosshair: {
+          vertLine: { color: COLORS.text, labelBackgroundColor: "#1E293B" },
+          horzLine: { visible: false, labelVisible: false },
+        },
+      });
+
+      const rsiSeries = rsiChart.addSeries(LineSeries, {
+        color:      "#8B5CF6",
+        lineWidth:  1,
+        priceLineVisible:       false,
+        lastValueVisible:       true,
+        crosshairMarkerVisible: false,
+      });
+
+      const rsiValues = computeRSISeries(candles.map((c) => c.close));
+      rsiSeries.setData(
+        candles
+          .map((c, i) =>
+            rsiValues[i] !== null
+              ? { time: c.time as UTCTimestamp, value: rsiValues[i] as number }
+              : null
+          )
+          .filter((d): d is { time: UTCTimestamp; value: number } => d !== null)
+      );
+
+      rsiSeries.createPriceLine({ price: 70, color: "#EF4444", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true,  title: "" });
+      rsiSeries.createPriceLine({ price: 50, color: "#94A3B8", lineWidth: 1, lineStyle: LineStyle.Dotted, axisLabelVisible: false, title: "" });
+      rsiSeries.createPriceLine({ price: 30, color: "#22C55E", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true,  title: "" });
+    }
+
+    // Sync all time scales — guard flag prevents circular updates
     let syncing = false;
     const onCandleRangeChange: LogicalRangeChangeEventHandler = (range) => {
       if (syncing || !range) return;
       syncing = true;
       volChart.timeScale().setVisibleLogicalRange(range);
+      rsiChart?.timeScale().setVisibleLogicalRange(range);
       syncing = false;
     };
     const onVolRangeChange: LogicalRangeChangeEventHandler = (range) => {
       if (syncing || !range) return;
       syncing = true;
       candleChart.timeScale().setVisibleLogicalRange(range);
+      rsiChart?.timeScale().setVisibleLogicalRange(range);
       syncing = false;
     };
+    const onRsiRangeChange: LogicalRangeChangeEventHandler = (range) => {
+      if (syncing || !range) return;
+      syncing = true;
+      candleChart.timeScale().setVisibleLogicalRange(range);
+      volChart.timeScale().setVisibleLogicalRange(range);
+      syncing = false;
+    };
+
     candleChart.timeScale().subscribeVisibleLogicalRangeChange(onCandleRangeChange);
     volChart.timeScale().subscribeVisibleLogicalRangeChange(onVolRangeChange);
+    if (rsiChart) {
+      rsiChart.timeScale().subscribeVisibleLogicalRangeChange(onRsiRangeChange);
+    }
 
     const ro = new ResizeObserver(() => {
       const w = el.clientWidth;
       candleChart.applyOptions({ width: w });
       volChart.applyOptions({ width: w });
+      rsiChart?.applyOptions({ width: w });
     });
     ro.observe(el);
 
@@ -313,31 +406,33 @@ export function PriceChart({ candles, mode, simulated, height = 160, mini = fals
       ro.disconnect();
       candleChart.timeScale().unsubscribeVisibleLogicalRangeChange(onCandleRangeChange);
       volChart.timeScale().unsubscribeVisibleLogicalRangeChange(onVolRangeChange);
+      if (rsiChart) {
+        rsiChart.timeScale().unsubscribeVisibleLogicalRangeChange(onRsiRangeChange);
+        rsiChart.remove();
+      }
       candleChart.remove();
       volChart.remove();
       chartRef.current = null;
     };
-  }, [candles, mode, height, mini, ma]);
+  }, [candles, mode, height, mini, ma, showRsi, candlePaneH, volPaneH, rsiPaneH]);
 
   return (
-    <div className="relative border border-[#1F1A14] bg-[#F3EDE0]" style={{ height }}>
+    <div className="relative border border-slate-200 bg-white overflow-hidden" style={{ height }}>
       {simulated && (
-        <div
-          className="absolute top-1 right-1 text-[8px] px-1 z-10"
-          style={{ background: "#FFD9E8", color: "#D6336C" }}
-        >
+        <div className="absolute top-1 right-1 text-[8px] px-1.5 py-0.5 z-10 bg-rose-50 text-rose-600 rounded font-medium">
           simulated
         </div>
       )}
       {candles.length < 2 && (
-        <div className="absolute inset-0 flex items-center justify-center text-[10px] text-[#8A8378] z-10">
+        <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-400 z-10">
           {candles.length === 0 ? "กำลังโหลด..." : "ไม่มีข้อมูลกราฟ"}
         </div>
       )}
       {useCandlestick ? (
         <div ref={containerRef} className="w-full h-full flex flex-col">
-          <div className="chart-candle w-full" style={{ height: `${Math.round(height * 0.75)}px` }} />
-          <div className="chart-vol   w-full" style={{ height: `${Math.round(height * 0.25)}px` }} />
+          <div className="chart-candle w-full" style={{ height: `${candlePaneH}px` }} />
+          <div className="chart-vol   w-full" style={{ height: `${volPaneH}px` }} />
+          {showRsi && <div className="chart-rsi w-full" style={{ height: `${rsiPaneH}px` }} />}
         </div>
       ) : (
         <div ref={containerRef} className="w-full h-full" />

@@ -46,6 +46,8 @@
 body {
   background: #F8FAFC;
   color: #0F172A;
+  /* Disable double-tap zoom; single-tap zoom still disabled per-input below */
+  touch-action: manipulation;
 }
 
 /* Card shadow primitives — replaces retro offset shadows */
@@ -115,5 +117,12 @@ html {
   .page-fullheight {
     height: 100vh;
     max-height: 100vh;
+  }
+}
+
+/* Prevent iOS Safari from zooming in on input focus (font-size < 16px triggers auto-zoom) */
+@media screen and (max-width: 1024px) {
+  input, textarea, select {
+    font-size: max(16px, 1em) !important;
   }
 }
