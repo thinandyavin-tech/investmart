@@ -82,7 +82,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   // No usable cache — run a live scan, persist to DB, return
-  const { results, total } = await scanUniverse(universe, apiKey);
+  const { results, scanned, total } = await scanUniverse(universe, apiKey);
   await saveDbScan(universe, results, total).catch(() => { /* non-fatal */ });
   const filtered = applyFilters(results, opts);
   markNew(filtered, base);
@@ -90,5 +90,5 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     results: filtered, total, scannedAt: new Date().toISOString(), refreshing: false,
   };
   setScan(key, entry);
-  return NextResponse.json({ ...entry, cached: false });
+  return NextResponse.json({ ...entry, scanned, cached: false });
 }

@@ -28,9 +28,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   for (const universe of UNIVERSES) {
     const t0 = Date.now();
     try {
-      const { results, total } = await scanUniverse(universe, apiKey);
+      const { results, scanned, total } = await scanUniverse(universe, apiKey);
       await saveDbScan(universe, results, total);
-      summary[universe] = { scanned: results.length, total, durationMs: Date.now() - t0 };
+      summary[universe] = { scanned, total, durationMs: Date.now() - t0 };
     } catch (err) {
       summary[universe] = {
         scanned: 0, total: 0, durationMs: Date.now() - t0,

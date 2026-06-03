@@ -141,7 +141,7 @@ export function RadarPage() {
   const [timeframe, setTimeframe]   = useState<Timeframe>("1D");
   const [capSize, setCapSize]       = useState<CapSize>("ALL");
   const [filterDead, setFilterDead] = useState(true);
-  const [minScore, setMinScore]     = useState(20);
+  const [minScore, setMinScore]     = useState(0);
   const [search, setSearch]         = useState("");
 
   const [scanning, setScanning]                 = useState(false);
@@ -149,7 +149,8 @@ export function RadarPage() {
   const [stocks, setStocks]                     = useState<StockMetrics[]>([]);
   const [selected, setSelected]                 = useState<StockMetrics | null>(null);
   const [lastScanTime, setLastScanTime]         = useState("");
-  const [totalScanned, setTotalScanned]         = useState(0);
+  const [totalScanned, setTotalScanned]         = useState(0);  // universe size
+  const [actualScanned, setActualScanned]       = useState(0);  // stocks with valid data
   const [scanElapsed, setScanElapsed]           = useState("00:00");
   const [fromCache, setFromCache]               = useState(false);
   const [cacheRefreshing, setCacheRefreshing]   = useState(false);
@@ -189,11 +190,13 @@ export function RadarPage() {
       if (force) params.set("force", "true");
       const res  = await fetch(`/api/radar/scan?${params}`);
       const data = (await res.json()) as {
-        results: StockMetrics[]; total: number; scannedAt: string; cached: boolean; refreshing: boolean;
+        results: StockMetrics[]; total: number; scanned?: number;
+        scannedAt: string; cached: boolean; refreshing: boolean;
       };
       const results = data.results ?? [];
       setStocks(results);
       setTotalScanned(data.total ?? 0);
+      setActualScanned(data.scanned ?? results.length);
       setFromCache(data.cached ?? false);
       setCacheRefreshing(data.refreshing ?? false);
       setProgress(100);
@@ -362,21 +365,21 @@ export function RadarPage() {
 
         {/* Progress card */}
         <div className="border border-slate-200 rounded-xl p-3 bg-white text-[10px]">
-          <div className="flex justify-between mb-2">
-            <span className="text-slate-500">ฐานข้อมูล</span>
+          <div className="flex justify-between mb-1">
+            <span className="text-slate-500">สแกนแล้ว</span>
             <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>
-              {totalScanned.toLocaleString()} หุ้น
+              {actualScanned > 0 ? `${actualScanned.toLocaleString()}/${totalScanned.toLocaleString()}` : `${totalScanned.toLocaleString()} หุ้น`}
             </span>
           </div>
           <div className="h-1.5 bg-slate-100 rounded-full mb-2 overflow-hidden">
             <div
               className="h-full rounded-full bg-scan-gradient transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              style={{ width: scanning ? `${progress}%` : actualScanned > 0 ? `${Math.round((actualScanned / totalScanned) * 100)}%` : "100%" }}
             />
           </div>
           <div className="text-[9px] text-slate-400">
             {scanning ? `สแกนอยู่… ${scanElapsed}` :
-             fromCache ? `แคช · ${lastScanTime}${cacheRefreshing ? " · กำลังรีเฟรช" : ""}` :
+             fromCache ? `แคช · ${lastScanTime}${cacheRefreshing ? " · รีเฟรช" : ""}` :
              `อัพเดท ${lastScanTime}`}
           </div>
         </div>
@@ -565,7 +568,7 @@ export function RadarPage() {
         <div className="flex-1 overflow-y-auto">
           {scanning && (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <div className="text-xs text-slate-400">กำลังสแกน {totalScanned || "..."} หุ้น…</div>
+              <div className="text-xs text-slate-400">กำลังสแกน {totalScanned > 0 ? `${totalScanned} หุ้น` : "..."}…</div>
               <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-scan-gradient rounded-full transition-all" style={{ width: `${progress}%` }} />
               </div>
@@ -657,8 +660,8 @@ export function RadarPage() {
         {/* Mobile footer stats */}
         {!scanning && stocks.length > 0 && (
           <div className="lg:hidden border-t border-slate-200 px-3 py-2 flex gap-3 text-[9px] text-slate-500">
-            <span>ติดเรดาร์ <b className="text-slate-800">{sortedFiltered.length}</b></span>
-            <span>จาก <b className="text-slate-800">{totalScanned}</b> หุ้น</span>
+            <span>แสดง <b className="text-slate-800">{sortedFiltered.length}</b></span>
+            <span>สแกน <b className="text-slate-800">{actualScanned || totalScanned}/{totalScanned}</b></span>
             {fromCache && <span className="text-green-600 font-semibold">แคช</span>}
           </div>
         )}
