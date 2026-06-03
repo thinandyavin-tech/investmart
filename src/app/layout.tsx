@@ -3,7 +3,10 @@ import { Noto_Sans_Thai, Inter, JetBrains_Mono } from "next/font/google";
 import { UserProvider } from "@/lib/userContext";
 import { OnboardingModal } from "@/components/OnboardingModal";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
+
+const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
 
 const notoSansThai = Noto_Sans_Thai({
   subsets: ["thai", "latin"],
@@ -57,18 +60,24 @@ export default function RootLayout({
       lang="th"
       className={`${notoSansThai.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Inline script prevents FOUC when dark mode is the user's stored preference */}
+        <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
+      </head>
       <body
-        className="min-h-full flex flex-col bg-[#FBF7ED] text-[#1F1A14]"
+        className="min-h-full flex flex-col bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100"
         style={{
           fontFamily:
             "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif",
         }}
       >
-        <UserProvider>
-          {children}
-          <OnboardingModal />
-          <ServiceWorkerRegistrar />
-        </UserProvider>
+        <ThemeProvider>
+          <UserProvider>
+            {children}
+            <OnboardingModal />
+            <ServiceWorkerRegistrar />
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { RetroMenu } from "@/components/RetroMenu";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useUser } from "@/lib/userContext";
 
 const icons = [
@@ -37,17 +38,17 @@ export function IconRail() {
   return (
     <>
       <nav
-        className="fixed left-0 top-0 h-full w-12 bg-white border-r border-slate-200 flex flex-col items-center py-2 gap-1 z-40"
+        className="fixed left-0 top-0 h-full w-12 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col items-center py-2 gap-1 z-40"
         aria-label="แถบนำทางหลัก"
       >
         <button
           onClick={() => setMenuOpen(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           aria-label="เปิดเมนู"
         >
           <Logo size={20} />
         </button>
-        <div className="w-full h-px bg-slate-200 my-1" />
+        <div className="w-full h-px bg-slate-200 dark:bg-slate-700 my-1" />
         {icons.map(({ href, label, icon }) => (
           <Link
             key={href}
@@ -55,8 +56,8 @@ export function IconRail() {
             title={label}
             className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${
               isActive(href)
-                ? "bg-green-50 text-green-700"
-                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-green-50 dark:bg-slate-800 text-green-700 dark:text-green-400"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
             }`}
             aria-current={isActive(href) ? "page" : undefined}
           >
@@ -65,11 +66,12 @@ export function IconRail() {
         ))}
         <div className="mt-auto mb-1 flex flex-col items-center gap-1">
           <NotificationBell size="md" />
+          <ThemeToggle size="md" />
           {isAdmin && (
             <Link
               href="/admin"
               title="Admin"
-              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors text-slate-500"
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-slate-500 dark:text-slate-400"
             >
               <ShieldIcon />
             </Link>

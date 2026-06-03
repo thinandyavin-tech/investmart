@@ -16,8 +16,8 @@ export function Card({
 }: CardProps) {
   const base =
     variant === "outline"
-      ? "bg-white border border-slate-200 rounded-xl"
-      : "bg-white rounded-xl shadow-card border border-slate-100";
+      ? "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl"
+      : "bg-white dark:bg-slate-900 rounded-xl shadow-card border border-slate-100 dark:border-slate-700";
 
   return (
     <div className={`${base} ${className}`} {...props}>

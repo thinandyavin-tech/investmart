@@ -10,10 +10,12 @@ import { FeedSection } from "@/components/social/FeedSection";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
+import { EarningsCalendarCard } from "@/components/home/EarningsCalendarCard";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const QUICK_ACTIONS = [
   { href: "/radar",       label: "เรดาร์",     icon: "📡" },
@@ -39,20 +41,20 @@ export function HomeMobile() {
     : "เด็กฝึกหุ้น #----";
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
       {/* Sticky header */}
       <div className="sticky top-0 z-30 relative">
-        <header className="bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2.5">
+        <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-4 py-2.5">
           <Link
             href="/radar"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
             aria-label="เปิดเรดาร์แสกนหุ้น"
           >
             <RadarScanIcon />
           </Link>
 
           <button
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#0F172A] text-white text-xs font-bold tracking-widest rounded-full"
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-[#0F172A] dark:bg-slate-700 text-white text-xs font-bold tracking-widest rounded-full"
             onClick={() => setDropdownOpen((v) => !v)}
             aria-expanded={dropdownOpen}
             aria-haspopup="menu"
@@ -64,12 +66,13 @@ export function HomeMobile() {
           <div className="flex items-center gap-1">
             <Link
               href="/search"
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
               aria-label="ค้นหาหุ้น"
             >
               <SearchIcon size={18} />
             </Link>
             <NotificationBell size="sm" />
+            <ThemeToggle size="sm" />
           </div>
         </header>
 
@@ -118,7 +121,7 @@ export function HomeMobile() {
           <Link
             key={href}
             href={href}
-            className="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-xs text-slate-700 hover:border-slate-400 whitespace-nowrap flex-shrink-0 flex flex-col items-center gap-0.5 transition-colors"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 whitespace-nowrap flex-shrink-0 flex flex-col items-center gap-0.5 transition-colors"
             style={{ minWidth: "56px" }}
           >
             <span className="text-base leading-none" aria-hidden="true">{icon}</span>
@@ -129,6 +132,9 @@ export function HomeMobile() {
 
       <DailyDigestCard />
       <TrendingTickerBar />
+      <div className="mx-3 mb-3">
+        <EarningsCalendarCard />
+      </div>
       <RadarPickCard />
 
       <div className="mx-3 mb-3">
@@ -140,7 +146,7 @@ export function HomeMobile() {
       </div>
 
       {/* Feed with composer enabled */}
-      <div className="border-t border-slate-200 mt-1">
+      <div className="border-t border-slate-200 dark:border-slate-700 mt-1">
         <FeedSection showComposer compact />
       </div>
     </div>
@@ -173,7 +179,7 @@ function TrendingTickerBar() {
           <Link
             key={ticker}
             href={`/stock/${ticker}`}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 rounded-full text-[9px] font-bold text-slate-700 hover:border-slate-400 transition-colors"
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full text-[9px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
           >
             <span className="text-green-600">${ticker}</span>
             <span className="text-slate-400 font-normal">{count}</span>
@@ -227,14 +233,14 @@ function ProfileSection({
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold truncate text-slate-900">{loading ? "กำลังโหลด..." : displayName}</p>
-          <p className="text-[9px] text-slate-500 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
+          <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">{loading ? "กำลังโหลด..." : displayName}</p>
+          <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
         </div>
 
         {loggedIn && (
           <Link
             href="/u/me"
-            className="flex-shrink-0 text-[9px] font-semibold border border-slate-200 rounded-lg px-2 py-1 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors"
+            className="flex-shrink-0 text-[9px] font-semibold border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 hover:border-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
           >
             โปรไฟล์
           </Link>
@@ -247,28 +253,28 @@ function ProfileSection({
         <StatChip label="เงินสด ($)" value={loading ? "..." : `$${cashUsd.toFixed(0)}`}         mono />
         <button
           onClick={onToggleHoldings}
-          className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl text-center hover:border-slate-400 transition-colors"
+          className="flex flex-col items-center justify-center p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
           aria-expanded={holdingsOpen}
         >
-          <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-tight">ถือหุ้น</span>
-          <span className="text-xs font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
+          <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">ถือหุ้น</span>
+          <span className="text-xs font-bold text-slate-900 dark:text-slate-100" style={{ fontFamily: "var(--font-mono)" }}>
             {loading ? "..." : holdings.length}
           </span>
-          <span className="text-[8px] text-slate-400">{holdingsOpen ? "▴" : "▾"}</span>
+          <span className="text-[8px] text-slate-400 dark:text-slate-500">{holdingsOpen ? "▴" : "▾"}</span>
         </button>
       </div>
 
       {/* Collapsible holdings list */}
       {holdingsOpen && !loading && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
           {holdings.length === 0 ? (
-            <p className="text-[10px] text-slate-500 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
           ) : (
             <table className="w-full text-[10px] border-collapse">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-slate-100 dark:border-slate-700">
                   {["หุ้น", "หุ้น", "ต้นทุน"].map((h, i) => (
-                    <th key={i} className="text-left px-2 py-1.5 text-[8px] text-slate-500 font-semibold uppercase tracking-wide">
+                    <th key={i} className="text-left px-2 py-1.5 text-[8px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -276,12 +282,12 @@ function ProfileSection({
               </thead>
               <tbody>
                 {holdings.map((h) => (
-                  <tr key={h.ticker} className="border-b border-slate-100 last:border-0">
-                    <td className="px-2 py-1.5 font-bold text-slate-900">
+                  <tr key={h.ticker} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                    <td className="px-2 py-1.5 font-bold text-slate-900 dark:text-slate-100">
                       <Link href={`/stock/${h.ticker}`} className="hover:underline">{h.ticker}</Link>
                     </td>
-                    <td className="px-2 py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
-                    <td className="px-2 py-1.5 text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
+                    <td className="px-2 py-1.5 text-slate-700 dark:text-slate-300" style={{ fontFamily: "var(--font-mono)" }}>{h.shares}</td>
+                    <td className="px-2 py-1.5 text-slate-700 dark:text-slate-300" style={{ fontFamily: "var(--font-mono)" }}>${h.avgCost.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -301,13 +307,13 @@ function ProfileSection({
       )}
 
       {!loggedIn && !loading && noticeVisible && (
-        <div className="flex items-center justify-between px-3 py-2 text-[10px] border border-slate-200 bg-white rounded-xl">
-          <span className="text-slate-500">
-            <span className="font-bold text-slate-900">ใหม่!</span>{" "}
+        <div className="flex items-center justify-between px-3 py-2 text-[10px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl">
+          <span className="text-slate-500 dark:text-slate-400">
+            <span className="font-bold text-slate-900 dark:text-slate-100">ใหม่!</span>{" "}
             คุณกำลังใช้งานไอดีแบบไม่ได้ล็อกอินอยู่
           </span>
           <button
-            className="ml-2 text-slate-400 font-bold hover:text-slate-700 flex-shrink-0"
+            className="ml-2 text-slate-400 font-bold hover:text-slate-700 dark:hover:text-slate-200 flex-shrink-0"
             onClick={onDismissNotice}
             aria-label="ปิดประกาศ"
           >
@@ -321,9 +327,9 @@ function ProfileSection({
 
 function StatChip({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl text-center">
-      <span className="text-[9px] text-slate-500 uppercase tracking-wide leading-tight">{label}</span>
-      <span className="text-xs font-bold mt-0.5 text-slate-900" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
+    <div className="flex flex-col items-center justify-center p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-center">
+      <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">{label}</span>
+      <span className="text-xs font-bold mt-0.5 text-slate-900 dark:text-slate-100" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
         {value}
       </span>
     </div>

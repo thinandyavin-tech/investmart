@@ -24,7 +24,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center z-40 lg:hidden"
+      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center z-40 lg:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="แถบนำทางล่าง"
     >
@@ -55,7 +55,7 @@ export function BottomNav() {
             key={href}
             href={href}
             className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-[10px] transition-colors ${
-              active ? "text-green-600 font-semibold" : "text-slate-400"
+              active ? "text-green-600 dark:text-green-400 font-semibold" : "text-slate-400 dark:text-slate-500"
             }`}
             aria-label={label}
             aria-current={active ? "page" : undefined}

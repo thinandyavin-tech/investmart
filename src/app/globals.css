@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   /* Brand palette */
   --color-background:    #F8FAFC;
@@ -43,11 +45,22 @@
   --titlebar:      #000080;
 }
 
+html.dark {
+  --background:   #0F172A;
+  --paper:        #1E293B;
+  --text-primary: #F1F5F9;
+}
+
 body {
   background: #F8FAFC;
   color: #0F172A;
   /* Disable double-tap zoom; single-tap zoom still disabled per-input below */
   touch-action: manipulation;
+}
+
+html.dark body {
+  background: #0F172A;
+  color: #F1F5F9;
 }
 
 /* Card shadow primitives — replaces retro offset shadows */
