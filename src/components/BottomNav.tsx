@@ -12,11 +12,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: "/",       label: "Home",   icon: <HomeIcon /> },
-  { href: "/news",   label: "ข่าว",   icon: <NewspaperIcon /> },
-  { href: "/compose", label: "Plus",  icon: null, isPlus: true },
-  { href: "/chat",   label: "แชท",    icon: <ChatIcon /> },
-  { href: "/profile", label: "Profile", icon: <PersonIcon /> },
+  { href: "/",        label: "หน้าหลัก", icon: <HomeIcon /> },
+  { href: "/assets",  label: "Assets",   icon: <PieIcon /> },
+  { href: "/compose", label: "Plus",     icon: null, isPlus: true },
+  { href: "/radar",   label: "เรดาร์",   icon: <RadarIcon /> },
+  { href: "/profile", label: "โปรไฟล์",  icon: <PersonIcon /> },
 ];
 
 export function BottomNav() {
@@ -60,7 +60,7 @@ export function BottomNav() {
             aria-label={label}
             aria-current={active ? "page" : undefined}
           >
-            <span className={active ? "text-green-600" : "text-slate-400"}>
+            <span className={active ? "text-green-600 dark:text-green-400" : "text-slate-400 dark:text-slate-500"}>
               {icon}
             </span>
             <span>{label}</span>
@@ -79,26 +79,32 @@ function HomeIcon() {
     </svg>
   );
 }
+
+function PieIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+      <path d="M22 12A10 10 0 0 0 12 2v10z" />
+    </svg>
+  );
+}
+
+function RadarIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="12" r="2" />
+      <path d="M12 2a10 10 0 1 0 10 10" />
+      <path d="M12 6a6 6 0 1 0 6 6" />
+      <path d="M22 12h-2M12 2v2" />
+    </svg>
+  );
+}
+
 function PersonIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="7" r="4" />
       <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-    </svg>
-  );
-}
-function ChatIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-function NewspaperIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-      <path d="M18 14h-8M15 18h-5M10 6h8v4h-8z" />
     </svg>
   );
 }

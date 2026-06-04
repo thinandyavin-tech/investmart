@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { getPersonaById } from "@/lib/personas";
 import { generateText } from "@/lib/aiService";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -119,6 +121,9 @@ const DEFAULT_SYSTEM_PROMPT = `คุณคือนักวิเคราะ�
 {"thesis":"สรุปมุมมองรวม 1-2 ประโยคที่มีจุดยืนชัดเจน","conviction":"low|medium|high","convictionReason":"เหตุผลเฉพาะที่กำหนด conviction ระดับนี้ อ้างอิงข้อมูลที่ให้มา","bull":{"description":"สถานการณ์ที่ดีที่สุดที่น่าจะเป็นไปได้ พร้อมกลไกที่จะทำให้เกิดขึ้น","probability":"XX%"},"base":{"description":"สถานการณ์กลางที่น่าจะเป็นที่สุด พร้อมกลไกหลัก","probability":"XX%"},"bear":{"description":"สถานการณ์ที่แย่ที่สุดที่เป็นไปได้ พร้อมกลไกที่จะทำให้เกิดขึ้น","probability":"XX%"},"drivers":["ปัจจัยขับเคลื่อนสำคัญที่สุดในขณะนี้","ปัจจัยที่ 2 ที่มีน้ำหนัก","ปัจจัยที่ 3 ที่ต้องติดตาม"],"risk":"ความเสี่ยงหลักที่สำคัญที่สุดที่นักลงทุนต้องติดตาม","invalidation":"เงื่อนไขที่วัดได้ซึ่งถ้าเกิดขึ้นจะพิสูจน์ว่า thesis นี้ผิด"}`;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
+
   const params    = request.nextUrl.searchParams;
   const ticker    = params.get("ticker")?.toUpperCase().trim();
   const personaId = params.get("persona") ?? "general";

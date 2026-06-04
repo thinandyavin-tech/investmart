@@ -4,10 +4,11 @@ import type { Universe } from "@/lib/stockUniverse";
 
 // Runs on schedule and on-demand to pre-compute radar scans for all universes.
 // Vercel invokes this with Authorization: Bearer <CRON_SECRET>.
+// Timing: SP500 ~110s, NASDAQ100 ~25s, SET100 ~20s → total ~155s, safely under 300s.
 export const dynamic    = "force-dynamic";
-export const maxDuration = 300; // seconds — full S&P 500 + Nasdaq-100 scan fits in ~60 s
+export const maxDuration = 300;
 
-const UNIVERSES: readonly Universe[] = ["SP500", "NASDAQ100"] as const;
+const UNIVERSES: readonly Universe[] = ["SP500", "NASDAQ100", "SET100"] as const;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const secret = process.env.CRON_SECRET;

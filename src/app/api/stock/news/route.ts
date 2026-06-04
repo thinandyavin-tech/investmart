@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { applyRateLimit } from "@/lib/rateLimit";
+
 const TICKER_RE    = /^[A-Z][A-Z0-9.\-]{0,9}$/;
 const MAX_ARTICLES = 10;
 const ONE_WEEK_MS  = 7 * 24 * 60 * 60 * 1000;
@@ -34,6 +36,9 @@ function mapArticle(a: FinnhubArticle) {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "quote");
+  if (limited) return limited;
+
   const ticker = request.nextUrl.searchParams.get("symbol")?.toUpperCase().trim() ?? "";
 
   if (!TICKER_RE.test(ticker)) {

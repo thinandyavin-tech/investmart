@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
+
 import { streamChat } from "@/lib/aiService";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,7 @@ const DATA_TTL_MS  = 5 * 60 * 1000; // 5-minute live data cache
 const BodySchema = z.object({
   messages: z.array(z.object({
     role:    z.enum(["user", "assistant"]),
-    content: z.string().max(2000),
+    content: z.string().max(8000), // AI replies can be 3-4k chars at maxTokens:1000
   })).min(1).max(MAX_MESSAGES),
   ticker: z.string().regex(/^[A-Z][A-Z.\-]{0,9}$/).optional(),
 });
@@ -171,6 +173,9 @@ function buildSystemPrompt(liveBlocks: string[]): string {
 // ─── Route handler ───────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest): Promise<Response> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
+
   const hasAi      = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
   const finnhubKey = process.env.FINNHUB_API_KEY;
 

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const SUPPORTED      = ["THB", "USD"] as const;
 const FALLBACK_USDTHB = 35.2;
@@ -30,6 +32,9 @@ async function fetchUsdThbRate(): Promise<number> {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = await applyRateLimit(request, "write");
+  if (limited) return limited;
+
   const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ error: "ยังไม่ได้เข้าสู่ระบบ" }, { status: 401 });

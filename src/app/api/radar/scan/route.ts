@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { type Universe } from "@/lib/stockUniverse";
 import { filterByCapSize, type CapSize } from "@/lib/momentum";
 import type { StockMetrics } from "@/lib/momentum";
 import { getScan, setScan, isStale, getBaseline, type ScanEntry } from "@/lib/scanCache";
 import { scanUniverse, loadDbScan, saveDbScan, dbScanFresh, dbScanUsable } from "@/lib/radarScan";
+import { applyRateLimit } from "@/lib/rateLimit";
 
-export const dynamic = "force-dynamic";
+export const dynamic    = "force-dynamic";
+export const maxDuration = 300; // full SP500 live scan takes ~110 s; SET100 ~30 s
 
 interface FilterOpts {
   minScore:   number;
@@ -30,6 +33,9 @@ function markNew(results: StockMetrics[], base: Set<string>): void {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "scan");
+  if (limited) return limited;
+
   const params     = request.nextUrl.searchParams;
   const universe   = (params.get("universe") ?? "SP500") as Universe;
   const minScore   = parseInt(params.get("minScore") ?? "20", 10);

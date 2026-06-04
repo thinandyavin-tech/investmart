@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/lib/userContext";
 import { OffsetButton } from "@/components/OffsetButton";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 const STORAGE_KEY = "investmart_onboarding_v1";
 
 export function OnboardingModal() {
   const { user, loading } = useUser();
   const [visible, setVisible] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, visible, dismiss);
 
   useEffect(() => {
     if (loading) return;
@@ -35,6 +38,7 @@ export function OnboardingModal() {
       onClick={dismiss}
     >
       <div
+        ref={dialogRef}
         className="w-full max-w-sm mx-4 mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#F3EDE0]"
         style={{ boxShadow: "6px 6px 0 #1F1A14" }}
         onClick={(e) => e.stopPropagation()}

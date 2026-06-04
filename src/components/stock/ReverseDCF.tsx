@@ -73,8 +73,8 @@ function InputRow({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={required ? "ต้องใส่" : "optional"}
-          className={`w-full px-2 py-1 text-[10px] border rounded-md outline-none transition-colors font-mono
-            ${required && !value ? "border-amber-400 bg-amber-50 focus:border-amber-500" : "border-slate-200 bg-white focus:border-green-500"}`}
+          className={`w-full px-2 py-1 text-[10px] border rounded-md focus:outline-none focus-visible:ring-1 transition-colors font-mono
+            ${required && !value ? "border-amber-400 bg-amber-50 focus:border-amber-500 focus-visible:ring-amber-400" : "border-slate-200 bg-white focus:border-green-500 focus-visible:ring-green-500"}`}
           aria-required={required}
         />
         {unit && <span className="text-[9px] text-slate-400 flex-shrink-0">{unit}</span>}

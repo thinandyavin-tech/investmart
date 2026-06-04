@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const CSP = [
   "default-src 'self'",
@@ -7,7 +8,8 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self'",
+  // Sentry error reporting + Vercel Analytics
+  "connect-src 'self' *.ingest.sentry.io *.ingest.us.sentry.io vitals.vercel-insights.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
@@ -36,4 +38,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org:       process.env.SENTRY_ORG,
+  project:   process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Suppress build output unless in CI
+  silent: !process.env.CI,
+
+  // Upload source maps from a wider set of files for better stack traces
+  widenClientFileUpload: true,
+
+  // Delete source map files from the build output after uploading to Sentry
+  sourcemaps: {
+    filesToDeleteAfterUpload: [".next/**/*.map"],
+  },
+
+  // Tree-shake Sentry debug logger out of the production bundle
+  disableLogger: true,
+});

@@ -147,8 +147,15 @@ export function FloatingAssistant() {
     if (!trimmed || streaming) return;
 
     setError(null);
-    const outgoing: Message[] = [...messages, { role: "user", content: trimmed }];
-    setMessages([...outgoing, { role: "assistant", content: "" }]);
+
+    // Keep last 10 messages (5 turns) + new user message, truncate each to 6000 chars
+    // so accumulated history never exceeds server validation limits.
+    const history = messages.slice(-10).map(m => ({
+      ...m,
+      content: m.content.slice(0, 6000),
+    }));
+    const outgoing: Message[] = [...history, { role: "user", content: trimmed }];
+    setMessages([...messages, { role: "user", content: trimmed }, { role: "assistant", content: "" }]);
     setInput("");
     setStreaming(true);
 
@@ -164,15 +171,16 @@ export function FloatingAssistant() {
       });
 
       if (!res.ok || !res.body) {
-        const err = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(err.error ?? "AI ไม่พร้อมใช้งาน");
+        const errBody = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(errBody.error ?? "AI ไม่พร้อมใช้งาน");
       }
 
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
       let   buf     = "";
+      let   sseEnd  = false; // true once [DONE] is received
 
-      while (true) {
+      while (!sseEnd) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -183,7 +191,7 @@ export function FloatingAssistant() {
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6).trim();
-          if (payload === "[DONE]") break;
+          if (payload === "[DONE]") { sseEnd = true; break; }
           try {
             const chunk = JSON.parse(payload) as { token?: string; error?: string };
             if (chunk.error) throw new Error(chunk.error);
@@ -201,11 +209,15 @@ export function FloatingAssistant() {
           }
         }
       }
+
+      reader.cancel().catch(() => { /* cleanup only */ });
     } catch (err) {
-      if ((err as Error).name === "AbortError") return;
+      if ((err as Error).name === "AbortError") {
+        // AbortError is intentional (user hit reset); finally still runs.
+        return;
+      }
       const msg = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
       setError(msg);
-      // Remove the empty assistant placeholder
       setMessages(prev => {
         const last = prev[prev.length - 1];
         return last?.role === "assistant" && last.content === "" ? prev.slice(0, -1) : prev;

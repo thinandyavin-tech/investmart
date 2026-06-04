@@ -5,6 +5,7 @@ import { useUser } from "@/lib/userContext";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
+import { ONBOARDING_DONE_KEY } from "@/components/OnboardingFlow";
 
 export default function SettingsIdPage() {
   const { user, loading, refreshUser } = useUser();
@@ -128,6 +129,21 @@ export default function SettingsIdPage() {
               {msg}
             </p>
           )}
+        </Card>
+
+        <Card className="p-4 flex flex-col gap-2">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest">Onboarding</h2>
+          <p className="text-[9px] text-[#8A8378]">เล่น flow แนะนำแอปใหม่อีกครั้ง</p>
+          <OffsetButton
+            variant="white"
+            size="sm"
+            onClick={() => {
+              localStorage.removeItem(ONBOARDING_DONE_KEY);
+              window.location.reload();
+            }}
+          >
+            ? ดู Onboarding อีกครั้ง
+          </OffsetButton>
         </Card>
       </div>
     </AppShell>

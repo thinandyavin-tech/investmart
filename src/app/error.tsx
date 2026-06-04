@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import * as Sentry from "@sentry/nextjs";
 import { Logo } from "@/components/Logo";
 
 interface ErrorProps {
@@ -11,8 +12,7 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log to error monitoring in production
-    console.error("[InvestMart]", error.message);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

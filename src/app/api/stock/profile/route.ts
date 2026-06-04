@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { applyRateLimit } from "@/lib/rateLimit";
+
 export async function GET(request: NextRequest) {
+  const limited = await applyRateLimit(request, "quote");
+  if (limited) return limited;
+
   const symbol = request.nextUrl.searchParams.get("symbol");
   if (!symbol) {
     return NextResponse.json({ error: "symbol required" }, { status: 400 });

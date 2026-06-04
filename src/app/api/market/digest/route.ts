@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
 import { generateText } from "@/lib/aiService";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -46,7 +48,10 @@ async function fetchHeadlines(apiKey: string): Promise<string[]> {
   }
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
+
   if (!isStale() && cached) {
     return NextResponse.json(cached);
   }

@@ -31,8 +31,10 @@ const menuItems: MenuItem[] = [
   { href: "/watchlist",     label: "Watchlist",             icon: "👁" },
   { href: "/exchange",      label: "Exchange",             icon: "💱" },
   { href: "/history",       label: "ประวัติซื้อขาย",     icon: "📋" },
-  { href: "/about",         label: "เกี่ยวกับ",          icon: "ℹ️" },
+  { href: "/learn",         label: "เรียนรู้",            icon: "📚" },
   { href: "/glossary",      label: "คำศัพท์หุ้น",        icon: "📖" },
+  { href: "/faq",           label: "คำถามที่พบบ่อย",     icon: "❓" },
+  { href: "/about",         label: "เกี่ยวกับ",          icon: "ℹ️" },
 ];
 
 export function RetroMenu({ onClose }: RetroMenuProps) {

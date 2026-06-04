@@ -1,7 +1,9 @@
 import { createHash } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
+
 import { generateText } from "@/lib/aiService";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const MAX_HEADLINE = 300;
 const MAX_SNIPPET  = 500;
@@ -33,6 +35,9 @@ const SYSTEM_PROMPT = `คุณคือผู้สรุปข่าวกา
 6. ลงท้ายด้วย: "สรุปโดย AI · อ่านต้นฉบับเพื่อความครบถ้วน"`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
+
   const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
   if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });

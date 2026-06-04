@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
+
+import { generateText } from "@/lib/aiService";
 import type { StockMetrics } from "@/lib/momentum";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
-
-const GROQ_MODEL = "llama-3.3-70b-versatile";
 
 const SYSTEM_PROMPT = `คุณคือนักวิเคราะห์ตลาดหุ้นผู้เชี่ยวชาญ สรุปผลการสแกนเรดาร์หุ้นวันนี้เป็นภาษาไทย
 
@@ -24,8 +24,11 @@ const summaryCache = new Map<string, { text: string; cachedAt: number }>();
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const groqKey = process.env.GROQ_API_KEY;
-  if (!groqKey) return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+  const limited = await applyRateLimit(req, "ai");
+  if (limited) return limited;
+
+  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || process.env.LOCAL_AI_BASE_URL);
+  if (!hasAi) return NextResponse.json({ error: "AI not configured" }, { status: 503 });
 
   let body: SummaryRequest;
   try {
@@ -56,18 +59,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const userMsg = `สแกนจาก ${total} หุ้น · ติดเรดาร์ ${stocks.length} ตัว · บวก ${bullCount}/${stocks.length} · หุ้นเด่น: ${stockList}`;
 
   try {
-    const groq   = new Groq({ apiKey: groqKey });
-    const result = await groq.chat.completions.create({
-      model:       GROQ_MODEL,
-      messages:    [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: userMsg },
-      ],
-      max_tokens:  200,
-      temperature: 0.4,
-    });
-
-    const text = result.choices[0]?.message?.content?.trim() ?? "";
+    const text = await generateText(userMsg, SYSTEM_PROMPT, { maxTokens: 200, temperature: 0.4 });
     summaryCache.set(cacheKey, { text, cachedAt: Date.now() });
     return NextResponse.json({ summary: text });
   } catch {

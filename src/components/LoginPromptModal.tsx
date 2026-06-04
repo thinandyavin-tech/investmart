@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { useUser } from "@/lib/userContext";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 interface LoginPromptModalProps {
   message:   string;
@@ -11,6 +13,8 @@ interface LoginPromptModalProps {
 
 export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPromptModalProps) {
   const { initDemo } = useUser();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, true, onClose);
 
   async function handleDemo() {
     onClose();
@@ -27,6 +31,7 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
       aria-label="เข้าสู่ระบบเพื่อดำเนินการต่อ"
     >
       <div
+        ref={dialogRef}
         className="mx-4 w-full max-w-sm border-2 border-[#1F1A14] bg-[#FBF7ED]"
         style={{ boxShadow: "4px 4px 0 #1F1A14" }}
         onClick={(e) => e.stopPropagation()}

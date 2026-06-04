@@ -1,4 +1,5 @@
-// S&P 500 constituents (503 components, as of 2025)
+// S&P 500 constituents (~503 components, as of 2025-Q2).
+// Source: official S&P 500 index. Rebalances quarterly; update this list after each rebalance.
 export const SP500_TICKERS = [
   // Communication Services (22)
   "GOOGL","GOOG","META","NFLX","DIS","CMCSA","T","VZ","TMUS","CHTR",
@@ -64,6 +65,8 @@ export const SP500_TICKERS = [
   "NEE","SO","DUK","AEP","SRE","D","EXC","PCG","ES","EIX",
   "ATO","CEG","WEC","CNP","LNT","EVRG","NI","AEE","DTE","PPL",
   "CMS","NRG","AWK","XEL","PNW","AES","BKH","OTTR","NFG","SR","UTL",
+  // 2024–2025 index additions
+  "GEV","VST","SOLV","DELL","TKO",
 ] as const;
 
 // Nasdaq-100 Index (NDX) constituents — ~103 components including dual share classes.
@@ -93,6 +96,31 @@ export const NASDAQ100_TICKERS = [
   "PLTR","APP","AXON","MSTR","COIN",
   // International ADRs (Nasdaq-listed)
   "MELI","PDD","NXPI","ILMN","SIRI","BIDU","JD","NTES",
+  // Additional confirmed NDX members
+  "ANET","ADSK","CSGP","CHKP",
+] as const;
+
+// SET100 — Thailand Stock Exchange top-100 constituents (as of 2025-Q2).
+// Tickers use the .BK (Bangkok) suffix required by Finnhub.
+// Source: Stock Exchange of Thailand (set.or.th) SET100 index.
+// Rebalances semi-annually (January & July); update after each rebalance.
+// NOTE: Real-time quotes for SET stocks require Finnhub Growth/Premium plan.
+// On the free tier, quotes may be unavailable — the scan will skip tickers with c=0.
+export const SET100_TICKERS = [
+  "ADVANC.BK","AOT.BK","AP.BK","AWC.BK","BANPU.BK",
+  "BAY.BK","BBL.BK","BCH.BK","BDMS.BK","BEM.BK",
+  "BH.BK","BGRIM.BK","BJC.BK","BLA.BK","BTS.BK",
+  "CBG.BK","CENTEL.BK","CPAXT.BK","CPALL.BK","CPF.BK",
+  "CPN.BK","CRC.BK","DELTA.BK","EA.BK","EGCO.BK",
+  "GLOBAL.BK","GPSC.BK","GULF.BK","HANA.BK","HMPRO.BK",
+  "INTUCH.BK","IVL.BK","JMT.BK","KBANK.BK","KCE.BK",
+  "KKP.BK","KTB.BK","LH.BK","LHFG.BK","MAJOR.BK",
+  "MBK.BK","MINT.BK","MTC.BK","OR.BK","OSP.BK",
+  "PSH.BK","PTT.BK","PTTEP.BK","PTTGC.BK","QH.BK",
+  "RATCH.BK","SCB.BK","SCC.BK","SIRI.BK","SPALI.BK",
+  "STA.BK","STEC.BK","STGT.BK","SUPER.BK","TCAP.BK",
+  "TIDLOR.BK","TISCO.BK","TOP.BK","TQM.BK","TRUE.BK",
+  "TU.BK","TTB.BK","VGI.BK","WHA.BK",
 ] as const;
 
 export const CEO_PORTFOLIO_TICKERS = [
@@ -100,12 +128,13 @@ export const CEO_PORTFOLIO_TICKERS = [
   "RKLB","IONQ","JOBY","RGTI","QBTS","ARKG","ARKK","SMCI","APP","HIMS",
 ] as const;
 
-export type Universe = "SP500" | "NASDAQ100" | "CEO";
+export type Universe = "SP500" | "NASDAQ100" | "SET100" | "CEO";
 
 export function getUniverseTickers(universe: Universe): readonly string[] {
   switch (universe) {
     case "SP500":      return SP500_TICKERS;
     case "NASDAQ100":  return NASDAQ100_TICKERS;
+    case "SET100":     return SET100_TICKERS;
     case "CEO":        return CEO_PORTFOLIO_TICKERS;
   }
 }
@@ -243,6 +272,35 @@ export const SECTOR_MAP: Record<string, string> = {
   AES:"Utility",
   // ETFs / thematic
   ARKG:"ETF", ARKK:"ETF",
+  // 2024-2025 SP500/NDX additions
+  GEV:"Indust", VST:"Utility", SOLV:"Health", DELL:"Tech", TKO:"Comm",
+  ANET:"Tech",  ADSK:"Tech",   CSGP:"Tech",  CHKP:"Tech",
+  // SET100 — key sectors (remaining map to "Other" via fallback)
+  "PTT.BK":"Energy",  "PTTEP.BK":"Energy",  "PTTGC.BK":"Energy",
+  "TOP.BK":"Energy",  "BANPU.BK":"Energy",  "EA.BK":"Utility",
+  "GULF.BK":"Utility","BGRIM.BK":"Utility", "GPSC.BK":"Utility",
+  "RATCH.BK":"Utility","EGCO.BK":"Utility",
+  "KBANK.BK":"Finance","BBL.BK":"Finance",  "SCB.BK":"Finance",
+  "KTB.BK":"Finance", "BAY.BK":"Finance",   "TTB.BK":"Finance",
+  "TISCO.BK":"Finance","KKP.BK":"Finance",  "MTC.BK":"Finance",
+  "TIDLOR.BK":"Finance","LHFG.BK":"Finance","JMT.BK":"Finance",
+  "BDMS.BK":"Health", "BH.BK":"Health",     "BCH.BK":"Health",
+  "CPALL.BK":"Staples","CPF.BK":"Staples",  "HMPRO.BK":"Staples",
+  "MAKRO.BK":"Staples","CPAXT.BK":"Staples","OSP.BK":"Staples",
+  "CBG.BK":"Staples",
+  "ADVANC.BK":"Comm", "TRUE.BK":"Comm",     "INTUCH.BK":"Comm",
+  "VGI.BK":"Comm",
+  "SCC.BK":"Matls",   "IVL.BK":"Matls",     "STA.BK":"Matls",
+  "STGT.BK":"Matls",
+  "DELTA.BK":"Tech",  "HANA.BK":"Tech",     "KCE.BK":"Tech",
+  "LH.BK":"RealEst",  "CPN.BK":"RealEst",   "AP.BK":"RealEst",
+  "SPALI.BK":"RealEst","QH.BK":"RealEst",   "PSH.BK":"RealEst",
+  "AWC.BK":"RealEst",
+  "AOT.BK":"Indust",  "BTS.BK":"Indust",    "BEM.BK":"Indust",
+  "STEC.BK":"Indust", "WHA.BK":"Indust",    "AMATA.BK":"Indust",
+  "MINT.BK":"Consumer","CENTEL.BK":"Consumer","MAJOR.BK":"Consumer",
+  "CRC.BK":"Consumer","BJC.BK":"Consumer",  "MBK.BK":"Consumer",
+  "GLOBAL.BK":"Consumer",
 };
 
 export function getSector(ticker: string): string {

@@ -1,7 +1,10 @@
 import { createHash } from "crypto";
+
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { generateText } from "@/lib/aiService";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -70,6 +73,9 @@ Respond with exactly this JSON structure (no extra keys, no markdown):
 }`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
+
   const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
   if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });

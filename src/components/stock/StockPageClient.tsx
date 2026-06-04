@@ -187,9 +187,17 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
-      <Link href="/" className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors">
-        ← กลับหน้าหลัก
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/" className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors">
+          ← กลับหน้าหลัก
+        </Link>
+        <Link
+          href={`/compare?tickers=${ticker}`}
+          className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors border border-slate-200 px-2 py-1 rounded"
+        >
+          เทียบหุ้น →
+        </Link>
+      </div>
 
       {/* Header card */}
       <Card className={`p-4 transition-colors duration-300 ${flashBg}`}>

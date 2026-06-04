@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const FALLBACK_FX = 35.2;
 
@@ -45,6 +47,9 @@ async function fetchCurrentPrice(ticker: string): Promise<number | null> {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = await applyRateLimit(request, "write");
+  if (limited) return limited;
+
   const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ error: "ยังไม่ได้เข้าสู่ระบบ" }, { status: 401 });

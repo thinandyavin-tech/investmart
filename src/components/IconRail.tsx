@@ -11,6 +11,7 @@ import { useUser } from "@/lib/userContext";
 
 const icons = [
   { href: "/", label: "หน้าหลัก", icon: <HomeIcon /> },
+  { href: "/assets", label: "Assets", icon: <PieIcon /> },
   { href: "/radar", label: "เรดาร์", icon: <RadarIcon /> },
   { href: "/news", label: "ข่าว", icon: <NewspaperIcon /> },
   { href: "/chat", label: "แชท", icon: <ChatIcon /> },
@@ -120,6 +121,14 @@ function HomeIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M3 12L12 3l9 9" />
       <path d="M5 10v11h5v-7h4v7h5V10" />
+    </svg>
+  );
+}
+function PieIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+      <path d="M22 12A10 10 0 0 0 12 2v10z" />
     </svg>
   );
 }

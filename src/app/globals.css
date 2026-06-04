@@ -133,6 +133,26 @@ html {
   }
 }
 
+/* Respect reduced-motion preference for all transitions and animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+}
+
+/* Onboarding flow slide animations */
+@keyframes ob-fwd  { from { opacity: 0; translate: 14px 0 } to { opacity: 1; translate: 0 0 } }
+@keyframes ob-back { from { opacity: 0; translate: -14px 0 } to { opacity: 1; translate: 0 0 } }
+@media (prefers-reduced-motion: reduce) {
+  @keyframes ob-fwd  { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes ob-back { from { opacity: 0 } to { opacity: 1 } }
+}
+.ob-enter-fwd  { animation: ob-fwd  200ms ease forwards }
+.ob-enter-back { animation: ob-back 200ms ease forwards }
+
 /* Prevent iOS Safari from zooming in on input focus (font-size < 16px triggers auto-zoom) */
 @media screen and (max-width: 1024px) {
   input, textarea, select {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useId } from "react";
 import { OffsetButton } from "@/components/OffsetButton";
 import { CategoryBadge } from "@/components/radar/CategoryBadge";
 import { ScoreBadge } from "@/components/radar/ScoreBadge";
@@ -165,14 +165,25 @@ export function RadarPage() {
   const [aiSummary, setAiSummary]               = useState("");
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen]           = useState(false);
+  const [scanError, setScanError]               = useState<string | null>(null);
 
   const scanStartRef = useRef<number>(0);
   const timerRef     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sidebarId    = useId();
+
+  // Close sidebar with Escape key
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    function handler(e: KeyboardEvent) { if (e.key === "Escape") setSidebarOpen(false); }
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [sidebarOpen]);
 
   const runScan = useCallback(async (force = false) => {
     setScanning(true);
     setProgress(0);
     setStocks([]);
+    setScanError(null);
     setAiSummary("");
     scanStartRef.current = Date.now();
 
@@ -189,6 +200,11 @@ export function RadarPage() {
       const params = new URLSearchParams({ universe, minScore: String(minScore), capSize, filterDead: String(filterDead) });
       if (force) params.set("force", "true");
       const res  = await fetch(`/api/radar/scan?${params}`);
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string; retryAfter?: number };
+        setScanError(body.error ?? "เกิดข้อผิดพลาด กรุณาลองใหม่");
+        return;
+      }
       const data = (await res.json()) as {
         results: StockMetrics[]; total: number; scanned?: number;
         scannedAt: string; cached: boolean; refreshing: boolean;
@@ -335,8 +351,8 @@ export function RadarPage() {
         {/* Universe */}
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-500">กลุ่มหุ้น</div>
-          {(["SP500", "NASDAQ100", "CEO"] as Universe[]).map((u) => {
-            const labels: Record<Universe, string> = { SP500: "S&P 500", NASDAQ100: "Nasdaq 100", CEO: "CEO Portfolio" };
+          {(["SP500", "NASDAQ100", "SET100", "CEO"] as Universe[]).map((u) => {
+            const labels: Record<Universe, string> = { SP500: "S&P 500", NASDAQ100: "Nasdaq 100", SET100: "SET 100 🇹🇭", CEO: "CEO Portfolio" };
             return (
               <button
                 key={u}
@@ -459,11 +475,25 @@ export function RadarPage() {
       {/* ── Mobile sidebar drawer ────────────────────────────────────────────── */}
       {sidebarOpen && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 p-3 overflow-y-auto lg:hidden">
+          <div
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            id={sidebarId}
+            className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 p-3 overflow-y-auto lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="ตั้งค่าการสแกน"
+          >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-bold uppercase tracking-widest text-slate-700">ตั้งค่าการสแกน</span>
-              <button onClick={() => setSidebarOpen(false)} className="text-slate-400 font-bold text-sm hover:text-slate-900">✕</button>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="text-slate-400 font-bold text-sm hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none rounded"
+                aria-label="ปิดแถบตั้งค่า"
+              >✕</button>
             </div>
             <SidebarContent />
           </div>
@@ -564,6 +594,11 @@ export function RadarPage() {
           <SortHeader field="score"  label="SCORE" />
         </div>
 
+        {/* Accessible status announcement for screen readers */}
+        <p className="sr-only" aria-live="polite" aria-atomic="true">
+          {!scanning && stocks.length > 0 && `พบ ${sortedFiltered.length} หุ้น`}
+        </p>
+
         {/* Stock rows */}
         <div className="flex-1 overflow-y-auto">
           {scanning && (
@@ -574,7 +609,18 @@ export function RadarPage() {
               </div>
             </div>
           )}
-          {!scanning && sortedFiltered.length === 0 && (
+          {!scanning && scanError && (
+            <div role="alert" className="mx-3 my-4 p-3 border border-[#DC2626] bg-red-50 dark:bg-red-950 text-[11px] text-[#DC2626] flex items-center justify-between gap-3">
+              <span>{scanError}</span>
+              <button
+                onClick={() => void runScan(false)}
+                className="text-[10px] font-bold underline whitespace-nowrap hover:no-underline"
+              >
+                ลองใหม่อีกครั้ง
+              </button>
+            </div>
+          )}
+          {!scanning && !scanError && sortedFiltered.length === 0 && (
             <div className="text-center text-xs text-slate-400 py-8">ไม่พบหุ้น — ลองปรับตัวกรอง</div>
           )}
           {sortedFiltered.map((stock, i) => {

@@ -355,7 +355,7 @@ export function ScreenerClient() {
                   placeholder="min"
                   value={filters.minChange}
                   onChange={(e) => setFilter("minChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Change minimum %"
                 />
                 <span className="text-[9px] text-[#8A8378]">–</span>
@@ -364,7 +364,7 @@ export function ScreenerClient() {
                   placeholder="max"
                   value={filters.maxChange}
                   onChange={(e) => setFilter("maxChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Change maximum %"
                 />
               </div>
@@ -378,7 +378,7 @@ export function ScreenerClient() {
                 placeholder="0"
                 value={filters.minScore}
                 onChange={(e) => setFilter("minScore", e.target.value)}
-                className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                 aria-label="Minimum momentum score"
               />
             </div>
@@ -392,7 +392,7 @@ export function ScreenerClient() {
                   placeholder="min"
                   value={filters.minPE}
                   onChange={(e) => setFilter("minPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="P/E minimum"
                 />
                 <span className="text-[9px] text-[#8A8378]">–</span>
@@ -401,7 +401,7 @@ export function ScreenerClient() {
                   placeholder="max"
                   value={filters.maxPE}
                   onChange={(e) => setFilter("maxPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="P/E maximum"
                 />
               </div>
@@ -416,7 +416,7 @@ export function ScreenerClient() {
                   placeholder="min"
                   value={filters.minBeta}
                   onChange={(e) => setFilter("minBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Beta minimum"
                 />
                 <span className="text-[9px] text-[#8A8378]">–</span>
@@ -425,7 +425,7 @@ export function ScreenerClient() {
                   placeholder="max"
                   value={filters.maxBeta}
                   onChange={(e) => setFilter("maxBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] outline-none focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Beta maximum"
                 />
               </div>
