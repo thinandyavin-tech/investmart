@@ -51,11 +51,18 @@ html.dark {
   --text-primary: #F1F5F9;
 }
 
+/* Dark fallback matches the aurora's darkest corner — any WebGL repaint
+   flash during iOS scroll shows this colour instead of browser-default white. */
+html {
+  background-color: #0a0514;
+}
+
 body {
   background: transparent;
   color: #0F172A;
-  /* Disable double-tap zoom; single-tap zoom still disabled per-input below */
   touch-action: manipulation;
+  /* Prevent rubber-band overscroll from revealing the raw html background */
+  overscroll-behavior: none;
 }
 
 html.dark body {

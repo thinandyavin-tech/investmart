@@ -96,7 +96,9 @@ export function AuroraDrift({ className = "" }: { className?: string }) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;";
+    // backface-visibility + translate3d forces the canvas onto its own GPU layer,
+    // preventing iOS Safari from repainting it (and flashing) on every scroll frame.
+    canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translateZ(0);";
     container.appendChild(canvas);
 
     // gl is confirmed non-null after the early return below
