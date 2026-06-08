@@ -16,7 +16,7 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#FBF7ED] flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6">
       <div
         className="w-full max-w-sm bg-[#F3EDE0] border border-[#1F1A14] p-8 flex flex-col items-center gap-5"
         style={{ boxShadow: "4px 4px 0 #1F1A14" }}

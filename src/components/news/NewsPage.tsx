@@ -69,15 +69,15 @@ export function NewsPage() {
   }
 
   return (
-    <div className="flex flex-col page-fullheight bg-[#FBF7ED]">
+    <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
-      <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex-shrink-0">
+      <div className="border-b border-white/20 bg-white/60 backdrop-blur-md px-4 py-2.5 flex-shrink-0">
         <h1 className="text-xs font-bold uppercase tracking-widest">ข่าวตลาด · InvestMart</h1>
-        <p className="text-xs text-[#8A8378] mt-0.5">ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน</p>
+        <p className="text-xs text-slate-500 mt-0.5">ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน</p>
       </div>
 
       {/* Industry tabs */}
-      <div className="border-b border-[#1F1A14] bg-[#F3EDE0] flex-shrink-0 overflow-x-auto">
+      <div className="border-b border-white/20 bg-white/60 backdrop-blur-md flex-shrink-0 overflow-x-auto">
         <div className="flex min-w-max">
           {TABS.map(tab => (
             <button
@@ -85,8 +85,8 @@ export function NewsPage() {
               onClick={() => handleTab(tab.key)}
               className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
                 activeTab === tab.key
-                  ? "bg-[#1F1A14] text-[#F3EDE0]"
-                  : "text-[#8A8378] hover:bg-[#E8E2D4] hover:text-[#1F1A14]"
+                  ? "bg-violet-600 text-white"
+                  : "text-slate-500 hover:bg-white/30 hover:text-slate-900"
               }`}
             >
               <span className="mr-1">{tab.icon}</span>
@@ -99,12 +99,12 @@ export function NewsPage() {
       {/* Article list */}
       <div className="flex-1 overflow-y-auto">
         {loading && (
-          <div className="divide-y divide-[#E8E2D4]">
+          <div className="divide-y divide-white/20">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="px-4 py-3">
-                <div className="h-3 w-3/4 bg-[#E8E2D4] animate-pulse rounded mb-2" />
-                <div className="h-2.5 w-1/2 bg-[#E8E2D4] animate-pulse rounded mb-2" />
-                <div className="h-2 w-1/4 bg-[#E8E2D4] animate-pulse rounded" />
+                <div className="h-3 w-3/4 bg-white/30 animate-pulse rounded mb-2" />
+                <div className="h-2.5 w-1/2 bg-white/30 animate-pulse rounded mb-2" />
+                <div className="h-2 w-1/4 bg-white/30 animate-pulse rounded" />
               </div>
             ))}
           </div>
@@ -112,10 +112,10 @@ export function NewsPage() {
 
         {!loading && error && (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <p className="text-xs text-[#E5484D]">ไม่สามารถโหลดข่าวได้</p>
+            <p className="text-xs text-red-600">ไม่สามารถโหลดข่าวได้</p>
             <button
               onClick={() => void loadNews(activeTab)}
-              className="text-xs border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="text-xs border border-slate-300 px-3 py-1 hover:bg-slate-900 hover:text-white transition-colors"
             >
               ลองใหม่
             </button>
@@ -124,12 +124,12 @@ export function NewsPage() {
 
         {!loading && !error && articles.length === 0 && (
           <div className="flex items-center justify-center py-16">
-            <p className="text-xs text-[#8A8378]">ยังไม่มีข่าวล่าสุดในหมวดนี้</p>
+            <p className="text-xs text-slate-500">ยังไม่มีข่าวล่าสุดในหมวดนี้</p>
           </div>
         )}
 
         {!loading && !error && articles.length > 0 && (
-          <div className="divide-y divide-[#E8E2D4]">
+          <div className="divide-y divide-white/20">
             {(() => {
               const allHeadlines = articles.map(a => a.headline);
               return articles.map(a => (
@@ -153,7 +153,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
   };
 
   return (
-    <div className="px-4 py-3 hover:bg-[#F3EDE0] transition-colors">
+    <div className="px-4 py-3 hover:bg-white/50 transition-colors">
       <a
         href={a.url}
         target="_blank"
@@ -161,24 +161,24 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
         className="block group"
         aria-label={`${a.headline} — เปิดในแท็บใหม่`}
       >
-        <p className="text-[12px] leading-snug text-[#1F1A14] group-hover:underline mb-1.5">
+        <p className="text-sm leading-snug text-slate-900 group-hover:underline mb-1.5">
           {a.headline}
         </p>
       </a>
 
       <div className="flex items-center gap-2 flex-wrap">
         {a.ticker && (
-          <span className="text-xs font-bold border border-[#1F1A14] px-1.5 py-0.5 bg-[#F3EDE0]">
+          <span className="text-xs font-bold border border-slate-300 px-1.5 py-0.5 bg-white/50">
             {a.ticker}
           </span>
         )}
-        <span className="text-xs text-[#8A8378]">{a.source}</span>
-        <span className="text-xs text-[#8A8378]">·</span>
-        <span className="text-xs text-[#8A8378]">{timeAgo(a.datetime)}</span>
+        <span className="text-xs text-slate-500">{a.source}</span>
+        <span className="text-xs text-slate-500">·</span>
+        <span className="text-xs text-slate-500">{timeAgo(a.datetime)}</span>
       </div>
 
       {a.summary && (
-        <p className="text-xs text-[#8A8378] mt-1.5 leading-relaxed line-clamp-2">
+        <p className="text-xs text-slate-500 mt-1.5 leading-relaxed line-clamp-2">
           {a.summary}
         </p>
       )}

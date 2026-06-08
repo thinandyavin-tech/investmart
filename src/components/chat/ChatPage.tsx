@@ -112,7 +112,7 @@ export function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col page-fullheight bg-[#FBF7ED]">
+    <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
       <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
         <div className="flex-1">
@@ -217,7 +217,7 @@ export function ChatPage() {
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }}
               placeholder="พิมพ์ข้อความ... (กด Enter เพื่อส่ง)"
               maxLength={500}
-              className="flex-1 border border-[#1F1A14] bg-[#FBF7ED] px-3 py-1.5 text-xs placeholder:text-[#8A8378] focus:outline-none focus:border-[#5B8A2A]"
+              className="flex-1 border border-[#1F1A14] bg-transparent px-3 py-1.5 text-xs placeholder:text-[#8A8378] focus:outline-none focus:border-[#5B8A2A]"
               disabled={sending}
             />
             <button

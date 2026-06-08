@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Card } from "@/components/Card";
 
 interface Mover {
-  ticker: string;
-  price:  number;
-  change: number;
-  volume: number;
+  ticker:  string;
+  price:   number;
+  change:  number;
+  volume?: number;
 }
 
 interface MoversData {
@@ -28,19 +28,21 @@ const TAB_LABELS: Record<Tab, string> = {
 function MoverRow({ mover }: { mover: Mover }) {
   const positive     = mover.change >= 0;
   const changeColor  = positive ? "#16A34A" : "#DC2626";
-  const volumeMillions = (mover.volume / 1_000_000).toFixed(1);
+  const volDisplay = mover.volume && !isNaN(mover.volume)
+    ? `${(mover.volume / 1_000_000).toFixed(1)}M`
+    : `$${mover.price.toFixed(2)}`;
 
   return (
     <Link
       href={`/radar?ticker=${mover.ticker}`}
-      className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 transition-colors"
+      className="flex items-center justify-between px-3 py-2 hover:bg-white/30 transition-colors"
     >
-      <span className="text-xs font-bold w-14 flex-shrink-0">{mover.ticker}</span>
+      <span className="text-sm font-bold w-16 flex-shrink-0 font-mono">{mover.ticker}</span>
       <span
         className="text-xs text-slate-500 flex-1"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        {volumeMillions}M
+        {volDisplay}
       </span>
       <span
         className="text-xs font-bold w-16 text-right flex-shrink-0"

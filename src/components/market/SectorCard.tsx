@@ -68,9 +68,10 @@ export function SectorCard() {
           ))}
         </div>
       ) : sectors.length === 0 ? (
-        <p className="px-3 py-4 text-xs text-slate-500 text-center">
-          ไม่มีข้อมูล Sector
-        </p>
+        <div className="px-3 py-4 text-center">
+          <p className="text-xs text-slate-500 mb-1">ข้อมูล Sector ไม่พร้อมใช้งาน</p>
+          <p className="text-xs text-slate-400">Finnhub free tier ไม่รองรับ sector performance</p>
+        </div>
       ) : (
         <div className="divide-y divide-slate-100">
           {sectors.map(({ name, change }) => {
