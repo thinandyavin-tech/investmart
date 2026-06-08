@@ -4,12 +4,13 @@ import { withSentryConfig } from "@sentry/nextjs";
 const CSP = [
   "default-src 'self'",
   // Next.js requires unsafe-inline for hydration scripts; tighten with nonces in a future pass
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https:",
-  "font-src 'self' https://fonts.gstatic.com",
-  // Sentry error reporting + Vercel Analytics
-  "connect-src 'self' *.ingest.sentry.io *.ingest.us.sentry.io vitals.vercel-insights.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.tradingview.com s3.tradingview.com",
+  "style-src 'self' 'unsafe-inline' *.tradingview.com",
+  "img-src 'self' data: https: *.tradingview.com",
+  "font-src 'self' https://fonts.gstatic.com *.tradingview.com",
+  // Sentry error reporting + Vercel Analytics + TradingView widgets
+  "connect-src 'self' *.ingest.sentry.io *.ingest.us.sentry.io vitals.vercel-insights.com *.tradingview.com",
+  "frame-src 'self' *.tradingview.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

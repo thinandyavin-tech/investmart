@@ -11,6 +11,7 @@ import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import { PortfolioChart } from "@/components/home/PortfolioChart";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
 
 export function HomeDesktop() {
   const { user, loading } = useUser();
@@ -26,6 +27,7 @@ export function HomeDesktop() {
 
         {/* Right column */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
+          <TradingViewTickerTape />
           <MarketStatusBanner />
           <PortfolioChart />
           <StatCards

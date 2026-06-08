@@ -12,6 +12,7 @@ import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import { EarningsCalendarCard } from "@/components/home/EarningsCalendarCard";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
+import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
 import { BRAND_NAME_UPPER } from "@/lib/brand";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -93,6 +94,7 @@ export function HomeMobile() {
       </div>
 
       {/* Market status */}
+      <TradingViewTickerTape className="border-b border-white/20" />
       <MarketStatusBanner />
 
       {/* Profile + balance */}

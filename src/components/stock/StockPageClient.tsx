@@ -11,6 +11,7 @@ import { ReverseDCF }   from "@/components/stock/ReverseDCF";
 import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser } from "@/lib/userContext";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
+import { TradingViewChart } from "@/components/tradingview/TradingViewChart";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -95,6 +96,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const [chartLoading, setChartLoading] = useState(true);
   const [timeframe, setTimeframe]       = useState<Timeframe>("3M");
   const [chartMode, setChartMode]       = useState<ChartMode>("Price");
+  const [useTVChart,  setUseTVChart]    = useState(false);
   const [maConfig, setMaConfig]         = useState({ ma20: false, ma50: false, ma200: false });
 
   useEffect(() => {
@@ -361,72 +363,93 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Chart */}
       <Card className="overflow-hidden">
-        <div className="px-3 pt-3 pb-2 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
-          <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5" role="tablist" aria-label="Chart mode">
-            {(["Price", "Relative", "Volume"] as const).map((m) => (
-              <button
-                key={m}
-                role="tab"
-                aria-selected={chartMode === m}
-                onClick={() => setChartMode(m)}
-                className={`px-2 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
-                  chartMode === m
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
-                }`}
-              >
-                {m}
-              </button>
-            ))}
+        <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between flex-wrap gap-2">
+          {/* Chart source toggle */}
+          <div className="flex gap-1 rounded-lg bg-white/30 p-0.5">
+            <button
+              onClick={() => setUseTVChart(false)}
+              className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${!useTVChart ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              ชาร์ต
+            </button>
+            <button
+              onClick={() => setUseTVChart(true)}
+              className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${useTVChart ? "bg-violet-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              TradingView
+            </button>
           </div>
-          <div className="flex gap-1 flex-wrap" role="tablist" aria-label="Timeframe">
-            {TIMEFRAMES.map((tf) => (
-              <button
-                key={tf}
-                role="tab"
-                aria-selected={timeframe === tf}
-                onClick={() => setTimeframe(tf)}
-                className={`px-1.5 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
-                  timeframe === tf
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                }`}
-              >
-                {tf}
-              </button>
-            ))}
-          </div>
-        </div>
-        {chartMode === "Price" && (
-          <div className="px-3 py-1.5 border-b border-slate-100 flex items-center gap-3">
-            <span className="text-[9px] text-slate-400 uppercase tracking-wide">MA:</span>
-            {([
-              { key: "ma20",  label: "20",  color: "#2563EB" },
-              { key: "ma50",  label: "50",  color: "#D97706" },
-              { key: "ma200", label: "200", color: "#7C3AED" },
-            ] as const).map(({ key, label, color }) => (
-              <button
-                key={key}
-                onClick={() => setMaConfig((c) => ({ ...c, [key]: !c[key] }))}
-                className="text-[9px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors"
-                style={{
-                  borderColor: color,
-                  color:       maConfig[key] ? "#fff" : color,
-                  background:  maConfig[key] ? color  : "transparent",
-                }}
-              >
-                MA{label}
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="p-3">
-          {chartLoading ? (
-            <div className="h-48 bg-slate-100 animate-pulse rounded-lg" />
-          ) : (
-            <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} ma={maConfig} />
+          {!useTVChart && (
+            <>
+              <div className="flex gap-1 rounded-lg bg-white/30 p-0.5" role="tablist" aria-label="Chart mode">
+                {(["Price", "Relative", "Volume"] as const).map((m) => (
+                  <button
+                    key={m}
+                    role="tab"
+                    aria-selected={chartMode === m}
+                    onClick={() => setChartMode(m)}
+                    className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                      chartMode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1 flex-wrap" role="tablist" aria-label="Timeframe">
+                {TIMEFRAMES.map((tf) => (
+                  <button
+                    key={tf}
+                    role="tab"
+                    aria-selected={timeframe === tf}
+                    onClick={() => setTimeframe(tf)}
+                    className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                      timeframe === tf ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    }`}
+                  >
+                    {tf}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
+        {useTVChart ? (
+          <TradingViewChart ticker={ticker} height={420} />
+        ) : (
+          <>
+            {chartMode === "Price" && (
+              <div className="px-3 py-1.5 border-b border-white/20 flex items-center gap-3">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wide">MA:</span>
+                {([
+                  { key: "ma20",  label: "20",  color: "#2563EB" },
+                  { key: "ma50",  label: "50",  color: "#D97706" },
+                  { key: "ma200", label: "200", color: "#7C3AED" },
+                ] as const).map(({ key, label, color }) => (
+                  <button
+                    key={key}
+                    onClick={() => setMaConfig((c) => ({ ...c, [key]: !c[key] }))}
+                    className="text-[10px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors"
+                    style={{
+                      borderColor: color,
+                      color:       maConfig[key] ? "#fff" : color,
+                      background:  maConfig[key] ? color  : "transparent",
+                    }}
+                  >
+                    MA{label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="p-3">
+              {chartLoading ? (
+                <div className="h-48 bg-white/30 animate-pulse rounded-lg" />
+              ) : (
+                <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} ma={maConfig} />
+              )}
+            </div>
+          </>
+        )}
       </Card>
 
       {/* Price alerts */}
