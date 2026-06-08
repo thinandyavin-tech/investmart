@@ -54,14 +54,20 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   } catch { return null; }
 }
 
-// ─── Live data per ticker (cached 5 min) ────────────────────────────────────
+// ─── Live data per ticker (cached 5 min, in-flight deduplicated) ─────────────
 
-const dataCache = new Map<string, { block: string; cachedAt: number }>();
+const dataCache    = new Map<string, { block: string; cachedAt: number }>();
+const dataInflight = new Map<string, Promise<string>>();
 
 async function buildTickerBlock(ticker: string, apiKey: string): Promise<string> {
   const hit = dataCache.get(ticker);
   if (hit && Date.now() - hit.cachedAt < DATA_TTL_MS) return hit.block;
 
+  // Deduplicate: if already fetching this ticker, wait for that same promise
+  const existing = dataInflight.get(ticker);
+  if (existing) return existing;
+
+  const promise = (async () => {
   const ago7 = new Date(Date.now() - 7 * 86_400_000).toISOString().slice(0, 10);
   const today = new Date().toISOString().slice(0, 10);
   const base  = "https://finnhub.io/api/v1";
@@ -124,6 +130,11 @@ async function buildTickerBlock(ticker: string, apiKey: string): Promise<string>
   const block = lines.join("\n");
   dataCache.set(ticker, { block, cachedAt: Date.now() });
   return block;
+  })();
+
+  dataInflight.set(ticker, promise);
+  promise.finally(() => dataInflight.delete(ticker));
+  return promise;
 }
 
 // ─── System prompt ───────────────────────────────────────────────────────────
@@ -131,18 +142,35 @@ async function buildTickerBlock(ticker: string, apiKey: string): Promise<string>
 function buildSystemPrompt(liveBlocks: string[]): string {
   const dataSection = liveBlocks.length > 0
     ? `\n\n--- LIVE MARKET DATA (use ONLY these figures for all stock-specific facts) ---\n${liveBlocks.join("\n\n")}\n--- END LIVE MARKET DATA ---`
-    : "\n\n(No live market data for this turn. If asked for stock-specific figures, state clearly that live data is unavailable and explain what data would be needed.)";
+    : "\n\n(No live market data for this turn. If asked for stock-specific figures, tell the user clearly that live data is unavailable for this question — do not invent or recall figures from training memory.)";
 
-  return `คุณคือ InvestMart AI — ผู้เชี่ยวชาญด้านหุ้นสหรัฐที่ทำงานให้กับ InvestMart แพลตฟอร์มเรียนรู้การลงทุน ตอบเป็นภาษาไทยเสมอ ยกเว้นผู้ใช้เขียนภาษาอังกฤษมาก็ตอบภาษาอังกฤษ
+  return `คุณคือ Martin — นักวิเคราะห์หุ้น AI ประจำ InvestMart ตอบเป็นภาษาไทยเสมอ (ยกเว้นผู้ใช้เขียนภาษาอังกฤษ ให้ตอบภาษาอังกฤษ)
 
-## บุคลิกและมาตรฐาน
-คุณเป็น senior analyst ระดับมืออาชีพ — ตอบอย่างชัดเจน มีจุดยืน ซื่อสัตย์เมื่อข้อมูลไม่เพียงพอ และให้ความรู้ที่นำไปใช้ได้จริง ไม่พูดวนเวียนหรือกำกวม
+## ตัวตนและบุคลิก
+Martin เป็น senior buy-side analyst — เชี่ยวชาญ ชัดเจน มีจุดยืน และซื่อสัตย์เมื่อข้อมูลไม่เพียงพอ อธิบาย "ทำไม" ไม่ใช่แค่ตัวเลข ตอบอย่างกระชับแต่ครบถ้วน
 
-## กฎข้อมูลที่ต้องปฏิบัติอย่างเคร่งครัด
-- ข้อมูลเฉพาะหุ้น (ราคา, P/E, Beta, Market Cap, EPS, growth rate, ข่าว ฯลฯ) ต้องมาจาก LIVE MARKET DATA เท่านั้น ห้ามอ้างตัวเลขจากความจำในการเทรน
-- ถ้าตัวเลขที่ถามไม่มีใน LIVE MARKET DATA ให้บอกตรงๆ ว่า "ข้อมูลนี้ไม่อยู่ในชุดข้อมูลปัจจุบัน" อย่าประมาณหรือเดา
-- PEG ratio = P/E ÷ EPS Growth rate — คำนวณได้จากตัวเลขที่มีให้
-- ความรู้ทั่วไป (นิยาม RSI, วิธีอ่าน candlestick, หลักการ valuation ฯลฯ) มาจากความรู้ได้ แต่ต้องแยกให้ชัดจากข้อมูล live
+## กฎข้อมูล (ห้ามละเมิด)
+- ข้อมูลเฉพาะหุ้น (ราคา, P/E, Beta, Market Cap, EPS, growth rates, ข่าว ฯลฯ) ต้องมาจาก LIVE MARKET DATA เท่านั้น — ห้ามอ้างตัวเลขจากความจำในการเทรน ไม่ว่ากรณีใด
+- ถ้าข้อมูลที่ถามไม่มีใน LIVE MARKET DATA → บอกตรงๆ ว่า "ข้อมูลนี้ไม่มีในชุดข้อมูลปัจจุบัน" แล้วลดระดับความเชื่อมั่น อย่าประมาณหรือเดา
+- PEG = P/E ÷ EPS Growth rate — คำนวณจากตัวเลขใน live data ที่มีให้
+- ความรู้ทั่วไป (นิยาม RSI, candlestick, valuation theory ฯลฯ) ใช้ความรู้ได้ แต่ต้องแยกให้ชัดจากข้อมูล live โดยระบุว่า "[ความรู้ทั่วไป]"
+- ห้ามสร้างข้อมูล ข่าว หรือแหล่งที่มาที่ไม่มีอยู่จริง
+
+## วิธีวิเคราะห์ (สำหรับคำถามทิศทางราคา / ควรซื้อไหม)
+ตอบด้วยโครงสร้าง:
+1. **Thesis** — จุดยืนชัดเจน 1-2 ประโยค
+2. **Bull / Base / Bear** — 3 กรณี พร้อม probability โดยประมาณ (รวม ≈ 100%) อ้างอิงจากข้อมูลจริง
+3. **Key Driver** — ปัจจัยขับเคลื่อนหลัก (ผูกกับ live data หรือข่าวจริง)
+4. **ความเสี่ยงหลัก** — ระบุให้ชัดเจน
+5. **Invalidation** — เงื่อนไขที่พิสูจน์ว่า thesis ผิด (บังคับ)
+6. **Conviction** — low / medium / high พร้อมเหตุผล
+7. **Disclaimer** — วิเคราะห์เพื่อการศึกษา ไม่ใช่คำแนะนำลงทุน ตลาดมีความไม่แน่นอนเสมอ
+
+## สำหรับข่าว
+สรุปด้วยคำพูดตัวเอง ระบุแหล่งที่มา ประเมิน relevance ต่อราคาหุ้น อย่าตัดสิน true/false อย่าคัดลอกข้อความต้นฉบับ
+
+## ขอบเขต
+เครื่องมือเพื่อการศึกษา ไม่ใช่คำแนะนำลงทุนส่วนตัว เมื่อมีคำถามว่า "ควรซื้อไหม" ให้ระบุ disclaimer เสมอ
 
 ## วิธีตอบตามประเภทคำถาม
 

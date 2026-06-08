@@ -97,14 +97,14 @@ export function RadarPickCard() {
 
   if (loading) {
     return (
-      <div className="mx-3 mb-3 border border-[#1F1A14] bg-[#F3EDE0] p-4 animate-pulse">
-        <div className="h-3 w-32 bg-[#E8E2D4] mb-3 rounded" />
-        <div className="h-8 w-28 bg-[#E8E2D4] mb-2 rounded" />
-        <div className="h-3 w-48 bg-[#E8E2D4] mb-4 rounded" />
-        <div className="h-24 bg-[#E8E2D4] rounded" />
+      <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 p-4 animate-pulse">
+        <div className="h-3 w-32 bg-white/40 mb-3 rounded" />
+        <div className="h-8 w-28 bg-white/40 mb-2 rounded" />
+        <div className="h-3 w-48 bg-white/40 mb-4 rounded" />
+        <div className="h-24 bg-white/40 rounded" />
         <div className="flex gap-2 mt-3">
-          <div className="flex-1 h-9 bg-[#E8E2D4] rounded" />
-          <div className="flex-1 h-9 bg-[#E8E2D4] rounded" />
+          <div className="flex-1 h-9 bg-white/40 rounded-lg" />
+          <div className="flex-1 h-9 bg-white/40 rounded-lg" />
         </div>
       </div>
     );
@@ -112,8 +112,8 @@ export function RadarPickCard() {
 
   if (!pick) {
     return (
-      <div className="mx-3 mb-3 border border-[#1F1A14] bg-[#F3EDE0] p-4 text-center">
-        <p className="text-xs text-[#8A8378]">ไม่สามารถโหลด Radar Pick ได้</p>
+      <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 p-4 text-center">
+        <p className="text-xs text-slate-500">ไม่สามารถโหลด Radar Pick ได้</p>
       </div>
     );
   }
@@ -121,31 +121,28 @@ export function RadarPickCard() {
   const up = pick.change >= 0;
 
   return (
-    <div className="mx-3 mb-3 border border-[#1F1A14] bg-[#F3EDE0]">
+    <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
       <div className="px-4 pt-3 pb-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#5B8A2A" }}>
-          ● ▶ RADAR PICK · 3M
+        <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
+          ● RADAR PICK · 3M
         </span>
       </div>
 
       <div className="flex items-end justify-between px-4 pb-2">
         <div>
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-3xl font-bold leading-none" style={{ fontFamily: "var(--font-mono)" }}>
+            <span className="text-3xl font-bold leading-none font-mono text-slate-900">
               {pick.ticker}
             </span>
-            <span className="text-xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+            <span className="text-xl font-bold font-mono text-slate-700">
               ${pick.price.toFixed(2)}
             </span>
           </div>
-          <div className="text-[10px] text-[#8A8378] mt-1">
+          <div className="text-[10px] text-slate-500 mt-1">
             {pick.companyName} · {pick.sector}
           </div>
         </div>
-        <span
-          className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-          style={{ background: up ? "#5B8A2A" : "#E5484D", color: "#fff" }}
-        >
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 ${up ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
           {up ? "+" : ""}{pick.change.toFixed(2)}%
         </span>
       </div>
@@ -156,13 +153,11 @@ export function RadarPickCard() {
 
       <div className="flex gap-2 px-4 pb-4">
         <button
-          className="flex-1 py-2.5 text-xs font-bold border transition-colors"
-          style={{
-            borderColor: watched ? "#5B8A2A" : "#1F1A14",
-            background:  watched ? "#F0FAE5"  : "#F3EDE0",
-            color:       watched ? "#5B8A2A"  : "#1F1A14",
-            boxShadow:   watched ? "none" : "2px 2px 0 #FF3D9A",
-          }}
+          className={`flex-1 py-2.5 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            watched
+              ? "border-green-500 bg-green-50 text-green-700 hover:bg-green-100"
+              : "border-slate-300 bg-white/60 text-slate-700 hover:bg-white/80"
+          }`}
           onClick={() => void toggleWatch()}
           disabled={watchLoading || !user}
           aria-pressed={watched}
@@ -172,7 +167,7 @@ export function RadarPickCard() {
         </button>
         <Link
           href={`/stock/${pick.ticker}`}
-          className="flex-1 py-2.5 text-xs font-bold text-center bg-[#1F1A14] text-white shadow-offset-lime"
+          className="flex-1 py-2.5 text-xs font-semibold text-center rounded-lg bg-violet-600 hover:bg-violet-700 text-white transition-colors"
         >
           ดูกราฟเต็ม
         </Link>

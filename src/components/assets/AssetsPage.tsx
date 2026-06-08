@@ -290,7 +290,7 @@ export function AssetsPage() {
   const asOfTime = new Date(asOf).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-24 lg:pb-8">
+    <main className="min-h-screen pb-24 lg:pb-8">
       {/* Header card */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 pt-4 pb-5">
         <div className="max-w-5xl mx-auto">

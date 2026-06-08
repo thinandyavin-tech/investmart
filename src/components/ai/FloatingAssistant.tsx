@@ -3,14 +3,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 interface Message {
   role:    "user" | "assistant";
   content: string;
 }
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const STOCK_PATH_RE = /^\/stock\/([A-Z][A-Z.\-]{0,9})(\/|$)/;
 
@@ -20,15 +16,13 @@ function tickerFromPath(pathname: string | null): string | undefined {
 }
 
 function suggestedPrompts(ticker?: string): string[] {
-  if (ticker) {
-    return [
-      `วิเคราะห์ $${ticker} ให้หน่อย`,
-      `P/E และ PEG ของ $${ticker}?`,
-      `ข่าวล่าสุดของ $${ticker}`,
-      `$${ticker} มีความเสี่ยงอะไรบ้าง?`,
-      `อธิบาย Beta ratio คืออะไร`,
-    ];
-  }
+  if (ticker) return [
+    `วิเคราะห์ $${ticker} ให้หน่อย`,
+    `P/E และ PEG ของ $${ticker}?`,
+    `ข่าวล่าสุดของ $${ticker}`,
+    `$${ticker} มีความเสี่ยงอะไรบ้าง?`,
+    `อธิบาย Beta ratio คืออะไร`,
+  ];
   return [
     "วิเคราะห์ $NVDA ให้หน่อย",
     "P/E และ PEG ของ $AAPL คืออะไร?",
@@ -38,76 +32,68 @@ function suggestedPrompts(ticker?: string): string[] {
   ];
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
 function MessageBubble({ role, content }: { role: "user" | "assistant"; content: string }) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
-        <div
-          className="max-w-[80%] px-3 py-2 text-[11px] leading-relaxed text-white break-words"
-          style={{ background: "#1F1A14" }}
-        >
+        <div className="max-w-[80%] px-3 py-2 text-xs leading-relaxed text-white break-words rounded-xl rounded-br-sm bg-violet-600">
           {content}
         </div>
       </div>
     );
   }
-
   return (
-    <div className="flex justify-start">
-      <div className="max-w-[92%]">
-        <p className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: "#8B5CF6" }}>
-          ✦ InvestMart AI
-        </p>
+    <div className="flex justify-start gap-2">
+      <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span className="text-violet-400 text-[10px]">✦</span>
+      </div>
+      <div className="max-w-[88%]">
+        <p className="text-[10px] font-bold text-violet-400 mb-0.5">Martin</p>
         {content ? (
-          <p className="text-[11px] leading-relaxed text-[#1F1A14] whitespace-pre-wrap break-words">
+          <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words">
             {content}
           </p>
         ) : (
-          <p className="text-[10px] text-[#8A8378] animate-pulse">กำลังคิด...</p>
+          <p className="text-xs text-slate-400 animate-pulse">กำลังคิด...</p>
         )}
       </div>
     </div>
   );
 }
 
-function SuggestedPromptsPanel({
-  ticker,
-  onSelect,
-}: {
-  ticker?:  string;
-  onSelect: (p: string) => void;
-}) {
+function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect: (p: string) => void }) {
   const prompts = suggestedPrompts(ticker);
-
   return (
     <div className="py-4 px-1">
-      <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A8378] mb-3 text-center">
-        สอบถาม InvestMart AI
-      </p>
+      <div className="flex items-center gap-2 justify-center mb-4">
+        <div className="w-8 h-8 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center">
+          <span className="text-violet-400 text-sm">✦</span>
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-800">Martin</p>
+          <p className="text-[10px] text-slate-500">InvestMart AI · ข้อมูลจริง Finnhub</p>
+        </div>
+      </div>
       <div className="space-y-1.5">
         {prompts.map((p) => (
           <button
             key={p}
             onClick={() => onSelect(p)}
-            className="w-full text-left text-[10px] px-3 py-2 border border-[#E8E2D4] hover:border-[#8B5CF6] hover:bg-[#F5F3FF] transition-colors text-[#1F1A14] leading-snug"
+            className="w-full text-left text-xs px-3 py-2.5 rounded-lg border border-white/30 bg-white/40 hover:bg-white/60 hover:border-violet-300 transition-colors text-slate-700 leading-snug"
           >
             {p}
           </button>
         ))}
       </div>
-      <p className="text-[8px] text-[#8A8378] mt-4 text-center leading-snug">
-        คำตอบใช้ข้อมูลจริงจาก Finnhub · ไม่ใช่คำแนะนำการลงทุน
+      <p className="text-[10px] text-slate-500 mt-4 text-center leading-snug">
+        Martin ตอบจากข้อมูลจริงเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-
 export function FloatingAssistant() {
-  const pathname     = usePathname();
+  const pathname      = usePathname();
   const contextTicker = tickerFromPath(pathname);
 
   const [isOpen,    setIsOpen]    = useState(false);
@@ -120,24 +106,17 @@ export function FloatingAssistant() {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const inputRef  = useRef<HTMLTextAreaElement | null>(null);
 
-  // Scroll to bottom whenever messages update
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Focus input when panel opens
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    if (isOpen) setTimeout(() => inputRef.current?.focus(), 50);
   }, [isOpen]);
 
-  // Dismiss on Escape
   useEffect(() => {
     if (!isOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setIsOpen(false);
-    }
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setIsOpen(false); }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen]);
@@ -147,13 +126,7 @@ export function FloatingAssistant() {
     if (!trimmed || streaming) return;
 
     setError(null);
-
-    // Keep last 10 messages (5 turns) + new user message, truncate each to 6000 chars
-    // so accumulated history never exceeds server validation limits.
-    const history = messages.slice(-10).map(m => ({
-      ...m,
-      content: m.content.slice(0, 6000),
-    }));
+    const history = messages.slice(-10).map(m => ({ ...m, content: m.content.slice(0, 6000) }));
     const outgoing: Message[] = [...history, { role: "user", content: trimmed }];
     setMessages([...messages, { role: "user", content: trimmed }, { role: "assistant", content: "" }]);
     setInput("");
@@ -172,22 +145,20 @@ export function FloatingAssistant() {
 
       if (!res.ok || !res.body) {
         const errBody = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(errBody.error ?? "AI ไม่พร้อมใช้งาน");
+        throw new Error(errBody.error ?? "Martin ไม่พร้อมใช้งานตอนนี้");
       }
 
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
       let   buf     = "";
-      let   sseEnd  = false; // true once [DONE] is received
+      let   sseEnd  = false;
 
       while (!sseEnd) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buf += decoder.decode(value, { stream: true });
         const lines = buf.split("\n");
         buf = lines.pop() ?? "";
-
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6).trim();
@@ -203,20 +174,18 @@ export function FloatingAssistant() {
               });
             }
           } catch (parseErr) {
-            if ((parseErr as Error).message !== "Unexpected end of JSON input") {
-              throw parseErr;
-            }
+            if ((parseErr as Error).message !== "Unexpected end of JSON input") throw parseErr;
           }
         }
       }
-
-      reader.cancel().catch(() => { /* cleanup only */ });
+      reader.cancel().catch(() => {});
     } catch (err) {
-      if ((err as Error).name === "AbortError") {
-        // AbortError is intentional (user hit reset); finally still runs.
-        return;
-      }
-      const msg = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
+      if ((err as Error).name === "AbortError") return;
+      const raw = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
+      // Surface rate-limit errors with a clear Thai message
+      const msg = /429|rate.?limit|too many|quota/i.test(raw)
+        ? "Martin ถูกใช้งานหนักมากตอนนี้ 🙏 รอสักครู่แล้วลองใหม่"
+        : raw;
       setError(msg);
       setMessages(prev => {
         const last = prev[prev.length - 1];
@@ -242,70 +211,63 @@ export function FloatingAssistant() {
 
   return (
     <>
-      {/* ── Floating button ───────────────────────────────────────────── */}
+      {/* Floating button */}
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="fixed z-50 w-12 h-12 rounded-full flex flex-col items-center justify-center text-white transition-transform hover:scale-105 active:scale-95"
-        style={{
-          bottom:     "calc(4.75rem + env(safe-area-inset-bottom, 0px))",
-          right:      "1rem",
-          background: "#1F1A14",
-          boxShadow:  isOpen ? "2px 2px 0 #8B5CF6" : "3px 3px 0 #8B5CF6",
-        }}
-        aria-label={isOpen ? "ปิด AI assistant" : "เปิด AI assistant"}
+        className="fixed z-50 w-12 h-12 rounded-full flex flex-col items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 bg-slate-900/90 backdrop-blur-sm border border-violet-500/40 shadow-lg shadow-violet-900/30"
+        style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))", right: "1rem" }}
+        aria-label={isOpen ? "ปิด Martin AI" : "เปิด Martin AI"}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
       >
-        <span className="text-base leading-none" aria-hidden="true">✦</span>
-        <span className="text-[8px] leading-none font-bold tracking-wider">AI</span>
+        <span className="text-violet-400 text-base leading-none" aria-hidden="true">✦</span>
+        <span className="text-[9px] leading-none font-bold tracking-wide text-violet-300">M</span>
       </button>
 
-      {/* ── Chat panel ────────────────────────────────────────────────── */}
+      {/* Chat panel */}
       {isOpen && (
         <>
-          {/* Mobile backdrop */}
           <div
             className="fixed inset-0 bg-black/40 z-40 lg:hidden"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-
           <div
-            className="fixed z-50 bg-[#FBF7ED] border border-[#1F1A14] flex flex-col
-              inset-x-0 bottom-0 h-[88vh] rounded-t-none
-              lg:inset-x-auto lg:bottom-24 lg:right-6 lg:w-96 lg:h-[600px] lg:rounded-none"
-            style={{ boxShadow: "4px 4px 0 #1F1A14" }}
+            className="fixed z-50 flex flex-col
+              inset-x-0 bottom-0 h-[88vh] rounded-t-2xl
+              lg:inset-x-auto lg:bottom-24 lg:right-6 lg:w-96 lg:h-[600px] lg:rounded-2xl
+              bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/30 dark:border-slate-700/40
+              shadow-2xl shadow-slate-900/20"
             role="dialog"
             aria-modal="true"
-            aria-label="InvestMart AI"
+            aria-label="Martin — InvestMart AI"
           >
             {/* Header */}
-            <div
-              className="flex items-center justify-between px-4 py-3 border-b border-[#1F1A14] flex-shrink-0"
-              style={{ background: "#1F1A14" }}
-            >
-              <div>
-                <p className="text-xs font-bold tracking-widest uppercase text-white">
-                  ✦ InvestMart AI
-                </p>
-                {contextTicker && (
-                  <p className="text-[9px] mt-0.5" style={{ color: "#8B5CF6" }}>
-                    ดูหุ้น ${contextTicker}
-                  </p>
-                )}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 flex-shrink-0 rounded-t-2xl bg-slate-900/60 backdrop-blur-md">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-full bg-slate-800 border border-violet-500/40 flex items-center justify-center">
+                  <span className="text-violet-400 text-xs">✦</span>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">Martin</p>
+                  {contextTicker ? (
+                    <p className="text-[10px] text-violet-300">กำลังดู ${contextTicker}</p>
+                  ) : (
+                    <p className="text-[10px] text-slate-400">InvestMart AI · ข้อมูลจริง</p>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={reset}
-                  className="text-[9px] font-bold px-2 py-1 border border-[#4A4440] text-[#C8C0B0] hover:border-white hover:text-white transition-colors"
-                  title="เริ่มการสนทนาใหม่"
+                  className="text-[10px] font-semibold px-2.5 py-1 rounded-lg border border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white transition-colors"
                   aria-label="เริ่มการสนทนาใหม่"
                 >
                   ใหม่
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-[#C8C0B0] hover:text-white transition-colors text-xl leading-none font-light"
+                  className="text-slate-400 hover:text-white transition-colors text-xl leading-none font-light w-7 h-7 flex items-center justify-center"
                   aria-label="ปิด"
                 >
                   ×
@@ -316,72 +278,56 @@ export function FloatingAssistant() {
             {/* Message list */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 min-h-0">
               {messages.length === 0 ? (
-                <SuggestedPromptsPanel
-                  ticker={contextTicker}
-                  onSelect={p => void send(p)}
-                />
+                <SuggestedPromptsPanel ticker={contextTicker} onSelect={p => void send(p)} />
               ) : (
-                messages.map((m, i) => (
-                  <MessageBubble key={i} role={m.role} content={m.content} />
-                ))
+                messages.map((m, i) => <MessageBubble key={i} role={m.role} content={m.content} />)
               )}
 
               {error && (
-                <p className="text-[10px] text-[#DC2626] text-center py-1">
-                  {error}
-                  {" · "}
-                  <button onClick={retryLast} className="underline font-bold">
-                    ลองใหม่
-                  </button>
-                  {" · "}
-                  <button onClick={() => setError(null)} className="underline">
-                    ปิด
-                  </button>
-                </p>
+                <div className="rounded-xl bg-red-50/80 border border-red-200/60 px-3 py-2.5 text-center">
+                  <p className="text-xs text-red-600 mb-1.5">{error}</p>
+                  <div className="flex gap-2 justify-center">
+                    <button onClick={retryLast} className="text-[10px] font-semibold text-red-700 underline">
+                      ลองใหม่
+                    </button>
+                    <span className="text-red-300">·</span>
+                    <button onClick={() => setError(null)} className="text-[10px] text-red-500 underline">
+                      ปิด
+                    </button>
+                  </div>
+                </div>
               )}
 
               <div ref={bottomRef} />
             </div>
 
             {/* Input area */}
-            <div className="flex-shrink-0 border-t border-[#E8E2D4] bg-[#F3EDE0] p-3">
+            <div className="flex-shrink-0 border-t border-white/20 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md p-3 rounded-b-2xl">
               <div className="flex gap-2 items-end">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      void send(input);
-                    }
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(input); }
                   }}
-                  placeholder={
-                    contextTicker
-                      ? `ถามเกี่ยวกับ $${contextTicker}... (Enter ส่ง)`
-                      : "ถามเกี่ยวกับหุ้น, กราฟ, ข่าว... (Enter ส่ง)"
-                  }
+                  placeholder={contextTicker ? `ถามเกี่ยวกับ $${contextTicker}...` : "ถามเกี่ยวกับหุ้น, กราฟ, ข่าว..."}
                   disabled={streaming}
                   rows={2}
-                  className="flex-1 text-xs border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 resize-none focus:outline-none focus:ring-1 disabled:opacity-50"
-                  style={{ focusRingColor: "#8B5CF6" } as React.CSSProperties}
+                  className="flex-1 text-xs border border-white/30 bg-white/60 dark:bg-slate-700/60 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 disabled:opacity-50 text-slate-800 dark:text-slate-200 placeholder:text-slate-400"
                   aria-label="พิมพ์คำถาม"
                 />
                 <button
                   onClick={() => void send(input)}
                   disabled={!input.trim() || streaming}
-                  className="px-3 py-2 text-white text-xs font-bold disabled:opacity-40 transition-colors flex-shrink-0 self-stretch flex items-center"
-                  style={{
-                    background: "#1F1A14",
-                    boxShadow:  "2px 2px 0 #8B5CF6",
-                  }}
+                  className="px-3 py-2 rounded-xl text-white text-xs font-semibold disabled:opacity-40 transition-colors flex-shrink-0 self-stretch flex items-center bg-violet-600 hover:bg-violet-700"
                   aria-label="ส่งข้อความ"
                 >
-                  {streaming ? "· · ·" : "ส่ง"}
+                  {streaming ? "· · ·" : "ส่ง"}
                 </button>
               </div>
-              <p className="text-[8px] text-[#8A8378] mt-1.5 leading-snug">
-                ข้อมูลจาก Finnhub · AI วิเคราะห์จากข้อมูลจริง ไม่ใช่คำแนะนำการลงทุน
+              <p className="text-[10px] text-slate-500 mt-1.5 leading-snug">
+                Martin ใช้ข้อมูลจาก Finnhub · วิเคราะห์เพื่อการศึกษา ไม่ใช่คำแนะนำลงทุน
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { MarketNewsCard }     from "@/components/market/MarketNewsCard";
 
 export function MarketPageClient() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+    <div className="flex flex-col min-h-screen">
       <MarketStatusBanner />
 
       <div className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 flex flex-col gap-4">

@@ -52,14 +52,14 @@ html.dark {
 }
 
 body {
-  background: #F8FAFC;
+  background: transparent;
   color: #0F172A;
   /* Disable double-tap zoom; single-tap zoom still disabled per-input below */
   touch-action: manipulation;
 }
 
 html.dark body {
-  background: #0F172A;
+  background: transparent;
   color: #F1F5F9;
 }
 

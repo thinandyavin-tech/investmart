@@ -22,29 +22,27 @@ export function DailyDigestCard() {
   if (!loading && !data) return null;
 
   const hour = data ? new Date(data.generatedAt).getHours() : null;
-  const timeLabel = hour !== null
-    ? `อัพเดท ${hour}:00 น.`
-    : "";
+  const timeLabel = hour !== null ? `อัพเดท ${hour}:00 น.` : "";
 
   return (
-    <div className="mx-3 mb-3 border border-[#1F1A14] bg-[#1F1A14] text-white p-3">
+    <div className="mx-3 mb-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/10 text-white p-3">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[9px] font-bold uppercase tracking-widest text-[#9BE15D]">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-violet-300">
           ▶ AI DIGEST วันนี้
         </span>
         {timeLabel && (
-          <span className="text-[8px] text-[#8A8378]">{timeLabel}</span>
+          <span className="text-[10px] text-slate-400">{timeLabel}</span>
         )}
       </div>
 
       {loading ? (
         <div className="flex flex-col gap-1.5">
-          <div className="h-2 bg-[#2A2520] animate-pulse rounded w-full" />
-          <div className="h-2 bg-[#2A2520] animate-pulse rounded w-4/5" />
-          <div className="h-2 bg-[#2A2520] animate-pulse rounded w-3/5" />
+          <div className="h-2 bg-white/10 animate-pulse rounded w-full" />
+          <div className="h-2 bg-white/10 animate-pulse rounded w-4/5" />
+          <div className="h-2 bg-white/10 animate-pulse rounded w-3/5" />
         </div>
       ) : (
-        <p className="text-[10px] leading-relaxed text-[#F3EDE0]">{data?.digest}</p>
+        <p className="text-xs leading-relaxed text-slate-200">{data?.digest}</p>
       )}
     </div>
   );

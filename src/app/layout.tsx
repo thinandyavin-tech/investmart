@@ -5,6 +5,7 @@ import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { GlobalBackground } from "@/components/background/GlobalBackground";
 import "./globals.css";
 
 const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
@@ -66,13 +67,14 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
       </head>
       <body
-        className="min-h-full flex flex-col bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100"
+        className="min-h-full flex flex-col text-slate-900 dark:text-slate-100"
         style={{
           fontFamily:
             "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif",
         }}
       >
         <ThemeProvider>
+          <GlobalBackground />
           <UserProvider>
             {children}
             <OnboardingFlow />

@@ -465,10 +465,10 @@ export function RadarPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen">
 
       {/* ── Desktop sidebar ──────────────────────────────────────────────────── */}
-      <aside className="hidden lg:flex w-52 flex-shrink-0 border-r border-slate-200 p-3 flex-col gap-3 bg-white overflow-y-auto">
+      <aside className="hidden lg:flex w-52 flex-shrink-0 border-r border-white/20 p-3 flex-col gap-3 bg-white/50 backdrop-blur-md overflow-y-auto">
         <SidebarContent />
       </aside>
 
@@ -482,7 +482,7 @@ export function RadarPage() {
           />
           <div
             id={sidebarId}
-            className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200 p-3 overflow-y-auto lg:hidden"
+            className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-white/80 backdrop-blur-md border-r border-white/30 p-3 overflow-y-auto lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="ตั้งค่าการสแกน"
@@ -501,7 +501,7 @@ export function RadarPage() {
       )}
 
       {/* ── Center: stock list ───────────────────────────────────────────────── */}
-      <section className="flex-1 lg:w-96 lg:flex-none border-r border-slate-200 flex flex-col overflow-hidden bg-white">
+      <section className="flex-1 lg:w-96 lg:flex-none border-r border-white/20 flex flex-col overflow-hidden bg-white/50 backdrop-blur-md">
 
         {/* Top bar */}
         <div className="border-b border-slate-200 px-3 py-2.5 flex items-center gap-2">
@@ -533,7 +533,7 @@ export function RadarPage() {
 
         {/* AI summary */}
         {(aiSummary || aiSummaryLoading) && (
-          <div className="mx-3 mt-2 border border-slate-100 rounded-xl p-3 bg-white shadow-card">
+          <div className="mx-3 mt-2 border border-white/30 rounded-xl p-3 bg-white/50 backdrop-blur-md">
             <div className="text-[9px] font-semibold text-green-600 uppercase tracking-wide mb-1">AI SNAPSHOT</div>
             {aiSummaryLoading
               ? <div className="h-3 w-full bg-slate-100 animate-pulse rounded" />
@@ -714,7 +714,7 @@ export function RadarPage() {
       </section>
 
       {/* ── Desktop right panel ──────────────────────────────────────────────── */}
-      <section className="hidden lg:block flex-1 overflow-y-auto bg-[#F8FAFC]">
+      <section className="hidden lg:block flex-1 overflow-y-auto">
         {compareMode && compareStocks.length >= 2 ? (
           <CompareView stocks={compareStocks} onClose={() => setCompareMode(false)} />
         ) : selected ? (

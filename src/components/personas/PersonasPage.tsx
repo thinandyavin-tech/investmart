@@ -118,7 +118,7 @@ export function PersonasPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+    <div className="flex flex-col min-h-screen">
       {/* Header */}
       <div className="bg-white border-b border-slate-100 px-4 py-4 max-w-5xl mx-auto w-full">
         <div className="flex items-start justify-between gap-4">

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { OffsetButton } from "@/components/OffsetButton";
 import { useUser } from "@/lib/userContext";
@@ -211,6 +212,7 @@ function ActionStep() {
 
 export function OnboardingFlow() {
   const { user, loading, refreshUser } = useUser();
+  const pathname = usePathname();
   const [visible,         setVisible]  = useState(false);
   const [stepIdx,         setStepIdx]  = useState(0);
   const [dir,             setDir]      = useState<"fwd" | "back">("fwd");
@@ -227,10 +229,11 @@ export function OnboardingFlow() {
 
   useEffect(() => {
     if (loading) return;
+    if (pathname !== "/") return;           // only show on home page
     if (localStorage.getItem(ONBOARDING_DONE_KEY)) return;
     localStorage.removeItem(LEGACY_KEY);
     setVisible(true);
-  }, [loading]);
+  }, [loading, pathname]);
 
   const dismiss = useCallback(() => {
     localStorage.setItem(ONBOARDING_DONE_KEY, "1");

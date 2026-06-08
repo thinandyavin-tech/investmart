@@ -51,38 +51,38 @@ export function HotNewsSection() {
   const allHeadlines = articles.map(a => a.headline);
 
   return (
-    <div className="bg-[#F3EDE0] border border-[#1F1A14]">
-      <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4] flex items-center justify-between">
+    <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
+      <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between">
         <div>
-          <h2 className="text-[10px] font-bold uppercase tracking-widest">ข่าวเด่นวันนี้</h2>
-          <p className="text-[9px] text-[#8A8378] mt-0.5">จาก Finnhub · ตรวจสอบก่อนตัดสินใจลงทุน</p>
+          <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-700">ข่าวเด่นวันนี้</h2>
+          <p className="text-[10px] text-slate-500 mt-0.5">จาก Finnhub · ตรวจสอบก่อนตัดสินใจลงทุน</p>
         </div>
-        <Link href="/market" className="text-[9px] font-bold text-[#5B8A2A] hover:underline">
+        <Link href="/market" className="text-[10px] font-semibold text-violet-600 hover:text-violet-800 transition-colors">
           ดูทั้งหมด →
         </Link>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-white/20">
           {[0, 1, 2].map((i) => (
             <div key={i} className="px-3 py-3">
-              <div className="h-3 w-full bg-[#E8E2D4] animate-pulse rounded mb-2" />
-              <div className="h-2 w-32 bg-[#E8E2D4] animate-pulse rounded" />
+              <div className="h-3 w-full bg-white/30 animate-pulse rounded mb-2" />
+              <div className="h-2 w-32 bg-white/30 animate-pulse rounded" />
             </div>
           ))}
         </div>
       ) : error ? (
         <div className="px-3 py-4 text-center">
-          <p className="text-[10px] text-[#8A8378] mb-2">ไม่สามารถโหลดข่าวได้</p>
+          <p className="text-[10px] text-slate-500 mb-2">ไม่สามารถโหลดข่าวได้</p>
           <button
             onClick={load}
-            className="text-[9px] font-bold border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="text-[10px] font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
           >
             ลองใหม่
           </button>
         </div>
       ) : articles.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-[#8A8378] text-center">
+        <p className="px-3 py-4 text-[10px] text-slate-500 text-center">
           ยังไม่มีข่าวเด่นตอนนี้
         </p>
       ) : (
@@ -90,7 +90,7 @@ export function HotNewsSection() {
           {articles.map((a) => {
             const tickers = extractTickers(a.headline);
             return (
-              <div key={a.id} className="border-b border-[#E8E2D4] last:border-0 px-3 py-3">
+              <div key={a.id} className="border-b border-white/20 last:border-0 px-3 py-3">
                 <a
                   href={a.url}
                   target="_blank"
@@ -98,20 +98,20 @@ export function HotNewsSection() {
                   className="block group"
                   aria-label={`${a.headline} — เปิดในแท็บใหม่`}
                 >
-                  <p className="text-[11px] leading-snug text-[#1F1A14] group-hover:underline mb-1.5">
+                  <p className="text-xs leading-snug text-slate-800 group-hover:text-violet-700 transition-colors mb-1.5">
                     {a.headline}
                   </p>
                 </a>
 
                 <div className="flex items-center flex-wrap gap-2 mb-1">
-                  <span className="text-[9px] text-[#8A8378]">
+                  <span className="text-[10px] text-slate-500">
                     {a.source} · {timeAgo(a.datetime)}
                   </span>
                   {tickers.map((t) => (
                     <Link
                       key={t}
                       href={`/stock/${t}`}
-                      className="text-[9px] font-bold text-[#5B8A2A] hover:underline"
+                      className="text-[10px] font-semibold text-violet-600 hover:underline"
                     >
                       ${t}
                     </Link>
