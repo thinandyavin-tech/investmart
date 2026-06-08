@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // ---------------------------------------------------------------------------
 
 const TIERS = {
-  ai:      { requests: 5,  window: 60 },  // expensive: AI generation
+  ai:      { requests: 20, window: 60 },  // chat + analysis — bumped from 5; caching absorbs repeats
   scan:    { requests: 3,  window: 60 },  // expensive: full-universe scan
   quote:   { requests: 30, window: 60 },  // moderate: market data
   write:   { requests: 20, window: 60 },  // mutations: trades, posts

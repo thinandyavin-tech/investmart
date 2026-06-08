@@ -191,7 +191,11 @@ export function FloatingAssistant() {
       });
 
       if (!res.ok || !res.body) {
-        const errBody = (await res.json().catch(() => ({}))) as { error?: string };
+        const errBody = (await res.json().catch(() => ({}))) as { error?: string; retryAfter?: number };
+        if (res.status === 429) {
+          const wait = errBody.retryAfter ?? 60;
+          throw new Error(`ระบบ AI กำลังใช้งานหนัก 🙏 รอ ${wait} วินาที แล้วลองใหม่`);
+        }
         throw new Error(errBody.error ?? "Martin ไม่พร้อมใช้งานตอนนี้");
       }
 
@@ -228,11 +232,7 @@ export function FloatingAssistant() {
       reader.cancel().catch(() => {});
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
-      const raw = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
-      // Surface rate-limit errors with a clear Thai message
-      const msg = /429|rate.?limit|too many|quota/i.test(raw)
-        ? "Martin ถูกใช้งานหนักมากตอนนี้ 🙏 รอสักครู่แล้วลองใหม่"
-        : raw;
+      const msg = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
       setError(msg);
       setMessages(prev => {
         const last = prev[prev.length - 1];

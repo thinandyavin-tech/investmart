@@ -149,10 +149,8 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
   const [state, setState] = useState<State>({ phase: "idle" });
 
   async function analyze() {
-    if (state.phase === "open") {
-      setState({ phase: "idle" });
-      return;
-    }
+    if (state.phase === "open") { setState({ phase: "idle" }); return; }
+    if (state.phase === "loading") return; // prevent double-tap
 
     setState({ phase: "loading" });
 
@@ -164,28 +162,18 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       otherHeadlines: (otherHeadlines ?? []).filter(h => h !== article.headline),
     };
 
-    async function doFetch(): Promise<Response> {
-      const r = await fetch("/api/news/analyze", {
+    try {
+      const res = await fetch("/api/news/analyze", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(payload),
       });
-      if (r.status === 429) {
-        await new Promise<void>(resolve => setTimeout(resolve, 1500));
-        return fetch("/api/news/analyze", {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify(payload),
-        });
-      }
-      return r;
-    }
-
-    try {
-      const res = await doFetch();
       if (!res.ok) {
-        const err = (await res.json().catch(() => ({}))) as { error?: string };
-        setState({ phase: "error", message: err.error ?? "AI ไม่พร้อมใช้งาน" });
+        const err = (await res.json().catch(() => ({}))) as { error?: string; retryAfter?: number };
+        const msg = res.status === 429
+          ? `ระบบ AI กำลังใช้งานหนัก 🙏 รอ ${err.retryAfter ?? 60} วินาที แล้วลองใหม่`
+          : (err.error ?? "AI ไม่พร้อมใช้งาน");
+        setState({ phase: "error", message: msg });
         return;
       }
       const data = (await res.json()) as AnalysisResult & { cached?: boolean };
@@ -193,6 +181,7 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
     } catch {
       setState({ phase: "error", message: "ไม่สามารถเชื่อมต่อได้" });
     }
+    // Note: no finally needed — every path above sets state explicitly
   }
 
   return (
@@ -200,47 +189,36 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       <button
         onClick={() => void analyze()}
         disabled={state.phase === "loading"}
-        className="text-xs font-bold px-2 py-0.5 border transition-colors disabled:opacity-50"
-        style={{
-          borderColor: state.phase === "open" ? "#1F1A14" : "#8A8378",
-          color:       state.phase === "open" ? "#1F1A14" : "#8A8378",
-          background:  state.phase === "open" ? "#F0EBE0" : "transparent",
-        }}
+        className={`text-xs font-semibold px-2 py-1 rounded-lg border transition-colors disabled:opacity-50 ${
+          state.phase === "open"
+            ? "border-violet-400 bg-violet-50 text-violet-700"
+            : "border-slate-300 text-slate-500 hover:border-violet-300 hover:text-violet-600"
+        }`}
         aria-expanded={state.phase === "open"}
         aria-label={`วิเคราะห์ข่าวด้วย AI: ${article.headline}`}
       >
-        {state.phase === "loading" ? "กำลังวิเคราะห์..." : state.phase === "open" ? "ซ่อน AI" : "วิเคราะห์ข่าวด้วย AI"}
+        {state.phase === "loading" ? "กำลังวิเคราะห์..." : state.phase === "open" ? "✦ ซ่อน AI" : "✦ วิเคราะห์ข่าวด้วย AI"}
       </button>
 
       {state.phase === "loading" && (
-        <div
-          className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-[#E8E2D4] bg-[#F9F7F2]"
-          aria-busy="true"
-          aria-label="กำลังวิเคราะห์"
-        >
+        <div className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-violet-200 bg-white/30 rounded-r-lg" aria-busy="true">
           <div className="flex gap-1.5 mb-2">
-            <div className="h-4 w-20 bg-[#E8E2D4] animate-pulse rounded" />
-            <div className="h-4 w-16 bg-[#E8E2D4] animate-pulse rounded" />
-            <div className="h-4 w-14 bg-[#E8E2D4] animate-pulse rounded" />
+            {[20, 16, 14].map(w => (
+              <div key={w} className={`h-4 w-${w} bg-white/50 animate-pulse rounded`} />
+            ))}
           </div>
-          <div className="h-2.5 w-full  bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-2.5 w-4/5   bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-2.5 w-3/5   bg-[#E8E2D4] animate-pulse rounded" />
+          <div className="h-2.5 w-full  bg-white/50 animate-pulse rounded" />
+          <div className="h-2.5 w-4/5   bg-white/50 animate-pulse rounded" />
+          <div className="h-2.5 w-3/5   bg-white/50 animate-pulse rounded" />
         </div>
       )}
 
       {state.phase === "error" && (
-        <p className="mt-1.5 text-xs px-2" style={{ color: "#DC2626" }}>
-          {state.message}
-          {" · "}
-          <button onClick={() => void analyze()} className="underline font-bold">
-            ลองใหม่
-          </button>
-          {" · "}
-          <button onClick={() => setState({ phase: "idle" })} className="underline">
-            ปิด
-          </button>
-        </p>
+        <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+          <p className="text-xs text-red-600">{state.message}</p>
+          <button onClick={() => void analyze()} className="text-xs text-red-700 underline font-semibold">ลองใหม่</button>
+          <button onClick={() => setState({ phase: "idle" })} className="text-xs text-slate-500 underline">ปิด</button>
+        </div>
       )}
 
       {state.phase === "open" && (
