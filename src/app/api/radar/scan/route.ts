@@ -8,7 +8,7 @@ import { scanUniverse, loadDbScan, saveDbScan, dbScanFresh, dbScanUsable } from 
 import { applyRateLimit } from "@/lib/rateLimit";
 
 export const dynamic    = "force-dynamic";
-export const maxDuration = 300; // full SP500 live scan takes ~110 s; SET100 ~30 s
+export const maxDuration = 300; // full SP500 live scan takes ~110 s; SET50 ~20s
 
 interface FilterOpts {
   minScore:   number;

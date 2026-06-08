@@ -351,19 +351,32 @@ export function RadarPage() {
         {/* Universe */}
         <div>
           <div className="text-xs font-semibold uppercase tracking-widest mb-2 text-slate-500">กลุ่มหุ้น</div>
-          {(["SP500", "NASDAQ100", "SET100", "CEO"] as Universe[]).map((u) => {
-            const labels: Record<Universe, string> = { SP500: "S&P 500", NASDAQ100: "Nasdaq 100", SET100: "SET 100 🇹🇭", CEO: "CEO Portfolio" };
+          {(["SP500", "NASDAQ100", "SET50", "CEO"] as Universe[]).map((u) => {
+            const labels: Record<Universe, string> = {
+              SP500: "S&P 500 (~503)",
+              NASDAQ100: "Nasdaq 100 (~103)",
+              SET50: "SET 50 🇹🇭",
+              CEO: "CEO Portfolio",
+            };
+            const sublabels: Partial<Record<Universe, string>> = {
+              SET50: "ต้องการ Finnhub Premium",
+            };
             return (
               <button
                 key={u}
                 onClick={() => setUniverse(u)}
-                className={`w-full text-left px-2.5 py-1.5 rounded-lg mb-1 text-xs font-semibold transition-colors ${
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg mb-1 transition-colors ${
                   universe === u
                     ? "bg-slate-900 text-white"
                     : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
                 }`}
               >
-                {labels[u]}
+                <span className="text-xs font-semibold block">{labels[u]}</span>
+                {sublabels[u] && (
+                  <span className={`text-[10px] ${universe === u ? "text-slate-400" : "text-amber-600"}`}>
+                    ⚠ {sublabels[u]}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -621,7 +634,24 @@ export function RadarPage() {
             </div>
           )}
           {!scanning && !scanError && sortedFiltered.length === 0 && (
-            <div className="text-center text-xs text-slate-400 py-8">ไม่พบหุ้น — ลองปรับตัวกรอง</div>
+            <div className="text-center py-8 px-4">
+              {universe === "SET50" ? (
+                <div className="space-y-2">
+                  <p className="text-2xl">🇹🇭</p>
+                  <p className="text-sm font-semibold text-slate-700">SET50 ต้องการข้อมูลไทย</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    ข้อมูลราคาหุ้น SET ต้องการ Finnhub Growth/Premium plan<br/>
+                    ซึ่งรองรับ international markets รวมถึง .BK tickers<br/>
+                    ปัจจุบันใช้ free tier ซึ่งไม่มีข้อมูล SET
+                  </p>
+                  <p className="text-xs text-violet-600 font-semibold mt-2">
+                    ต้องการ: FINNHUB_PLAN=premium ใน env vars
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-slate-400">ไม่พบหุ้น — ลองปรับตัวกรอง</p>
+              )}
+            </div>
           )}
           {sortedFiltered.map((stock, i) => {
             const isSelected = selected?.ticker === stock.ticker;

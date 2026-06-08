@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  SP500_TICKERS, NASDAQ100_TICKERS, SET100_TICKERS, CEO_PORTFOLIO_TICKERS,
+  SP500_TICKERS, NASDAQ100_TICKERS, SET50_TICKERS, CEO_PORTFOLIO_TICKERS,
 } from "@/lib/stockUniverse";
 import { STOCK_INFO } from "@/lib/stockNames";
 
@@ -20,7 +20,7 @@ const ALL_TICKERS: Suggestion[] = (() => {
   const sets: [string, readonly string[]][] = [
     ["S&P 500",   SP500_TICKERS],
     ["NASDAQ 100",NASDAQ100_TICKERS],
-    ["SET 100",   SET100_TICKERS],
+    ["SET 50",   SET50_TICKERS],
     ["CEO",       CEO_PORTFOLIO_TICKERS],
   ];
   const map = new Map<string, Suggestion>();

@@ -4,11 +4,13 @@ import type { Universe } from "@/lib/stockUniverse";
 
 // Runs on schedule and on-demand to pre-compute radar scans for all universes.
 // Vercel invokes this with Authorization: Bearer <CRON_SECRET>.
-// Timing: SP500 ~110s, NASDAQ100 ~25s, SET100 ~20s → total ~155s, safely under 300s.
+// Timing (Growth plan): SP500 ~110s, NASDAQ100 ~25s → total ~135s, safely under 300s.
+// SET50: skipped if Finnhub free tier (returns 0 valid quotes for .BK tickers).
+// Set FINNHUB_BATCH_DELAY_MS=10000 in env if using free tier (60 req/min).
 export const dynamic    = "force-dynamic";
 export const maxDuration = 300;
 
-const UNIVERSES: readonly Universe[] = ["SP500", "NASDAQ100", "SET100"] as const;
+const UNIVERSES: readonly Universe[] = ["SP500", "NASDAQ100", "SET50"] as const;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const secret = process.env.CRON_SECRET;

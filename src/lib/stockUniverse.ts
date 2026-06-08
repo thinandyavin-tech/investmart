@@ -100,27 +100,39 @@ export const NASDAQ100_TICKERS = [
   "ANET","ADSK","CSGP","CHKP",
 ] as const;
 
-// SET100 — Thailand Stock Exchange top-100 constituents (as of 2025-Q2).
+// SET50 — Thailand Stock Exchange top-50 constituents (as of 2025-Q2).
 // Tickers use the .BK (Bangkok) suffix required by Finnhub.
-// Source: Stock Exchange of Thailand (set.or.th) SET100 index.
+// Source: Stock Exchange of Thailand (set.or.th) SET50 index.
 // Rebalances semi-annually (January & July); update after each rebalance.
-// NOTE: Real-time quotes for SET stocks require Finnhub Growth/Premium plan.
-// On the free tier, quotes may be unavailable — the scan will skip tickers with c=0.
-export const SET100_TICKERS = [
-  "ADVANC.BK","AOT.BK","AP.BK","AWC.BK","BANPU.BK",
-  "BAY.BK","BBL.BK","BCH.BK","BDMS.BK","BEM.BK",
-  "BH.BK","BGRIM.BK","BJC.BK","BLA.BK","BTS.BK",
-  "CBG.BK","CENTEL.BK","CPAXT.BK","CPALL.BK","CPF.BK",
-  "CPN.BK","CRC.BK","DELTA.BK","EA.BK","EGCO.BK",
-  "GLOBAL.BK","GPSC.BK","GULF.BK","HANA.BK","HMPRO.BK",
-  "INTUCH.BK","IVL.BK","JMT.BK","KBANK.BK","KCE.BK",
-  "KKP.BK","KTB.BK","LH.BK","LHFG.BK","MAJOR.BK",
-  "MBK.BK","MINT.BK","MTC.BK","OR.BK","OSP.BK",
-  "PSH.BK","PTT.BK","PTTEP.BK","PTTGC.BK","QH.BK",
-  "RATCH.BK","SCB.BK","SCC.BK","SIRI.BK","SPALI.BK",
-  "STA.BK","STEC.BK","STGT.BK","SUPER.BK","TCAP.BK",
-  "TIDLOR.BK","TISCO.BK","TOP.BK","TQM.BK","TRUE.BK",
-  "TU.BK","TTB.BK","VGI.BK","WHA.BK",
+//
+// ⚠️  DATA AVAILABILITY NOTE:
+// Finnhub free tier does NOT provide real-time quotes for Thai/SET stocks.
+// All 50 tickers will return empty data on the free plan — the scan results
+// will be empty, and the UI shows an honest "needs Thai data provider" message.
+// To enable live SET50 data, set FINNHUB_PLAN=premium in your Vercel env vars
+// (requires Finnhub Growth or Premium plan with international coverage).
+export const SET50_TICKERS = [
+  // Financials (10)
+  "KBANK.BK","SCB.BK","BBL.BK","KTB.BK","BAY.BK",
+  "TTB.BK","TISCO.BK","KKP.BK","TCAP.BK","MTC.BK",
+  // Energy (10)
+  "PTT.BK","PTTEP.BK","TOP.BK","PTTGC.BK","BANPU.BK",
+  "RATCH.BK","EGCO.BK","GPSC.BK","GULF.BK","EA.BK",
+  // Industrials & Transport (4)
+  "AOT.BK","BTS.BK","BEM.BK","WHA.BK",
+  // Consumer Staples & Retail (7)
+  "CPALL.BK","CPF.BK","HMPRO.BK","CPAXT.BK","OSP.BK",
+  "TU.BK","BJC.BK",
+  // Real Estate (5)
+  "CPN.BK","LH.BK","AP.BK","SPALI.BK","AWC.BK",
+  // Technology & Telecom (5)
+  "ADVANC.BK","TRUE.BK","INTUCH.BK","DELTA.BK","VGI.BK",
+  // Healthcare (3)
+  "BDMS.BK","BH.BK","BCH.BK",
+  // Materials (2)
+  "SCC.BK","IVL.BK",
+  // Consumer Discretionary (4)
+  "MINT.BK","CRC.BK","CENTEL.BK","OR.BK",
 ] as const;
 
 export const CEO_PORTFOLIO_TICKERS = [
@@ -128,13 +140,19 @@ export const CEO_PORTFOLIO_TICKERS = [
   "RKLB","IONQ","JOBY","RGTI","QBTS","ARKG","ARKK","SMCI","APP","HIMS",
 ] as const;
 
-export type Universe = "SP500" | "NASDAQ100" | "SET100" | "CEO";
+export type Universe = "SP500" | "NASDAQ100" | "SET50" | "CEO";
+
+// SET50 requires Finnhub Growth/Premium for live Thai quotes.
+// Returns true if the universe needs a plan the current key may not have.
+export function isThaiUniverse(universe: Universe): boolean {
+  return universe === "SET50";
+}
 
 export function getUniverseTickers(universe: Universe): readonly string[] {
   switch (universe) {
     case "SP500":      return SP500_TICKERS;
     case "NASDAQ100":  return NASDAQ100_TICKERS;
-    case "SET100":     return SET100_TICKERS;
+    case "SET50":      return SET50_TICKERS;
     case "CEO":        return CEO_PORTFOLIO_TICKERS;
   }
 }
@@ -275,7 +293,7 @@ export const SECTOR_MAP: Record<string, string> = {
   // 2024-2025 SP500/NDX additions
   GEV:"Indust", VST:"Utility", SOLV:"Health", DELL:"Tech", TKO:"Comm",
   ANET:"Tech",  ADSK:"Tech",   CSGP:"Tech",  CHKP:"Tech",
-  // SET100 — key sectors (remaining map to "Other" via fallback)
+  // SET50 — key sectors (remaining map to "Other" via fallback)
   "PTT.BK":"Energy",  "PTTEP.BK":"Energy",  "PTTGC.BK":"Energy",
   "TOP.BK":"Energy",  "BANPU.BK":"Energy",  "EA.BK":"Utility",
   "GULF.BK":"Utility","BGRIM.BK":"Utility", "GPSC.BK":"Utility",
