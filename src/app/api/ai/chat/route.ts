@@ -230,7 +230,8 @@ export async function POST(request: NextRequest): Promise<Response> {
   const limited = await applyRateLimit(request, "ai");
   if (limited) return limited;
 
-  const hasAi      = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
+  // Accept any configured provider — Groq, Gemini, or local (Ollama/LM Studio)
+  const hasAi      = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || process.env.LOCAL_AI_BASE_URL);
   const finnhubKey = process.env.FINNHUB_API_KEY;
 
   if (!hasAi || !finnhubKey) {
