@@ -126,7 +126,7 @@ export function FloatingAssistant() {
     if (!trimmed || streaming) return;
 
     setError(null);
-    const history = messages.slice(-10).map(m => ({ ...m, content: m.content.slice(0, 6000) }));
+    const history = messages.slice(-10).map(m => ({ ...m, content: m.content.slice(0, 10000) }));
     const outgoing: Message[] = [...history, { role: "user", content: trimmed }];
     setMessages([...messages, { role: "user", content: trimmed }, { role: "assistant", content: "" }]);
     setInput("");

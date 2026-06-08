@@ -18,6 +18,7 @@ export type { AIMessage as ChatMessage };
 export function streamChat(
   messages:     AIMessage[],
   systemPrompt: string,
+  opts?: { maxTokens?: number; temperature?: number },
 ): ReadableStream<Uint8Array> {
   const enc = new TextEncoder();
 
@@ -30,8 +31,8 @@ export function streamChat(
           { role: "system" as const, content: systemPrompt },
           ...messages,
         ],
-        maxTokens:   1000,
-        temperature: 0.35,
+        maxTokens:   opts?.maxTokens   ?? 1000,
+        temperature: opts?.temperature ?? 0.35,
       };
 
       try {
