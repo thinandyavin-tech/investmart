@@ -42,18 +42,18 @@ function WelcomeStep() {
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <h2 className="text-sm font-bold text-[#1F1A14]">ยินดีต้อนรับสู่ InvestMart</h2>
-        <p className="text-[10px] text-[#8A8378] leading-relaxed">
+        <p className="text-xs text-[#8A8378] leading-relaxed">
           แพลตฟอร์มเรียนรู้การลงทุนหุ้นสหรัฐสำหรับนักลงทุนไทย มีสามอย่างหลักที่ควรรู้ก่อน
         </p>
       </div>
 
       <div className="border border-dashed border-[#5B8A2A] bg-[#F8FDF2] rounded p-3 flex flex-col gap-1">
-        <p className="text-[10px] font-bold text-[#5B8A2A] uppercase tracking-widest">พอร์ตเริ่มต้น</p>
+        <p className="text-xs font-bold text-[#5B8A2A] uppercase tracking-widest">พอร์ตเริ่มต้น</p>
         <p className="text-xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>฿1,250,000</p>
-        <p className="text-[9px] text-[#8A8378]">เงินจำลองทั้งหมด — ไม่มีเงินจริงเข้ามาเกี่ยวข้องเลย</p>
+        <p className="text-xs text-[#8A8378]">เงินจำลองทั้งหมด — ไม่มีเงินจริงเข้ามาเกี่ยวข้องเลย</p>
       </div>
 
-      <ul className="flex flex-col gap-2 text-[10px]">
+      <ul className="flex flex-col gap-2 text-xs">
         {([
           ["📡", "เรดาร์ AI", "สแกนหุ้นใน S&P 500 / Nasdaq ที่มี momentum ผิดปกติ คัดมาให้ดูง่าย"],
           ["💹", "ซื้อขายจำลอง", "ราคาหุ้นเป็นข้อมูลจริงจาก API แต่เงินที่ใช้เป็นเงินสมมติทั้งสิ้น"],
@@ -66,7 +66,7 @@ function WelcomeStep() {
         ))}
       </ul>
 
-      <p className="text-[9px] text-[#8A8378] border-t border-[#E8E2D4] pt-2">
+      <p className="text-xs text-[#8A8378] border-t border-[#E8E2D4] pt-2">
         ผลการเทรดจำลองไม่ได้รับประกันว่าจะสะท้อนผลการลงทุนจริง
         InvestMart ไม่ใช่บริษัทหลักทรัพย์และไม่ได้รับใบอนุญาต
       </p>
@@ -86,18 +86,18 @@ function UsernameStep({ value, onChange, error, inputRef }: UsernameStepProps) {
     <div className="flex flex-col gap-3">
       <div>
         <h2 className="text-sm font-bold text-[#1F1A14] mb-1">เลือก Username</h2>
-        <p className="text-[10px] text-[#8A8378] leading-relaxed">
+        <p className="text-xs text-[#8A8378] leading-relaxed">
           ชื่อที่คนอื่นจะเห็นในชุมชน เปลี่ยนได้ในภายหลัง (มีระยะรอระหว่างการเปลี่ยน)
           ข้ามหากยังไม่แน่ใจ
         </p>
       </div>
 
       <div>
-        <label htmlFor="ob-username" className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1">
+        <label htmlFor="ob-username" className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1">
           Username (ข้ามได้)
         </label>
         <div className="flex items-center border-2 border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
-          <span className="px-2 py-2 text-[10px] text-[#8A8378] border-r-2 border-[#1F1A14] select-none">@</span>
+          <span className="px-2 py-2 text-xs text-[#8A8378] border-r-2 border-[#1F1A14] select-none">@</span>
           <input
             ref={inputRef}
             id="ob-username"
@@ -115,11 +115,11 @@ function UsernameStep({ value, onChange, error, inputRef }: UsernameStepProps) {
           />
         </div>
         {error && (
-          <p id="ob-un-error" role="alert" className="mt-1 text-[9px] text-[#DC2626]">{error}</p>
+          <p id="ob-un-error" role="alert" className="mt-1 text-xs text-[#DC2626]">{error}</p>
         )}
       </div>
 
-      <p className="text-[9px] text-[#8A8378]">
+      <p className="text-xs text-[#8A8378]">
         3–30 ตัวอักษร · ใช้ a-z, 0-9, _ เท่านั้น · ไม่มีช่องว่าง
       </p>
     </div>
@@ -137,7 +137,7 @@ function WatchlistStep({ selected, onToggle, canSave }: WatchlistStepProps) {
     <div className="flex flex-col gap-3">
       <div>
         <h2 className="text-sm font-bold text-[#1F1A14] mb-1">เพิ่มหุ้นที่สนใจ</h2>
-        <p className="text-[10px] text-[#8A8378]">
+        <p className="text-xs text-[#8A8378]">
           เลือกหุ้นที่อยากติดตาม แอปจะไม่ว่างเปล่าตั้งแต่วันแรก ข้ามได้ถ้าจะเลือกเองทีหลัง
         </p>
       </div>
@@ -155,21 +155,21 @@ function WatchlistStep({ selected, onToggle, canSave }: WatchlistStepProps) {
               type="button"
               onClick={() => onToggle(ticker)}
               aria-pressed={active}
-              className={`flex flex-col items-center justify-center py-2 px-1 border-2 rounded transition-colors text-[9px] ${
+              className={`flex flex-col items-center justify-center py-2 px-1 border-2 rounded transition-colors text-xs ${
                 active
                   ? "border-[#5B8A2A] bg-[#F0FAE8] text-[#5B8A2A] font-bold"
                   : "border-[#D4CFC8] bg-white text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14]"
               }`}
             >
-              <span className="font-mono font-bold text-[10px]">{ticker}</span>
-              <span className="text-[8px] mt-0.5 truncate max-w-full">{name}</span>
+              <span className="font-mono font-bold text-xs">{ticker}</span>
+              <span className="text-xs mt-0.5 truncate max-w-full">{name}</span>
             </button>
           );
         })}
       </div>
 
       {!canSave && selected.size > 0 && (
-        <p className="text-[9px] text-[#8A8378]">
+        <p className="text-xs text-[#8A8378]">
           เข้าสู่ระบบเพื่อบันทึก Watchlist ของคุณ
         </p>
       )}
@@ -182,24 +182,24 @@ function ActionStep() {
     <div className="flex flex-col gap-3">
       <div>
         <h2 className="text-sm font-bold text-[#1F1A14] mb-1">พร้อมแล้ว — เริ่มได้เลย</h2>
-        <p className="text-[10px] text-[#8A8378] leading-relaxed">
+        <p className="text-xs text-[#8A8378] leading-relaxed">
           ผลตอบแทนจำลองไม่ใช่คำแนะนำการลงทุน · ทุกอย่างในนี้เป็นเพื่อการเรียนรู้เท่านั้น
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <Link href="/radar" className="block">
-          <OffsetButton variant="lime" className="w-full text-center text-[11px]">
+          <OffsetButton variant="lime" className="w-full text-center text-xs">
             📡 เปิดเรดาร์สแกนหุ้น
           </OffsetButton>
         </Link>
         <Link href="/market" className="block">
-          <OffsetButton variant="black" className="w-full text-center text-[11px]">
+          <OffsetButton variant="black" className="w-full text-center text-xs">
             📈 ดูภาพรวมตลาดวันนี้
           </OffsetButton>
         </Link>
         <Link href="/learn" className="block">
-          <OffsetButton variant="white" className="w-full text-center text-[11px]">
+          <OffsetButton variant="white" className="w-full text-center text-xs">
             📚 เรียนรู้คำศัพท์ก่อน
           </OffsetButton>
         </Link>
@@ -334,7 +334,7 @@ export function OnboardingFlow() {
       >
         {/* Title bar */}
         <div className="flex items-center justify-between px-3 py-1.5 bg-[#000080]">
-          <span className="text-white text-[10px] font-bold tracking-widest">
+          <span className="text-white text-xs font-bold tracking-widest">
             INVESTMART — ขั้นตอน {stepIdx + 1}/{steps.length}
           </span>
           <button
@@ -388,7 +388,7 @@ export function OnboardingFlow() {
           {stepIdx > 0 && step !== "action" && (
             <button
               onClick={back}
-              className="text-[10px] text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline"
+              className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline"
             >
               ← กลับ
             </button>
@@ -396,7 +396,7 @@ export function OnboardingFlow() {
           {step !== "action" && (
             <button
               onClick={dismiss}
-              className="text-[10px] text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline ml-auto"
+              className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline ml-auto"
             >
               ข้าม
             </button>
@@ -414,7 +414,7 @@ export function OnboardingFlow() {
           {step === "action" && (
             <button
               onClick={dismiss}
-              className="text-[10px] text-[#8A8378] hover:underline mx-auto focus:outline-none focus:underline"
+              className="text-xs text-[#8A8378] hover:underline mx-auto focus:outline-none focus:underline"
             >
               ปิด · ไม่แสดงอีก
             </button>

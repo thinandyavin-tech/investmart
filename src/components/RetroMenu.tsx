@@ -86,7 +86,7 @@ export function RetroMenu({ onClose }: RetroMenuProps) {
                   <span>{icon}</span>
                   <span>{label}</span>
                   <span
-                    className="ml-auto text-[10px] px-1.5 py-0.5 font-bold"
+                    className="ml-auto text-xs px-1.5 py-0.5 font-bold"
                     style={{ background: "#FFD9E8", color: "#D6336C" }}
                   >
                     SOON

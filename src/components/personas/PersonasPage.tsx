@@ -22,13 +22,13 @@ function VoteBar({
     <div className="flex items-center gap-2 py-1">
       <div className="w-32 flex-shrink-0">
         <div className="flex items-center gap-1">
-          {icon && <span className="text-[10px]">{icon}</span>}
-          <span className="text-[10px] font-semibold text-slate-900 leading-tight">{label}</span>
+          {icon && <span className="text-xs">{icon}</span>}
+          <span className="text-xs font-semibold text-slate-900 leading-tight">{label}</span>
           {isUser && (
-            <span className="text-[8px] font-bold px-1 py-px rounded bg-green-100 text-green-700 ml-1">คุณ</span>
+            <span className="text-xs font-bold px-1 py-px rounded bg-green-100 text-green-700 ml-1">คุณ</span>
           )}
         </div>
-        <div className="text-[8px] text-slate-400">{sublabel}</div>
+        <div className="text-xs text-slate-400">{sublabel}</div>
       </div>
       <div className="flex-1 bg-slate-100 rounded-full h-2 relative overflow-hidden">
         <div
@@ -37,8 +37,8 @@ function VoteBar({
         />
       </div>
       <div className="w-14 text-right flex-shrink-0">
-        <span className="text-[11px] font-bold" style={{ color }}>{count}</span>
-        <span className="text-[9px] text-slate-400">/{total}</span>
+        <span className="text-xs font-bold" style={{ color }}>{count}</span>
+        <span className="text-xs text-slate-400">/{total}</span>
       </div>
     </div>
   );
@@ -54,8 +54,8 @@ function WinnerBadge({ theme }: { theme: DesignTheme }) {
     >
       <span className="text-lg">🏆</span>
       <div>
-        <div className="text-[11px] font-bold" style={{ color: t.color }}>{t.label}</div>
-        <div className="text-[9px] text-slate-500">
+        <div className="text-xs font-bold" style={{ color: t.color }}>{t.label}</div>
+        <div className="text-xs text-slate-500">
           {isCurrent ? "Design ที่ใช้อยู่ตอนนี้ ✓" : t.desc}
         </div>
       </div>
@@ -124,12 +124,12 @@ export function PersonasPage() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-lg font-bold text-slate-900">ชุมชน InvestMart</h1>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               20 Personas โหวต Design และ Feature ที่อยากเห็น — เสียงคุณมีผล
             </p>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="text-[9px] text-slate-400 uppercase tracking-widest">ผู้เข้าร่วม</div>
+            <div className="text-xs text-slate-400 uppercase tracking-widest">ผู้เข้าร่วม</div>
             <div className="text-xl font-bold text-slate-900">{totalDesign}</div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export function PersonasPage() {
           {/* Design tally */}
           <div className="bg-white rounded-xl border border-slate-100 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Design Preference</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">Design Preference</h2>
               <WinnerBadge theme={winningDesign} />
             </div>
             <div className="flex flex-col gap-0.5">
@@ -163,10 +163,10 @@ export function PersonasPage() {
           {/* Feature tally */}
           <div className="bg-white rounded-xl border border-slate-100 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Feature Priority</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">Feature Priority</h2>
               <div className="text-right">
-                <div className="text-[9px] text-slate-400">อยากเห็นมากสุด</div>
-                <div className="text-[10px] font-bold text-slate-900">
+                <div className="text-xs text-slate-400">อยากเห็นมากสุด</div>
+                <div className="text-xs font-bold text-slate-900">
                   {FEATURES[winningFeature].icon} {FEATURES[winningFeature].label}
                 </div>
               </div>
@@ -190,24 +190,24 @@ export function PersonasPage() {
 
         {/* User vote form */}
         <div className="bg-white rounded-xl border border-slate-100 p-4">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-3">โหวตของคุณ</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-3">โหวตของคุณ</h2>
           {submitted && hydrated ? (
             <div className="flex items-center justify-between gap-4">
               <div className="flex gap-2 flex-wrap">
-                <span className="text-[10px] text-slate-600">คุณโหวต:</span>
+                <span className="text-xs text-slate-600">คุณโหวต:</span>
                 <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-white text-[9px] font-bold"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-white text-xs font-bold"
                   style={{ background: DESIGN_THEMES[userVote!.design].color }}
                 >
                   🎨 {DESIGN_THEMES[userVote!.design].label}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-100 text-green-700 text-[9px] font-bold">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-bold">
                   {FEATURES[userVote!.feature].icon} {FEATURES[userVote!.feature].label}
                 </span>
               </div>
               <button
                 onClick={handleChangeVote}
-                className="text-[9px] text-slate-400 hover:text-slate-700 underline flex-shrink-0"
+                className="text-xs text-slate-400 hover:text-slate-700 underline flex-shrink-0"
               >
                 เปลี่ยนโหวต
               </button>
@@ -215,7 +215,7 @@ export function PersonasPage() {
           ) : (
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-[10px] font-semibold text-slate-700 mb-2">Design ที่คุณชอบ</p>
+                <p className="text-xs font-semibold text-slate-700 mb-2">Design ที่คุณชอบ</p>
                 <div className="grid grid-cols-2 gap-2">
                   {(Object.entries(DESIGN_THEMES) as [DesignTheme, typeof DESIGN_THEMES[DesignTheme]][]).map(([key, t]) => (
                     <button
@@ -228,17 +228,17 @@ export function PersonasPage() {
                       }`}
                       style={draftDesign === key ? { borderColor: t.color, background: t.bg } : {}}
                     >
-                      <div className="text-[10px] font-bold" style={draftDesign === key ? { color: t.color } : { color: "#0F172A" }}>
+                      <div className="text-xs font-bold" style={draftDesign === key ? { color: t.color } : { color: "#0F172A" }}>
                         {t.label}
                       </div>
-                      <div className="text-[8px] text-slate-500 mt-0.5">{t.desc}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{t.desc}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <p className="text-[10px] font-semibold text-slate-700 mb-2">Feature ที่อยากเห็นมากสุด</p>
+                <p className="text-xs font-semibold text-slate-700 mb-2">Feature ที่อยากเห็นมากสุด</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {(Object.entries(FEATURES) as [Feature, typeof FEATURES[Feature]][]).map(([key, f]) => (
                     <button
@@ -250,11 +250,11 @@ export function PersonasPage() {
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                     >
-                      <div className="text-[11px]">{f.icon}</div>
-                      <div className={`text-[10px] font-bold mt-0.5 ${draftFeature === key ? "text-green-700" : "text-slate-900"}`}>
+                      <div className="text-xs">{f.icon}</div>
+                      <div className={`text-xs font-bold mt-0.5 ${draftFeature === key ? "text-green-700" : "text-slate-900"}`}>
                         {f.label}
                       </div>
-                      <div className="text-[8px] text-slate-500 mt-0.5 leading-tight">{f.desc}</div>
+                      <div className="text-xs text-slate-500 mt-0.5 leading-tight">{f.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -262,7 +262,7 @@ export function PersonasPage() {
 
               <button
                 onClick={handleVote}
-                className="self-start px-5 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-[11px] font-bold rounded-lg transition-colors"
+                className="self-start px-5 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold rounded-lg transition-colors"
               >
                 ส่งโหวต
               </button>
@@ -272,7 +272,7 @@ export function PersonasPage() {
 
         {/* Personas grid */}
         <div>
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
             20 Personas
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -288,7 +288,7 @@ export function PersonasPage() {
             ))}
           </div>
           {hydrated && userVote && (
-            <p className="text-[9px] text-slate-400 text-center mt-3">
+            <p className="text-xs text-slate-400 text-center mt-3">
               ✨ บุคลิกที่ตรงกับโหวตของคุณทั้งคู่จะถูก highlight
             </p>
           )}

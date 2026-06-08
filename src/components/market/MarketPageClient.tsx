@@ -32,7 +32,7 @@ export function MarketPageClient() {
           <MarketNewsCard />
         </section>
 
-        <p className="text-[9px] text-slate-400 text-center pb-2">
+        <p className="text-xs text-slate-400 text-center pb-2">
           ข้อมูลอาจล่าช้า 15–20 นาที · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>

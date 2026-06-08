@@ -52,7 +52,7 @@ export function BrandPillDropdown({ onClose }: BrandPillDropdownProps) {
               </span>
               <span className="text-xs font-bold text-[#8A8378]">{label}</span>
               <span
-                className="ml-auto text-[9px] px-1.5 py-0.5 font-bold rounded"
+                className="ml-auto text-xs px-1.5 py-0.5 font-bold rounded"
                 style={{ background: "#FFD9E8", color: "#D6336C" }}
               >
                 SOON

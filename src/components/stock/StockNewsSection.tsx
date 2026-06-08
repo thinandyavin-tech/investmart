@@ -47,8 +47,8 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
   return (
     <Card className="overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest">ข่าว {ticker}</h2>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">จาก Finnhub · อ่านต้นฉบับก่อนตัดสินใจ</p>
+        <h2 className="text-xs font-bold uppercase tracking-widest">ข่าว {ticker}</h2>
+        <p className="text-xs text-[#8A8378] mt-0.5">จาก Finnhub · อ่านต้นฉบับก่อนตัดสินใจ</p>
       </div>
 
       {loading ? (
@@ -61,11 +61,11 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
           ))}
         </div>
       ) : error ? (
-        <p className="px-3 py-4 text-[10px] text-[#8A8378] text-center">
+        <p className="px-3 py-4 text-xs text-[#8A8378] text-center">
           ไม่สามารถโหลดข่าวได้
         </p>
       ) : articles.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-[#8A8378] text-center">
+        <p className="px-3 py-4 text-xs text-[#8A8378] text-center">
           ยังไม่มีข่าวล่าสุดสำหรับ {ticker}
         </p>
       ) : (
@@ -79,11 +79,11 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
                 className="block group mb-1"
                 aria-label={`${a.headline} — เปิดในแท็บใหม่`}
               >
-                <p className="text-[11px] leading-snug text-[#1F1A14] group-hover:underline">
+                <p className="text-xs leading-snug text-[#1F1A14] group-hover:underline">
                   {a.headline}
                 </p>
               </a>
-              <p className="text-[9px] text-[#8A8378] mb-1">
+              <p className="text-xs text-[#8A8378] mb-1">
                 {a.source} · {timeAgo(a.datetime)}
               </p>
               <NewsAnalysisPanel

@@ -71,7 +71,7 @@ export function HomeDesktop() {
 function AboutCard({ bio }: { bio: string }) {
   return (
     <Card className="p-5">
-      <h2 className="text-xs font-bold uppercase tracking-widest mb-3 border-b border-white/30 pb-2 text-slate-500">
+      <h2 className="text-xs font-semibold uppercase tracking-widest mb-3 border-b border-white/30 pb-2 text-slate-400">
         เกี่ยวกับฉัน
       </h2>
       {bio ? (
@@ -222,7 +222,7 @@ function HomeFooter() {
   return (
     <footer className="border-t border-white/30 bg-white/50 backdrop-blur-md px-6 py-4 mt-4">
       <div className="max-w-5xl mx-auto">
-        <p className="text-[11px] text-slate-900 font-semibold mb-1">
+        <p className="text-xs text-slate-900 font-semibold mb-1">
           InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา
         </p>
         <div className="flex flex-wrap gap-3 text-xs mb-2">

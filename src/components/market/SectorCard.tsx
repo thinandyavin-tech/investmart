@@ -55,7 +55,7 @@ export function SectorCard() {
   return (
     <Card className="overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-slate-100">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest">Sector Performance</h2>
+        <h2 className="text-xs font-bold uppercase tracking-widest">Sector Performance</h2>
       </div>
 
       {loading ? (
@@ -68,7 +68,7 @@ export function SectorCard() {
           ))}
         </div>
       ) : sectors.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-slate-500 text-center">
+        <p className="px-3 py-4 text-xs text-slate-500 text-center">
           ไม่มีข้อมูล Sector
         </p>
       ) : (
@@ -80,12 +80,12 @@ export function SectorCard() {
 
             return (
               <div key={name} className="flex items-center gap-2 px-3 py-1.5">
-                <span className="text-[9px] text-slate-900 w-28 flex-shrink-0 truncate" title={name}>
+                <span className="text-xs text-slate-900 w-28 flex-shrink-0 truncate" title={name}>
                   {thaiName}
                 </span>
                 <Bar change={change} maxAbs={maxAbs} />
                 <span
-                  className="text-[9px] font-bold w-12 text-right flex-shrink-0"
+                  className="text-xs font-bold w-12 text-right flex-shrink-0"
                   style={{ color: changeColor, fontFamily: "var(--font-mono)" }}
                 >
                   {positive ? "+" : ""}{change.toFixed(2)}%

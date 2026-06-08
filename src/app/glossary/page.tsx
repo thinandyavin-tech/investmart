@@ -15,12 +15,12 @@ export default function GlossaryPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/learn" className="text-[9px] text-[#8A8378] hover:underline">
+            <Link href="/learn" className="text-xs text-[#8A8378] hover:underline">
               ← เรียนรู้
             </Link>
           </div>
           <h1 className="text-sm font-bold uppercase tracking-widest">คำศัพท์การลงทุน</h1>
-          <p className="text-[10px] text-[#8A8378] mt-0.5">
+          <p className="text-xs text-[#8A8378] mt-0.5">
             คำศัพท์ที่ใช้บ่อยในตลาดหุ้น อธิบายเป็นภาษาไทยพร้อมตัวอย่าง
           </p>
         </div>

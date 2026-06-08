@@ -15,7 +15,7 @@ export function DeletePostsButton({ userId }: DeletePostsButtonProps) {
   return (
     <button
       onClick={handleDelete}
-      className="bg-yellow-100 border border-yellow-700 text-yellow-800 px-2 py-0.5 text-[10px] hover:bg-yellow-200 cursor-pointer"
+      className="bg-yellow-100 border border-yellow-700 text-yellow-800 px-2 py-0.5 text-xs hover:bg-yellow-200 cursor-pointer"
     >
       Del Posts
     </button>

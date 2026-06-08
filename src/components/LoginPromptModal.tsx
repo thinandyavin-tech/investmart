@@ -75,7 +75,7 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
           </div>
 
           {withDemo && (
-            <p className="text-[9px] text-[#8A8378] text-center">
+            <p className="text-xs text-[#8A8378] text-center">
               ยังไม่พร้อมสมัคร?{" "}
               <button
                 onClick={() => void handleDemo()}

@@ -62,11 +62,11 @@ function InfographicCard({ card }: { card: InfographicCard }) {
         <span style={{ color: s.accent }}>
           <CategoryIcon hint={card.icon_hint} />
         </span>
-        <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: s.accent }}>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: s.accent }}>
           {CATEGORY_LABEL[card.category]}
         </span>
-        {card.sentiment === "positive" && <span className="ml-auto text-[10px]" style={{ color: s.accent }} aria-label="บวก">▲</span>}
-        {card.sentiment === "negative" && <span className="ml-auto text-[10px]" style={{ color: s.accent }} aria-label="ลบ">▼</span>}
+        {card.sentiment === "positive" && <span className="ml-auto text-xs" style={{ color: s.accent }} aria-label="บวก">▲</span>}
+        {card.sentiment === "negative" && <span className="ml-auto text-xs" style={{ color: s.accent }} aria-label="ลบ">▼</span>}
       </div>
 
       {/* Headline */}
@@ -83,7 +83,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
           <div className="mb-2">
             <Link
               href={`/stock/${card.ticker}`}
-              className="inline-flex items-center gap-1.5 border border-[#1F1A14] px-2 py-0.5 text-[10px] font-bold font-mono hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 border border-[#1F1A14] px-2 py-0.5 text-xs font-bold font-mono hover:bg-[#1F1A14] hover:text-white transition-colors"
               aria-label={`ดูหุ้น ${card.ticker}`}
             >
               ${card.ticker}
@@ -101,7 +101,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
           {card.key_facts.slice(0, 3).map((fact, i) => (
             <li
               key={i}
-              className="text-[10px] leading-relaxed text-[#1F1A14] flex gap-1.5"
+              className="text-xs leading-relaxed text-[#1F1A14] flex gap-1.5"
             >
               <span aria-hidden="true" style={{ color: s.accent }} className="mt-px flex-shrink-0">▸</span>
               <span>{fact}</span>
@@ -112,13 +112,13 @@ function InfographicCard({ card }: { card: InfographicCard }) {
 
       {/* Footer */}
       <div className="px-3 py-2 border-t border-[#E8E2D4] flex items-center justify-between gap-2">
-        <span className="text-[8px] text-[#8A8378] truncate">
+        <span className="text-xs text-[#8A8378] truncate">
           {card.source_name}
         </span>
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => setExpanded(v => !v)}
-            className="text-[8px] font-bold text-[#8A8378] hover:text-[#1F1A14] transition-colors"
+            className="text-xs font-bold text-[#8A8378] hover:text-[#1F1A14] transition-colors"
             aria-expanded={expanded}
           >
             {expanded ? "ซ่อน" : "AI ▸"}
@@ -127,7 +127,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
             href={card.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[8px] font-bold underline text-[#1F1A14]"
+            className="text-xs font-bold underline text-[#1F1A14]"
             aria-label={`อ่านต้นฉบับจาก ${card.source_name}`}
           >
             ต้นฉบับ ↗
@@ -138,18 +138,18 @@ function InfographicCard({ card }: { card: InfographicCard }) {
       {/* Expanded: AI analysis */}
       {expanded && (
         <div className="px-3 pb-2 border-t border-[#E8E2D4] bg-[#F3EDE0]">
-          <p className="text-[9px] text-[#8A8378] pt-2">
+          <p className="text-xs text-[#8A8378] pt-2">
             ต้องการวิเคราะห์ AI เพิ่มเติม?
           </p>
           <a
             href={card.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-[9px] font-bold text-[#5B8A2A] underline mt-0.5"
+            className="block text-xs font-bold text-[#5B8A2A] underline mt-0.5"
           >
             เปิดต้นฉบับ → แล้วกด "ตรวจสอบ + สรุปด้วย AI"
           </a>
-          <p className="text-[8px] text-[#8A8378] mt-1">
+          <p className="text-xs text-[#8A8378] mt-1">
             AI สร้าง infographic นี้จากข้อมูลจริง · ไม่ใช่คำแนะนำการลงทุน
           </p>
         </div>
@@ -211,12 +211,12 @@ export function InfographicsSection() {
         <div>
           <h2
             id="infographics-heading"
-            className="text-[10px] font-bold uppercase tracking-widest"
+            className="text-xs font-bold uppercase tracking-widest"
           >
             ข่าวเด่นวันนี้ · Infographic
           </h2>
           {timeLabel && (
-            <p className="text-[9px] text-[#8A8378] mt-0.5">
+            <p className="text-xs text-[#8A8378] mt-0.5">
               อัพเดทล่าสุด {timeLabel} · อัพเดท 6×/วัน
             </p>
           )}
@@ -224,7 +224,7 @@ export function InfographicsSection() {
         {error && (
           <button
             onClick={load}
-            className="text-[9px] font-bold border border-[#1F1A14] px-2 py-0.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="text-xs font-bold border border-[#1F1A14] px-2 py-0.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
           >
             ลองใหม่
           </button>
@@ -241,9 +241,9 @@ export function InfographicsSection() {
           {[0, 1, 2].map(i => <CardSkeleton key={i} />)}
         </div>
       ) : error ? (
-        <p className="text-[10px] text-[#8A8378] py-3">ไม่สามารถโหลด infographic ได้ในขณะนี้</p>
+        <p className="text-xs text-[#8A8378] py-3">ไม่สามารถโหลด infographic ได้ในขณะนี้</p>
       ) : cards.length === 0 ? (
-        <p className="text-[10px] text-[#8A8378] py-3">ยังไม่มีข่าวเด่นวันนี้</p>
+        <p className="text-xs text-[#8A8378] py-3">ยังไม่มีข่าวเด่นวันนี้</p>
       ) : (
         <div
           className="flex gap-3 overflow-x-auto pb-3"

@@ -72,13 +72,13 @@ export default async function AdminPage() {
                     <div className="flex gap-2">
                       {u.bannedAt ? (
                         <form action={unbanUser.bind(null, u.id)}>
-                          <button className="bg-green-100 border border-green-700 text-green-800 px-2 py-0.5 text-[10px] hover:bg-green-200 cursor-pointer">
+                          <button className="bg-green-100 border border-green-700 text-green-800 px-2 py-0.5 text-xs hover:bg-green-200 cursor-pointer">
                             Unban
                           </button>
                         </form>
                       ) : (
                         <form action={banUser.bind(null, u.id)}>
-                          <button className="bg-red-100 border border-red-700 text-red-800 px-2 py-0.5 text-[10px] hover:bg-red-200 cursor-pointer">
+                          <button className="bg-red-100 border border-red-700 text-red-800 px-2 py-0.5 text-xs hover:bg-red-200 cursor-pointer">
                             Ban
                           </button>
                         </form>

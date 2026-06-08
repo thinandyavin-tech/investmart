@@ -123,7 +123,7 @@ export function RadarPickCard() {
   return (
     <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
       <div className="px-4 pt-3 pb-1">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
+        <span className="text-xs font-bold uppercase tracking-widest text-violet-600">
           ● RADAR PICK · 3M
         </span>
       </div>
@@ -138,7 +138,7 @@ export function RadarPickCard() {
               ${pick.price.toFixed(2)}
             </span>
           </div>
-          <div className="text-[10px] text-slate-500 mt-1">
+          <div className="text-xs text-slate-500 mt-1">
             {pick.companyName} · {pick.sector}
           </div>
         </div>

@@ -60,7 +60,7 @@ function InputRow({
   const id = "rdcf-" + label.replace(/\s+/g, "-").toLowerCase();
   return (
     <div className="flex flex-col gap-0.5">
-      <label htmlFor={id} className="text-[9px] font-semibold text-slate-500 uppercase tracking-wide">
+      <label htmlFor={id} className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       <div className="flex items-center gap-1">
@@ -73,13 +73,13 @@ function InputRow({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={required ? "ต้องใส่" : "optional"}
-          className={`w-full px-2 py-1 text-[10px] border rounded-md focus:outline-none focus-visible:ring-1 transition-colors font-mono
+          className={`w-full px-2 py-1 text-xs border rounded-md focus:outline-none focus-visible:ring-1 transition-colors font-mono
             ${required && !value ? "border-amber-400 bg-amber-50 focus:border-amber-500 focus-visible:ring-amber-400" : "border-slate-200 bg-white focus:border-green-500 focus-visible:ring-green-500"}`}
           aria-required={required}
         />
-        {unit && <span className="text-[9px] text-slate-400 flex-shrink-0">{unit}</span>}
+        {unit && <span className="text-xs text-slate-400 flex-shrink-0">{unit}</span>}
       </div>
-      {hint && <span className="text-[8px] text-slate-400 leading-tight">{hint}</span>}
+      {hint && <span className="text-xs text-slate-400 leading-tight">{hint}</span>}
     </div>
   );
 }
@@ -87,9 +87,9 @@ function InputRow({
 function MathRow({ label, formula, value }: { label: string; formula: string; value: string }) {
   return (
     <tr className="border-b border-slate-50 last:border-0">
-      <td className="py-1 pr-2 text-[9px] font-semibold text-slate-600 whitespace-nowrap">{label}</td>
-      <td className="py-1 pr-2 text-[9px] text-slate-400 font-mono">{formula}</td>
-      <td className="py-1 text-[9px] font-bold text-slate-900 font-mono text-right">{value}</td>
+      <td className="py-1 pr-2 text-xs font-semibold text-slate-600 whitespace-nowrap">{label}</td>
+      <td className="py-1 pr-2 text-xs text-slate-400 font-mono">{formula}</td>
+      <td className="py-1 text-xs font-bold text-slate-900 font-mono text-right">{value}</td>
     </tr>
   );
 }
@@ -105,7 +105,7 @@ function PersonaPresetPicker({ selectedId, onSelect }: PersonaPresetPickerProps)
   const selected = selectedId ? PERSONAS.find((p) => p.id === selectedId) ?? null : null;
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wide">
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
         Apply Persona Preset
       </span>
       <div className="flex gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
@@ -125,18 +125,18 @@ function PersonaPresetPicker({ selectedId, onSelect }: PersonaPresetPickerProps)
                   : "border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50"}`}
             >
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
                 style={{ backgroundColor: p.color }}
               >
                 {initials}
               </div>
-              <span className="text-[8px] text-slate-600 font-medium whitespace-nowrap">{firstName}</span>
+              <span className="text-xs text-slate-600 font-medium whitespace-nowrap">{firstName}</span>
             </button>
           );
         })}
       </div>
       {selected && (
-        <p className="text-[9px] text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5 leading-relaxed">
+        <p className="text-xs text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5 leading-relaxed">
           <strong className="text-slate-700 not-italic">{selected.name}</strong>
           <span className="text-slate-400"> · {selected.role}</span>
           <br />
@@ -262,14 +262,14 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
       <div className="px-4 pt-3 pb-2 border-b border-slate-100 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-900">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">
               Reverse DCF · Expectations Gauge
             </h2>
-            <span className="text-[8px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md font-semibold">
+            <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md font-semibold">
               by Earthh Evans
             </span>
           </div>
-          <p className="text-[9px] text-slate-400 mt-0.5">ราคาหุ้นต้องการ CAGR เท่าใด vs ที่เป็นไปได้จริง</p>
+          <p className="text-xs text-slate-400 mt-0.5">ราคาหุ้นต้องการ CAGR เท่าใด vs ที่เป็นไปได้จริง</p>
         </div>
         <button onClick={() => setCollapsed(c => !c)} aria-expanded={!collapsed}
           className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0"
@@ -291,7 +291,7 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
             </div>
           )}
           {fetchError && (
-            <p className="text-[10px] text-slate-500 text-center py-2">
+            <p className="text-xs text-slate-500 text-center py-2">
               ไม่สามารถโหลดข้อมูลได้ — ลองรีเฟรช
             </p>
           )}
@@ -302,7 +302,7 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
               {needsInput && (
                 <div className="flex items-start gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                   <span className="text-amber-500 text-sm flex-shrink-0">⚠</span>
-                  <p className="text-[9px] text-amber-800 leading-snug">
+                  <p className="text-xs text-amber-800 leading-snug">
                     ต้องการข้อมูลเพิ่ม:{" "}
                     {[
                       !assumptions.terminalMargin && "Terminal Margin",
@@ -319,7 +319,7 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
                 <ResultsPanel result={result} missing={missing} />
               )}
               {result && result.kind === "error" && (
-                <div className="text-[9px] text-red-600 px-2 py-1 bg-red-50 border border-red-100 rounded-lg">
+                <div className="text-xs text-red-600 px-2 py-1 bg-red-50 border border-red-100 rounded-lg">
                   {result.reason === "wacc_lte_g"
                     ? "WACC ต้องมากกว่า Terminal Growth Rate"
                     : result.reason === "negative_implied_revenue"
@@ -331,14 +331,14 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
               {/* Assumptions */}
               <div>
                 <button onClick={() => setShowAssumptions(s => !s)}
-                  className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                   aria-expanded={showAssumptions}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d={showAssumptions ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                   </svg>
                   Assumptions
                   {autoFill?.waccSource && (
-                    <span className="text-[8px] text-slate-400 font-normal normal-case truncate max-w-[160px]">
+                    <span className="text-xs text-slate-400 font-normal normal-case truncate max-w-[160px]">
                       ({autoFill.waccSource.split("—")[0].trim()})
                     </span>
                   )}
@@ -372,7 +372,7 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
               {result && result.kind === "success" && (
                 <div>
                   <button onClick={() => setShowMath(s => !s)}
-                    className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                     aria-expanded={showMath}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d={showMath ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
@@ -404,7 +404,7 @@ function ResultsPanel({ result, missing }: { result: RdcfSuccess; missing: strin
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-3 gap-2 text-center">
         <div className="bg-slate-50 rounded-xl p-2.5">
-          <div className="text-[8px] text-slate-400 uppercase tracking-wide mb-1">Implied CAGR</div>
+          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Implied CAGR</div>
           <div className="text-[18px] font-bold font-mono" style={{ color: gapPositive ? "#DC2626" : "#16A34A" }}>
             {fPct(result.impliedCAGR)}
           </div>
@@ -412,15 +412,15 @@ function ResultsPanel({ result, missing }: { result: RdcfSuccess; missing: strin
         </div>
 
         <div className="flex flex-col items-center justify-center gap-1">
-          <div className="text-[8px] text-slate-400 uppercase tracking-wide">Gap</div>
+          <div className="text-xs text-slate-400 uppercase tracking-wide">Gap</div>
           <div className="text-[15px] font-bold font-mono" style={{ color: vs.text }}>
             {gapPositive ? "+" : ""}{gapPp}pp
           </div>
-          <div className="text-[10px]">{gapPositive ? "▲" : "▼"}</div>
+          <div className="text-xs">{gapPositive ? "▲" : "▼"}</div>
         </div>
 
         <div className="bg-slate-50 rounded-xl p-2.5">
-          <div className="text-[8px] text-slate-400 uppercase tracking-wide mb-1">Plausible CAGR</div>
+          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plausible CAGR</div>
           <div className="text-[18px] font-bold font-mono text-slate-900">
             {fPct(result.plausibleCAGR)}
           </div>
@@ -429,12 +429,12 @@ function ResultsPanel({ result, missing }: { result: RdcfSuccess; missing: strin
       </div>
 
       <div className="rounded-xl px-4 py-2.5 text-center border" style={{ background: vs.bg, borderColor: vs.text + "33" }}>
-        <div className="text-[11px] font-bold" style={{ color: vs.text }}>{vs.label}</div>
-        <div className="text-[9px] mt-0.5" style={{ color: vs.text }}>{vs.labelTh}</div>
+        <div className="text-xs font-bold" style={{ color: vs.text }}>{vs.label}</div>
+        <div className="text-xs mt-0.5" style={{ color: vs.text }}>{vs.labelTh}</div>
       </div>
 
       {missing.includes("historicalCAGR3Y") || !missing.includes("historicalCAGR3Y") && result.capA === null ? (
-        <p className="text-[8px] text-slate-400 italic">
+        <p className="text-xs text-slate-400 italic">
           Cap A ไม่ได้ใช้ (ไม่มีข้อมูล 3Y CAGR) — Plausible คำนวณจาก {result.plausibleSource}
         </p>
       ) : null}
@@ -471,10 +471,10 @@ function MathPanel({ r, assumptions, autoFill, sensitivity }: {
 
       {sensitivity && (
         <div>
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
             Sensitivity — Implied CAGR (WACC × Terminal Margin)
           </div>
-          <table className="w-full text-center text-[8px]">
+          <table className="w-full text-center text-xs">
             <thead>
               <tr>
                 <th className="py-0.5 text-slate-400 font-normal">WACC ↓ / Margin →</th>
@@ -509,8 +509,8 @@ function Caveats({ industry }: { industry: string | null }) {
   const isMature = industry && /bank|util|insurance|consumer defensive/i.test(industry);
   return (
     <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-1">
-      <p className="text-[8px] font-semibold text-slate-400 uppercase tracking-wide">คำเตือนสำคัญ</p>
-      <ul className="flex flex-col gap-0.5 text-[8px] text-slate-400 leading-relaxed list-none p-0 m-0">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">คำเตือนสำคัญ</p>
+      <ul className="flex flex-col gap-0.5 text-xs text-slate-400 leading-relaxed list-none p-0 m-0">
         <li>• <strong>เครื่องมือเพื่อการศึกษาเท่านั้น</strong> — ไม่ใช่คำแนะนำการลงทุน ตรวจสอบตัวเลขทุกอันก่อนใช้</li>
         <li>• เหมาะกับหุ้น growth ที่ value อยู่ที่ปลาย horizon{isMature && " — "}
           {isMature && <strong>คำเตือน: {industry} มี early cashflow มาก โมเดลนี้ overstate required CAGR</strong>}

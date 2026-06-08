@@ -73,7 +73,7 @@ function LastUpdated({ date }: { date: Date | null }) {
     return () => clearInterval(id);
   }, [date]);
   if (!date) return null;
-  return <span className="text-[9px] text-slate-400">อัพเดทเมื่อ {display}</span>;
+  return <span className="text-xs text-slate-400">อัพเดทเมื่อ {display}</span>;
 }
 
 interface StockPageClientProps {
@@ -175,7 +175,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6 text-center">
         <p className="text-xs text-slate-500">Ticker "{ticker}" ไม่ถูกต้อง</p>
-        <Link href="/" className="text-[10px] text-green-600 hover:underline mt-2 block">← หน้าหลัก</Link>
+        <Link href="/" className="text-xs text-green-600 hover:underline mt-2 block">← หน้าหลัก</Link>
       </div>
     );
   }
@@ -190,12 +190,12 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors">
+        <Link href="/" className="text-xs text-slate-400 hover:text-slate-900 transition-colors">
           ← กลับหน้าหลัก
         </Link>
         <Link
           href={`/compare?tickers=${ticker}`}
-          className="text-[10px] text-slate-400 hover:text-slate-900 transition-colors border border-slate-200 px-2 py-1 rounded"
+          className="text-xs text-slate-400 hover:text-slate-900 transition-colors border border-slate-200 px-2 py-1 rounded"
         >
           เทียบหุ้น →
         </Link>
@@ -217,7 +217,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                   <h1 className="text-sm font-bold truncate text-slate-900">{companyName}</h1>
                   {profile?.finnhubIndustry && (
-                    <span className="text-[9px] px-1.5 py-0.5 bg-slate-100 text-slate-500 font-semibold uppercase tracking-wide rounded-md flex-shrink-0">
+                    <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 font-semibold uppercase tracking-wide rounded-md flex-shrink-0">
                       {profile.finnhubIndustry}
                     </span>
                   )}
@@ -226,7 +226,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                       onClick={() => void toggleWatch()}
                       disabled={watchLoading}
                       aria-label={watched ? `ลบ ${ticker} จาก watchlist` : `เพิ่ม ${ticker} ใน watchlist`}
-                      className="flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors flex-shrink-0"
+                      className="flex items-center gap-1 text-xs font-semibold px-1.5 py-0.5 border rounded-md transition-colors flex-shrink-0"
                       style={{
                         borderColor: watched ? "#16A34A" : "#CBD5E1",
                         color:       watched ? "#16A34A" : "#64748B",
@@ -241,7 +241,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-slate-500">
+                <p className="text-xs text-slate-500">
                   {ticker}
                   {profile?.exchange && ` · ${profile.exchange}`}
                   {profile?.country  && ` · ${profile.country}`}
@@ -258,7 +258,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                       ${quote.price.toFixed(2)}
                     </div>
                     <div
-                      className="text-[11px] font-bold"
+                      className="text-xs font-bold"
                       style={{ fontFamily: "var(--font-mono)", color: positive ? "#16A34A" : "#DC2626" }}
                     >
                       {positive ? "+" : ""}{quote.changePct.toFixed(2)}%
@@ -266,7 +266,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     </div>
                   </>
                 ) : (
-                  <div className="text-[10px] text-slate-400">—</div>
+                  <div className="text-xs text-slate-400">—</div>
                 )}
               </div>
             </div>
@@ -274,14 +274,14 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             {/* Pre-market badge */}
             {quote?.preMarket && (
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-[9px] font-semibold text-violet-600 uppercase tracking-wide border border-violet-300 bg-violet-50 px-1.5 py-0.5 rounded-md">
+                <span className="text-xs font-semibold text-violet-600 uppercase tracking-wide border border-violet-300 bg-violet-50 px-1.5 py-0.5 rounded-md">
                   PRE-MARKET
                 </span>
-                <span className="font-mono text-[11px] font-bold text-slate-900">
+                <span className="font-mono text-xs font-bold text-slate-900">
                   ${quote.preMarket.price.toFixed(2)}
                 </span>
                 <span
-                  className="text-[10px] font-mono font-bold"
+                  className="text-xs font-mono font-bold"
                   style={{ color: quote.preMarket.change >= 0 ? "#16A34A" : "#DC2626" }}
                 >
                   {quote.preMarket.change >= 0 ? "+" : ""}{quote.preMarket.changePercent.toFixed(2)}%
@@ -292,7 +292,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             {/* Live indicator */}
             <div className="flex items-center gap-2 mt-2">
               {isLive ? (
-                <span className="flex items-center gap-1 text-[9px] text-green-600 font-semibold">
+                <span className="flex items-center gap-1 text-xs text-green-600 font-semibold">
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full bg-green-500"
                     style={{ animation: "pulse 1.5s ease-in-out infinite" }}
@@ -301,7 +301,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                   LIVE
                 </span>
               ) : (
-                <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wide">
+                <span className="text-xs text-slate-400 font-semibold uppercase tracking-wide">
                   ตลาดปิด
                 </span>
               )}
@@ -313,16 +313,16 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* OHLC row */}
       {!quoteLoading && !quoteError && quote && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-3">
           {[
             { label: "เปิด",        value: `$${quote.open.toFixed(2)}` },
             { label: "สูงสุด",      value: `$${quote.high.toFixed(2)}` },
             { label: "ต่ำสุด",      value: `$${quote.low.toFixed(2)}` },
             { label: "ปิดเมื่อวาน", value: `$${quote.prevClose.toFixed(2)}` },
           ].map(({ label, value }) => (
-            <Card key={label} className="p-2 text-center">
-              <div className="text-[9px] text-slate-500 uppercase tracking-wide mb-0.5 leading-tight">{label}</div>
-              <div className="text-[11px] font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+            <Card key={label} className="p-3 text-center">
+              <div className="text-xs text-slate-500 uppercase tracking-widest mb-1 leading-tight">{label}</div>
+              <div className="text-sm font-bold text-slate-900 font-mono">{value}</div>
             </Card>
           ))}
         </div>
@@ -330,35 +330,39 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Fundamentals row */}
       {metrics && (
-        <div className="flex flex-wrap gap-3 px-1 items-center">
-          {[
-            { label: "Market Cap",  value: fmtCap(profile?.marketCapitalization) },
-            { label: "52W High",    value: metrics["52WeekHigh"]  ? `$${metrics["52WeekHigh"].toFixed(2)}`  : "—" },
-            { label: "52W Low",     value: metrics["52WeekLow"]   ? `$${metrics["52WeekLow"].toFixed(2)}`   : "—" },
-            { label: "P/E TTM",     value: metrics.peBasicExclExtraTTM ? metrics.peBasicExclExtraTTM.toFixed(1) : "—" },
-            { label: "Beta",        value: metrics.beta           ? metrics.beta.toFixed(2)                 : "—" },
-            { label: "RSI-14",      value: rsi !== null           ? String(rsi)                               : "—" },
-          ].map(({ label, value }) => (
-            <div key={label} className="text-[10px]">
-              <span className="text-slate-500">{label} </span>
-              <span className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>{value}</span>
-            </div>
-          ))}
-          {metrics.beta !== undefined && (
-            <span
-              className="text-[9px] px-1.5 py-0.5 font-semibold border rounded-md"
-              style={{ borderColor: riskLabel(metrics.beta).color, color: riskLabel(metrics.beta).color }}
-            >
-              {riskLabel(metrics.beta).label}
-            </span>
-          )}
-          {profile?.weburl && (
-            <a href={profile.weburl} target="_blank" rel="noopener noreferrer"
-              className="text-[10px] text-green-600 hover:underline">
-              เว็บไซต์ ↗
-            </a>
-          )}
-        </div>
+        <Card className="p-4">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {[
+              { label: "Market Cap",  value: fmtCap(profile?.marketCapitalization) },
+              { label: "52W High",    value: metrics["52WeekHigh"]  ? `$${metrics["52WeekHigh"].toFixed(2)}`  : "—" },
+              { label: "52W Low",     value: metrics["52WeekLow"]   ? `$${metrics["52WeekLow"].toFixed(2)}`   : "—" },
+              { label: "P/E TTM",     value: metrics.peBasicExclExtraTTM ? metrics.peBasicExclExtraTTM.toFixed(1) : "—" },
+              { label: "Beta",        value: metrics.beta           ? metrics.beta.toFixed(2)                 : "—" },
+              { label: "RSI-14",      value: rsi !== null           ? String(rsi)                               : "—" },
+            ].map(({ label, value }) => (
+              <div key={label} className="text-center">
+                <div className="text-xs text-slate-500 uppercase tracking-widest mb-1">{label}</div>
+                <div className="text-sm font-bold text-slate-900 font-mono">{value}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/20">
+            {metrics.beta !== undefined && (
+              <span
+                className="text-xs px-2 py-1 font-semibold border rounded-lg"
+                style={{ borderColor: riskLabel(metrics.beta).color, color: riskLabel(metrics.beta).color }}
+              >
+                {riskLabel(metrics.beta).label}
+              </span>
+            )}
+            {profile?.weburl && (
+              <a href={profile.weburl} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-green-600 hover:underline font-medium">
+                เว็บไซต์ ↗
+              </a>
+            )}
+          </div>
+        </Card>
       )}
 
       {/* Chart */}
@@ -368,13 +372,13 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           <div className="flex gap-1 rounded-lg bg-white/30 p-0.5">
             <button
               onClick={() => setUseTVChart(false)}
-              className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${!useTVChart ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${!useTVChart ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
               ชาร์ต
             </button>
             <button
               onClick={() => setUseTVChart(true)}
-              className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${useTVChart ? "bg-violet-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${useTVChart ? "bg-violet-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
               TradingView
             </button>
@@ -388,7 +392,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     role="tab"
                     aria-selected={chartMode === m}
                     onClick={() => setChartMode(m)}
-                    className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                    className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                       chartMode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
                     }`}
                   >
@@ -403,7 +407,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     role="tab"
                     aria-selected={timeframe === tf}
                     onClick={() => setTimeframe(tf)}
-                    className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                    className={`px-1.5 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                       timeframe === tf ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
                     }`}
                   >
@@ -420,7 +424,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           <>
             {chartMode === "Price" && (
               <div className="px-3 py-1.5 border-b border-white/20 flex items-center gap-3">
-                <span className="text-[10px] text-slate-400 uppercase tracking-wide">MA:</span>
+                <span className="text-xs text-slate-400 uppercase tracking-wide">MA:</span>
                 {([
                   { key: "ma20",  label: "20",  color: "#2563EB" },
                   { key: "ma50",  label: "50",  color: "#D97706" },
@@ -429,7 +433,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                   <button
                     key={key}
                     onClick={() => setMaConfig((c) => ({ ...c, [key]: !c[key] }))}
-                    className="text-[10px] font-semibold px-1.5 py-0.5 border rounded-md transition-colors"
+                    className="text-xs font-semibold px-1.5 py-0.5 border rounded-md transition-colors"
                     style={{
                       borderColor: color,
                       color:       maConfig[key] ? "#fff" : color,
@@ -475,7 +479,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         >
           ซื้อ / ขาย {ticker} (Paper Trade) →
         </Link>
-        <p className="text-[9px] text-slate-400 text-center">
+        <p className="text-xs text-slate-400 text-center">
           จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>
@@ -546,7 +550,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-700">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">
           ตั้งแจ้งเตือนราคา
         </h2>
         <PushNotificationSetup compact />
@@ -554,7 +558,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
 
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-2">
         <div className="flex gap-2 items-center flex-wrap">
-          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-[10px] font-semibold">
+          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs font-semibold">
             {(["above", "below"] as const).map((c) => (
               <button
                 key={c}
@@ -579,19 +583,19 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
             value={threshold}
             onChange={(e) => setThreshold(e.target.value)}
             placeholder={currentPrice ? `ปัจจุบัน $${currentPrice.toFixed(2)}` : "ราคา USD"}
-            className="flex-1 min-w-[120px] px-2 py-1.5 text-[11px] border border-slate-200 bg-white rounded-lg outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
+            className="flex-1 min-w-[120px] px-2 py-1.5 text-xs border border-slate-200 bg-white rounded-lg outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
             aria-label="ราคาเป้าหมาย"
             style={{ fontFamily: "var(--font-mono)" }}
           />
           <button
             type="submit"
             disabled={saving || !threshold}
-            className="px-3 py-1.5 text-[10px] font-semibold text-white bg-[#16A34A] rounded-lg disabled:opacity-40 hover:bg-[#15803D] transition-colors"
+            className="px-3 py-1.5 text-xs font-semibold text-white bg-[#16A34A] rounded-lg disabled:opacity-40 hover:bg-[#15803D] transition-colors"
           >
             {saving ? "..." : "ตั้งแจ้งเตือน"}
           </button>
         </div>
-        {error && <p className="text-[9px] text-red-600">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
       </form>
 
       {tickerAlerts.length > 0 && (
@@ -599,7 +603,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
           {tickerAlerts.map((a) => (
             <li
               key={a.id}
-              className="flex items-center justify-between text-[10px] px-2.5 py-1.5 border border-slate-100 bg-slate-50 rounded-lg"
+              className="flex items-center justify-between text-xs px-2.5 py-1.5 border border-slate-100 bg-slate-50 rounded-lg"
             >
               <span className="text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>
                 {a.condition === "above" ? "▲" : "▼"}{" "}
@@ -607,7 +611,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
               </span>
               <button
                 onClick={() => void deleteAlert(a.id)}
-                className="text-[9px] text-slate-400 hover:text-red-600 transition-colors"
+                className="text-xs text-slate-400 hover:text-red-600 transition-colors"
                 aria-label={`ลบแจ้งเตือน ${a.threshold}`}
               >
                 ✕ ลบ

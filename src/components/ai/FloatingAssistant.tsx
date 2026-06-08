@@ -45,10 +45,10 @@ function MessageBubble({ role, content }: { role: "user" | "assistant"; content:
   return (
     <div className="flex justify-start gap-2">
       <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-violet-400 text-[10px]">✦</span>
+        <span className="text-violet-400 text-xs">✦</span>
       </div>
       <div className="max-w-[88%]">
-        <p className="text-[10px] font-bold text-violet-400 mb-0.5">Martin</p>
+        <p className="text-xs font-bold text-violet-400 mb-0.5">Martin</p>
         {content ? (
           <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words">
             {content}
@@ -71,7 +71,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
         </div>
         <div>
           <p className="text-sm font-bold text-slate-800">Martin</p>
-          <p className="text-[10px] text-slate-500">InvestMart AI · ข้อมูลจริง Finnhub</p>
+          <p className="text-xs text-slate-500">InvestMart AI · ข้อมูลจริง Finnhub</p>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -85,7 +85,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
           </button>
         ))}
       </div>
-      <p className="text-[10px] text-slate-500 mt-4 text-center leading-snug">
+      <p className="text-xs text-slate-500 mt-4 text-center leading-snug">
         Martin ตอบจากข้อมูลจริงเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>
@@ -221,7 +221,7 @@ export function FloatingAssistant() {
         aria-haspopup="dialog"
       >
         <span className="text-violet-400 text-base leading-none" aria-hidden="true">✦</span>
-        <span className="text-[9px] leading-none font-bold tracking-wide text-violet-300">M</span>
+        <span className="text-xs leading-none font-bold tracking-wide text-violet-300">M</span>
       </button>
 
       {/* Chat panel */}
@@ -251,16 +251,16 @@ export function FloatingAssistant() {
                 <div>
                   <p className="text-sm font-bold text-white">Martin</p>
                   {contextTicker ? (
-                    <p className="text-[10px] text-violet-300">กำลังดู ${contextTicker}</p>
+                    <p className="text-xs text-violet-300">กำลังดู ${contextTicker}</p>
                   ) : (
-                    <p className="text-[10px] text-slate-400">InvestMart AI · ข้อมูลจริง</p>
+                    <p className="text-xs text-slate-400">InvestMart AI · ข้อมูลจริง</p>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={reset}
-                  className="text-[10px] font-semibold px-2.5 py-1 rounded-lg border border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white transition-colors"
+                  className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white transition-colors"
                   aria-label="เริ่มการสนทนาใหม่"
                 >
                   ใหม่
@@ -287,11 +287,11 @@ export function FloatingAssistant() {
                 <div className="rounded-xl bg-red-50/80 border border-red-200/60 px-3 py-2.5 text-center">
                   <p className="text-xs text-red-600 mb-1.5">{error}</p>
                   <div className="flex gap-2 justify-center">
-                    <button onClick={retryLast} className="text-[10px] font-semibold text-red-700 underline">
+                    <button onClick={retryLast} className="text-xs font-semibold text-red-700 underline">
                       ลองใหม่
                     </button>
                     <span className="text-red-300">·</span>
-                    <button onClick={() => setError(null)} className="text-[10px] text-red-500 underline">
+                    <button onClick={() => setError(null)} className="text-xs text-red-500 underline">
                       ปิด
                     </button>
                   </div>
@@ -326,7 +326,7 @@ export function FloatingAssistant() {
                   {streaming ? "· · ·" : "ส่ง"}
                 </button>
               </div>
-              <p className="text-[10px] text-slate-500 mt-1.5 leading-snug">
+              <p className="text-xs text-slate-500 mt-1.5 leading-snug">
                 Martin ใช้ข้อมูลจาก Finnhub · วิเคราะห์เพื่อการศึกษา ไม่ใช่คำแนะนำลงทุน
               </p>
             </div>

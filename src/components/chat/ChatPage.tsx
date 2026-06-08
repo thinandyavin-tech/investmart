@@ -116,10 +116,10 @@ export function ChatPage() {
       {/* Header */}
       <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
         <div className="flex-1">
-          <h1 className="text-[11px] font-bold uppercase tracking-widest">แชท · InvestMart</h1>
-          <p className="text-[9px] text-[#8A8378]">พูดคุยกับนักลงทุนคนอื่น · รับข่าวสารตลาดจากระบบ</p>
+          <h1 className="text-xs font-bold uppercase tracking-widest">แชท · InvestMart</h1>
+          <p className="text-xs text-[#8A8378]">พูดคุยกับนักลงทุนคนอื่น · รับข่าวสารตลาดจากระบบ</p>
         </div>
-        <span className="flex items-center gap-1 text-[9px] text-[#5B8A2A]">
+        <span className="flex items-center gap-1 text-xs text-[#5B8A2A]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#5B8A2A] animate-pulse" />
           LIVE
         </span>
@@ -129,13 +129,13 @@ export function ChatPage() {
       <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-2">
         {loading && (
           <div className="flex justify-center py-8">
-            <span className="text-[10px] text-[#8A8378]">กำลังโหลด...</span>
+            <span className="text-xs text-[#8A8378]">กำลังโหลด...</span>
           </div>
         )}
 
         {!loading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-center">
-            <p className="text-[10px] text-[#8A8378]">ยังไม่มีข้อความ · เป็นคนแรกที่พูดคุย!</p>
+            <p className="text-xs text-[#8A8378]">ยังไม่มีข้อความ · เป็นคนแรกที่พูดคุย!</p>
           </div>
         )}
 
@@ -145,10 +145,10 @@ export function ChatPage() {
             return (
               <div key={msg.id} className="flex justify-center">
                 <div
-                  className="max-w-sm w-full border border-[#5B8A2A] p-2.5 text-[10px] leading-relaxed whitespace-pre-line"
+                  className="max-w-sm w-full border border-[#5B8A2A] p-2.5 text-xs leading-relaxed whitespace-pre-line"
                   style={{ background: "#F0FAE8", boxShadow: "2px 2px 0 #5B8A2A" }}
                 >
-                  <div className="text-[9px] font-bold text-[#5B8A2A] uppercase tracking-widest mb-1">
+                  <div className="text-xs font-bold text-[#5B8A2A] uppercase tracking-widest mb-1">
                     📡 InvestMart · {timeLabel(msg.createdAt)}
                   </div>
                   {msg.content}
@@ -164,7 +164,7 @@ export function ChatPage() {
             >
               {/* Avatar */}
               <div
-                className="w-7 h-7 rounded-full border border-[#1F1A14] flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                className="w-7 h-7 rounded-full border border-[#1F1A14] flex items-center justify-center text-xs font-bold flex-shrink-0"
                 style={{ background: isMe ? "#1F1A14" : "#F3EDE0", color: isMe ? "#F3EDE0" : "#1F1A14" }}
               >
                 {authorInitial(msg)}
@@ -172,11 +172,11 @@ export function ChatPage() {
 
               {/* Bubble */}
               <div className={`flex flex-col gap-0.5 max-w-[75%] ${isMe ? "items-end" : "items-start"}`}>
-                <span className="text-[8px] text-[#8A8378]">
+                <span className="text-xs text-[#8A8378]">
                   {isMe ? "คุณ" : authorDisplay(msg)} · {timeLabel(msg.createdAt)}
                 </span>
                 <div
-                  className="px-3 py-1.5 text-[11px] leading-relaxed border border-[#1F1A14]"
+                  className="px-3 py-1.5 text-xs leading-relaxed border border-[#1F1A14]"
                   style={{
                     background: isMe ? "#1F1A14" : "#FBF7ED",
                     color:      isMe ? "#F3EDE0" : "#1F1A14",
@@ -196,14 +196,14 @@ export function ChatPage() {
       {/* Input bar */}
       <div className="border-t border-[#1F1A14] bg-[#F3EDE0] px-3 py-2 flex-shrink-0">
         {error && (
-          <p className="text-[9px] text-[#E5484D] mb-1">{error}</p>
+          <p className="text-xs text-[#E5484D] mb-1">{error}</p>
         )}
         {!user ? (
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#8A8378]">เข้าสู่ระบบเพื่อส่งข้อความ</span>
+            <span className="text-xs text-[#8A8378]">เข้าสู่ระบบเพื่อส่งข้อความ</span>
             <Link
               href="/signin"
-              className="text-[10px] font-bold border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="text-xs font-bold border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
             >
               เข้าสู่ระบบ
             </Link>
@@ -217,20 +217,20 @@ export function ChatPage() {
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }}
               placeholder="พิมพ์ข้อความ... (กด Enter เพื่อส่ง)"
               maxLength={500}
-              className="flex-1 border border-[#1F1A14] bg-[#FBF7ED] px-3 py-1.5 text-[11px] placeholder:text-[#8A8378] focus:outline-none focus:border-[#5B8A2A]"
+              className="flex-1 border border-[#1F1A14] bg-[#FBF7ED] px-3 py-1.5 text-xs placeholder:text-[#8A8378] focus:outline-none focus:border-[#5B8A2A]"
               disabled={sending}
             />
             <button
               onClick={() => void send()}
               disabled={sending || !input.trim()}
-              className="border-2 border-[#1F1A14] px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide disabled:opacity-40"
+              className="border-2 border-[#1F1A14] px-4 py-1.5 text-xs font-bold uppercase tracking-wide disabled:opacity-40"
               style={{ background: "#1F1A14", color: "#F3EDE0", boxShadow: "2px 2px 0 #5B8A2A" }}
             >
               {sending ? "..." : "ส่ง"}
             </button>
           </div>
         )}
-        <p className="text-[8px] text-[#8A8378] mt-1">
+        <p className="text-xs text-[#8A8378] mt-1">
           ระบบจะส่งสรุปตลาดหุ้นทุกวันหลังปิดตลาด ET · ไม่ใช่คำแนะนำลงทุน
         </p>
       </div>

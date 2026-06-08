@@ -43,7 +43,7 @@ export default function ProfilePage() {
         {/* First-time Google user: prompt to set username */}
         {!loading && user && !user.username && !user.isDemo && (
           <Card className="p-3 flex items-center justify-between gap-3" style={{ borderColor: "#5B8A2A", borderWidth: 2 }}>
-            <p className="text-[10px] text-[#1F1A14] leading-relaxed">
+            <p className="text-xs text-[#1F1A14] leading-relaxed">
               <span className="font-bold">ยินดีต้อนรับ!</span> ตั้ง username เพื่อให้คนอื่นหาคุณเจอได้
             </p>
             <Link href="/settings/id">
@@ -66,7 +66,7 @@ export default function ProfilePage() {
                   <h1 className="text-sm font-bold">
                     {loading ? "กำลังโหลด..." : displayName}
                   </h1>
-                  <p className="text-[10px] text-[#8A8378]">{loading ? "..." : handle}</p>
+                  <p className="text-xs text-[#8A8378]">{loading ? "..." : handle}</p>
                 </div>
                 {!loading && user && (
                   <Link href="/profile/edit">
@@ -75,10 +75,10 @@ export default function ProfilePage() {
                 )}
               </div>
               {!loading && user?.bio && (
-                <p className="text-[10px] text-[#8A8378] mt-1.5 leading-relaxed">{user.bio}</p>
+                <p className="text-xs text-[#8A8378] mt-1.5 leading-relaxed">{user.bio}</p>
               )}
               {!loading && !user?.bio && user && (
-                <p className="text-[10px] italic text-[#8A8378] mt-1.5">
+                <p className="text-xs italic text-[#8A8378] mt-1.5">
                   ยังไม่มี bio —{" "}
                   <Link href="/profile/edit" className="underline text-[#5B8A2A]">เพิ่มเลย</Link>
                 </p>
@@ -91,8 +91,8 @@ export default function ProfilePage() {
         {!loading && user && (
           <Card className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">มูลค่าพอร์ต (cost basis)</h2>
-              <span className="text-[9px] text-[#8A8378]">เทรดทั้งหมด {user.tradeCount} ครั้ง</span>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">มูลค่าพอร์ต (cost basis)</h2>
+              <span className="text-xs text-[#8A8378]">เทรดทั้งหมด {user.tradeCount} ครั้ง</span>
             </div>
             <div className="flex items-end gap-3 mb-3">
               <div>
@@ -100,35 +100,35 @@ export default function ProfilePage() {
                   ฿{Math.round(totalThb).toLocaleString("th-TH")}
                 </div>
                 <div
-                  className="text-[11px] font-bold mt-0.5"
+                  className="text-xs font-bold mt-0.5"
                   style={{ color: pnlPos ? "#5B8A2A" : "#DC2626" }}
                 >
                   {pnlPos ? "+" : ""}{Math.round(pnl).toLocaleString("th-TH")} ({pnlPos ? "+" : ""}{pnlPct.toFixed(2)}%)
                 </div>
               </div>
-              <div className="text-[9px] text-[#8A8378] mb-0.5">เทียบกับ ฿1,250,000 เริ่มต้น</div>
+              <div className="text-xs text-[#8A8378] mb-0.5">เทียบกับ ฿1,250,000 เริ่มต้น</div>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
-                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">Cash THB</div>
-                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                <div className="text-xs text-[#8A8378] uppercase tracking-wide">Cash THB</div>
+                <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ฿{Math.round(user.cashThb).toLocaleString("th-TH")}
                 </div>
               </div>
               <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
-                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">Cash USD</div>
-                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                <div className="text-xs text-[#8A8378] uppercase tracking-wide">Cash USD</div>
+                <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ${user.cashUsd.toFixed(2)}
                 </div>
               </div>
               <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
-                <div className="text-[8px] text-[#8A8378] uppercase tracking-wide">หุ้น ({user.holdings.length})</div>
-                <div className="text-[10px] font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
+                <div className="text-xs text-[#8A8378] uppercase tracking-wide">หุ้น ({user.holdings.length})</div>
+                <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ${costBasis.toFixed(0)}
                 </div>
               </div>
             </div>
-            <p className="text-[8px] text-[#8A8378] mt-2">
+            <p className="text-xs text-[#8A8378] mt-2">
               ราคาต้นทุน (cost basis) · ไม่ใช่ราคาตลาดปัจจุบัน · FX ≈ {FALLBACK_FX} THB/USD
             </p>
           </Card>
@@ -141,14 +141,14 @@ export default function ProfilePage() {
         {!loading && user && user.holdings.length > 0 && (
           <Card className="overflow-hidden">
             <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-[10px] min-w-[280px]">
+              <table className="w-full text-xs min-w-[280px]">
                 <thead>
                   <tr className="border-b border-[#E8E2D4]">
                     {["หุ้น", "จำนวน", "ต้นทุน/หุ้น", "มูลค่า USD"].map((h) => (
-                      <th key={h} className="text-left px-3 py-1.5 text-[9px] text-[#8A8378] uppercase tracking-wide font-bold">
+                      <th key={h} className="text-left px-3 py-1.5 text-xs text-[#8A8378] uppercase tracking-wide font-bold">
                         {h}
                       </th>
                     ))}
@@ -180,7 +180,7 @@ export default function ProfilePage() {
 
         {/* Actions */}
         <Card className="p-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2">เครื่องมือ Simulator</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest mb-2">เครื่องมือ Simulator</h2>
           {[
             { href: "/radar",       label: "เรดาร์แสกนหุ้น", icon: "📡" },
             { href: "/market",      label: "ภาพรวมตลาด",      icon: "📈" },
@@ -205,12 +205,12 @@ export default function ProfilePage() {
         {!loading && user && (
           <div className="flex gap-2">
             <Link href="/settings/id" className="flex-1">
-              <OffsetButton variant="black" className="w-full text-center text-[10px]">
+              <OffsetButton variant="black" className="w-full text-center text-xs">
                 ตั้งค่าไอดี
               </OffsetButton>
             </Link>
             <Link href="/profile/edit" className="flex-1">
-              <OffsetButton variant="lime" className="w-full text-center text-[10px]">
+              <OffsetButton variant="lime" className="w-full text-center text-xs">
                 แก้ไขโปรไฟล์
               </OffsetButton>
             </Link>
@@ -222,7 +222,7 @@ export default function ProfilePage() {
           <div className="flex gap-2">
             <OffsetButton
               variant="black"
-              className="flex-1 text-center text-[10px]"
+              className="flex-1 text-center text-xs"
               onClick={() => void signOut()}
             >
               ออกจากระบบ
@@ -242,13 +242,13 @@ export default function ProfilePage() {
                 <OffsetButton variant="lime">สมัครสมาชิก</OffsetButton>
               </Link>
             </div>
-            <p className="text-[9px] text-[#8A8378]">หรือ{" "}
+            <p className="text-xs text-[#8A8378]">หรือ{" "}
               <button onClick={initDemo} className="underline text-[#5B8A2A] font-bold">เริ่มเล่น (demo)</button>
             </p>
           </Card>
         )}
 
-        <p className="text-[9px] text-[#8A8378] text-center pb-2">
+        <p className="text-xs text-[#8A8378] text-center pb-2">
           InvestMart · <Link href="/about" className="hover:underline">เกี่ยวกับ</Link>{" "}·{" "}
           <Link href="/privacy" className="hover:underline">ความเป็นส่วนตัว</Link>{" "}·{" "}
           <Link href="/terms" className="hover:underline">ข้อกำหนด</Link>

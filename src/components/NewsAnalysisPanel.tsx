@@ -59,7 +59,7 @@ function Chip({
 }) {
   return (
     <span
-      className="text-[8px] font-bold px-2 py-0.5 border"
+      className="text-xs font-bold px-2 py-0.5 border"
       style={{ color: color.text, borderColor: color.border, background: color.bg }}
       title={title}
     >
@@ -96,10 +96,10 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
         <Chip color={relCfg} title={result.reliability_reason_th}>{relCfg.label}</Chip>
         <Chip color={ctCfg}>{ctCfg.label}</Chip>
         <Chip color={impCfg} title={result.market_impact.reason_th}>{impCfg.label}</Chip>
-        <span className="text-[8px] font-bold" style={{ color: confCfg.text }}>
+        <span className="text-xs font-bold" style={{ color: confCfg.text }}>
           · {confCfg.label}
         </span>
-        {cached && <span className="text-[8px] text-[#8A8378]">· แคช</span>}
+        {cached && <span className="text-xs text-[#8A8378]">· แคช</span>}
       </div>
 
       {/* Reliability reason */}
@@ -107,14 +107,14 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
         className="px-3 py-1.5 border-b border-[#E8E2D4]"
         style={{ background: relCfg.bg }}
       >
-        <p className="text-[9px] leading-snug" style={{ color: relCfg.text }}>
+        <p className="text-xs leading-snug" style={{ color: relCfg.text }}>
           {result.reliability_reason_th}
         </p>
       </div>
 
       {/* Market impact reason */}
       <div className="px-3 py-1.5 bg-[#F9F7F2] border-b border-[#E8E2D4]">
-        <p className="text-[9px] leading-snug text-[#8A8378]">
+        <p className="text-xs leading-snug text-[#8A8378]">
           <span className="font-bold" style={{ color: impCfg.text }}>ผลต่อหุ้น: </span>
           {result.market_impact.reason_th}
         </p>
@@ -122,14 +122,14 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
 
       {/* Summary */}
       <div className="px-3 py-2 bg-[#F9F7F2]">
-        <p className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-1">สรุปข่าว</p>
-        <p className="text-[11px] leading-relaxed text-[#1F1A14]">{result.summary_th}</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-[#8A8378] mb-1">สรุปข่าว</p>
+        <p className="text-xs leading-relaxed text-[#1F1A14]">{result.summary_th}</p>
       </div>
 
       {/* Footer: disclaimer + source */}
       <div className="px-3 py-2 bg-[#F3EDE0] border-t border-[#E8E2D4]">
-        <p className="text-[9px] text-[#8A8378] leading-relaxed">{result.disclaimer_th}</p>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">
+        <p className="text-xs text-[#8A8378] leading-relaxed">{result.disclaimer_th}</p>
+        <p className="text-xs text-[#8A8378] mt-0.5">
           แหล่งข่าว: {sourceLabel}{" · "}
           <a
             href={sourceUrl}
@@ -200,7 +200,7 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       <button
         onClick={() => void analyze()}
         disabled={state.phase === "loading"}
-        className="text-[9px] font-bold px-2 py-0.5 border transition-colors disabled:opacity-50"
+        className="text-xs font-bold px-2 py-0.5 border transition-colors disabled:opacity-50"
         style={{
           borderColor: state.phase === "open" ? "#1F1A14" : "#8A8378",
           color:       state.phase === "open" ? "#1F1A14" : "#8A8378",
@@ -230,7 +230,7 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       )}
 
       {state.phase === "error" && (
-        <p className="mt-1.5 text-[9px] px-2" style={{ color: "#DC2626" }}>
+        <p className="mt-1.5 text-xs px-2" style={{ color: "#DC2626" }}>
           {state.message}
           {" · "}
           <button onClick={() => void analyze()} className="underline font-bold">

@@ -67,13 +67,13 @@ function SignInForm() {
     <div className="max-w-sm mx-auto px-4 py-8 flex flex-col gap-4">
       <div>
         <h1 className="text-xs font-bold uppercase tracking-widest">เข้าสู่ระบบ</h1>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา</p>
+        <p className="text-xs text-[#8A8378] mt-0.5">InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา</p>
       </div>
 
       <Card className="p-4">
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
           <div>
-            <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-email">
+            <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-email">
               อีเมล
             </label>
             <input
@@ -89,7 +89,7 @@ function SignInForm() {
           </div>
 
           <div>
-            <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-password">
+            <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-password">
               รหัสผ่าน
             </label>
             <input
@@ -105,7 +105,7 @@ function SignInForm() {
           </div>
 
           {error && (
-            <p className="text-[10px] font-bold text-center" style={{ color: "#DC2626" }} role="alert" aria-live="polite">
+            <p className="text-xs font-bold text-center" style={{ color: "#DC2626" }} role="alert" aria-live="polite">
               {error}
             </p>
           )}
@@ -121,7 +121,7 @@ function SignInForm() {
       </Card>
 
       <Card className="p-4 flex flex-col gap-3">
-        <p className="text-[9px] text-[#8A8378] text-center uppercase tracking-wide">หรือเข้าสู่ระบบด้วย</p>
+        <p className="text-xs text-[#8A8378] text-center uppercase tracking-wide">หรือเข้าสู่ระบบด้วย</p>
         <button
           onClick={() => void signIn("google", { callbackUrl: "/profile" })}
           className="w-full flex items-center justify-center gap-2 border-2 border-[#1F1A14] bg-white px-3 py-2.5 text-xs font-bold hover:bg-[#F3EDE0] transition-colors"
@@ -133,14 +133,14 @@ function SignInForm() {
         </button>
       </Card>
 
-      <p className="text-[10px] text-center text-[#8A8378]">
+      <p className="text-xs text-center text-[#8A8378]">
         ยังไม่มีบัญชี?{" "}
         <Link href="/signup" className="font-bold text-[#5B8A2A] underline">
           สมัครสมาชิก
         </Link>
       </p>
 
-      <p className="text-[9px] text-[#8A8378] text-center">
+      <p className="text-xs text-[#8A8378] text-center">
         InvestMart
       </p>
     </div>

@@ -75,13 +75,13 @@ export default function SignUpPage() {
       <div className="max-w-sm mx-auto px-4 py-8 flex flex-col gap-4">
         <div>
           <h1 className="text-xs font-bold uppercase tracking-widest">สมัครสมาชิก</h1>
-          <p className="text-[9px] text-[#8A8378] mt-0.5">เริ่มต้นด้วย ฿1,250,000 จำลอง</p>
+          <p className="text-xs text-[#8A8378] mt-0.5">เริ่มต้นด้วย ฿1,250,000 จำลอง</p>
         </div>
 
         <Card className="p-4">
           <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
             <div>
-              <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-email">
+              <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-email">
                 อีเมล <span className="text-[#DC2626]">*</span>
               </label>
               <input
@@ -97,11 +97,11 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-username">
+              <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-username">
                 Username <span className="text-[#8A8378]">(ไม่บังคับ)</span>
               </label>
               <div className="flex items-center border border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
-                <span className="px-2 text-[10px] text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
+                <span className="px-2 text-xs text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
                 <input
                   id="su-username"
                   type="text"
@@ -114,11 +114,11 @@ export default function SignUpPage() {
                   spellCheck={false}
                 />
               </div>
-              <p className="text-[9px] text-[#8A8378] mt-0.5">3-30 ตัวอักษร a-z 0-9 _ เท่านั้น</p>
+              <p className="text-xs text-[#8A8378] mt-0.5">3-30 ตัวอักษร a-z 0-9 _ เท่านั้น</p>
             </div>
 
             <div>
-              <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-password">
+              <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-password">
                 รหัสผ่าน <span className="text-[#DC2626]">*</span>
               </label>
               <input
@@ -134,7 +134,7 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-confirm">
+              <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-confirm">
                 ยืนยันรหัสผ่าน <span className="text-[#DC2626]">*</span>
               </label>
               <input
@@ -150,7 +150,7 @@ export default function SignUpPage() {
             </div>
 
             {error && (
-              <p className="text-[10px] font-bold text-center" style={{ color: "#DC2626" }} role="alert">
+              <p className="text-xs font-bold text-center" style={{ color: "#DC2626" }} role="alert">
                 {error}
               </p>
             )}
@@ -165,14 +165,14 @@ export default function SignUpPage() {
           </form>
         </Card>
 
-        <p className="text-[10px] text-center text-[#8A8378]">
+        <p className="text-xs text-center text-[#8A8378]">
           มีบัญชีแล้ว?{" "}
           <Link href="/signin" className="font-bold text-[#5B8A2A] underline">
             เข้าสู่ระบบ
           </Link>
         </p>
 
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           InvestMart
         </p>
       </div>

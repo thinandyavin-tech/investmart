@@ -58,13 +58,13 @@ export function SavedPostsClient() {
       ) : !authed ? (
         <div className="py-12 text-center px-4">
           <p className="text-xs font-bold mb-1">กรุณาเข้าสู่ระบบก่อน</p>
-          <p className="text-[10px] text-[#8A8378]">เริ่ม demo เพื่อบันทึกโพสต์</p>
+          <p className="text-xs text-[#8A8378]">เริ่ม demo เพื่อบันทึกโพสต์</p>
         </div>
       ) : posts.length === 0 ? (
         <div className="py-12 text-center px-4">
           <p className="text-sm" aria-hidden="true">🔖</p>
           <p className="text-xs font-bold mt-2 mb-1">ยังไม่มีโพสต์ที่บันทึก</p>
-          <p className="text-[10px] text-[#8A8378]">กดไอคอนบันทึกบนโพสต์เพื่อเก็บไว้ที่นี่</p>
+          <p className="text-xs text-[#8A8378]">กดไอคอนบันทึกบนโพสต์เพื่อเก็บไว้ที่นี่</p>
         </div>
       ) : (
         <>

@@ -60,7 +60,7 @@ export function DiscoverClient() {
     <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-5">
       <div>
         <h1 className="text-xs font-bold uppercase tracking-widest">Discover</h1>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">ยอดนิยมใน 7 วัน</p>
+        <p className="text-xs text-[#8A8378] mt-0.5">ยอดนิยมใน 7 วัน</p>
       </div>
 
       {loading && (
@@ -86,7 +86,7 @@ export function DiscoverClient() {
           {/* Trending tickers */}
           {data.trendingTickers.length > 0 && (
             <section>
-              <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
                 หุ้นที่ถูกพูดถึงมากสุด
               </h2>
               <div className="flex flex-wrap gap-1.5">
@@ -94,10 +94,10 @@ export function DiscoverClient() {
                   <Link
                     key={ticker}
                     href={`/stock/${ticker}`}
-                    className="flex items-center gap-1.5 border border-[#1F1A14] px-2.5 py-1 text-[10px] font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"
+                    className="flex items-center gap-1.5 border border-[#1F1A14] px-2.5 py-1 text-xs font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"
                   >
                     <span>${ticker}</span>
-                    <span className="text-[#8A8378] group-hover:text-[#ccc] text-[9px]">{count}</span>
+                    <span className="text-[#8A8378] group-hover:text-[#ccc] text-xs">{count}</span>
                   </Link>
                 ))}
               </div>
@@ -107,7 +107,7 @@ export function DiscoverClient() {
           {/* Top traders */}
           {data.topTraders.length > 0 && (
             <section>
-              <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
                 เทรดเดอร์ยอดนิยม
               </h2>
               <Card className="overflow-hidden">
@@ -116,28 +116,28 @@ export function DiscoverClient() {
                     key={trader.id}
                     className="flex items-center gap-3 px-3 py-2.5 border-b border-[#E8E2D4] last:border-0"
                   >
-                    <span className="text-[10px] font-bold text-[#8A8378] w-5 flex-shrink-0">
+                    <span className="text-xs font-bold text-[#8A8378] w-5 flex-shrink-0">
                       {i + 1}
                     </span>
                     <div className="flex-1 min-w-0">
                       <Link
                         href={trader.username ? `/u/${trader.username}` : "#"}
-                        className="font-bold text-[11px] hover:underline"
+                        className="font-bold text-xs hover:underline"
                       >
                         {trader.name}
                       </Link>
                       {trader.username && (
-                        <span className="text-[9px] text-[#8A8378] ml-1.5">@{trader.username}</span>
+                        <span className="text-xs text-[#8A8378] ml-1.5">@{trader.username}</span>
                       )}
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-[10px] font-bold">{trader.followers.toLocaleString()} followers</div>
-                      <div className="text-[9px] text-[#8A8378]">{trader.posts} โพสต์</div>
+                      <div className="text-xs font-bold">{trader.followers.toLocaleString()} followers</div>
+                      <div className="text-xs text-[#8A8378]">{trader.posts} โพสต์</div>
                     </div>
                     {trader.username && (
                       <Link
                         href={`/u/${trader.username}`}
-                        className="text-[9px] font-bold border border-[#5B8A2A] text-[#5B8A2A] px-2 py-0.5 hover:bg-[#5B8A2A] hover:text-white transition-colors flex-shrink-0"
+                        className="text-xs font-bold border border-[#5B8A2A] text-[#5B8A2A] px-2 py-0.5 hover:bg-[#5B8A2A] hover:text-white transition-colors flex-shrink-0"
                       >
                         ดู
                       </Link>
@@ -150,7 +150,7 @@ export function DiscoverClient() {
 
           {/* Trending posts */}
           <section>
-            <h2 className="text-[10px] font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
+            <h2 className="text-xs font-bold uppercase tracking-widest mb-2 text-[#8A8378]">
               โพสต์ยอดนิยม (7 วัน)
             </h2>
             {data.trendingPosts.length === 0 ? (
@@ -165,22 +165,22 @@ export function DiscoverClient() {
                   return (
                     <Card key={post.id} className="p-3">
                       <div className="flex items-center gap-1.5 mb-1.5">
-                        <span className="text-[10px] font-bold">{author}</span>
-                        {handle && <span className="text-[9px] text-[#8A8378]">{handle}</span>}
-                        <span className="text-[9px] text-[#8A8378] ml-auto flex-shrink-0">
+                        <span className="text-xs font-bold">{author}</span>
+                        {handle && <span className="text-xs text-[#8A8378]">{handle}</span>}
+                        <span className="text-xs text-[#8A8378] ml-auto flex-shrink-0">
                           {relativeTime(post.createdAt)}
                         </span>
                       </div>
-                      <p className="text-[11px] leading-relaxed line-clamp-3">{post.content}</p>
+                      <p className="text-xs leading-relaxed line-clamp-3">{post.content}</p>
                       {post.ticker && (
                         <Link
                           href={`/stock/${post.ticker}`}
-                          className="inline-block text-[9px] font-bold text-[#5B8A2A] hover:underline mt-1.5"
+                          className="inline-block text-xs font-bold text-[#5B8A2A] hover:underline mt-1.5"
                         >
                           ${post.ticker}
                         </Link>
                       )}
-                      <div className="flex gap-3 mt-2 text-[9px] text-[#8A8378]">
+                      <div className="flex gap-3 mt-2 text-xs text-[#8A8378]">
                         <span>❤️ {post._count.likes}</span>
                         <span>💬 {post._count.comments}</span>
                       </div>

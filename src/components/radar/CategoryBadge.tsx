@@ -80,7 +80,7 @@ export function CategoryBadge({ category, active, onClick }: CategoryBadgeProps)
         <div className={active ? "text-white" : "text-slate-700"}>
           {config.icon}
         </div>
-        <span className="text-[9px] font-semibold uppercase tracking-wide">
+        <span className="text-xs font-semibold uppercase tracking-wide">
           {config.label}
         </span>
       </div>

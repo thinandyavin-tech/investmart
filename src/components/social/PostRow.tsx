@@ -119,16 +119,16 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             <Link href={`/u/${post.author.username ?? post.author.id}`} className="text-xs font-bold hover:underline">
               {username}
             </Link>
-            <span className="text-[10px] text-[#8A8378]">{displayId}</span>
+            <span className="text-xs text-[#8A8378]">{displayId}</span>
             {isTrader && (
               <span
-                className="text-[9px] px-1.5 py-0.5 font-bold border rounded-sm flex-shrink-0"
+                className="text-xs px-1.5 py-0.5 font-bold border rounded-sm flex-shrink-0"
                 style={{ borderColor: "#8B5CF6", color: "#8B5CF6" }}
               >
                 TRADER
               </span>
             )}
-            <span className="text-[9px] text-[#8A8378] ml-auto flex-shrink-0">
+            <span className="text-xs text-[#8A8378] ml-auto flex-shrink-0">
               {relativeTime(new Date(post.createdAt))}
             </span>
           </div>
@@ -144,13 +144,13 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
               {post.ticker && (
                 <Link
                   href={`/stock/${post.ticker}`}
-                  className="text-[9px] px-1.5 py-0.5 font-bold border border-[#5B8A2A] text-[#5B8A2A] rounded-sm hover:bg-[#5B8A2A] hover:text-white transition-colors"
+                  className="text-xs px-1.5 py-0.5 font-bold border border-[#5B8A2A] text-[#5B8A2A] rounded-sm hover:bg-[#5B8A2A] hover:text-white transition-colors"
                 >
                   ${post.ticker}
                 </Link>
               )}
               {post.topic && (
-                <span className="text-[9px] px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] rounded-sm">
+                <span className="text-xs px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] rounded-sm">
                   {post.topic}
                 </span>
               )}
@@ -161,7 +161,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             <button
               onClick={toggleLike}
               disabled={busy}
-              className={`flex items-center gap-1 text-[10px] transition-colors ${liked ? "text-[#E5484D]" : "text-[#8A8378] hover:text-[#E5484D]"}`}
+              className={`flex items-center gap-1 text-xs transition-colors ${liked ? "text-[#E5484D]" : "text-[#8A8378] hover:text-[#E5484D]"}`}
               aria-label={liked ? "เอาถูกใจออก" : "ถูกใจ"}
               aria-pressed={liked}
             >
@@ -171,7 +171,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
 
             {showReply && (
               <button
-                className="flex items-center gap-1 text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors"
+                className="flex items-center gap-1 text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors"
                 aria-label="แสดงความคิดเห็น"
               >
                 <CommentIcon />
@@ -181,7 +181,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
 
             <button
               onClick={() => setQuoting((v) => !v)}
-              className={`flex items-center gap-1 text-[10px] transition-colors ${quoting ? "text-[#1F1A14]" : "text-[#8A8378] hover:text-[#1F1A14]"}`}
+              className={`flex items-center gap-1 text-xs transition-colors ${quoting ? "text-[#1F1A14]" : "text-[#8A8378] hover:text-[#1F1A14]"}`}
               aria-label="อ้างอิงโพสต์"
               aria-pressed={quoting}
             >
@@ -192,7 +192,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             <button
               onClick={toggleBookmark}
               disabled={busy}
-              className={`flex items-center gap-1 text-[10px] transition-colors ml-auto ${bookmarked ? "text-[#8B5CF6]" : "text-[#8A8378] hover:text-[#8B5CF6]"}`}
+              className={`flex items-center gap-1 text-xs transition-colors ml-auto ${bookmarked ? "text-[#8B5CF6]" : "text-[#8A8378] hover:text-[#8B5CF6]"}`}
               aria-label={bookmarked ? "เอาออกจากบันทึก" : "บันทึกโพสต์"}
               aria-pressed={bookmarked}
             >
@@ -217,13 +217,13 @@ function QuotedPostCard({ post }: { post: QuotedPost }) {
   return (
     <div className="mt-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
       <div className="flex items-center gap-1.5 mb-1">
-        <span className="text-[9px] font-bold text-[#1F1A14] truncate">{author}</span>
-        <span className="text-[8px] text-[#8A8378] flex-shrink-0">{relativeTime(new Date(post.createdAt))}</span>
+        <span className="text-xs font-bold text-[#1F1A14] truncate">{author}</span>
+        <span className="text-xs text-[#8A8378] flex-shrink-0">{relativeTime(new Date(post.createdAt))}</span>
         {post.ticker && (
-          <span className="text-[8px] font-bold text-[#5B8A2A] ml-auto flex-shrink-0">${post.ticker}</span>
+          <span className="text-xs font-bold text-[#5B8A2A] ml-auto flex-shrink-0">${post.ticker}</span>
         )}
       </div>
-      <p className="text-[10px] text-[#1F1A14] leading-relaxed line-clamp-3 break-words">{post.content}</p>
+      <p className="text-xs text-[#1F1A14] leading-relaxed line-clamp-3 break-words">{post.content}</p>
     </div>
   );
 }
@@ -267,22 +267,22 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
         aria-label="ความคิดเห็นสำหรับโพสต์อ้างอิง"
       />
       <div className="flex items-center gap-2 mt-1.5">
-        <span className={`text-[10px] font-bold ${remaining < 0 ? "text-[#E5484D]" : "text-[#8A8378]"}`}>
+        <span className={`text-xs font-bold ${remaining < 0 ? "text-[#E5484D]" : "text-[#8A8378]"}`}>
           {remaining}
         </span>
-        <button onClick={onClose} className="ml-auto text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors">
+        <button onClick={onClose} className="ml-auto text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors">
           ยกเลิก
         </button>
         <button
           onClick={submit}
           disabled={!content.trim() || remaining < 0 || submitting}
-          className="px-3 py-1 text-[10px] font-bold text-white bg-[#1F1A14] disabled:opacity-40 transition-opacity"
+          className="px-3 py-1 text-xs font-bold text-white bg-[#1F1A14] disabled:opacity-40 transition-opacity"
           aria-busy={submitting}
         >
           {submitting ? "..." : "โพสต์"}
         </button>
       </div>
-      {error && <p className="text-[10px] text-[#E5484D] mt-1" role="alert">{error}</p>}
+      {error && <p className="text-xs text-[#E5484D] mt-1" role="alert">{error}</p>}
     </div>
   );
 }

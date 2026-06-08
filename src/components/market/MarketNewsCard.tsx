@@ -33,8 +33,8 @@ export function MarketNewsCard() {
   return (
     <Card className="overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-slate-100">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest">ข่าวตลาด</h2>
-        <p className="text-[9px] text-slate-500 mt-0.5">แหล่งข่าวภายนอก — ตรวจสอบก่อนตัดสินใจ</p>
+        <h2 className="text-xs font-bold uppercase tracking-widest">ข่าวตลาด</h2>
+        <p className="text-xs text-slate-500 mt-0.5">แหล่งข่าวภายนอก — ตรวจสอบก่อนตัดสินใจ</p>
       </div>
 
       {loading ? (
@@ -47,7 +47,7 @@ export function MarketNewsCard() {
           ))}
         </div>
       ) : articles.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-slate-500 text-center">
+        <p className="px-3 py-4 text-xs text-slate-500 text-center">
           ไม่มีข่าว
         </p>
       ) : (
@@ -61,10 +61,10 @@ export function MarketNewsCard() {
               className="block px-3 py-2.5 hover:bg-slate-50 transition-colors group"
               aria-label={`${a.headline} — เปิดในแท็บใหม่`}
             >
-              <p className="text-[11px] leading-snug text-slate-900 group-hover:underline line-clamp-2">
+              <p className="text-xs leading-snug text-slate-900 group-hover:underline line-clamp-2">
                 {a.headline}
               </p>
-              <p className="text-[9px] text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 {a.source} · {timeAgo(a.datetime)}
               </p>
             </a>

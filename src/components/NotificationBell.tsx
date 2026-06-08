@@ -100,7 +100,7 @@ export function NotificationBell({ size = "md" }: BellProps) {
         <BellIcon size={dim} />
         {unread > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white px-0.5"
+            className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full flex items-center justify-center text-xs font-bold text-white px-0.5"
             style={{ background: "#FF3D9A" }}
             aria-hidden="true"
           >
@@ -118,11 +118,11 @@ export function NotificationBell({ size = "md" }: BellProps) {
           style={{ maxHeight: "360px", display: "flex", flexDirection: "column" }}
         >
           <div className="flex items-center justify-between px-3 py-2 border-b border-[#E8E2D4] flex-shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-widest">การแจ้งเตือน</span>
+            <span className="text-xs font-bold uppercase tracking-widest">การแจ้งเตือน</span>
             {unread > 0 && (
               <button
                 onClick={() => void markAllRead()}
-                className="text-[9px] text-[#5B8A2A] hover:underline"
+                className="text-xs text-[#5B8A2A] hover:underline"
               >
                 อ่านทั้งหมด
               </button>
@@ -130,7 +130,7 @@ export function NotificationBell({ size = "md" }: BellProps) {
           </div>
 
           {notifications.length === 0 ? (
-            <p className="px-3 py-4 text-[10px] text-[#8A8378] text-center">ยังไม่มีการแจ้งเตือน</p>
+            <p className="px-3 py-4 text-xs text-[#8A8378] text-center">ยังไม่มีการแจ้งเตือน</p>
           ) : (
             <ul className="overflow-y-auto flex-1" style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {notifications.map((n) => {
@@ -141,8 +141,8 @@ export function NotificationBell({ size = "md" }: BellProps) {
                   >
                     <span className="text-base flex-shrink-0 leading-none mt-0.5">{typeIcon(n.type)}</span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] leading-snug break-words">{n.message}</p>
-                      <p className="text-[9px] text-[#8A8378] mt-0.5">{timeAgo(n.createdAt)}</p>
+                      <p className="text-xs leading-snug break-words">{n.message}</p>
+                      <p className="text-xs text-[#8A8378] mt-0.5">{timeAgo(n.createdAt)}</p>
                     </div>
                     {!n.read && (
                       <span className="w-1.5 h-1.5 rounded-full bg-[#FF3D9A] flex-shrink-0 mt-1" aria-hidden="true" />

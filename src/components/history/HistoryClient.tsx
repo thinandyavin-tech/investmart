@@ -83,7 +83,7 @@ export function HistoryClient() {
   return (
     <div className="p-4 max-w-2xl mx-auto">
       <h1 className="text-xs font-bold uppercase tracking-widest mb-1">ประวัติซื้อขาย</h1>
-      <p className="text-[10px] text-[#8A8378] mb-4">
+      <p className="text-xs text-[#8A8378] mb-4">
         รายการซื้อขายทั้งหมด
       </p>
 
@@ -110,7 +110,7 @@ export function HistoryClient() {
       ) : trades.length === 0 ? (
         <Card className="p-6 text-center">
           <p className="text-xs text-[#8A8378]">ยังไม่มีประวัติการซื้อขาย</p>
-          <p className="text-[10px] text-[#8A8378] mt-1">
+          <p className="text-xs text-[#8A8378] mt-1">
             ซื้อหุ้นครั้งแรกจากหน้าเรดาร์เพื่อเริ่มต้น
           </p>
         </Card>
@@ -118,7 +118,7 @@ export function HistoryClient() {
         <>
           {/* Portfolio Analytics */}
           <Card className="p-4 mb-4">
-            <h2 className="text-[10px] font-bold uppercase tracking-widest mb-3 text-[#8A8378]">Portfolio Summary</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest mb-3 text-[#8A8378]">Portfolio Summary</h2>
             <div className="grid grid-cols-2 gap-3 mb-3">
               {[
                 { label: "ซื้อทั้งหมด",      value: `$${analytics.totalBought.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
@@ -128,14 +128,14 @@ export function HistoryClient() {
                 { label: "หุ้นที่เคยซื้อ",    value: `${analytics.uniqueTickers} ตัว` },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col gap-0.5">
-                  <span className="text-[9px] text-[#8A8378] uppercase tracking-wide">{label}</span>
+                  <span className="text-xs text-[#8A8378] uppercase tracking-wide">{label}</span>
                   <span className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</span>
                 </div>
               ))}
             </div>
             {analytics.holdings.length > 0 && (
               <div>
-                <div className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] mb-1.5">
+                <div className="text-xs font-bold uppercase tracking-wide text-[#8A8378] mb-1.5">
                   ถือครองอยู่ ({analytics.holdings.length} ตัว)
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -143,7 +143,7 @@ export function HistoryClient() {
                     <Link
                       key={h.ticker}
                       href={`/stock/${h.ticker}`}
-                      className="flex items-center gap-1.5 border border-[#1F1A14] px-2 py-1 text-[10px] hover:bg-[#1F1A14] hover:text-white transition-colors"
+                      className="flex items-center gap-1.5 border border-[#1F1A14] px-2 py-1 text-xs hover:bg-[#1F1A14] hover:text-white transition-colors"
                     >
                       <span className="font-bold">{h.ticker}</span>
                       <span className="text-[#8A8378]">{h.shares.toFixed(2)} หุ้น</span>
@@ -151,7 +151,7 @@ export function HistoryClient() {
                     </Link>
                   ))}
                 </div>
-                <p className="text-[8px] text-[#8A8378] mt-1.5">
+                <p className="text-xs text-[#8A8378] mt-1.5">
                   ต้นทุนเฉลี่ย (cost basis) · ไม่ใช่ราคาตลาดปัจจุบัน
                 </p>
               </div>
@@ -165,7 +165,7 @@ export function HistoryClient() {
               <thead>
                 <tr className="bg-[#1F1A14] text-[#F3EDE0]">
                   {["วันที่", "หุ้น", "ซื้อ/ขาย", "จำนวน", "ราคา", "รวม"].map((h) => (
-                    <th key={h} className="text-left px-3 py-2 text-[9px] uppercase tracking-wide font-bold">
+                    <th key={h} className="text-left px-3 py-2 text-xs uppercase tracking-wide font-bold">
                       {h}
                     </th>
                   ))}
@@ -174,7 +174,7 @@ export function HistoryClient() {
               <tbody>
                 {trades.map((t) => (
                   <tr key={t.id} className="border-b border-[#E8E2D4] last:border-0">
-                    <td className="px-3 py-2 text-[9px] text-[#8A8378]">
+                    <td className="px-3 py-2 text-xs text-[#8A8378]">
                       {new Date(t.createdAt).toLocaleDateString("th-TH", {
                         day:   "numeric",
                         month: "short",
@@ -188,7 +188,7 @@ export function HistoryClient() {
                     </td>
                     <td className="px-3 py-2">
                       <span
-                        className="px-1.5 py-0.5 text-[9px] font-bold"
+                        className="px-1.5 py-0.5 text-xs font-bold"
                         style={{
                           background: t.side === "BUY" ? "#3FA34D22" : "#E5484D22",
                           color:      t.side === "BUY" ? "#3FA34D"   : "#E5484D",

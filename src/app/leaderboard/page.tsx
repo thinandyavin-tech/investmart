@@ -47,7 +47,7 @@ export default function LeaderboardPage() {
       <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
         <div>
           <h1 className="text-xs font-bold uppercase tracking-widest">Leaderboard — อันดับนักลงทุน</h1>
-          <p className="text-[9px] text-[#8A8378] mt-0.5">
+          <p className="text-xs text-[#8A8378] mt-0.5">
             จัดอันดับจากมูลค่าพอร์ตทั้งหมด · คำนวณจากราคาต้นทุน ไม่ใช่ราคาตลาดปัจจุบัน
           </p>
         </div>
@@ -56,10 +56,10 @@ export default function LeaderboardPage() {
           <table className="w-full text-xs border-collapse">
             <thead>
               <tr className="border-b border-[#1F1A14] bg-[#1F1A14] text-[#F3EDE0]">
-                <th className="text-left px-3 py-2 text-[10px] uppercase tracking-wide">#</th>
-                <th className="text-left px-3 py-2 text-[10px] uppercase tracking-wide">ผู้ใช้</th>
-                <th className="text-right px-3 py-2 text-[10px] uppercase tracking-wide">มูลค่าพอร์ต</th>
-                <th className="text-right px-3 py-2 text-[10px] uppercase tracking-wide hidden sm:table-cell">เทรด</th>
+                <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">#</th>
+                <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">ผู้ใช้</th>
+                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide">มูลค่าพอร์ต</th>
+                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide hidden sm:table-cell">เทรด</th>
               </tr>
             </thead>
             <tbody>
@@ -78,7 +78,7 @@ export default function LeaderboardPage() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={4} className="px-3 py-6 text-center text-[10px] text-[#8A8378]">
+                  <td colSpan={4} className="px-3 py-6 text-center text-xs text-[#8A8378]">
                     โหลดข้อมูลไม่ได้ กรุณาลองใหม่
                   </td>
                 </tr>
@@ -86,7 +86,7 @@ export default function LeaderboardPage() {
 
               {!loading && !error && entries.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-3 py-6 text-center text-[10px] text-[#8A8378]">
+                  <td colSpan={4} className="px-3 py-6 text-center text-xs text-[#8A8378]">
                     ยังไม่มีข้อมูล
                   </td>
                 </tr>
@@ -104,18 +104,18 @@ export default function LeaderboardPage() {
                     className="border-b border-[#E8E2D4] last:border-0"
                     style={{ background: isMe ? "#F5FAEE" : undefined }}
                   >
-                    <td className="px-3 py-2.5 font-bold text-[11px]" style={{ fontFamily: "var(--font-mono)" }}>
+                    <td className="px-3 py-2.5 font-bold text-xs" style={{ fontFamily: "var(--font-mono)" }}>
                       {rankIcon ?? e.rank}
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-bold text-[11px]">{displayName}</span>
+                        <span className="font-bold text-xs">{displayName}</span>
                         {e.name && e.username && (
-                          <span className="text-[9px] text-[#8A8378]">{handle}</span>
+                          <span className="text-xs text-[#8A8378]">{handle}</span>
                         )}
                         {isMe && (
                           <span
-                            className="text-[9px] px-1.5 py-0.5 font-bold"
+                            className="text-xs px-1.5 py-0.5 font-bold"
                             style={{ background: "#9BE15D", color: "#1F1A14" }}
                           >
                             คุณ
@@ -124,15 +124,15 @@ export default function LeaderboardPage() {
                       </div>
                     </td>
                     <td className="px-3 py-2.5 text-right" style={{ fontFamily: "var(--font-mono)" }}>
-                      <div className="font-bold text-[11px]">{formatTHB(e.totalThb)}</div>
+                      <div className="font-bold text-xs">{formatTHB(e.totalThb)}</div>
                       <div
-                        className="text-[9px]"
+                        className="text-xs"
                         style={{ color: e.pnl >= 0 ? "#5B8A2A" : "#DC2626" }}
                       >
                         {e.pnl >= 0 ? "+" : ""}{formatTHB(e.pnl)}
                       </div>
                     </td>
-                    <td className="px-3 py-2.5 text-right text-[10px] text-[#8A8378] hidden sm:table-cell"
+                    <td className="px-3 py-2.5 text-right text-xs text-[#8A8378] hidden sm:table-cell"
                         style={{ fontFamily: "var(--font-mono)" }}>
                       {e.trades}
                     </td>
@@ -143,7 +143,7 @@ export default function LeaderboardPage() {
           </table>
         </Card>
 
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           มูลค่าคำนวณจากราคาต้นทุน + เงินสด · InvestMart
         </p>
       </div>

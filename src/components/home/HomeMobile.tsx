@@ -61,7 +61,7 @@ export function HomeMobile() {
             aria-haspopup="menu"
           >
             {BRAND_NAME_UPPER}
-            <span className="text-[10px] leading-none">{dropdownOpen ? "▴" : "▾"}</span>
+            <span className="text-xs leading-none">{dropdownOpen ? "▴" : "▾"}</span>
           </button>
 
           <div className="flex items-center gap-1">
@@ -127,7 +127,7 @@ export function HomeMobile() {
             style={{ minWidth: "56px" }}
           >
             <span className="text-base leading-none" aria-hidden="true">{icon}</span>
-            <span className="text-[10px] font-semibold whitespace-nowrap">{label}</span>
+            <span className="text-xs font-medium whitespace-nowrap leading-tight">{label}</span>
           </Link>
         ))}
       </div>
@@ -173,7 +173,7 @@ function TrendingTickerBar() {
 
   return (
     <div className="mx-3 mb-3">
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
         หุ้นถูกพูดถึงมากสุด
       </p>
       <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
@@ -181,7 +181,7 @@ function TrendingTickerBar() {
           <Link
             key={ticker}
             href={`/stock/${ticker}`}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-full text-[10px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
           >
             <span className="text-green-600">${ticker}</span>
             <span className="text-slate-400 font-normal">{count}</span>
@@ -236,13 +236,13 @@ function ProfileSection({
 
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">{loading ? "กำลังโหลด..." : displayName}</p>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
         </div>
 
         {loggedIn && (
           <Link
             href="/u/me"
-            className="flex-shrink-0 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 hover:border-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            className="flex-shrink-0 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 hover:border-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
           >
             โปรไฟล์
           </Link>
@@ -258,11 +258,11 @@ function ProfileSection({
           className="flex flex-col items-center justify-center p-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl text-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
           aria-expanded={holdingsOpen}
         >
-          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">ถือหุ้น</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">ถือหุ้น</span>
           <span className="text-xs font-bold text-slate-900 dark:text-slate-100" style={{ fontFamily: "var(--font-mono)" }}>
             {loading ? "..." : holdings.length}
           </span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500">{holdingsOpen ? "▴" : "▾"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">{holdingsOpen ? "▴" : "▾"}</span>
         </button>
       </div>
 
@@ -270,13 +270,13 @@ function ProfileSection({
       {holdingsOpen && !loading && (
         <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl overflow-hidden">
           {holdings.length === 0 ? (
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
           ) : (
-            <table className="w-full text-[10px] border-collapse">
+            <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-700">
                   {["หุ้น", "หุ้น", "ต้นทุน"].map((h, i) => (
-                    <th key={i} className="text-left px-2 py-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">
+                    <th key={i} className="text-left px-2 py-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -309,7 +309,7 @@ function ProfileSection({
       )}
 
       {!loggedIn && !loading && noticeVisible && (
-        <div className="flex items-center justify-between px-3 py-2 text-[10px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl">
+        <div className="flex items-center justify-between px-3 py-2 text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl">
           <span className="text-slate-500 dark:text-slate-400">
             <span className="font-bold text-slate-900 dark:text-slate-100">ใหม่!</span>{" "}
             คุณกำลังใช้งานไอดีแบบไม่ได้ล็อกอินอยู่
@@ -330,7 +330,7 @@ function ProfileSection({
 function StatChip({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center p-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl text-center">
-      <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">{label}</span>
+      <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">{label}</span>
       <span className="text-xs font-bold mt-0.5 text-slate-900 dark:text-slate-100" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
         {value}
       </span>

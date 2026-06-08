@@ -53,7 +53,7 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1">
             <span className="font-semibold text-sm text-slate-900 dark:text-white">{h.ticker}</span>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500">{h.weight.toFixed(1)}%</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{h.weight.toFixed(1)}%</span>
           </div>
           <div className="text-xs text-slate-400 dark:text-slate-500 truncate">{h.companyName}</div>
         </div>
@@ -358,7 +358,7 @@ export function AssetsPage() {
                 </div>
               </div>
 
-              <div className="flex text-[10px] text-slate-400 dark:text-slate-500 px-4 pb-1 gap-2">
+              <div className="flex text-xs text-slate-400 dark:text-slate-500 px-4 pb-1 gap-2">
                 <span className="flex-1">ชื่อหุ้น</span>
                 <span className="w-24 text-right">มูลค่า</span>
                 <span className="w-20 text-right">P/L</span>

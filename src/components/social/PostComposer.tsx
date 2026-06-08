@@ -59,17 +59,17 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
   return (
     <div className={`bg-[#F3EDE0] border border-[#1F1A14] ${compact ? "p-3" : "p-4"}`}>
       {!compact && (
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-2">
+        <p className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2">
           เขียนโพสต์ · ไม่มีรูป ไม่มีอีโมจิ — มีแต่ความคิด
         </p>
       )}
 
       {quotePost && (
         <div className="mb-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
-          <p className="text-[9px] font-bold text-[#8A8378] mb-0.5">
+          <p className="text-xs font-bold text-[#8A8378] mb-0.5">
             อ้างอิงโพสต์ของ {quotePost.author.username ?? quotePost.author.name ?? "ผู้ใช้"}
           </p>
-          <p className="text-[10px] text-[#1F1A14] leading-relaxed line-clamp-2 break-words">{quotePost.content}</p>
+          <p className="text-xs text-[#1F1A14] leading-relaxed line-clamp-2 break-words">{quotePost.content}</p>
         </div>
       )}
 
@@ -89,14 +89,14 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
           value={ticker}
           onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z.\-]/g, "").slice(0, 10))}
           placeholder="$NVDA"
-          className="w-20 bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-[10px] font-bold focus:outline-none focus:border-[#5B8A2A] transition-colors"
+          className="w-20 bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-xs font-bold focus:outline-none focus:border-[#5B8A2A] transition-colors"
           aria-label="cashtag (เช่น NVDA)"
         />
 
         <select
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          className="bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-[10px] focus:outline-none focus:border-[#1F1A14] transition-colors"
+          className="bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-xs focus:outline-none focus:border-[#1F1A14] transition-colors"
           aria-label="หัวข้อ"
         >
           <option value="">หัวข้อ (ไม่บังคับ)</option>
@@ -104,7 +104,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
         </select>
 
         <span
-          className={`text-[10px] font-bold ml-auto ${remaining < 50 ? (remaining < 0 ? "text-[#E5484D]" : "text-[#D6336C]") : "text-[#8A8378]"}`}
+          className={`text-xs font-bold ml-auto ${remaining < 50 ? (remaining < 0 ? "text-[#E5484D]" : "text-[#D6336C]") : "text-[#8A8378]"}`}
           aria-live="polite"
           aria-label={`เหลือ ${remaining} ตัวอักษร`}
         >
@@ -122,7 +122,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       </div>
 
       {error && (
-        <p className="text-[10px] text-[#E5484D] font-bold mt-1" role="alert">
+        <p className="text-xs text-[#E5484D] font-bold mt-1" role="alert">
           {error}
         </p>
       )}

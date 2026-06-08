@@ -84,7 +84,7 @@ export function PushNotificationSetup({ compact = false }: PushNotificationSetup
   if (status === "denied") {
     if (compact) return null;
     return (
-      <p className="text-[9px] text-slate-400">
+      <p className="text-xs text-slate-400">
         การแจ้งเตือนถูกบล็อก — เปิดในการตั้งค่าเบราว์เซอร์เพื่อรับแจ้งเตือน
       </p>
     );
@@ -95,7 +95,7 @@ export function PushNotificationSetup({ compact = false }: PushNotificationSetup
       <button
         onClick={() => void enable()}
         disabled={loading}
-        className="text-[9px] text-violet-600 hover:text-violet-800 underline disabled:opacity-50 flex-shrink-0"
+        className="text-xs text-violet-600 hover:text-violet-800 underline disabled:opacity-50 flex-shrink-0"
       >
         {loading ? "กำลังเปิด..." : "เปิดการแจ้งเตือน"}
       </button>
@@ -105,13 +105,13 @@ export function PushNotificationSetup({ compact = false }: PushNotificationSetup
   return (
     <div className="flex items-center justify-between gap-3 px-3 py-2 bg-violet-50 border border-violet-200 rounded-xl">
       <div>
-        <p className="text-[10px] font-semibold text-violet-800">รับแจ้งเตือนราคาหุ้น</p>
-        <p className="text-[9px] text-violet-600 mt-0.5">แจ้งเตือนทันทีเมื่อราคาถึงเป้าหมาย</p>
+        <p className="text-xs font-semibold text-violet-800">รับแจ้งเตือนราคาหุ้น</p>
+        <p className="text-xs text-violet-600 mt-0.5">แจ้งเตือนทันทีเมื่อราคาถึงเป้าหมาย</p>
       </div>
       <button
         onClick={() => void enable()}
         disabled={loading}
-        className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-[9px] font-bold rounded-lg disabled:opacity-50 transition-colors flex-shrink-0"
+        className="px-3 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-lg disabled:opacity-50 transition-colors flex-shrink-0"
       >
         {loading ? "..." : "เปิด"}
       </button>

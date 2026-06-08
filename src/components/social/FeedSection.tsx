@@ -104,7 +104,7 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
           <p className="text-xs font-bold text-red-600 text-center">{error}</p>
           <button
             onClick={() => setRetry((c) => c + 1)}
-            className="text-[10px] underline text-[#8A8378] hover:text-[#1F1A14]"
+            className="text-xs underline text-[#8A8378] hover:text-[#1F1A14]"
           >
             ลองใหม่
           </button>
@@ -153,7 +153,7 @@ function FeedEmpty({ tab }: { tab: FeedTab }) {
       <p className="text-xs font-bold text-[#1F1A14] text-center">
         {tab === "following" ? "ยังไม่มีโพสต์จากคนที่ติดตาม" : "ยังไม่มีโพสต์"}
       </p>
-      <p className="text-[10px] text-[#8A8378] text-center">
+      <p className="text-xs text-[#8A8378] text-center">
         {tab === "following"
           ? "ติดตามเทรดเดอร์คนอื่นเพื่อดูโพสต์ของพวกเขาที่นี่"
           : "เป็นคนแรกที่แบ่งปันมุมมองการลงทุน!"}

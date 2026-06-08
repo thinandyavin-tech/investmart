@@ -15,19 +15,19 @@ export default function AboutPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest mb-1">เกี่ยวกับ InvestMart</h1>
-          <p className="text-[10px] text-[#8A8378]">แพลตฟอร์มเรียนรู้การลงทุนสำหรับนักลงทุนไทย</p>
+          <p className="text-xs text-[#8A8378]">แพลตฟอร์มเรียนรู้การลงทุนสำหรับนักลงทุนไทย</p>
         </div>
 
         <Card className="p-4 flex flex-col gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">
             เราทำอะไร และทำเพื่ออะไร
           </h2>
-          <p className="text-[11px] leading-relaxed">
+          <p className="text-xs leading-relaxed">
             InvestMart เกิดมาจากคำถามที่ว่า "จะเรียนรู้ตลาดหุ้นสหรัฐได้อย่างไรโดยไม่ต้องเสียเงินจริง?"
             คำตอบคือแพลตฟอร์มที่รวมสามสิ่งไว้ด้วยกัน: เครื่องมือสแกนหุ้น (เรดาร์), พอร์ตจำลอง
             และชุมชนเพื่อแลกเปลี่ยนความคิดเห็น — ทุกอย่างเป็นภาษาไทย
           </p>
-          <p className="text-[11px] leading-relaxed text-[#8A8378]">
+          <p className="text-xs leading-relaxed text-[#8A8378]">
             เราเชื่อว่าการ "ลองเล่น" ด้วยเงินสมมติก่อนตัดสินใจจริงนั้นสำคัญ
             ตลาดหุ้นมีความซับซ้อนมากกว่าที่หลายแหล่งข้อมูลพูดถึง
             InvestMart พยายามแสดงความจริงทั้งสองด้าน — โอกาสและความเสี่ยง
@@ -35,10 +35,10 @@ export default function AboutPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">
             ฟีเจอร์หลัก
           </h2>
-          <ul className="flex flex-col gap-2 text-[11px]">
+          <ul className="flex flex-col gap-2 text-xs">
             {([
               ["📡", "Momentum Radar",   "สแกนหุ้นใน S&P 500, Nasdaq 100 และ SET 100 หาสัญญาณที่ผิดปกติ คำนวณจาก breakout score + quality score + volume"],
               ["💹", "พอร์ตจำลอง",       "ซื้อขายหุ้นด้วยราคาจริง (อาจล่าช้า) ด้วยเงินสมมติ ฝึกกลยุทธ์ก่อนใช้เงินจริง"],
@@ -58,10 +58,10 @@ export default function AboutPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">
             แหล่งข้อมูลและเครื่องมือที่ใช้
           </h2>
-          <div className="flex flex-col gap-2 text-[11px]">
+          <div className="flex flex-col gap-2 text-xs">
             {([
               ["Finnhub API",       "ราคาหุ้น ข้อมูลบริษัท ปริมาณซื้อขาย และข่าวสำหรับตลาดสหรัฐและ SET ไทย"],
               ["Stooq",             "ข้อมูลราคาย้อนหลังสำหรับกราฟระยะยาว (ฟรี ไม่ต้อง API key)"],
@@ -80,15 +80,15 @@ export default function AboutPage() {
         </Card>
 
         <Card className="p-3 flex flex-col gap-1.5">
-          <p className="text-[11px] font-bold text-[#DC2626]">ข้อความสำคัญ</p>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed">
+          <p className="text-xs font-bold text-[#DC2626]">ข้อความสำคัญ</p>
+          <p className="text-xs text-[#8A8378] leading-relaxed">
             ข้อมูลและการวิเคราะห์ทั้งหมดบน InvestMart มีวัตถุประสงค์เพื่อการศึกษาเท่านั้น
             ไม่ใช่คำแนะนำในการซื้อหรือขายหลักทรัพย์ ราคาหุ้นที่แสดงอาจมีความล่าช้าและไม่ใช่ราคาซื้อขายจริง
             InvestMart ไม่ใช่บริษัทหลักทรัพย์หรือที่ปรึกษาทางการเงิน
           </p>
         </Card>
 
-        <div className="flex flex-wrap gap-4 text-[10px] pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
           <Link href="/learn"   className="text-[#5B8A2A] hover:underline">ส่วนเรียนรู้</Link>
           <Link href="/faq"     className="text-[#5B8A2A] hover:underline">คำถามที่พบบ่อย</Link>
           <Link href="/privacy" className="text-[#5B8A2A] hover:underline">นโยบายความเป็นส่วนตัว</Link>

@@ -145,7 +145,7 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
             )}
             <button
               onClick={shareProfile}
-              className="px-3 py-1.5 text-[9px] font-bold border border-[#D0C8B8] text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors"
+              className="px-3 py-1.5 text-xs font-bold border border-[#D0C8B8] text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors"
               aria-label="คัดลอก link โปรไฟล์"
             >
               {copied ? "✓ คัดลอกแล้ว" : "แชร์ ↗"}
@@ -154,11 +154,11 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
         </div>
 
         <p className="text-sm font-bold">{displayName}</p>
-        <p className="text-[10px] text-[#8A8378]">{shortId}</p>
+        <p className="text-xs text-[#8A8378]">{shortId}</p>
 
         {isTrader && (
           <span
-            className="inline-block mt-1 text-[9px] px-1.5 py-0.5 font-bold border rounded-sm"
+            className="inline-block mt-1 text-xs px-1.5 py-0.5 font-bold border rounded-sm"
             style={{ borderColor: "#8B5CF6", color: "#8B5CF6" }}
           >
             TRADER
@@ -177,12 +177,12 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <p className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)" }}>{value}</p>
-              <p className="text-[9px] text-[#8A8378]">{label}</p>
+              <p className="text-xs text-[#8A8378]">{label}</p>
             </div>
           ))}
         </div>
 
-        <p className="text-[10px] text-[#8A8378] mt-2">
+        <p className="text-xs text-[#8A8378] mt-2">
           พอร์ตหุ้นอเมริกา ·{" "}
           <span style={{ fontFamily: "var(--font-mono)" }}>
             {profile.cashThb.toLocaleString("th-TH")} ฿

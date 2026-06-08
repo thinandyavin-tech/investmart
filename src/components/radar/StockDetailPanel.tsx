@@ -188,11 +188,11 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       <div className="flex items-start gap-3" style={{ background: flashBg, transition: "background 0.3s" }}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <p className="text-[10px] text-slate-500 uppercase tracking-wide truncate">
+            <p className="text-xs text-slate-500 uppercase tracking-wide truncate">
               {profile?.name ?? stock.companyName} · {stock.exchange}
             </p>
             {isLive && (
-              <span className="text-[8px] font-semibold px-1.5 py-0.5 rounded-md bg-green-100 text-green-700 flex-shrink-0">
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded-md bg-green-100 text-green-700 flex-shrink-0">
                 LIVE
               </span>
             )}
@@ -218,7 +218,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-[10px] text-slate-600 leading-relaxed border border-slate-100 rounded-lg p-3 bg-slate-50 line-clamp-3">
+        <p className="text-xs text-slate-600 leading-relaxed border border-slate-100 rounded-lg p-3 bg-slate-50 line-clamp-3">
           {profile.description}
         </p>
       )}
@@ -230,7 +230,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             <button
               key={mode}
               onClick={() => setChartMode(mode)}
-              className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+              className={`px-2.5 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                 chartMode === mode
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
@@ -245,7 +245,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
-              className={`px-1.5 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
+              className={`px-1.5 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                 timeframe === tf
                   ? "bg-slate-900 text-white"
                   : "text-slate-500 hover:bg-slate-100"
@@ -270,7 +270,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             <button
               key={key}
               onClick={() => setMaConfig((prev) => ({ ...prev, [key]: !prev[key] }))}
-              className={`px-2 py-0.5 text-[9px] font-bold rounded-md border transition-colors ${
+              className={`px-2 py-0.5 text-xs font-bold rounded-md border transition-colors ${
                 maConfig[key]
                   ? "text-white border-transparent"
                   : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
@@ -282,7 +282,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           ))}
           <button
             onClick={() => setShowRsi((v) => !v)}
-            className={`px-2 py-0.5 text-[9px] font-bold rounded-md border transition-colors ${
+            className={`px-2 py-0.5 text-xs font-bold rounded-md border transition-colors ${
               showRsi
                 ? "bg-violet-500 text-white border-violet-500"
                 : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
@@ -322,7 +322,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           },
         ].map(({ label, value, color }) => (
           <div key={label} className="border border-slate-100 rounded-xl p-2 text-center bg-white shadow-card">
-            <div className="text-[9px] text-slate-500 uppercase tracking-wide mb-0.5">{label}</div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide mb-0.5">{label}</div>
             <div className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color }}>
               {value}
             </div>
@@ -344,17 +344,17 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             ].map(({ label, value, tip }) => (
               <Tooltip key={label} text={tip}>
                 <div className="border border-slate-100 rounded-xl p-2 bg-white w-full shadow-card">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wide">{label}</div>
-                  <div className="font-bold text-slate-900 text-[11px]" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
+                  <div className="text-xs text-slate-500 uppercase tracking-wide">{label}</div>
+                  <div className="font-bold text-slate-900 text-xs" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
                 </div>
               </Tooltip>
             ))}
           </div>
           {m.beta !== undefined && riskLabel(m.beta) && (
             <div className="flex items-center gap-2">
-              <span className="text-[9px] text-slate-500">Risk Profile:</span>
+              <span className="text-xs text-slate-500">Risk Profile:</span>
               <span
-                className="text-[9px] px-1.5 py-0.5 font-semibold border rounded-md"
+                className="text-xs px-1.5 py-0.5 font-semibold border rounded-md"
                 style={{ borderColor: riskLabel(m.beta)!.color, color: riskLabel(m.beta)!.color }}
               >
                 {riskLabel(m.beta)!.label}
@@ -366,7 +366,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Current holding */}
       {holding && (
-        <div className="border border-green-200 rounded-xl p-3 bg-green-50 text-[10px]">
+        <div className="border border-green-200 rounded-xl p-3 bg-green-50 text-xs">
           <span className="font-semibold text-green-700">ถืออยู่:</span>{" "}
           <span className="text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>
             {holding.shares} หุ้น · ต้นทุนเฉลี่ย ${holding.avgCost.toFixed(2)} · P/L{" "}
@@ -381,7 +381,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       <div className="border border-slate-200 rounded-xl p-4 bg-white flex flex-col gap-3">
         {!user ? (
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 mb-2">เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง</p>
+            <p className="text-xs text-slate-500 mb-2">เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง</p>
             <OffsetButton variant="lime" onClick={() => setShowLoginPrompt(true)}>
               เข้าสู่ระบบ
             </OffsetButton>
@@ -390,7 +390,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           <>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-[9px] text-slate-500 uppercase tracking-wide block mb-1" htmlFor="shares-input">
+                <label className="text-xs text-slate-500 uppercase tracking-wide block mb-1" htmlFor="shares-input">
                   จำนวนหุ้น
                 </label>
                 <input
@@ -405,12 +405,12 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
                   style={{ fontFamily: "var(--font-mono)" }}
                 />
               </div>
-              <div className="text-right text-[10px]">
+              <div className="text-right text-xs">
                 <div className="text-slate-500">ราคา</div>
                 <div className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
                   ${livePrice.toFixed(2)}
                 </div>
-                <div className="text-[9px] text-slate-400">
+                <div className="text-xs text-slate-400">
                   รวม ${(parseFloat(shares || "0") * livePrice).toFixed(2)}
                 </div>
               </div>
@@ -431,24 +431,24 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
                 SELL
               </button>
             </div>
-            <div className="text-[9px] flex justify-between text-slate-500">
+            <div className="text-xs flex justify-between text-slate-500">
               <span>USD: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>${user.cashUsd.toFixed(2)}</span></span>
               <span>THB: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>฿{user.cashThb.toLocaleString()}</span></span>
             </div>
           </>
         )}
         {tradeMsg && (
-          <p className="text-[10px] font-bold text-center" style={{ color: tradeMsg.includes("✓") ? "#16A34A" : "#DC2626" }}>
+          <p className="text-xs font-bold text-center" style={{ color: tradeMsg.includes("✓") ? "#16A34A" : "#DC2626" }}>
             {tradeMsg}
           </p>
         )}
-        <p className="text-[9px] text-slate-400 text-center">จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน</p>
+        <p className="text-xs text-slate-400 text-center">จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน</p>
       </div>
 
       {/* AI Reasons */}
       <div className="border border-slate-100 rounded-xl p-4 bg-white">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-700">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-700">
             เหตุผลที่ติดเรดาร์
           </h3>
           {!aiReason && (
@@ -458,9 +458,9 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           )}
         </div>
         {aiReason ? (
-          <p className="text-[10px] leading-relaxed whitespace-pre-line text-slate-700">{aiReason}</p>
+          <p className="text-xs leading-relaxed whitespace-pre-line text-slate-700">{aiReason}</p>
         ) : (
-          <p className="text-[10px] text-slate-400 italic">
+          <p className="text-xs text-slate-400 italic">
             กดปุ่มเพื่อให้ AI วิเคราะห์ว่าหุ้นนี้ติดเรดาร์เพราะอะไร (เครื่องมือวิจัย ไม่ใช่การทำนาย)
           </p>
         )}

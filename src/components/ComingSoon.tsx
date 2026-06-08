@@ -19,11 +19,11 @@ export function ComingSoon({ titleThai, descThai }: ComingSoonProps) {
           <h1 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14] mb-1">
             {titleThai}
           </h1>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed">{descThai}</p>
+          <p className="text-xs text-[#8A8378] leading-relaxed">{descThai}</p>
         </div>
 
         <div
-          className="text-[9px] font-bold tracking-widest uppercase px-3 py-1.5"
+          className="text-xs font-bold tracking-widest uppercase px-3 py-1.5"
           style={{ background: "#FFD9E8", color: "#D6336C" }}
         >
           กำลังพัฒนา · Coming soon
@@ -31,7 +31,7 @@ export function ComingSoon({ titleThai, descThai }: ComingSoonProps) {
 
         <Link
           href="/"
-          className="text-[10px] font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
+          className="text-xs font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
         >
           ← กลับหน้าหลัก
         </Link>

@@ -102,7 +102,7 @@ export default function WatchlistPage() {
             </OffsetButton>
           </div>
           {addMsg && (
-            <p className="text-[10px] mt-1" style={{ color: "#DC2626" }} role="alert">
+            <p className="text-xs mt-1" style={{ color: "#DC2626" }} role="alert">
               {addMsg}
             </p>
           )}
@@ -111,10 +111,10 @@ export default function WatchlistPage() {
         {/* List */}
         <Card className="overflow-hidden">
           <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4] flex items-center justify-between">
-            <h2 className="text-[10px] font-bold uppercase tracking-widest">
+            <h2 className="text-xs font-bold uppercase tracking-widest">
               {items.length} หุ้น
             </h2>
-            <span className="text-[9px] text-[#8A8378]">สูงสุด 50 หุ้น</span>
+            <span className="text-xs text-[#8A8378]">สูงสุด 50 หุ้น</span>
           </div>
 
           {loading ? (
@@ -127,7 +127,7 @@ export default function WatchlistPage() {
               ))}
             </div>
           ) : items.length === 0 ? (
-            <p className="px-3 py-6 text-[10px] text-[#8A8378] text-center">
+            <p className="px-3 py-6 text-xs text-[#8A8378] text-center">
               Watchlist ว่างอยู่ — เพิ่มหุ้นด้านบน
             </p>
           ) : (
@@ -140,7 +140,7 @@ export default function WatchlistPage() {
                   <div key={item.ticker} className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#EDE7D9] transition-colors">
                     <Link
                       href={`/stock/${item.ticker}`}
-                      className="font-bold text-[11px] w-16 flex-shrink-0 hover:underline text-[#5B8A2A]"
+                      className="font-bold text-xs w-16 flex-shrink-0 hover:underline text-[#5B8A2A]"
                     >
                       {item.ticker}
                     </Link>
@@ -150,13 +150,13 @@ export default function WatchlistPage() {
                     ) : liveData ? (
                       <>
                         <span
-                          className="flex-1 text-[11px] font-bold"
+                          className="flex-1 text-xs font-bold"
                           style={{ fontFamily: "var(--font-mono)" }}
                         >
                           ${liveData.price.toFixed(2)}
                         </span>
                         <span
-                          className="text-[10px] font-bold w-16 text-right"
+                          className="text-xs font-bold w-16 text-right"
                           style={{
                             fontFamily: "var(--font-mono)",
                             color: positive ? "#5B8A2A" : "#DC2626",
@@ -166,20 +166,20 @@ export default function WatchlistPage() {
                         </span>
                       </>
                     ) : (
-                      <span className="flex-1 text-[10px] text-[#8A8378]">—</span>
+                      <span className="flex-1 text-xs text-[#8A8378]">—</span>
                     )}
 
                     <div className="flex gap-1.5 flex-shrink-0">
                       <Link
                         href={`/radar?ticker=${item.ticker}`}
-                        className="text-[9px] px-1.5 py-0.5 border border-[#1F1A14] font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"
+                        className="text-xs px-1.5 py-0.5 border border-[#1F1A14] font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"
                         title="วิเคราะห์ใน Radar"
                       >
                         Radar
                       </Link>
                       <button
                         onClick={() => void handleRemove(item.ticker)}
-                        className="text-[9px] px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] hover:border-[#DC2626] hover:text-[#DC2626] transition-colors"
+                        className="text-xs px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] hover:border-[#DC2626] hover:text-[#DC2626] transition-colors"
                         aria-label={`ลบ ${item.ticker}`}
                       >
                         ×
@@ -192,7 +192,7 @@ export default function WatchlistPage() {
           )}
         </Card>
 
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           ราคาจาก Finnhub · อัพเดทอัตโนมัติระหว่างตลาดเปิด
         </p>
       </div>

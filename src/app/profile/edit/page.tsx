@@ -88,11 +88,11 @@ export default function ProfileEditPage() {
         <Card className="p-4 flex flex-col gap-4">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide" htmlFor="edit-name">
+              <label className="block text-xs text-[#8A8378] uppercase tracking-wide" htmlFor="edit-name">
                 ชื่อแสดง (max 50 ตัวอักษร)
               </label>
               {nameChangeLocked && (
-                <span className="text-[9px] text-[#DC2626] font-bold">
+                <span className="text-xs text-[#DC2626] font-bold">
                   เปลี่ยนชื่อได้อีกครั้งใน {cooldownDays} วัน
                 </span>
               )}
@@ -110,20 +110,20 @@ export default function ProfileEditPage() {
             />
             <div className="flex justify-between">
               {nameChangeLocked ? (
-                <p id="name-cooldown" className="text-[9px] text-[#DC2626] mt-0.5">
+                <p id="name-cooldown" className="text-xs text-[#DC2626] mt-0.5">
                   ล็อกชั่วคราว — เปลี่ยนชื่อได้ทุก {NAME_COOLDOWN_DAYS} วัน
                 </p>
               ) : (
                 <span />
               )}
-              <p id="name-count" className="text-[9px] text-[#8A8378] mt-0.5 text-right">
+              <p id="name-count" className="text-xs text-[#8A8378] mt-0.5 text-right">
                 {name.length}/50
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="edit-bio">
+            <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="edit-bio">
               Bio (max 300 ตัวอักษร)
             </label>
             <textarea
@@ -136,7 +136,7 @@ export default function ProfileEditPage() {
               placeholder="แนะนำตัวเองสั้นๆ — ตัวอักษรเท่านั้น ไม่มีอีโมจิ"
               aria-describedby="bio-count"
             />
-            <p id="bio-count" className="text-[9px] text-[#8A8378] mt-0.5 text-right">
+            <p id="bio-count" className="text-xs text-[#8A8378] mt-0.5 text-right">
               {bio.length}/300
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function ProfileEditPage() {
 
           {msg && (
             <p
-              className="text-[10px] font-bold text-center"
+              className="text-xs font-bold text-center"
               style={{ color: msg.includes("✓") ? "#5B8A2A" : "#DC2626" }}
               role="status"
               aria-live="polite"
@@ -162,7 +162,7 @@ export default function ProfileEditPage() {
           )}
         </Card>
 
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           InvestMart ใช้ข้อความล้วน ไม่มีรูป ไม่มีอีโมจิ
         </p>
       </div>

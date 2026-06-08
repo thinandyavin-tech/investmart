@@ -94,12 +94,12 @@ export default function LessonsPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/learn" className="text-[9px] text-[#8A8378] hover:underline">
+            <Link href="/learn" className="text-xs text-[#8A8378] hover:underline">
               ← เรียนรู้
             </Link>
           </div>
           <h1 className="text-sm font-bold uppercase tracking-widest">บทเรียนสั้น</h1>
-          <p className="text-[10px] text-[#8A8378] mt-0.5">3 บทสั้น เขียนเฉพาะสำหรับ InvestMart</p>
+          <p className="text-xs text-[#8A8378] mt-0.5">3 บทสั้น เขียนเฉพาะสำหรับ InvestMart</p>
         </div>
 
         {LESSONS.map((lesson) => (
@@ -107,20 +107,20 @@ export default function LessonsPage() {
             <div className="flex items-center gap-2">
               <span className="text-2xl">{lesson.icon}</span>
               <div>
-                <h2 className="text-[11px] font-bold text-[#1F1A14] dark:text-slate-100">
+                <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100">
                   {lesson.title}
                 </h2>
-                <span className="text-[9px] text-[#8A8378]">อ่าน ~{lesson.readTime}</span>
+                <span className="text-xs text-[#8A8378]">อ่าน ~{lesson.readTime}</span>
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
               {lesson.body.map((section) => (
                 <Card key={section.heading} className="p-3">
-                  <h3 className="text-[10px] font-bold mb-1.5">{section.heading}</h3>
+                  <h3 className="text-xs font-bold mb-1.5">{section.heading}</h3>
                   {section.text.split("\n").map((line, i) => (
                     line.trim()
-                      ? <p key={i} className="text-[10px] text-[#8A8378] leading-relaxed">{line}</p>
+                      ? <p key={i} className="text-xs text-[#8A8378] leading-relaxed">{line}</p>
                       : <div key={i} className="h-1" />
                   ))}
                 </Card>
@@ -129,7 +129,7 @@ export default function LessonsPage() {
           </section>
         ))}
 
-        <div className="flex flex-wrap gap-4 text-[10px] pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
           <Link href="/radar"  className="text-[#5B8A2A] hover:underline">เปิดเรดาร์</Link>
           <Link href="/glossary" className="text-[#5B8A2A] hover:underline">คำศัพท์</Link>
           <Link href="/learn"  className="text-[#8A8378] hover:underline">← กลับหน้าเรียนรู้</Link>

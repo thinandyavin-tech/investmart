@@ -22,14 +22,14 @@ export default function NotFound() {
             <h1 className="text-xs font-bold uppercase tracking-widest mb-1">
               ไม่พบหน้าที่ต้องการ
             </h1>
-            <p className="text-[10px] text-[#8A8378] leading-relaxed">
+            <p className="text-xs text-[#8A8378] leading-relaxed">
               ลิงก์นี้อาจถูกย้าย ลบ หรือยังไม่ได้สร้างขึ้น
             </p>
           </div>
 
           <Link
             href="/"
-            className="text-[10px] font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="text-xs font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
           >
             ← กลับหน้าหลัก
           </Link>

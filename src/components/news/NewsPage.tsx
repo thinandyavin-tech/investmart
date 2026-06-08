@@ -72,8 +72,8 @@ export function NewsPage() {
     <div className="flex flex-col page-fullheight bg-[#FBF7ED]">
       {/* Header */}
       <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex-shrink-0">
-        <h1 className="text-[11px] font-bold uppercase tracking-widest">ข่าวตลาด · InvestMart</h1>
-        <p className="text-[9px] text-[#8A8378] mt-0.5">ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน</p>
+        <h1 className="text-xs font-bold uppercase tracking-widest">ข่าวตลาด · InvestMart</h1>
+        <p className="text-xs text-[#8A8378] mt-0.5">ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน</p>
       </div>
 
       {/* Industry tabs */}
@@ -83,7 +83,7 @@ export function NewsPage() {
             <button
               key={tab.key}
               onClick={() => handleTab(tab.key)}
-              className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
+              className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
                 activeTab === tab.key
                   ? "bg-[#1F1A14] text-[#F3EDE0]"
                   : "text-[#8A8378] hover:bg-[#E8E2D4] hover:text-[#1F1A14]"
@@ -112,10 +112,10 @@ export function NewsPage() {
 
         {!loading && error && (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <p className="text-[11px] text-[#E5484D]">ไม่สามารถโหลดข่าวได้</p>
+            <p className="text-xs text-[#E5484D]">ไม่สามารถโหลดข่าวได้</p>
             <button
               onClick={() => void loadNews(activeTab)}
-              className="text-[10px] border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="text-xs border border-[#1F1A14] px-3 py-1 hover:bg-[#1F1A14] hover:text-white transition-colors"
             >
               ลองใหม่
             </button>
@@ -124,7 +124,7 @@ export function NewsPage() {
 
         {!loading && !error && articles.length === 0 && (
           <div className="flex items-center justify-center py-16">
-            <p className="text-[11px] text-[#8A8378]">ยังไม่มีข่าวล่าสุดในหมวดนี้</p>
+            <p className="text-xs text-[#8A8378]">ยังไม่มีข่าวล่าสุดในหมวดนี้</p>
           </div>
         )}
 
@@ -168,17 +168,17 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
 
       <div className="flex items-center gap-2 flex-wrap">
         {a.ticker && (
-          <span className="text-[9px] font-bold border border-[#1F1A14] px-1.5 py-0.5 bg-[#F3EDE0]">
+          <span className="text-xs font-bold border border-[#1F1A14] px-1.5 py-0.5 bg-[#F3EDE0]">
             {a.ticker}
           </span>
         )}
-        <span className="text-[9px] text-[#8A8378]">{a.source}</span>
-        <span className="text-[9px] text-[#8A8378]">·</span>
-        <span className="text-[9px] text-[#8A8378]">{timeAgo(a.datetime)}</span>
+        <span className="text-xs text-[#8A8378]">{a.source}</span>
+        <span className="text-xs text-[#8A8378]">·</span>
+        <span className="text-xs text-[#8A8378]">{timeAgo(a.datetime)}</span>
       </div>
 
       {a.summary && (
-        <p className="text-[10px] text-[#8A8378] mt-1.5 leading-relaxed line-clamp-2">
+        <p className="text-xs text-[#8A8378] mt-1.5 leading-relaxed line-clamp-2">
           {a.summary}
         </p>
       )}

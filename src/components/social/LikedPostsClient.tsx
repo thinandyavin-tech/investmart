@@ -66,13 +66,13 @@ export function LikedPostsClient() {
       ) : !user ? (
         <div className="py-12 text-center px-4">
           <p className="text-xs font-bold mb-1">กรุณาเข้าสู่ระบบก่อน</p>
-          <p className="text-[10px] text-[#8A8378]">เข้าสู่ระบบเพื่อดูโพสต์ที่ถูกใจ</p>
+          <p className="text-xs text-[#8A8378]">เข้าสู่ระบบเพื่อดูโพสต์ที่ถูกใจ</p>
         </div>
       ) : posts.length === 0 ? (
         <div className="py-12 text-center px-4">
           <p className="text-sm" aria-hidden="true">♥</p>
           <p className="text-xs font-bold mt-2 mb-1">ยังไม่มีโพสต์ที่ถูกใจ</p>
-          <p className="text-[10px] text-[#8A8378]">กดหัวใจบนโพสต์เพื่อแสดงการสนับสนุน</p>
+          <p className="text-xs text-[#8A8378]">กดหัวใจบนโพสต์เพื่อแสดงการสนับสนุน</p>
         </div>
       ) : (
         <>

@@ -96,6 +96,24 @@ html.dark body {
   background: linear-gradient(90deg, #8B5CF6, #4F46E5, #06B6D4);
 }
 
+/* ── Type scale ─────────────────────────────────────────────────────────────
+   Semantic classes that map intent to size. Use these instead of ad-hoc
+   text-[Npx] so the whole app scales together.
+
+   display  → 2rem   / 700  — hero numbers (portfolio value, big price)
+   heading  → 1.25rem / 700 — page/section heading
+   subhead  → 1rem   / 600  — card heading, stock ticker symbol
+   body     → 0.9375rem     — default readable body text (15px)
+   meta     → 0.8125rem     — secondary info, timestamps, source names
+   label    → 0.6875rem     — uppercase caps labels, badges (11px)
+────────────────────────────────────────────────────────────────────────── */
+.t-display { font-size: 2rem;    font-weight: 700; line-height: 1.1; }
+.t-heading { font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+.t-subhead { font-size: 1rem;    font-weight: 600; line-height: 1.3; }
+.t-body    { font-size: 0.9375rem; line-height: 1.6; }
+.t-meta    { font-size: 0.8125rem; line-height: 1.5; color: var(--link); }
+.t-label   { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
 /* Dense terminal style */
 * {
   box-sizing: border-box;

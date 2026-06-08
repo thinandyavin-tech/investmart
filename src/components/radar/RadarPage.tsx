@@ -53,7 +53,7 @@ function HeatIndicator({ stocks }: { stocks: StockMetrics[] }) {
                                     { label: "↔️ ผสมปนเป",     cls: "bg-slate-50 border-slate-200",  textCls: "text-slate-500" };
 
   return (
-    <div className={`border rounded-lg px-3 py-2 flex items-center justify-between text-[10px] ${heat.cls}`}>
+    <div className={`border rounded-lg px-3 py-2 flex items-center justify-between text-xs ${heat.cls}`}>
       <span className={`font-semibold ${heat.textCls}`}>{heat.label}</span>
       <span className="text-slate-500">
         บวก {bullPct}% · เฉลี่ย{" "}
@@ -81,16 +81,16 @@ function CompareView({ stocks, onClose }: { stocks: StockMetrics[]; onClose: () 
   return (
     <div className="p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-700">เปรียบเทียบหุ้น</h2>
-        <button onClick={onClose} className="text-[10px] font-semibold text-slate-400 hover:text-slate-900">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">เปรียบเทียบหุ้น</h2>
+        <button onClick={onClose} className="text-xs font-semibold text-slate-400 hover:text-slate-900">
           ✕ ปิด
         </button>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-[10px] border-collapse">
+        <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="border-b-2 border-slate-200">
-              <th className="text-left py-1.5 pr-3 text-slate-400 uppercase tracking-wide font-semibold text-[9px]">
+              <th className="text-left py-1.5 pr-3 text-slate-400 uppercase tracking-wide font-semibold text-xs">
                 เมตริก
               </th>
               {stocks.map((s) => (
@@ -103,7 +103,7 @@ function CompareView({ stocks, onClose }: { stocks: StockMetrics[]; onClose: () 
           <tbody>
             {fields.map(({ key, label, fmt }) => (
               <tr key={key} className="border-b border-slate-100">
-                <td className="py-1.5 pr-3 text-slate-500 font-semibold text-[9px] uppercase tracking-wide">
+                <td className="py-1.5 pr-3 text-slate-500 font-semibold text-xs uppercase tracking-wide">
                   {label}
                 </td>
                 {stocks.map((s) => {
@@ -318,12 +318,12 @@ export function RadarPage() {
     return (
       <button
         onClick={() => toggleSort(field)}
-        className={`flex items-center gap-0.5 text-[9px] font-semibold uppercase tracking-wide transition-colors ${
+        className={`flex items-center gap-0.5 text-xs font-semibold uppercase tracking-wide transition-colors ${
           active ? "text-slate-900" : "text-slate-400 hover:text-slate-700"
         }`}
       >
         {label}
-        {active && <span className="text-[8px]">{sortDir === "desc" ? "▼" : "▲"}</span>}
+        {active && <span className="text-xs">{sortDir === "desc" ? "▼" : "▲"}</span>}
       </button>
     );
   }
@@ -335,29 +335,29 @@ export function RadarPage() {
       <div className="flex flex-col gap-4">
         {/* Scan presets */}
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-500">Presets</div>
+          <div className="text-xs font-semibold uppercase tracking-widest mb-2 text-slate-500">Presets</div>
           {PRESETS.map((p) => (
             <button
               key={p.id}
               onClick={() => { applyPreset(p); setSidebarOpen(false); }}
               className="w-full text-left px-2.5 py-2 rounded-lg border border-slate-200 mb-1 hover:bg-slate-50 hover:border-slate-300 transition-colors"
             >
-              <span className="text-[10px] font-semibold text-slate-800">{p.label}</span>
-              <span className="text-[9px] text-slate-400 ml-1.5">{p.desc}</span>
+              <span className="text-xs font-semibold text-slate-800">{p.label}</span>
+              <span className="text-xs text-slate-400 ml-1.5">{p.desc}</span>
             </button>
           ))}
         </div>
 
         {/* Universe */}
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-500">กลุ่มหุ้น</div>
+          <div className="text-xs font-semibold uppercase tracking-widest mb-2 text-slate-500">กลุ่มหุ้น</div>
           {(["SP500", "NASDAQ100", "SET100", "CEO"] as Universe[]).map((u) => {
             const labels: Record<Universe, string> = { SP500: "S&P 500", NASDAQ100: "Nasdaq 100", SET100: "SET 100 🇹🇭", CEO: "CEO Portfolio" };
             return (
               <button
                 key={u}
                 onClick={() => setUniverse(u)}
-                className={`w-full text-left px-2.5 py-1.5 rounded-lg mb-1 text-[10px] font-semibold transition-colors ${
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg mb-1 text-xs font-semibold transition-colors ${
                   universe === u
                     ? "bg-slate-900 text-white"
                     : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
@@ -380,7 +380,7 @@ export function RadarPage() {
         </div>
 
         {/* Progress card */}
-        <div className="border border-slate-200 rounded-xl p-3 bg-white text-[10px]">
+        <div className="border border-slate-200 rounded-xl p-3 bg-white text-xs">
           <div className="flex justify-between mb-1">
             <span className="text-slate-500">สแกนแล้ว</span>
             <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>
@@ -393,7 +393,7 @@ export function RadarPage() {
               style={{ width: scanning ? `${progress}%` : actualScanned > 0 ? `${Math.round((actualScanned / totalScanned) * 100)}%` : "100%" }}
             />
           </div>
-          <div className="text-[9px] text-slate-400">
+          <div className="text-xs text-slate-400">
             {scanning ? `สแกนอยู่… ${scanElapsed}` :
              fromCache ? `แคช · ${lastScanTime}${cacheRefreshing ? " · รีเฟรช" : ""}` :
              `อัพเดท ${lastScanTime}`}
@@ -402,11 +402,11 @@ export function RadarPage() {
 
         {/* Cap size */}
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-500">ขนาดบริษัท</div>
+          <div className="text-xs font-semibold uppercase tracking-widest mb-2 text-slate-500">ขนาดบริษัท</div>
           <select
             value={capSize}
             onChange={(e) => setCapSize(e.target.value as CapSize)}
-            className="w-full border border-slate-200 bg-white rounded-lg text-[10px] px-2 py-1.5 text-slate-700 focus:outline-none focus:border-slate-400"
+            className="w-full border border-slate-200 bg-white rounded-lg text-xs px-2 py-1.5 text-slate-700 focus:outline-none focus:border-slate-400"
           >
             {CAP_OPTIONS.map(({ value, label }) => (
               <option key={value} value={value}>{label}</option>
@@ -416,7 +416,7 @@ export function RadarPage() {
 
         {/* Filters */}
         <div>
-          <label className="flex items-center gap-2 text-[10px] cursor-pointer text-slate-700">
+          <label className="flex items-center gap-2 text-xs cursor-pointer text-slate-700">
             <input
               type="checkbox"
               checked={filterDead}
@@ -429,7 +429,7 @@ export function RadarPage() {
 
         {/* Min score */}
         <div>
-          <div className="flex items-center justify-between text-[10px] mb-2">
+          <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-semibold text-slate-700 uppercase tracking-wide">Min Score</span>
             <span className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>{minScore}</span>
           </div>
@@ -443,13 +443,13 @@ export function RadarPage() {
 
         {/* Timeframe */}
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest mb-2 text-slate-500">ช่วงเวลา</div>
+          <div className="text-xs font-semibold uppercase tracking-widest mb-2 text-slate-500">ช่วงเวลา</div>
           <div className="flex flex-wrap gap-1">
             {TIMEFRAMES.map((tf) => (
               <button
                 key={tf}
                 onClick={() => setTimeframe(tf)}
-                className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-colors ${
+                className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                   timeframe === tf
                     ? "bg-slate-900 text-white"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -488,7 +488,7 @@ export function RadarPage() {
             aria-label="ตั้งค่าการสแกน"
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-700">ตั้งค่าการสแกน</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-700">ตั้งค่าการสแกน</span>
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="text-slate-400 font-bold text-sm hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none rounded"
@@ -507,17 +507,17 @@ export function RadarPage() {
         <div className="border-b border-slate-200 px-3 py-2.5 flex items-center gap-2">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50"
+            className="lg:hidden border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
           >
             ☰ ตั้งค่า
           </button>
-          <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-700 flex-1">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700 flex-1">
             MOMENTUM INTELLIGENCE
           </h2>
           {compareSet.size >= 2 && (
             <button
               onClick={() => setCompareMode(true)}
-              className="text-[9px] font-semibold border border-green-600 rounded-md px-2 py-0.5 text-green-600 hover:bg-green-600 hover:text-white transition-colors"
+              className="text-xs font-semibold border border-green-600 rounded-md px-2 py-0.5 text-green-600 hover:bg-green-600 hover:text-white transition-colors"
             >
               เปรียบเทียบ {compareSet.size}
             </button>
@@ -534,12 +534,12 @@ export function RadarPage() {
         {/* AI summary */}
         {(aiSummary || aiSummaryLoading) && (
           <div className="mx-3 mt-2 border border-white/30 rounded-xl p-3 bg-white/50 backdrop-blur-md">
-            <div className="text-[9px] font-semibold text-green-600 uppercase tracking-wide mb-1">AI SNAPSHOT</div>
+            <div className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">AI SNAPSHOT</div>
             {aiSummaryLoading
               ? <div className="h-3 w-full bg-slate-100 animate-pulse rounded" />
-              : <p className="leading-relaxed text-[10px] text-slate-700">{aiSummary}</p>
+              : <p className="leading-relaxed text-xs text-slate-700">{aiSummary}</p>
             }
-            <p className="text-[8px] text-slate-400 mt-1">เครื่องมือวิจัย · ไม่ใช่คำแนะนำลงทุน</p>
+            <p className="text-xs text-slate-400 mt-1">เครื่องมือวิจัย · ไม่ใช่คำแนะนำลงทุน</p>
           </div>
         )}
 
@@ -549,7 +549,7 @@ export function RadarPage() {
             <button
               key={s}
               onClick={() => setSectorFilter(s)}
-              className={`flex-shrink-0 px-2 py-0.5 text-[9px] font-semibold rounded-md transition-colors ${
+              className={`flex-shrink-0 px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                 sectorFilter === s
                   ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -579,12 +579,12 @@ export function RadarPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ค้นหา ticker หรือชื่อบริษัท"
-            className="w-full border border-slate-200 rounded-lg bg-white text-[10px] px-2.5 py-1.5 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors"
+            className="w-full border border-slate-200 rounded-lg bg-white text-xs px-2.5 py-1.5 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors"
           />
         </div>
 
         {/* Table header */}
-        <div className="px-3 pt-2 pb-1 flex items-center gap-1 border-b border-slate-100 text-[9px] text-slate-400">
+        <div className="px-3 pt-2 pb-1 flex items-center gap-1 border-b border-slate-100 text-xs text-slate-400">
           <span className="w-5" />
           <span className="flex-1 font-semibold uppercase tracking-wide">TICKER</span>
           <SortHeader field="change" label="CHG%" />
@@ -610,11 +610,11 @@ export function RadarPage() {
             </div>
           )}
           {!scanning && scanError && (
-            <div role="alert" className="mx-3 my-4 p-3 border border-[#DC2626] bg-red-50 dark:bg-red-950 text-[11px] text-[#DC2626] flex items-center justify-between gap-3">
+            <div role="alert" className="mx-3 my-4 p-3 border border-[#DC2626] bg-red-50 dark:bg-red-950 text-xs text-[#DC2626] flex items-center justify-between gap-3">
               <span>{scanError}</span>
               <button
                 onClick={() => void runScan(false)}
-                className="text-[10px] font-bold underline whitespace-nowrap hover:no-underline"
+                className="text-xs font-bold underline whitespace-nowrap hover:no-underline"
               >
                 ลองใหม่อีกครั้ง
               </button>
@@ -634,7 +634,7 @@ export function RadarPage() {
                   setMobileDetailOpen(true);
                   setCompareMode(false);
                 }}
-                className="w-full text-left border-b border-slate-100 px-3 py-2.5 flex items-center gap-2 transition-colors"
+                className="w-full text-left border-b border-slate-100 px-3 py-3 flex items-center gap-2.5 transition-colors"
                 style={{
                   background: isSelected ? "#0F172A" : undefined,
                   color:      isSelected ? "#F1F5F9" : "#0F172A",
@@ -643,20 +643,20 @@ export function RadarPage() {
                 onMouseLeave={(e) => { if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = ""; }}
               >
                 {/* Rank */}
-                <span className="text-[9px] w-5 text-right flex-shrink-0 text-slate-400">{i + 1}</span>
+                <span className="text-xs w-5 text-right flex-shrink-0 text-slate-400 font-mono">{i + 1}</span>
 
                 {/* Ticker + info */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <span className="text-[11px] font-bold">{stock.ticker}</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm font-bold font-mono">{stock.ticker}</span>
                     {stock.isNew && (
-                      <span className="text-[7px] font-bold px-1 py-0.5 rounded-sm" style={{ background: "#FF3D9A", color: "#fff" }}>NEW</span>
+                      <span className="text-[10px] font-bold px-1 py-0.5 rounded" style={{ background: "#FF3D9A", color: "#fff" }}>NEW</span>
                     )}
-                    {i === 0 && <span className="text-[10px]">🔥</span>}
+                    {i === 0 && <span className="text-sm">🔥</span>}
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     <span
-                      className="text-[8px] px-1 rounded-sm"
+                      className="text-xs px-1.5 py-0.5 rounded-md"
                       style={{
                         background: isSelected ? "#1E293B" : "#F1F5F9",
                         color:      isSelected ? "#94A3B8" : "#64748B",
@@ -665,24 +665,24 @@ export function RadarPage() {
                       {stock.sector}
                     </span>
                     <span
-                      className="text-[9px] truncate"
+                      className="text-xs truncate"
                       style={{ color: isSelected ? "#94A3B8" : "#64748B" }}
                     >
-                      {stock.companyName !== stock.ticker ? stock.companyName.slice(0, 16) : ""}
+                      {stock.companyName !== stock.ticker ? stock.companyName.slice(0, 18) : ""}
                     </span>
                   </div>
                 </div>
 
                 {/* Change */}
                 <span
-                  className="text-[10px] font-bold w-12 text-right flex-shrink-0"
+                  className="text-sm font-bold w-14 text-right flex-shrink-0 font-mono"
                   style={{ color: stock.change1D >= 0 ? "#16A34A" : "#DC2626" }}
                 >
                   {stock.change1D >= 0 ? "+" : ""}{stock.change1D.toFixed(2)}%
                 </span>
 
                 {/* Volume */}
-                <span className="text-[9px] w-8 text-right flex-shrink-0 text-slate-400">
+                <span className="text-xs w-8 text-right flex-shrink-0 text-slate-400 font-mono">
                   {stock.volumeSurge.toFixed(1)}x
                 </span>
 
@@ -705,7 +705,7 @@ export function RadarPage() {
 
         {/* Mobile footer stats */}
         {!scanning && stocks.length > 0 && (
-          <div className="lg:hidden border-t border-slate-200 px-3 py-2 flex gap-3 text-[9px] text-slate-500">
+          <div className="lg:hidden border-t border-slate-200 px-3 py-2 flex gap-3 text-xs text-slate-500">
             <span>แสดง <b className="text-slate-800">{sortedFiltered.length}</b></span>
             <span>สแกน <b className="text-slate-800">{actualScanned || totalScanned}/{totalScanned}</b></span>
             {fromCache && <span className="text-green-600 font-semibold">แคช</span>}
@@ -735,7 +735,7 @@ export function RadarPage() {
             style={{ maxHeight: "88vh" }}
           >
             <div className="sticky top-0 bg-white border-b border-slate-100 px-3 py-2.5 flex items-center justify-between z-10">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-800">{selected.ticker}</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-800">{selected.ticker}</span>
               <button
                 onClick={() => setMobileDetailOpen(false)}
                 className="text-slate-400 font-bold text-sm hover:text-slate-900"

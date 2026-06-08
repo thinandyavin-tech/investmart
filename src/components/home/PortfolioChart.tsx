@@ -104,13 +104,13 @@ export function PortfolioChart() {
         style={{ border: "2px dashed #5B8A2A" }}
       >
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5B8A2A]">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#5B8A2A]">
             กราฟพอร์ตโฟลิโอ
           </h2>
-          <span className="text-[9px] text-[#8A8378]">พอร์ตจำลอง</span>
+          <span className="text-xs text-[#8A8378]">พอร์ตจำลอง</span>
         </div>
         <div className="h-16 flex items-center justify-center border border-dashed border-[#5B8A2A]">
-          <span className="text-[9px] text-[#8A8378]">กราฟจะแสดงหลังจากซื้อขายครั้งแรก</span>
+          <span className="text-xs text-[#8A8378]">กราฟจะแสดงหลังจากซื้อขายครั้งแรก</span>
         </div>
       </div>
     );
@@ -127,11 +127,11 @@ export function PortfolioChart() {
   return (
     <div className="bg-[#F3EDE0] p-3" style={{ border: "2px dashed #5B8A2A" }}>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#5B8A2A]">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#5B8A2A]">
           กราฟพอร์ตโฟลิโอ
         </h2>
         <span
-          className="text-[9px] font-bold"
+          className="text-xs font-bold"
           style={{ fontFamily: "var(--font-mono)", color: positive ? "#5B8A2A" : "#DC2626" }}
         >
           {positive ? "+" : ""}{pnlPct.toFixed(2)}% vs เริ่มต้น
@@ -140,7 +140,7 @@ export function PortfolioChart() {
       <div className="text-xs font-bold mb-1" style={{ fontFamily: "var(--font-mono)" }}>
         ฿{Math.round(latest).toLocaleString("th-TH")}
         <span
-          className="text-[9px] ml-2"
+          className="text-xs ml-2"
           style={{ color: change >= 0 ? "#5B8A2A" : "#DC2626" }}
         >
           {change >= 0 ? "+" : ""}{changePct.toFixed(2)}% ช่วงนี้

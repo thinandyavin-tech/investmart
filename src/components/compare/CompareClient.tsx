@@ -79,7 +79,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 pb-24">
-      <Link href="/" className="text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors mb-4 block">
+      <Link href="/" className="text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors mb-4 block">
         ← กลับหน้าหลัก
       </Link>
       <h1 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14] mb-4">เทียบหุ้น</h1>
@@ -110,7 +110,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
       {tickers.length > 0 && (
         <div className="flex gap-2 flex-wrap mb-6">
           {tickers.map((t) => (
-            <span key={t} className="flex items-center gap-1.5 px-3 py-1 bg-[#1F1A14] text-white text-[11px] font-bold">
+            <span key={t} className="flex items-center gap-1.5 px-3 py-1 bg-[#1F1A14] text-white text-xs font-bold">
               <Link href={`/stock/${t}`} className="hover:underline font-mono">{t}</Link>
               <button
                 onClick={() => setTickers((prev) => prev.filter((x) => x !== t))}
@@ -124,7 +124,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
           {tickers.length > 1 && (
             <button
               onClick={() => setTickers([])}
-              className="text-[10px] text-[#8A8378] hover:text-[#1F1A14] transition-colors px-2 py-1 border border-[#E8E2D4]"
+              className="text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors px-2 py-1 border border-[#E8E2D4]"
             >
               ล้างทั้งหมด
             </button>
@@ -132,12 +132,12 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
         </div>
       )}
 
-      {error && <p className="text-[10px] text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-xs text-red-500 mb-4">{error}</p>}
 
       {tickers.length === 0 && !loading && (
         <p className="text-xs text-[#8A8378] mt-12 text-center leading-relaxed">
           เพิ่มหุ้นอย่างน้อย 1 ตัวเพื่อเริ่มเปรียบเทียบ<br />
-          <span className="text-[10px]">รองรับสูงสุด {MAX} ตัวพร้อมกัน</span>
+          <span className="text-xs">รองรับสูงสุด {MAX} ตัวพร้อมกัน</span>
         </p>
       )}
 
@@ -155,7 +155,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
               <thead>
                 <tr style={{ background: "#1F1A14" }}>
                   <th
-                    className="sticky left-0 px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-[#C8C0B0]"
+                    className="sticky left-0 px-3 py-3 text-xs font-bold uppercase tracking-widest text-[#C8C0B0]"
                     style={{ background: "#1F1A14", minWidth: 160 }}
                   >
                     ตัวชี้วัด
@@ -163,10 +163,10 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
                   {(loading ? tickers : rows.map((r) => r.ticker)).map((t) => {
                     const name = rows.find((r) => r.ticker === t)?.name;
                     return (
-                      <th key={t} className="px-4 py-3 text-[11px] font-bold text-white" style={{ minWidth: 180 }}>
+                      <th key={t} className="px-4 py-3 text-xs font-bold text-white" style={{ minWidth: 180 }}>
                         <Link href={`/stock/${t}`} className="font-mono hover:underline">{t}</Link>
                         {name && (
-                          <div className="text-[9px] font-normal text-[#8A8378] truncate max-w-[160px] mt-0.5">
+                          <div className="text-xs font-normal text-[#8A8378] truncate max-w-[160px] mt-0.5">
                             {name}
                           </div>
                         )}
@@ -188,8 +188,8 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
                             className="sticky left-0 px-3 py-2.5 border-b border-[#E8E2D4]"
                             style={{ background: bg }}
                           >
-                            <div className="text-[10px] font-semibold text-[#1F1A14]">{m.label}</div>
-                            {m.sublabel && <div className="text-[9px] text-[#8A8378]">{m.sublabel}</div>}
+                            <div className="text-xs font-semibold text-[#1F1A14]">{m.label}</div>
+                            {m.sublabel && <div className="text-xs text-[#8A8378]">{m.sublabel}</div>}
                           </td>
                           {rows.map((row) => (
                             <td key={row.ticker} className="px-4 py-2.5 border-b border-[#E8E2D4]">
@@ -223,7 +223,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
         </>
       )}
 
-      <p className="text-[8px] text-[#8A8378] mt-6 text-center">
+      <p className="text-xs text-[#8A8378] mt-6 text-center">
         ข้อมูลจาก Finnhub · แคชทุก 5 นาที · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>

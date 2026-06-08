@@ -28,7 +28,7 @@ export function MarketStatusBanner() {
       aria-atomic="true"
     >
       <span
-        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase text-white"
+        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-widest uppercase text-white"
         style={{ background: color }}
       >
         <span
@@ -39,11 +39,11 @@ export function MarketStatusBanner() {
         {info.statusThai}
       </span>
 
-      <span className="text-[11px] text-slate-500">ตลาดหุ้นสหรัฐ (ET)</span>
+      <span className="text-xs text-slate-500">ตลาดหุ้นสหรัฐ (ET)</span>
 
       {info.secsToChange !== null && (
         <span
-          className="ml-auto text-[11px] font-bold"
+          className="ml-auto text-xs font-bold"
           style={{ fontFamily: "var(--font-mono)", color }}
         >
           {formatCountdown(info.secsToChange)}{" "}
@@ -52,7 +52,7 @@ export function MarketStatusBanner() {
       )}
 
       {info.secsToChange === null && (
-        <span className="ml-auto text-[10px] text-slate-500">{info.nextEventThai}</span>
+        <span className="ml-auto text-xs text-slate-500">{info.nextEventThai}</span>
       )}
     </div>
   );

@@ -22,7 +22,7 @@ export function Chg({ v }: { v: number | null }) {
   if (v == null) return <span className="text-[#8A8378]">—</span>;
   const pos = v >= 0;
   return (
-    <span className={`font-mono text-[11px] font-bold ${pos ? "text-green-600" : "text-red-500"}`}>
+    <span className={`font-mono text-xs font-bold ${pos ? "text-green-600" : "text-red-500"}`}>
       {pos ? "+" : ""}{v.toFixed(2)}%
     </span>
   );
@@ -39,7 +39,7 @@ export function RangeBar({ price, low, high }: { price: number | null; low: numb
           style={{ left: `${pct * 100}%` }}
         />
       </div>
-      <div className="flex justify-between text-[9px] text-[#8A8378] mt-0.5 w-28">
+      <div className="flex justify-between text-xs text-[#8A8378] mt-0.5 w-28">
         <span>${low.toFixed(0)}</span>
         <span>${high.toFixed(0)}</span>
       </div>
@@ -56,12 +56,12 @@ export function MobileCard({ row, metrics }: { row: CompareRow; metrics: MetricD
         <Link href={`/stock/${row.ticker}`} className="font-bold text-sm text-[#1F1A14] hover:underline font-mono">
           {row.ticker}
         </Link>
-        <span className="text-[10px] text-[#8A8378] truncate max-w-[180px]">{row.name}</span>
+        <span className="text-xs text-[#8A8378] truncate max-w-[180px]">{row.name}</span>
       </div>
       <div className="space-y-2.5">
         {metrics.map((m) => (
           <div key={m.id} className="flex items-start justify-between gap-3">
-            <span className="text-[10px] text-[#8A8378] flex-shrink-0">{m.label}</span>
+            <span className="text-xs text-[#8A8378] flex-shrink-0">{m.label}</span>
             <span className="text-right">{m.cell(row)}</span>
           </div>
         ))}
@@ -119,7 +119,7 @@ export const METRICS: MetricDef[] = [
       return (
         <span>
           <span className="font-mono text-xs">{row.beta.toFixed(2)}</span>
-          <span className={`ml-1 text-[9px] ${color}`}>{label}</span>
+          <span className={`ml-1 text-xs ${color}`}>{label}</span>
         </span>
       );
     },
@@ -133,7 +133,7 @@ export const METRICS: MetricDef[] = [
       return (
         <span>
           <span className="font-mono text-xs font-bold">{row.rsi}</span>
-          <span className={`ml-1 text-[9px] ${color}`}>{label}</span>
+          <span className={`ml-1 text-xs ${color}`}>{label}</span>
         </span>
       );
     },

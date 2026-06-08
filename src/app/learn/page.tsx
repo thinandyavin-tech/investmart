@@ -40,7 +40,7 @@ export default function LearnPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-6">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest mb-1">เรียนรู้</h1>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed max-w-prose">
+          <p className="text-xs text-[#8A8378] leading-relaxed max-w-prose">
             ทุกอย่างในนี้เขียนขึ้นโดยตรงจากวิธีที่ InvestMart ทำงาน ไม่ใช่คัดลอกมาจากที่อื่น
             เป้าหมายคือให้คุณเข้าใจว่าแอปทำอะไร ทำไม่ได้อะไร และควรระวังอะไร
           </p>
@@ -53,11 +53,11 @@ export default function LearnPage() {
                 <span className="text-2xl flex-shrink-0">{s.icon}</span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <h2 className="text-[11px] font-bold text-[#1F1A14] dark:text-slate-100">
+                    <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100">
                       {s.title}
                     </h2>
                     <span
-                      className="text-[8px] font-bold px-1.5 py-0.5 rounded"
+                      className="text-xs font-bold px-1.5 py-0.5 rounded"
                       style={{
                         background: (s as { tagColor?: string }).tagColor ? "#FEE2E2" : "#F0FAE8",
                         color:      (s as { tagColor?: string }).tagColor ?? "#5B8A2A",
@@ -66,7 +66,7 @@ export default function LearnPage() {
                       {s.tag}
                     </span>
                   </div>
-                  <p className="text-[10px] text-[#8A8378] leading-relaxed">{s.desc}</p>
+                  <p className="text-xs text-[#8A8378] leading-relaxed">{s.desc}</p>
                 </div>
                 <span className="text-[#8A8378] flex-shrink-0 group-hover:text-[#1F1A14] transition-colors" aria-hidden="true">→</span>
               </Card>
@@ -74,7 +74,7 @@ export default function LearnPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 text-[10px] pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
           <Link href="/faq"     className="text-[#5B8A2A] hover:underline">คำถามที่พบบ่อย (FAQ)</Link>
           <Link href="/about"   className="text-[#8A8378] hover:underline">เกี่ยวกับ InvestMart</Link>
           <Link href="/"        className="text-[#8A8378] hover:underline">กลับหน้าหลัก</Link>

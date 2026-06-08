@@ -60,9 +60,9 @@ export default function MailPage() {
         </div>
 
         {loading ? (
-          <div className="text-[10px] text-[#8A8378] text-center py-8">กำลังโหลด...</div>
+          <div className="text-xs text-[#8A8378] text-center py-8">กำลังโหลด...</div>
         ) : error ? (
-          <div className="text-[10px] text-red-600 text-center py-8">{error}</div>
+          <div className="text-xs text-red-600 text-center py-8">{error}</div>
         ) : notifications.length === 0 ? (
           <Card className="p-4 text-center">
             <p className="text-xs text-[#8A8378]">ยังไม่มีการแจ้งเตือน</p>
@@ -77,7 +77,7 @@ export default function MailPage() {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs">{n.message}</p>
-                    <p className="text-[10px] text-[#8A8378] mt-0.5">
+                    <p className="text-xs text-[#8A8378] mt-0.5">
                       {new Date(n.createdAt).toLocaleString("th-TH")}
                     </p>
                   </div>

@@ -84,22 +84,22 @@ export default function ProfileSharePage() {
       <div className="max-w-sm mx-auto px-4 py-6 flex flex-col gap-4">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest mb-1">แชร์โปรไฟล์</h1>
-          <p className="text-[10px] text-[#8A8378]">คัดลอกข้อมูลพอร์ตเพื่อแชร์ให้เพื่อน</p>
+          <p className="text-xs text-[#8A8378]">คัดลอกข้อมูลพอร์ตเพื่อแชร์ให้เพื่อน</p>
         </div>
 
         <Card className="p-4" style={{ fontFamily: "var(--font-mono)" }}>
           <div className="border-b border-[#E8E2D4] pb-3 mb-3">
             <p className="text-xs font-bold">{displayName}</p>
-            {handle && <p className="text-[9px] text-[#8A8378]">{handle}</p>}
+            {handle && <p className="text-xs text-[#8A8378]">{handle}</p>}
           </div>
 
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-[9px] text-[#8A8378] uppercase tracking-widest">มูลค่าพอร์ต</span>
+              <span className="text-xs text-[#8A8378] uppercase tracking-widest">มูลค่าพอร์ต</span>
               <span className="text-sm font-bold">฿{Math.round(totalThb).toLocaleString("th-TH")}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[9px] text-[#8A8378] uppercase tracking-widest">P&L</span>
+              <span className="text-xs text-[#8A8378] uppercase tracking-widest">P&L</span>
               <span
                 className="text-sm font-bold"
                 style={{ color: pnlPos ? "#5B8A2A" : "#DC2626" }}
@@ -109,24 +109,24 @@ export default function ProfileSharePage() {
             </div>
             {rank !== null && (
               <div className="flex justify-between items-center">
-                <span className="text-[9px] text-[#8A8378] uppercase tracking-widest">อันดับ</span>
+                <span className="text-xs text-[#8A8378] uppercase tracking-widest">อันดับ</span>
                 <span className="text-sm font-bold">#{rank}</span>
               </div>
             )}
             <div className="flex justify-between items-center">
-              <span className="text-[9px] text-[#8A8378] uppercase tracking-widest">หุ้น / เทรด</span>
+              <span className="text-xs text-[#8A8378] uppercase tracking-widest">หุ้น / เทรด</span>
               <span className="text-xs">{user?.holdings.length ?? 0} ตัว / {user?.tradeCount ?? 0} ครั้ง</span>
             </div>
             {topHolding && (
               <div className="flex justify-between items-center">
-                <span className="text-[9px] text-[#8A8378] uppercase tracking-widest">Top holding</span>
+                <span className="text-xs text-[#8A8378] uppercase tracking-widest">Top holding</span>
                 <span className="text-xs font-bold">{topHolding.ticker}</span>
               </div>
             )}
           </div>
 
           <div className="mt-3 pt-3 border-t border-[#E8E2D4]">
-            <p className="text-[9px] text-[#8A8378] text-center">investmart.vercel.app</p>
+            <p className="text-xs text-[#8A8378] text-center">investmart.vercel.app</p>
           </div>
         </Card>
 
@@ -134,7 +134,7 @@ export default function ProfileSharePage() {
           {copied ? "✓ คัดลอกแล้ว!" : "คัดลอกข้อมูล"}
         </OffsetButton>
 
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           ข้อมูลพอร์ตจำลอง · ไม่ใช่คำแนะนำการลงทุน
         </p>
       </div>

@@ -45,7 +45,7 @@ function ExchangeBadge({ exchange }: { exchange: string }) {
     exchange === "NYSE"   ? "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300" :
                             "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400";
   return (
-    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${cls} flex-shrink-0`}>
+    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${cls} flex-shrink-0`}>
       {exchange}
     </span>
   );
@@ -209,7 +209,7 @@ export function SearchClient() {
               aria-expanded={showDropdown}
             />
             {suggLoading && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 dark:text-slate-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 dark:text-slate-500">
                 ●
               </span>
             )}
@@ -233,7 +233,7 @@ export function SearchClient() {
             className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden max-h-72 overflow-y-auto"
           >
             {query.length === 0 && recent.length > 0 && (
-              <li className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+              <li className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
                 ค้นหาล่าสุด
               </li>
             )}
@@ -265,7 +265,7 @@ export function SearchClient() {
                     <button
                       type="button"
                       onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); router.push(`/compare?tickers=${s.ticker}`); }}
-                      className="text-[9px] text-violet-500 dark:text-violet-400 hover:underline"
+                      className="text-xs text-violet-500 dark:text-violet-400 hover:underline"
                       aria-label={`เทียบหุ้น ${s.ticker}`}
                       tabIndex={-1}
                     >
@@ -274,7 +274,7 @@ export function SearchClient() {
                     <button
                       type="button"
                       onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); router.push(`/stock/${s.ticker}`); }}
-                      className="text-[9px] text-emerald-600 dark:text-emerald-400 hover:underline"
+                      className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
                       aria-label={`เปิดหน้าหุ้น ${s.ticker}`}
                       tabIndex={-1}
                     >

@@ -49,13 +49,13 @@ export function ComposePageClient() {
       ) : published ? (
         <div className="border border-[#5B8A2A] bg-[#F3EDE0] p-6 text-center">
           <p className="text-xs font-bold text-[#5B8A2A]">โพสต์สำเร็จ ✓</p>
-          <p className="text-[10px] text-[#8A8378] mt-1">กำลังไปที่โปรไฟล์...</p>
+          <p className="text-xs text-[#8A8378] mt-1">กำลังไปที่โปรไฟล์...</p>
         </div>
       ) : (
         <PostComposer onPublished={handlePublished} />
       )}
 
-      <p className="text-[9px] text-[#8A8378] mt-3 text-center">
+      <p className="text-xs text-[#8A8378] mt-3 text-center">
         ข้อความล้วน · ไม่มีรูป · ไม่มีวิดีโอ · ไม่มีอีโมจิ — มีแต่ความคิด
       </p>
     </div>

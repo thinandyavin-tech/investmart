@@ -40,21 +40,21 @@ export function WhyMovingCard({ ticker }: WhyMovingCardProps) {
         variant="black"
         size="sm"
         onClick={() => void load()}
-        className="text-[10px]"
+        className="text-xs"
       >
         {loading ? "กำลังวิเคราะห์..." : shown ? "▲ ซ่อน" : "▶ ทำไมราคาถึงเปลี่ยน?"}
       </OffsetButton>
 
       {error && (
-        <p className="text-[9px] text-[#DC2626]">{error}</p>
+        <p className="text-xs text-[#DC2626]">{error}</p>
       )}
 
       {shown && reason && (
         <Card className="p-3 border-l-4" style={{ borderLeftColor: "#5B8A2A" }}>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed mb-1 uppercase tracking-widest font-bold">
+          <p className="text-xs text-[#8A8378] leading-relaxed mb-1 uppercase tracking-widest font-bold">
             AI วิเคราะห์
           </p>
-          <p className="text-[11px] leading-relaxed">{reason}</p>
+          <p className="text-xs leading-relaxed">{reason}</p>
         </Card>
       )}
     </div>

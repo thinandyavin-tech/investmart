@@ -61,18 +61,18 @@ export function OnboardingModal() {
         <div className="p-4 flex flex-col gap-3">
           <div>
             <h2 className="text-sm font-bold mb-1">ยินดีต้อนรับสู่ InvestMart</h2>
-            <p className="text-[10px] text-[#8A8378] leading-relaxed">
+            <p className="text-xs text-[#8A8378] leading-relaxed">
               โซเชียลมีเดียหุ้นอเมริกา พร้อม simulator ฝึกเทรดโดยไม่ใช้เงินจริง
             </p>
           </div>
 
           <div className="border border-dashed border-[#5B8A2A] bg-[#F8FDF2] p-3 flex flex-col gap-1.5">
-            <p className="text-[10px] font-bold text-[#5B8A2A] uppercase tracking-widest">พอร์ตเริ่มต้นของคุณ</p>
+            <p className="text-xs font-bold text-[#5B8A2A] uppercase tracking-widest">พอร์ตเริ่มต้นของคุณ</p>
             <p className="text-2xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>฿1,250,000</p>
-            <p className="text-[9px] text-[#8A8378]">เงินจำลอง · ไม่ใช่เงินจริง · ใช้ฝึกกลยุทธ์ได้เต็มที่</p>
+            <p className="text-xs text-[#8A8378]">เงินจำลอง · ไม่ใช่เงินจริง · ใช้ฝึกกลยุทธ์ได้เต็มที่</p>
           </div>
 
-          <div className="flex flex-col gap-1.5 text-[10px]">
+          <div className="flex flex-col gap-1.5 text-xs">
             {[
               { icon: "📡", text: "สแกนหุ้น momentum สูงจาก S&P 500 และ NASDAQ ด้วยเรดาร์" },
               { icon: "🤖", text: "วิเคราะห์หุ้นด้วย AI ใน 30 สไตล์การลงทุน" },
@@ -88,12 +88,12 @@ export function OnboardingModal() {
 
           <div className="flex gap-2 pt-1">
             <Link href="/radar" onClick={dismiss} className="flex-1">
-              <OffsetButton variant="lime" className="w-full text-center text-[11px]">
+              <OffsetButton variant="lime" className="w-full text-center text-xs">
                 📡 เริ่มสแกนหุ้น
               </OffsetButton>
             </Link>
             <Link href="/glossary" onClick={dismiss} className="flex-1">
-              <OffsetButton variant="black" className="w-full text-center text-[11px]">
+              <OffsetButton variant="black" className="w-full text-center text-xs">
                 📖 คำศัพท์
               </OffsetButton>
             </Link>
@@ -101,7 +101,7 @@ export function OnboardingModal() {
 
           <button
             onClick={dismiss}
-            className="text-[9px] text-[#8A8378] underline text-center"
+            className="text-xs text-[#8A8378] underline text-center"
           >
             ปิด · ไม่แสดงอีก
           </button>

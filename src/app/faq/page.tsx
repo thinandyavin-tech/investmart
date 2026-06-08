@@ -64,7 +64,7 @@ export default function FaqPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest mb-1">คำถามที่พบบ่อย</h1>
-          <p className="text-[10px] text-[#8A8378]">
+          <p className="text-xs text-[#8A8378]">
             คำตอบตรงไปตรงมา ไม่มีการพูดคลุมเครือ
           </p>
         </div>
@@ -72,13 +72,13 @@ export default function FaqPage() {
         <div className="flex flex-col gap-3">
           {FAQS.map(({ q, a }) => (
             <Card key={q} className="p-4 flex flex-col gap-2">
-              <h2 className="text-[11px] font-bold text-[#1F1A14] dark:text-slate-100 leading-snug">
+              <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100 leading-snug">
                 {q}
               </h2>
               <div className="flex flex-col gap-1.5">
                 {a.split("\n").map((line, i) =>
                   line.trim()
-                    ? <p key={i} className="text-[10px] text-[#8A8378] leading-relaxed">{line}</p>
+                    ? <p key={i} className="text-xs text-[#8A8378] leading-relaxed">{line}</p>
                     : null,
                 )}
               </div>
@@ -86,7 +86,7 @@ export default function FaqPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 text-[10px] pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
           <Link href="/learn"    className="text-[#5B8A2A] hover:underline">เรียนรู้เพิ่มเติม</Link>
           <Link href="/privacy"  className="text-[#5B8A2A] hover:underline">นโยบายความเป็นส่วนตัว</Link>
           <Link href="/terms"    className="text-[#5B8A2A] hover:underline">ข้อกำหนดการใช้งาน</Link>

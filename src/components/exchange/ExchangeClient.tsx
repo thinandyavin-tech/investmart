@@ -83,7 +83,7 @@ export function ExchangeClient() {
         />
       )}
       <h1 className="text-xs font-bold uppercase tracking-widest mb-1">แลกเปลี่ยนเงิน · Exchange</h1>
-      <p className="text-[10px] text-[#8A8378] mb-4">
+      <p className="text-xs text-[#8A8378] mb-4">
         อัตราโดยประมาณ · แหล่งข้อมูล: <span className="font-bold">{source || "..."}</span>
       </p>
 
@@ -91,13 +91,13 @@ export function ExchangeClient() {
       {user && (
         <div className="flex gap-2 mb-3">
           <Card className="p-2 flex-1 text-center">
-            <div className="text-[9px] text-[#8A8378] uppercase tracking-wide">THB</div>
+            <div className="text-xs text-[#8A8378] uppercase tracking-wide">THB</div>
             <div className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               ฿{user.cashThb.toLocaleString("th-TH")}
             </div>
           </Card>
           <Card className="p-2 flex-1 text-center">
-            <div className="text-[9px] text-[#8A8378] uppercase tracking-wide">USD</div>
+            <div className="text-xs text-[#8A8378] uppercase tracking-wide">USD</div>
             <div className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               ${user.cashUsd.toFixed(2)}
             </div>
@@ -108,7 +108,7 @@ export function ExchangeClient() {
       <Card className="p-4 flex flex-col gap-3">
         <div className="flex gap-2">
           <div className="flex-1">
-            <label className="text-[10px] text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-amount">
+            <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-amount">
               จำนวน
             </label>
             <input
@@ -122,7 +122,7 @@ export function ExchangeClient() {
             />
           </div>
           <div>
-            <label className="text-[10px] text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-currency">
+            <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-currency">
               จาก
             </label>
             <select
@@ -150,16 +150,16 @@ export function ExchangeClient() {
 
         <div className="flex gap-2 items-end">
           <div className="flex-1">
-            <div className="text-[10px] text-[#8A8378] uppercase tracking-wide mb-1">ผลลัพธ์</div>
+            <div className="text-xs text-[#8A8378] uppercase tracking-wide mb-1">ผลลัพธ์</div>
             <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               {loading ? "..." : result.toLocaleString("en-US", { maximumFractionDigits: 2 })}
             </div>
-            <div className="text-[9px] text-[#8A8378] mt-0.5">
+            <div className="text-xs text-[#8A8378] mt-0.5">
               1 {fromCurrency} = {rate.toFixed(4)} {toCurrency}
             </div>
           </div>
           <div>
-            <label className="text-[10px] text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="to-currency">
+            <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="to-currency">
               เป็น
             </label>
             <select
@@ -190,20 +190,20 @@ export function ExchangeClient() {
 
         {msg && (
           <p
-            className="text-[10px] font-bold text-center"
+            className="text-xs font-bold text-center"
             style={{ color: msg.includes("✓") ? "#5B8A2A" : "#E5484D" }}
           >
             {msg}
           </p>
         )}
-        <p className="text-[9px] text-[#8A8378] text-center">
+        <p className="text-xs text-[#8A8378] text-center">
           อัตราแลกเปลี่ยนโดยประมาณ
         </p>
       </Card>
 
       {/* Rate table */}
       <Card className="mt-4 overflow-hidden">
-        <div className="px-3 py-2 border-b border-[#1F1A14] text-[10px] font-bold uppercase tracking-wide bg-[#1F1A14] text-[#F3EDE0]">
+        <div className="px-3 py-2 border-b border-[#1F1A14] text-xs font-bold uppercase tracking-wide bg-[#1F1A14] text-[#F3EDE0]">
           อัตราแลกเปลี่ยน (base USD)
         </div>
         {Object.entries(rates)

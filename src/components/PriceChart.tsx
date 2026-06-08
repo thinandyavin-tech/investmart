@@ -419,12 +419,12 @@ export function PriceChart({
   return (
     <div className="relative border border-slate-200 bg-white overflow-hidden" style={{ height }}>
       {simulated && (
-        <div className="absolute top-1 right-1 text-[8px] px-1.5 py-0.5 z-10 bg-rose-50 text-rose-600 rounded font-medium">
+        <div className="absolute top-1 right-1 text-xs px-1.5 py-0.5 z-10 bg-rose-50 text-rose-600 rounded font-medium">
           simulated
         </div>
       )}
       {candles.length < 2 && (
-        <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-400 z-10">
+        <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-400 z-10">
           {candles.length === 0 ? "กำลังโหลด..." : "ไม่มีข้อมูลกราฟ"}
         </div>
       )}

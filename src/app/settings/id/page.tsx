@@ -64,7 +64,7 @@ export default function SettingsIdPage() {
 
         <Card className="p-4 flex flex-col gap-3">
           <div>
-            <p className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5">User ID (ถาวร)</p>
+            <p className="text-xs text-[#8A8378] uppercase tracking-wide mb-0.5">User ID (ถาวร)</p>
             <p
               className="text-xs font-bold break-all"
               style={{ fontFamily: "var(--font-mono)" }}
@@ -74,7 +74,7 @@ export default function SettingsIdPage() {
           </div>
 
           <div className="border-t border-[#E8E2D4] pt-3">
-            <p className="text-[9px] text-[#8A8378] uppercase tracking-wide mb-0.5">Username ปัจจุบัน</p>
+            <p className="text-xs text-[#8A8378] uppercase tracking-wide mb-0.5">Username ปัจจุบัน</p>
             <p className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               {user.username ? `@${user.username}` : "ยังไม่ได้ตั้ง"}
             </p>
@@ -82,19 +82,19 @@ export default function SettingsIdPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest">
+          <h2 className="text-xs font-bold uppercase tracking-widest">
             {user.username ? "เปลี่ยน Username" : "ตั้ง Username"}
           </h2>
-          <p className="text-[9px] text-[#8A8378] leading-relaxed">
+          <p className="text-xs text-[#8A8378] leading-relaxed">
             3-30 ตัวอักษร · ใช้ a-z, A-Z, 0-9, _ เท่านั้น · ไม่มีช่องว่าง
           </p>
 
           <div>
-            <label className="block text-[9px] text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="username-input">
+            <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="username-input">
               Username ใหม่
             </label>
             <div className="flex items-center border border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
-              <span className="px-2 text-[10px] text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
+              <span className="px-2 text-xs text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
               <input
                 id="username-input"
                 type="text"
@@ -121,7 +121,7 @@ export default function SettingsIdPage() {
 
           {msg && (
             <p
-              className="text-[10px] font-bold text-center"
+              className="text-xs font-bold text-center"
               style={{ color: msg.includes("✓") ? "#5B8A2A" : "#DC2626" }}
               role="status"
               aria-live="polite"
@@ -132,8 +132,8 @@ export default function SettingsIdPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest">Onboarding</h2>
-          <p className="text-[9px] text-[#8A8378]">เล่น flow แนะนำแอปใหม่อีกครั้ง</p>
+          <h2 className="text-xs font-bold uppercase tracking-widest">Onboarding</h2>
+          <p className="text-xs text-[#8A8378]">เล่น flow แนะนำแอปใหม่อีกครั้ง</p>
           <OffsetButton
             variant="white"
             size="sm"

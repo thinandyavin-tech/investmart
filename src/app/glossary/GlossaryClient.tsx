@@ -169,7 +169,7 @@ export function GlossaryClient() {
           />
         </div>
         {q.trim() && (
-          <p className="mt-1 text-[9px] text-[#8A8378]">
+          <p className="mt-1 text-xs text-[#8A8378]">
             พบ {filtered.length} รายการ
           </p>
         )}
@@ -181,7 +181,7 @@ export function GlossaryClient() {
       ) : (
         categories.map((cat) => (
           <section key={cat}>
-            <h2 className="text-[9px] font-bold uppercase tracking-widest text-[#8A8378] mb-2 border-b border-[#E8E2D4] pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2 border-b border-[#E8E2D4] pb-1">
               {cat}
             </h2>
             <div className="flex flex-col gap-2">
@@ -192,12 +192,12 @@ export function GlossaryClient() {
                   className="p-3 scroll-mt-4"
                 >
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
-                    <span className="font-bold text-[11px] text-[#1F1A14] dark:text-slate-100">{term.th}</span>
-                    <span className="text-[9px] text-[#8A8378]">{term.en}</span>
+                    <span className="font-bold text-xs text-[#1F1A14] dark:text-slate-100">{term.th}</span>
+                    <span className="text-xs text-[#8A8378]">{term.en}</span>
                   </div>
-                  <p className="text-[10px] text-[#8A8378] dark:text-slate-400 leading-relaxed">{term.body}</p>
+                  <p className="text-xs text-[#8A8378] dark:text-slate-400 leading-relaxed">{term.body}</p>
                   {term.example && (
-                    <p className="mt-1.5 text-[9px] text-[#5B8A2A] dark:text-emerald-400 leading-relaxed border-l-2 border-[#5B8A2A] dark:border-emerald-600 pl-2">
+                    <p className="mt-1.5 text-xs text-[#5B8A2A] dark:text-emerald-400 leading-relaxed border-l-2 border-[#5B8A2A] dark:border-emerald-600 pl-2">
                       {term.example}
                     </p>
                   )}
@@ -208,7 +208,7 @@ export function GlossaryClient() {
         ))
       )}
 
-      <p className="text-[9px] text-[#8A8378] text-center pt-2 border-t border-[#E8E2D4]">
+      <p className="text-xs text-[#8A8378] text-center pt-2 border-t border-[#E8E2D4]">
         คำศัพท์เพื่อการศึกษา · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>

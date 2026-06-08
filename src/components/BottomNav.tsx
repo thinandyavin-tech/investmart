@@ -54,7 +54,7 @@ export function BottomNav() {
           <Link
             key={href}
             href={href}
-            className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-[10px] transition-colors ${
+            className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-xs transition-colors ${
               active ? "text-green-600 dark:text-green-400 font-semibold" : "text-slate-400 dark:text-slate-500"
             }`}
             aria-label={label}

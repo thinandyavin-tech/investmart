@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
 
         {!IS_PRODUCTION && (
-          <div className="rounded border border-amber-300 bg-amber-50 dark:bg-amber-950 dark:border-amber-700 p-3 text-[10px] text-amber-800 dark:text-amber-300 leading-relaxed">
+          <div className="rounded border border-amber-300 bg-amber-50 dark:bg-amber-950 dark:border-amber-700 p-3 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
             <strong>ฉบับร่าง — ยังไม่เสร็จสมบูรณ์</strong>
             {" "}เอกสารนี้เป็นฉบับร่างที่ยังต้องได้รับการทบทวนโดยเจ้าของแพลตฟอร์ม
             (และอาจปรึกษาผู้เชี่ยวชาญด้านกฎหมาย) ก่อนเผยแพร่สู่สาธารณะ
@@ -29,17 +29,17 @@ export default function PrivacyPage() {
 
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest mb-1">นโยบายความเป็นส่วนตัว</h1>
-          <p className="text-[10px] text-[#8A8378]">ปรับปรุงล่าสุด: มิถุนายน 2025 · InvestMart</p>
+          <p className="text-xs text-[#8A8378]">ปรับปรุงล่าสุด: มิถุนายน 2025 · InvestMart</p>
         </div>
 
-        <p className="text-[11px] text-[#8A8378] leading-relaxed">
+        <p className="text-xs text-[#8A8378] leading-relaxed">
           InvestMart เป็นแพลตฟอร์มจำลองการลงทุนและเรียนรู้ เราเขียนนโยบายนี้ให้ตรงไปตรงมา
           ไม่มีวาระซ่อนเร้น บอกให้ครบว่าเก็บอะไร ทำไม และคุณมีสิทธิ์อะไรบ้าง
         </p>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">1. ข้อมูลที่เราเก็บ</h2>
-          <div className="flex flex-col gap-2 text-[11px]">
+          <h2 className="text-xs font-bold uppercase tracking-widest">1. ข้อมูลที่เราเก็บ</h2>
+          <div className="flex flex-col gap-2 text-xs">
             {([
               ["ข้อมูลบัญชี", "อีเมล ชื่อ username และรหัสผ่านที่เข้ารหัส (bcrypt) ที่คุณให้มาตอนสมัคร"],
               ["ข้อมูลการใช้งาน", "โพสต์ คอมเมนต์ การ like/bookmark ประวัติเทรดจำลอง และ watchlist ที่คุณสร้าง"],
@@ -56,8 +56,8 @@ export default function PrivacyPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">2. วิธีที่เราใช้ข้อมูล</h2>
-          <ul className="flex flex-col gap-1.5 text-[11px]">
+          <h2 className="text-xs font-bold uppercase tracking-widest">2. วิธีที่เราใช้ข้อมูล</h2>
+          <ul className="flex flex-col gap-1.5 text-xs">
             {([
               "แสดงพอร์ตจำลอง ประวัติเทรด และ watchlist ของคุณ",
               "แสดง leaderboard และโปรไฟล์สาธารณะ (username, โพสต์, สถิติพอร์ตที่คุณเลือกเปิดเผย)",
@@ -74,11 +74,11 @@ export default function PrivacyPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">3. บริการและบุคคลที่สาม</h2>
-          <p className="text-[10px] text-[#8A8378] mb-1">
+          <h2 className="text-xs font-bold uppercase tracking-widest">3. บริการและบุคคลที่สาม</h2>
+          <p className="text-xs text-[#8A8378] mb-1">
             InvestMart ใช้บริการภายนอกเหล่านี้ ซึ่งมีนโยบายความเป็นส่วนตัวของตัวเอง
           </p>
-          <div className="flex flex-col gap-1.5 text-[10px]">
+          <div className="flex flex-col gap-1.5 text-xs">
             {([
               ["Finnhub", "ข้อมูลหุ้นสหรัฐและข่าว ดึงจาก server เท่านั้น ไม่ส่ง IP ของคุณโดยตรง"],
               ["Groq / Google Gemini", "รับเฉพาะ prompt ที่ประกอบด้วยข้อมูลหุ้นสาธารณะ ไม่มีข้อมูลส่วนตัวของคุณ"],
@@ -94,8 +94,8 @@ export default function PrivacyPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">4. สิทธิ์ของคุณ</h2>
-          <ul className="flex flex-col gap-1.5 text-[11px]">
+          <h2 className="text-xs font-bold uppercase tracking-widest">4. สิทธิ์ของคุณ</h2>
+          <ul className="flex flex-col gap-1.5 text-xs">
             {([
               "ขอดูข้อมูลที่เราเก็บเกี่ยวกับคุณ",
               "ขอแก้ไขข้อมูลที่ไม่ถูกต้อง",
@@ -111,8 +111,8 @@ export default function PrivacyPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">5. ความปลอดภัย</h2>
-          <ul className="flex flex-col gap-1.5 text-[11px]">
+          <h2 className="text-xs font-bold uppercase tracking-widest">5. ความปลอดภัย</h2>
+          <ul className="flex flex-col gap-1.5 text-xs">
             {([
               "HTTPS ทุก request ข้อมูลส่งเข้ารหัสระหว่างเบราว์เซอร์และ server ตลอดเวลา",
               "รหัสผ่านเก็บในรูป hash (bcrypt) ไม่มีใครรู้รหัสผ่านจริงของคุณ รวมถึงทีม",
@@ -128,14 +128,14 @@ export default function PrivacyPage() {
         </Card>
 
         <Card className="p-4 flex flex-col gap-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest">6. การเปลี่ยนแปลงนโยบาย</h2>
-          <p className="text-[11px] text-[#8A8378] leading-relaxed">
+          <h2 className="text-xs font-bold uppercase tracking-widest">6. การเปลี่ยนแปลงนโยบาย</h2>
+          <p className="text-xs text-[#8A8378] leading-relaxed">
             หากมีการเปลี่ยนแปลงสำคัญ เราจะแจ้งใน feed หรืออีเมล วันที่ปรับปรุงจะแสดงที่ด้านบน
             การใช้งานต่อเนื่องถือว่ายอมรับนโยบายล่าสุด
           </p>
         </Card>
 
-        <div className="flex flex-wrap gap-4 text-[10px] pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
           <Link href="/terms"  className="text-[#5B8A2A] hover:underline">ข้อกำหนดการใช้งาน</Link>
           <Link href="/about"  className="text-[#5B8A2A] hover:underline">เกี่ยวกับ InvestMart</Link>
           <Link href="/faq"    className="text-[#5B8A2A] hover:underline">คำถามที่พบบ่อย</Link>

@@ -54,10 +54,10 @@ export function HotNewsSection() {
     <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between">
         <div>
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-700">ข่าวเด่นวันนี้</h2>
-          <p className="text-[10px] text-slate-500 mt-0.5">จาก Finnhub · ตรวจสอบก่อนตัดสินใจลงทุน</p>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">ข่าวเด่นวันนี้</h2>
+          <p className="text-xs text-slate-500 mt-0.5">จาก Finnhub · ตรวจสอบก่อนตัดสินใจลงทุน</p>
         </div>
-        <Link href="/market" className="text-[10px] font-semibold text-violet-600 hover:text-violet-800 transition-colors">
+        <Link href="/market" className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors">
           ดูทั้งหมด →
         </Link>
       </div>
@@ -73,16 +73,16 @@ export function HotNewsSection() {
         </div>
       ) : error ? (
         <div className="px-3 py-4 text-center">
-          <p className="text-[10px] text-slate-500 mb-2">ไม่สามารถโหลดข่าวได้</p>
+          <p className="text-xs text-slate-500 mb-2">ไม่สามารถโหลดข่าวได้</p>
           <button
             onClick={load}
-            className="text-[10px] font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
+            className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
           >
             ลองใหม่
           </button>
         </div>
       ) : articles.length === 0 ? (
-        <p className="px-3 py-4 text-[10px] text-slate-500 text-center">
+        <p className="px-3 py-4 text-xs text-slate-500 text-center">
           ยังไม่มีข่าวเด่นตอนนี้
         </p>
       ) : (
@@ -104,14 +104,14 @@ export function HotNewsSection() {
                 </a>
 
                 <div className="flex items-center flex-wrap gap-2 mb-1">
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     {a.source} · {timeAgo(a.datetime)}
                   </span>
                   {tickers.map((t) => (
                     <Link
                       key={t}
                       href={`/stock/${t}`}
-                      className="text-[10px] font-semibold text-violet-600 hover:underline"
+                      className="text-xs font-semibold text-violet-600 hover:underline"
                     >
                       ${t}
                     </Link>

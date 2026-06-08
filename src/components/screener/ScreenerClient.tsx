@@ -136,7 +136,7 @@ function SortHeader({
       aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
     >
       {label}
-      {active && <span className="ml-0.5 text-[8px]">{dir === "asc" ? "▲" : "▼"}</span>}
+      {active && <span className="ml-0.5 text-xs">{dir === "asc" ? "▲" : "▼"}</span>}
     </th>
   );
 }
@@ -246,7 +246,7 @@ export function ScreenerClient() {
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest">Stock Screener</h1>
           {scannedAt && (
-            <p className="text-[9px] text-[#8A8378]">
+            <p className="text-xs text-[#8A8378]">
               {refreshing ? "กำลังอัพเดท..." : `อัพเดทเมื่อ ${new Date(scannedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`}
             </p>
           )}
@@ -254,14 +254,14 @@ export function ScreenerClient() {
         <div className="flex gap-2 items-center">
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className="text-[10px] font-bold px-2 py-1 border border-[#1F1A14] hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="text-xs font-bold px-2 py-1 border border-[#1F1A14] hover:bg-[#1F1A14] hover:text-white transition-colors"
           >
             {showFilters ? "ซ่อนตัวกรอง" : "แสดงตัวกรอง"}
           </button>
           <button
             onClick={() => fetchRows(filters.universe)}
             disabled={loading}
-            className="text-[10px] font-bold px-2 py-1 border border-[#1F1A14] bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors disabled:opacity-40"
+            className="text-xs font-bold px-2 py-1 border border-[#1F1A14] bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors disabled:opacity-40"
           >
             {loading ? "..." : "รีเฟรช"}
           </button>
@@ -274,12 +274,12 @@ export function ScreenerClient() {
 
           {/* Universe */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] w-16">Universe</span>
+            <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378] w-16">Universe</span>
             {(["SP500", "NASDAQ100", "CEO"] as const).map((u) => (
               <button
                 key={u}
                 onClick={() => { setFilters((f) => ({ ...f, universe: u })); setPage(1); }}
-                className="text-[10px] font-bold px-2 py-0.5 border transition-colors"
+                className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
                   background:   filters.universe === u ? "#1F1A14" : "#FBF7ED",
                   color:        filters.universe === u ? "#fff" : "#1F1A14",
@@ -293,13 +293,13 @@ export function ScreenerClient() {
 
           {/* Sector */}
           <div className="flex items-start gap-2 flex-wrap">
-            <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] w-16 pt-0.5">Sector</span>
+            <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378] w-16 pt-0.5">Sector</span>
             <div className="flex gap-1 flex-wrap">
               {ALL_SECTORS.map((s) => (
                 <button
                   key={s}
                   onClick={() => toggleSector(s)}
-                  className="text-[9px] font-bold px-1.5 py-0.5 border transition-colors"
+                  className="text-xs font-bold px-1.5 py-0.5 border transition-colors"
                   style={{
                     background:  filters.sectors.has(s) ? "#1F1A14" : "#FBF7ED",
                     color:       filters.sectors.has(s) ? "#fff" : "#8A8378",
@@ -312,7 +312,7 @@ export function ScreenerClient() {
               {filters.sectors.size > 0 && (
                 <button
                   onClick={() => { setFilters((f) => ({ ...f, sectors: new Set() })); setPage(1); }}
-                  className="text-[9px] text-[#DC2626] hover:underline"
+                  className="text-xs text-[#DC2626] hover:underline"
                 >
                   ล้าง
                 </button>
@@ -322,7 +322,7 @@ export function ScreenerClient() {
 
           {/* Cap size */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378] w-16">Cap</span>
+            <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378] w-16">Cap</span>
             {([
               { v: "ALL", l: "ทั้งหมด" },
               { v: "SMALL", l: "Small <$300M" },
@@ -332,7 +332,7 @@ export function ScreenerClient() {
               <button
                 key={v}
                 onClick={() => { setFilter("capSize", v); }}
-                className="text-[10px] font-bold px-2 py-0.5 border transition-colors"
+                className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
                   background:  filters.capSize === v ? "#1F1A14" : "#FBF7ED",
                   color:       filters.capSize === v ? "#fff" : "#1F1A14",
@@ -348,23 +348,23 @@ export function ScreenerClient() {
           <div className="flex gap-3 flex-wrap items-end">
             {/* Change % */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378]">Change %</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">Change %</span>
               <div className="flex gap-1 items-center">
                 <input
                   type="number" step="0.5"
                   placeholder="min"
                   value={filters.minChange}
                   onChange={(e) => setFilter("minChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Change minimum %"
                 />
-                <span className="text-[9px] text-[#8A8378]">–</span>
+                <span className="text-xs text-[#8A8378]">–</span>
                 <input
                   type="number" step="0.5"
                   placeholder="max"
                   value={filters.maxChange}
                   onChange={(e) => setFilter("maxChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Change maximum %"
                 />
               </div>
@@ -372,36 +372,36 @@ export function ScreenerClient() {
 
             {/* Min score */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378]">Score min</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">Score min</span>
               <input
                 type="number" min="0" max="100" step="5"
                 placeholder="0"
                 value={filters.minScore}
                 onChange={(e) => setFilter("minScore", e.target.value)}
-                className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                 aria-label="Minimum momentum score"
               />
             </div>
 
             {/* P/E */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378]">P/E</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">P/E</span>
               <div className="flex gap-1 items-center">
                 <input
                   type="number" step="1"
                   placeholder="min"
                   value={filters.minPE}
                   onChange={(e) => setFilter("minPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="P/E minimum"
                 />
-                <span className="text-[9px] text-[#8A8378]">–</span>
+                <span className="text-xs text-[#8A8378]">–</span>
                 <input
                   type="number" step="1"
                   placeholder="max"
                   value={filters.maxPE}
                   onChange={(e) => setFilter("maxPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="P/E maximum"
                 />
               </div>
@@ -409,23 +409,23 @@ export function ScreenerClient() {
 
             {/* Beta */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-[#8A8378]">Beta</span>
+              <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">Beta</span>
               <div className="flex gap-1 items-center">
                 <input
                   type="number" step="0.1"
                   placeholder="min"
                   value={filters.minBeta}
                   onChange={(e) => setFilter("minBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Beta minimum"
                 />
-                <span className="text-[9px] text-[#8A8378]">–</span>
+                <span className="text-xs text-[#8A8378]">–</span>
                 <input
                   type="number" step="0.1"
                   placeholder="max"
                   value={filters.maxBeta}
                   onChange={(e) => setFilter("maxBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-[10px] border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-[#D0C8B8] bg-[#FBF7ED] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
                   aria-label="Beta maximum"
                 />
               </div>
@@ -437,12 +437,12 @@ export function ScreenerClient() {
             <button
               onClick={() => void loadMetrics()}
               disabled={metricsLoading || loading}
-              className="text-[10px] font-bold px-2 py-1 border border-[#5B8A2A] text-[#5B8A2A] hover:bg-[#5B8A2A] hover:text-white transition-colors disabled:opacity-40"
+              className="text-xs font-bold px-2 py-1 border border-[#5B8A2A] text-[#5B8A2A] hover:bg-[#5B8A2A] hover:text-white transition-colors disabled:opacity-40"
             >
               {metricsLoading ? "กำลังโหลด..." : hasMetrics ? "รีโหลด P/E, PEG & Beta" : "โหลด P/E, PEG & Beta (top 40)"}
             </button>
             {hasMetricsFilters && !hasMetrics && (
-              <span className="text-[9px] text-[#D97706]">โหลด P/E, PEG & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
+              <span className="text-xs text-[#D97706]">โหลด P/E, PEG & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
             )}
           </div>
         </div>
@@ -450,13 +450,13 @@ export function ScreenerClient() {
 
       {/* Results count */}
       <div className="flex items-center justify-between">
-        <p className="text-[10px] text-[#8A8378]">
+        <p className="text-xs text-[#8A8378]">
           {loading ? "กำลังสแกน..." : `${filtered.length.toLocaleString()} หุ้น จาก ${rows.length.toLocaleString()}`}
         </p>
         {filters.sectors.size > 0 || filters.capSize !== "ALL" || filters.minScore || filters.minChange || filters.maxChange ? (
           <button
             onClick={() => { setFilters(defaultFilters()); setPage(1); }}
-            className="text-[9px] text-[#DC2626] hover:underline"
+            className="text-xs text-[#DC2626] hover:underline"
           >
             ล้างตัวกรองทั้งหมด
           </button>
@@ -469,14 +469,14 @@ export function ScreenerClient() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-8 bg-[#E8E2D4] animate-pulse rounded" style={{ opacity: 1 - i * 0.1 }} />
           ))}
-          <p className="text-[9px] text-[#8A8378] text-center">กำลังดึงข้อมูลจาก Finnhub (~10 วินาที)</p>
+          <p className="text-xs text-[#8A8378] text-center">กำลังดึงข้อมูลจาก Finnhub (~10 วินาที)</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-xs text-[#8A8378]">ไม่พบหุ้นที่ตรงกับตัวกรอง</p>
           <button
             onClick={() => { setFilters(defaultFilters()); setPage(1); }}
-            className="mt-2 text-[10px] text-[#5B8A2A] hover:underline"
+            className="mt-2 text-xs text-[#5B8A2A] hover:underline"
           >
             ล้างตัวกรอง
           </button>
@@ -484,9 +484,9 @@ export function ScreenerClient() {
       ) : (
         <>
           <div className="overflow-x-auto -mx-4 px-4">
-            <table className="w-full text-[10px] border-collapse" style={{ minWidth: "640px" }}>
+            <table className="w-full text-xs border-collapse" style={{ minWidth: "640px" }}>
               <thead>
-                <tr className="border-b-2 border-[#1F1A14] bg-[#F3EDE0] text-[9px] font-bold uppercase tracking-wide text-[#8A8378]">
+                <tr className="border-b-2 border-[#1F1A14] bg-[#F3EDE0] text-xs font-bold uppercase tracking-wide text-[#8A8378]">
                   <th className="px-2 py-1.5 text-left w-8">#</th>
                   <SortHeader label="Ticker"  field="ticker"        current={sortField} dir={sortDir} onClick={toggleSort} />
                   <th className="px-2 py-1.5 text-left">Sector</th>
@@ -525,7 +525,7 @@ export function ScreenerClient() {
                       </td>
                       <td className="px-2 py-1.5">
                         <span
-                          className="text-[8px] font-bold px-1 py-0.5"
+                          className="text-xs font-bold px-1 py-0.5"
                           style={{ background: "#E8E2D4", color: "#8A8378" }}
                         >
                           {row.sector}
@@ -574,7 +574,7 @@ export function ScreenerClient() {
           {hasMore && (
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="self-center text-[10px] font-bold px-4 py-1.5 border border-[#1F1A14] hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="self-center text-xs font-bold px-4 py-1.5 border border-[#1F1A14] hover:bg-[#1F1A14] hover:text-white transition-colors"
             >
               โหลดเพิ่ม ({filtered.length - pageRows.length} รายการ)
             </button>
@@ -582,7 +582,7 @@ export function ScreenerClient() {
         </>
       )}
 
-      <p className="text-[9px] text-[#8A8378] text-center pb-4">
+      <p className="text-xs text-[#8A8378] text-center pb-4">
         ข้อมูลราคาจาก Finnhub · จำลองเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>

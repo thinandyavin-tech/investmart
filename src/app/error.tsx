@@ -27,7 +27,7 @@ export default function Error({ error, reset }: ErrorProps) {
           <h1 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14] mb-1">
             เกิดข้อผิดพลาด
           </h1>
-          <p className="text-[10px] text-[#8A8378] leading-relaxed">
+          <p className="text-xs text-[#8A8378] leading-relaxed">
             บางอย่างไม่ทำงานตามปกติ — ลองใหม่อีกครั้งหรือกลับหน้าหลัก
           </p>
         </div>
@@ -35,13 +35,13 @@ export default function Error({ error, reset }: ErrorProps) {
         <div className="flex gap-3">
           <button
             onClick={reset}
-            className="text-[10px] font-bold text-white bg-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:opacity-80 transition-opacity"
+            className="text-xs font-bold text-white bg-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:opacity-80 transition-opacity"
           >
             ลองใหม่
           </button>
           <Link
             href="/"
-            className="text-[10px] font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
+            className="text-xs font-bold text-[#1F1A14] border border-[#1F1A14] px-4 py-1.5 hover:bg-[#1F1A14] hover:text-white transition-colors"
           >
             ← หน้าหลัก
           </Link>
