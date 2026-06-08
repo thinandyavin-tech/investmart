@@ -67,7 +67,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   scored.sort((a, b) => a.rank - b.rank || a.s.ticker.localeCompare(b.s.ticker));
 
-  const results = scored.slice(0, 12).map(({ s }) => ({
+  const results = scored.slice(0, 20).map(({ s }) => ({
     ticker:   s.ticker,
     name:     s.name || s.ticker,
     exchange: s.exchange,
