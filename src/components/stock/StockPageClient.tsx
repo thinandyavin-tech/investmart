@@ -6,9 +6,10 @@ import Link from "next/link";
 import { Card } from "@/components/Card";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
-import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
-import { ReverseDCF }   from "@/components/stock/ReverseDCF";
-import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
+import { AiOutlookCard }    from "@/components/stock/AiOutlookCard";
+import { ReverseDCF }       from "@/components/stock/ReverseDCF";
+import { WhyMovingCard }    from "@/components/stock/WhyMovingCard";
+import { StockInfographic } from "@/components/stock/StockInfographic";
 import { useUser } from "@/lib/userContext";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TradingViewChart } from "@/components/tradingview/TradingViewChart";
@@ -96,7 +97,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
   const [chartLoading, setChartLoading] = useState(true);
   const [timeframe, setTimeframe]       = useState<Timeframe>("3M");
   const [chartMode, setChartMode]       = useState<ChartMode>("Price");
-  const [useTVChart,  setUseTVChart]    = useState(false);
+  const [useTVChart,      setUseTVChart]      = useState(false);
+  const [showInfographic, setShowInfographic] = useState(false);
   const [maConfig, setMaConfig]         = useState({ ma20: false, ma50: false, ma200: false });
 
   useEffect(() => {
@@ -458,6 +460,26 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Price alerts */}
       {user && <PriceAlertSection ticker={ticker} currentPrice={quote?.price} />}
+
+      {/* Infographic */}
+      <div>
+        <button
+          onClick={() => setShowInfographic(v => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 hover:bg-white/70 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-violet-600 font-bold text-sm">✦</span>
+            <span className="text-sm font-semibold text-slate-800">Martin Infographic</span>
+            <span className="text-xs text-slate-500">สรุปข้อมูลเป็นภาพ + AI takeaway</span>
+          </div>
+          <span className="text-slate-400 text-sm">{showInfographic ? "▴" : "▾"}</span>
+        </button>
+        {showInfographic && (
+          <div className="mt-2 flex justify-center">
+            <StockInfographic ticker={ticker} onClose={() => setShowInfographic(false)} />
+          </div>
+        )}
+      </div>
 
       {/* Why is it moving */}
       <WhyMovingCard ticker={ticker} />

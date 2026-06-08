@@ -2,10 +2,29 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const StockInfographic = dynamic(
+  () => import("@/components/stock/StockInfographic").then(m => m.StockInfographic),
+  { ssr: false },
+);
+
+// Infographic trigger: "infographic NVDA", "สร้าง infographic ของ NVDA", etc.
+const INFOGRAPHIC_RE = /(?:infographic|อินโฟกราฟิก|สร้างภาพ|ทำ infographic)[^\w]*\$?([A-Z][A-Z.\-]{0,9})/i;
+const INFOGRAPHIC_TH = /(?:infographic|อินโฟกราฟิก).*\$?([A-Z][A-Z.\-]{1,9})/i;
+
+function extractInfographicTicker(text: string, fallback?: string): string | null {
+  const m = INFOGRAPHIC_RE.exec(text) ?? INFOGRAPHIC_TH.exec(text);
+  if (m?.[1]) return m[1].toUpperCase();
+  // If user just said "infographic" with no ticker, use the page/context ticker
+  if (/infographic|อินโฟกราฟิก/i.test(text) && fallback) return fallback;
+  return null;
+}
 
 interface Message {
-  role:    "user" | "assistant";
-  content: string;
+  role:      "user" | "assistant";
+  content:   string;
+  infographic?: string; // ticker — renders StockInfographic instead of text
 }
 
 const STOCK_PATH_RE = /^\/stock\/([A-Z][A-Z.\-]{0,9})(\/|$)/;
@@ -18,21 +37,21 @@ function tickerFromPath(pathname: string | null): string | undefined {
 function suggestedPrompts(ticker?: string): string[] {
   if (ticker) return [
     `วิเคราะห์ $${ticker} ให้หน่อย`,
+    `สร้าง infographic ของ $${ticker}`,
     `P/E และ PEG ของ $${ticker}?`,
     `ข่าวล่าสุดของ $${ticker}`,
     `$${ticker} มีความเสี่ยงอะไรบ้าง?`,
-    `อธิบาย Beta ratio คืออะไร`,
   ];
   return [
     "วิเคราะห์ $NVDA ให้หน่อย",
+    "สร้าง infographic ของ $NVDA",
     "P/E และ PEG ของ $AAPL คืออะไร?",
     "ข่าวล่าสุดของ $TSLA",
-    "$AMD มีความเสี่ยงอะไรบ้าง?",
     "อธิบาย RSI คืออะไร",
   ];
 }
 
-function MessageBubble({ role, content }: { role: "user" | "assistant"; content: string }) {
+function MessageBubble({ role, content, infographic }: { role: "user" | "assistant"; content: string; infographic?: string }) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
@@ -42,6 +61,22 @@ function MessageBubble({ role, content }: { role: "user" | "assistant"; content:
       </div>
     );
   }
+
+  // Infographic message — render card instead of text
+  if (infographic) {
+    return (
+      <div className="flex justify-start gap-2">
+        <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5 flex-shrink-0">
+          <span className="text-violet-400 text-xs">✦</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-violet-400 mb-1.5">Martin</p>
+          <StockInfographic ticker={infographic} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-start gap-2">
       <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -126,10 +161,22 @@ export function FloatingAssistant() {
     if (!trimmed || streaming) return;
 
     setError(null);
+    setInput("");
+
+    // ── Infographic shortcut: skip AI, render card directly ──
+    const infographicTicker = extractInfographicTicker(trimmed, contextTicker);
+    if (infographicTicker) {
+      setMessages(prev => [
+        ...prev,
+        { role: "user",      content: trimmed },
+        { role: "assistant", content: "", infographic: infographicTicker },
+      ]);
+      return;
+    }
+
     const history = messages.slice(-10).map(m => ({ ...m, content: m.content.slice(0, 10000) }));
     const outgoing: Message[] = [...history, { role: "user", content: trimmed }];
     setMessages([...messages, { role: "user", content: trimmed }, { role: "assistant", content: "" }]);
-    setInput("");
     setStreaming(true);
 
     const ctrl = new AbortController();
@@ -280,7 +327,7 @@ export function FloatingAssistant() {
               {messages.length === 0 ? (
                 <SuggestedPromptsPanel ticker={contextTicker} onSelect={p => void send(p)} />
               ) : (
-                messages.map((m, i) => <MessageBubble key={i} role={m.role} content={m.content} />)
+                messages.map((m, i) => <MessageBubble key={i} role={m.role} content={m.content} infographic={m.infographic} />)
               )}
 
               {error && (
