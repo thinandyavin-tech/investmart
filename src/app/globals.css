@@ -51,22 +51,45 @@ html.dark {
   --text-primary: #F1F5F9;
 }
 
-/* Dark fallback matches the aurora's darkest corner — any WebGL repaint
-   flash during iOS scroll shows this colour instead of browser-default white. */
 html {
-  background-color: #0a0514;
+  background-color: oklch(0.988 0.006 285);
 }
 
 body {
-  background: transparent;
+  background-color: oklch(0.988 0.006 285);
+
+  background-image:
+    /* purple glow — top-left */
+    radial-gradient(ellipse 75% 65% at -8% -5%,
+      oklch(0.88 0.055 295 / 0.22) 0%, transparent 65%),
+    /* indigo glow — top-right */
+    radial-gradient(ellipse 55% 45% at 108% 2%,
+      oklch(0.90 0.038 265 / 0.16) 0%, transparent 60%),
+    /* violet glow — bottom-right */
+    radial-gradient(ellipse 65% 55% at 110% 105%,
+      oklch(0.89 0.045 280 / 0.14) 0%, transparent 65%),
+    /* soft wash — bottom center */
+    radial-gradient(ellipse 80% 35% at 50% 110%,
+      oklch(0.93 0.025 250 / 0.12) 0%, transparent 60%),
+    /* dot grid */
+    radial-gradient(circle,
+      oklch(0.72 0.025 285 / 0.10) 1px, transparent 1px);
+
+  background-size:
+    100% 100%, 100% 100%,
+    100% 100%, 100% 100%,
+    22px 22px;
+
+  background-attachment: fixed;
+
   color: #0F172A;
   touch-action: manipulation;
-  /* Prevent rubber-band overscroll from revealing the raw html background */
   overscroll-behavior: none;
 }
 
 html.dark body {
-  background: transparent;
+  background-color: #0F172A;
+  background-image: none;
   color: #F1F5F9;
 }
 
