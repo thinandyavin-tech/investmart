@@ -123,10 +123,11 @@ export function StockInfographic({ ticker, onClose }: StockInfographicProps) {
     );
   }
 
-  const up    = data.change1D >= 0;
+  const noPrice = data.priceUnavailable ?? data.price === 0;
+  const up    = !noPrice && data.change1D >= 0;
   const sign  = up ? "+" : "";
-  const clr   = up ? "#16A34A" : "#DC2626";
-  const arrow = up ? "▲" : "▼";
+  const clr   = noPrice ? "#94A3B8" : up ? "#16A34A" : "#DC2626";
+  const arrow = noPrice ? "—" : up ? "▲" : "▼";
 
   return (
     <div className="w-full max-w-sm">
@@ -184,10 +185,16 @@ export function StockInfographic({ ticker, onClose }: StockInfographicProps) {
 
         {/* Price row */}
         <div className="px-4 pb-3 flex items-end gap-3">
-          <span className="text-3xl font-bold font-mono text-slate-900">${data.price.toFixed(2)}</span>
-          <span className="text-base font-bold font-mono pb-0.5" style={{ color: clr }}>
-            {arrow} {sign}{data.change1D.toFixed(2)}%
-          </span>
+          {noPrice ? (
+            <span className="text-sm font-medium text-slate-400">ราคาไม่พร้อมใช้งาน (Finnhub ไม่มีข้อมูล)</span>
+          ) : (
+            <>
+              <span className="text-3xl font-bold font-mono text-slate-900">${data.price.toFixed(2)}</span>
+              <span className="text-base font-bold font-mono pb-0.5" style={{ color: clr }}>
+                {arrow} {sign}{data.change1D.toFixed(2)}%
+              </span>
+            </>
+          )}
         </div>
 
         {/* Divider */}

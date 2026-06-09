@@ -174,7 +174,11 @@ export function FloatingAssistant() {
       return;
     }
 
-    const history = messages.slice(-10).map(m => ({ ...m, content: m.content.slice(0, 10000) }));
+    // Strip infographic/empty-content messages — they have no text for the AI to read
+    const history = messages
+      .filter(m => !m.infographic && m.content.trim().length > 0)
+      .slice(-10)
+      .map(m => ({ role: m.role, content: m.content.slice(0, 10000) }));
     const outgoing: Message[] = [...history, { role: "user", content: trimmed }];
     setMessages([...messages, { role: "user", content: trimmed }, { role: "assistant", content: "" }]);
     setStreaming(true);

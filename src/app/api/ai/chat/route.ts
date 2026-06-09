@@ -87,12 +87,13 @@ async function buildTickerBlock(ticker: string, apiKey: string): Promise<string>
 
   const lines: string[] = [`=== ${ticker} — live data fetched ${new Date().toUTCString()} ===`];
 
-  if (q) {
+  if (q && q.c > 0) {
     const sign = q.dp >= 0 ? "+" : "";
     lines.push(`Price: $${q.c.toFixed(2)} (${sign}${q.dp.toFixed(2)}% today)`);
     lines.push(`Day range: $${q.l.toFixed(2)} – $${q.h.toFixed(2)}, Prev close: $${q.pc.toFixed(2)}`);
   } else {
-    lines.push("Price: unavailable");
+    // c=0 means Finnhub has no data (common for non-US/SET tickers on the free tier)
+    lines.push("Price: ไม่มีข้อมูลราคาจาก Finnhub (Finnhub free tier อาจไม่รองรับหุ้นนี้)");
   }
 
   if (m) {

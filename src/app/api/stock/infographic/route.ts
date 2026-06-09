@@ -10,21 +10,22 @@ const TTL_MS    = 15 * 60 * 1000; // 15 min cache per ticker
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface InfographicData {
-  ticker:      string;
-  companyName: string;
-  sector:      string;
-  price:       number;
-  change1D:    number;       // percent
-  marketCap:   string;       // formatted e.g. "$2.8T"
-  pe:          string;       // e.g. "31.1x" or "N/A"
-  peg:         string;       // calculated or "N/A"
-  rsi:         number | null;
-  week52High:  number | null;
-  week52Low:   number | null;
-  volume10d:   string;       // formatted
-  sparkline:   number[];     // last 30 close prices for mini chart
-  takeaway:    string;       // AI-generated Thai takeaway ~80 words
-  generatedAt: string;       // ISO timestamp
+  ticker:           string;
+  companyName:      string;
+  sector:           string;
+  price:            number;
+  change1D:         number;       // percent
+  priceUnavailable: boolean;      // true when Finnhub returned no price (e.g. SET stocks)
+  marketCap:        string;       // formatted e.g. "$2.8T"
+  pe:               string;       // e.g. "31.1x" or "N/A"
+  peg:              string;       // calculated or "N/A"
+  rsi:              number | null;
+  week52High:       number | null;
+  week52Low:        number | null;
+  volume10d:        string;       // formatted
+  sparkline:        number[];     // last 30 close prices for mini chart
+  takeaway:         string;       // AI-generated Thai takeaway ~80 words
+  generatedAt:      string;       // ISO timestamp
 }
 
 interface CacheEntry { data: InfographicData; cachedAt: number }
@@ -105,9 +106,11 @@ async function buildInfographic(ticker: string, origin: string): Promise<Infogra
                ?? rawP?.metrics?.metric
                ?? null;
 
-  const profile = rawP?.profile ?? null;
-  const price   = rawQ?.c ?? 0;
-  const chgPct  = rawQ?.dp ?? 0;
+  const profile          = rawP?.profile ?? null;
+  const price            = rawQ?.c ?? 0;
+  const chgPct           = rawQ?.dp ?? 0;
+  // Finnhub returns c=0 for tickers it doesn't cover (e.g. SET stocks, some OTC)
+  const priceUnavailable = !rawQ || rawQ.c === 0;
 
   const closes  = (hist?.candles ?? []).map(c => c.close);
   const rsi     = closes.length >= 15 ? computeRSI(closes) : null;
@@ -120,7 +123,7 @@ async function buildInfographic(ticker: string, origin: string): Promise<Infogra
 
   const dataBlock = [
     `${ticker} — ${profile?.name ?? ticker} (${profile?.finnhubIndustry ?? "N/A"})`,
-    rawQ ? `ราคา: $${price.toFixed(2)} (${chgPct >= 0 ? "+" : ""}${chgPct.toFixed(2)}% วันนี้)` : "ราคา: ไม่มีข้อมูล",
+    priceUnavailable ? "ราคา: ไม่มีข้อมูลจาก Finnhub (อาจเป็นหุ้นนอก US หรือ OTC)" : `ราคา: $${price.toFixed(2)} (${chgPct >= 0 ? "+" : ""}${chgPct.toFixed(2)}% วันนี้)`,
     met?.marketCapitalization ? `Market Cap: ${fmtCap(met.marketCapitalization)}` : "",
     `P/E TTM: ${pe}, PEG: ${peg}`,
     rsi !== null ? `RSI-14: ${rsi}` : "",
@@ -135,10 +138,11 @@ async function buildInfographic(ticker: string, origin: string): Promise<Infogra
 
   return {
     ticker,
-    companyName:  profile?.name ?? ticker,
-    sector:       profile?.finnhubIndustry ?? "N/A",
+    companyName:      profile?.name ?? ticker,
+    sector:           profile?.finnhubIndustry ?? "N/A",
     price,
-    change1D:     chgPct,
+    change1D:         chgPct,
+    priceUnavailable,
     marketCap:    fmtCap(met?.marketCapitalization),
     pe,
     peg,
