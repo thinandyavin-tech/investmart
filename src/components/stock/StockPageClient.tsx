@@ -481,6 +481,21 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         )}
       </div>
 
+      {/* Chart Analysis CTA */}
+      <Link
+        href={`/analyze?ticker=${ticker}&timeframe=3M`}
+        className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-violet-50/80 border border-violet-200 hover:bg-violet-100 transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-violet-500 font-bold text-base">✦</span>
+          <div>
+            <p className="text-sm font-bold text-violet-800">Martin · Chart Analysis</p>
+            <p className="text-xs text-violet-500">วิเคราะห์กราฟเทคนิค · Scenario Playbook · ระดับราคาสำคัญ</p>
+          </div>
+        </div>
+        <span className="text-violet-400 text-sm flex-shrink-0">→</span>
+      </Link>
+
       {/* Why is it moving */}
       <WhyMovingCard ticker={ticker} />
 

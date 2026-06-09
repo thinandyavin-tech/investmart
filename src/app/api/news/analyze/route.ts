@@ -73,10 +73,10 @@ Respond with exactly this JSON structure (no extra keys, no markdown):
 }`;
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const limited = await applyRateLimit(request, "ai");
+  const limited = await applyRateLimit(request, "news");
   if (limited) return limited;
 
-  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY);
+  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || process.env.LOCAL_AI_BASE_URL);
   if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });
   }

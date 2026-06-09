@@ -5,7 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 // ---------------------------------------------------------------------------
 
 const TIERS = {
-  ai:      { requests: 20, window: 60 },  // chat + analysis — bumped from 5; caching absorbs repeats
+  ai:      { requests: 20, window: 60 },  // Martin chat + chart analysis — cached responses don't count
+  news:    { requests: 40, window: 60 },  // news summaries/analysis — higher limit, cached by content hash
   scan:    { requests: 3,  window: 60 },  // expensive: full-universe scan
   quote:   { requests: 30, window: 60 },  // moderate: market data
   write:   { requests: 20, window: 60 },  // mutations: trades, posts
