@@ -5,10 +5,10 @@ import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { FeedSection } from "@/components/social/FeedSection";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
-import { HotNewsSection } from "@/components/home/HotNewsSection";
-import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import { PortfolioChart } from "@/components/home/PortfolioChart";
+import { NewsForwardSection } from "@/components/home/NewsForwardSection";
+import { MarketsRail } from "@/components/home/MarketsRail";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
@@ -19,50 +19,71 @@ export function HomeDesktop() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-1 gap-6 p-6 max-w-6xl mx-auto w-full">
-        {/* Left column */}
-        <aside className="w-72 flex-shrink-0 flex flex-col gap-4">
-          <AboutCard bio={user?.bio ?? ""} />
-        </aside>
+      {/* Full-width ticker tape */}
+      <div className="px-6 pt-4 pb-0 max-w-6xl mx-auto w-full">
+        <TradingViewTickerTape />
+      </div>
 
-        {/* Right column */}
+      {/* 2-col layout: content + market rail */}
+      <div className="flex flex-1 gap-6 px-6 py-4 max-w-6xl mx-auto w-full">
+
+        {/* Main content column */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
-          <TradingViewTickerTape />
           <MarketStatusBanner />
-          <PortfolioChart />
-          <StatCards
-            loading={loading}
-            cashThb={user?.cashThb ?? null}
-            cashUsd={user?.cashUsd ?? null}
-            holdings={user?.holdings ?? []}
-            tradeCount={user?.tradeCount ?? 0}
-          />
-          <div className="text-center text-xs text-slate-400/70 py-0.5 tracking-[0.2em] font-mono">
-            · · · The InvestMart Simulator · · ·
-          </div>
-          <ActionButtons />
-          <HoldingsCard holdings={user?.holdings ?? []} loading={loading} />
+
+          {/* Portfolio strip for logged-in users */}
+          {user && !user.isDemo && (
+            <>
+              <PortfolioChart />
+              <StatCards
+                loading={loading}
+                cashThb={user.cashThb ?? null}
+                cashUsd={user.cashUsd ?? null}
+                holdings={user.holdings ?? []}
+                tradeCount={user.tradeCount ?? 0}
+              />
+            </>
+          )}
+
+          {/* Guest CTA */}
           {(!user || user.isDemo) && !loading && (
-            <Card className="p-4 text-center flex flex-col gap-2">
-              <p className="text-xs text-slate-500">
-                เข้าสู่ระบบเพื่อเริ่มเล่น simulator · เริ่มต้นด้วย ฿1,250,000
-              </p>
-              <div className="flex gap-2 justify-center">
-                <OffsetButton variant="black" onClick={() => router.push("/signin")}>
-                  เข้าสู่ระบบ
-                </OffsetButton>
-                <OffsetButton variant="lime" onClick={() => router.push("/signup")}>
-                  สมัครสมาชิก ฟรี
-                </OffsetButton>
+            <Card className="p-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-800 mb-0.5">
+                  จำลองการลงทุนหุ้น US ฟรี
+                </p>
+                <p className="text-xs text-slate-500">
+                  เริ่มด้วย ฿1,250,000 — ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
+                </p>
+              </div>
+              <div className="flex gap-2 flex-shrink-0">
+                <OffsetButton variant="black" onClick={() => router.push("/signin")}>เข้าสู่ระบบ</OffsetButton>
+                <OffsetButton variant="lime"  onClick={() => router.push("/signup")}>สมัครฟรี</OffsetButton>
               </div>
             </Card>
           )}
+
+          <ActionButtons />
+          {user && !user.isDemo && (
+            <HoldingsCard holdings={user.holdings ?? []} loading={loading} />
+          )}
+
+          {/* AI digest */}
           <DailyDigestCard />
-          <InfographicsSection />
-          <HotNewsSection />
+
+          {/* News-forward — hero + grid */}
+          <NewsForwardSection />
+
+          {/* Social feed */}
           <PostsCard />
         </section>
+
+        {/* Right rail: markets + curated screens */}
+        <div className="w-72 flex-shrink-0">
+          <MarketsRail />
+        </div>
       </div>
+
       <HomeFooter />
     </div>
   );
