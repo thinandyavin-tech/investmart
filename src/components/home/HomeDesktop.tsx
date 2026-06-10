@@ -2,20 +2,17 @@
 
 import { useUser } from "@/lib/userContext";
 import { Card } from "@/components/Card";
-import { OffsetButton } from "@/components/OffsetButton";
 import { FeedSection } from "@/components/social/FeedSection";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
-import { PortfolioChart } from "@/components/home/PortfolioChart";
+import { PortfolioHero } from "@/components/home/PortfolioHero";
 import { NewsForwardSection } from "@/components/home/NewsForwardSection";
 import { MarketsRail } from "@/components/home/MarketsRail";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
 
 export function HomeDesktop() {
-  const { user, loading } = useUser();
-  const router = useRouter();
+  const { loading } = useUser();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -31,42 +28,10 @@ export function HomeDesktop() {
         <section className="flex-1 min-w-0 flex flex-col gap-4">
           <MarketStatusBanner />
 
-          {/* Portfolio strip for logged-in users */}
-          {user && !user.isDemo && (
-            <>
-              <PortfolioChart />
-              <StatCards
-                loading={loading}
-                cashThb={user.cashThb ?? null}
-                cashUsd={user.cashUsd ?? null}
-                holdings={user.holdings ?? []}
-                tradeCount={user.tradeCount ?? 0}
-              />
-            </>
-          )}
-
-          {/* Guest CTA */}
-          {(!user || user.isDemo) && !loading && (
-            <Card className="p-4 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-slate-800 mb-0.5">
-                  จำลองการลงทุนหุ้น US ฟรี
-                </p>
-                <p className="text-xs text-slate-500">
-                  เริ่มด้วย ฿1,250,000 — ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
-                </p>
-              </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <OffsetButton variant="black" onClick={() => router.push("/signin")}>เข้าสู่ระบบ</OffsetButton>
-                <OffsetButton variant="lime"  onClick={() => router.push("/signup")}>สมัครฟรี</OffsetButton>
-              </div>
-            </Card>
-          )}
+          {/* Portfolio Hero — shows for all users (handles logged-out state internally) */}
+          {!loading && <PortfolioHero />}
 
           <ActionButtons />
-          {user && !user.isDemo && (
-            <HoldingsCard holdings={user.holdings ?? []} loading={loading} />
-          )}
 
           {/* AI digest */}
           <DailyDigestCard />

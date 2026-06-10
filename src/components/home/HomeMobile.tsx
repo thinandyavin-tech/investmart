@@ -10,6 +10,7 @@ import { FeedSection } from "@/components/social/FeedSection";
 import { HotNewsSection } from "@/components/home/HotNewsSection";
 import { InfographicsSection } from "@/components/home/InfographicsSection";
 import { DailyDigestCard } from "@/components/home/DailyDigestCard";
+import { PortfolioHero } from "@/components/home/PortfolioHero";
 import { EarningsCalendarCard } from "@/components/home/EarningsCalendarCard";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
@@ -130,6 +131,11 @@ export function HomeMobile() {
             <span className="text-xs font-medium whitespace-nowrap leading-tight">{label}</span>
           </Link>
         ))}
+      </div>
+
+      {/* Portfolio hero — compact mode on mobile */}
+      <div className="mx-3 mb-3">
+        <PortfolioHero compact />
       </div>
 
       <DailyDigestCard />
