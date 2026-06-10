@@ -34,11 +34,11 @@ function extractTickers(text: string): string[] {
 
 function SkeletonFeatured() {
   return (
-    <div className="animate-pulse space-y-3">
-      <div className="h-5 w-3/4 bg-slate-200/60 rounded" />
-      <div className="h-4 w-full bg-slate-200/60 rounded" />
-      <div className="h-4 w-2/3 bg-slate-200/60 rounded" />
-      <div className="h-3 w-32 bg-slate-200/40 rounded" />
+    <div className="space-y-3">
+      <div className="h-5 w-3/4 skeleton rounded" />
+      <div className="h-4 w-full skeleton rounded" />
+      <div className="h-4 w-2/3 skeleton rounded" />
+      <div className="h-3 w-32 skeleton rounded" />
     </div>
   );
 }
@@ -47,10 +47,10 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 gap-3">
       {[0,1,2,3].map(i => (
-        <div key={i} className="animate-pulse space-y-2">
-          <div className="h-3 w-full bg-slate-200/60 rounded" />
-          <div className="h-3 w-4/5 bg-slate-200/60 rounded" />
-          <div className="h-2 w-20 bg-slate-200/40 rounded" />
+        <div key={i} className="space-y-2">
+          <div className="h-3 w-full skeleton rounded" />
+          <div className="h-3 w-4/5 skeleton rounded" />
+          <div className="h-2 w-20 skeleton rounded" />
         </div>
       ))}
     </div>
@@ -65,7 +65,7 @@ interface FeaturedArticleProps {
 function FeaturedArticle({ article, allHeadlines }: FeaturedArticleProps) {
   const tickers = extractTickers(article.headline);
   return (
-    <div className="pb-4 border-b border-slate-100">
+    <div className="pb-4 border-b border-[#E8E2D4]">
       <a
         href={article.url}
         target="_blank"
@@ -73,14 +73,14 @@ function FeaturedArticle({ article, allHeadlines }: FeaturedArticleProps) {
         className="group block mb-2"
         aria-label={`${article.headline} — เปิดในแท็บใหม่`}
       >
-        <h2 className="text-base font-bold leading-snug text-slate-900 group-hover:text-violet-700 transition-colors">
+        <h2 className="text-base font-bold leading-snug text-[#1F1A14] group-hover:text-violet-700 transition-colors">
           {article.headline}
         </h2>
       </a>
       {article.summary && (
-        <p className="text-xs text-slate-600 leading-relaxed mb-2 line-clamp-2">{article.summary}</p>
+        <p className="text-xs text-[#5A4E42] leading-relaxed mb-2 line-clamp-2">{article.summary}</p>
       )}
-      <div className="flex items-center flex-wrap gap-2 text-xs text-slate-500 mb-2">
+      <div className="flex items-center flex-wrap gap-2 text-xs text-[#8A8378] mb-2">
         <span className="font-medium">{article.source}</span>
         <span>·</span>
         <span>{timeAgo(article.datetime)}</span>
@@ -114,11 +114,11 @@ function SecondaryArticle({ article, allHeadlines }: SecondaryArticleProps) {
         className="group"
         aria-label={`${article.headline} — เปิดในแท็บใหม่`}
       >
-        <p className="text-xs font-semibold leading-snug text-slate-800 group-hover:text-violet-700 transition-colors line-clamp-3">
+        <p className="text-xs font-semibold leading-snug text-[#1F1A14] group-hover:text-violet-700 transition-colors line-clamp-3">
           {article.headline}
         </p>
       </a>
-      <div className="flex items-center flex-wrap gap-1.5 text-xs text-slate-500">
+      <div className="flex items-center flex-wrap gap-1.5 text-xs text-[#8A8378]">
         <span>{article.source}</span>
         <span>·</span>
         <span>{timeAgo(article.datetime)}</span>
@@ -159,7 +159,7 @@ export function NewsForwardSection() {
   return (
     <section className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
+      <div className="px-4 pt-4 pb-3 border-b border-[#E8E2D4] flex items-center justify-between">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">ข่าวเด่น</h2>
           <p className="text-xs text-slate-400 mt-0.5">Finnhub · ตรวจสอบก่อนตัดสินใจ</p>
@@ -177,7 +177,7 @@ export function NewsForwardSection() {
           </>
         ) : error ? (
           <div className="text-center py-4">
-            <p className="text-xs text-slate-500 mb-2">ไม่สามารถโหลดข่าวได้</p>
+            <p className="text-xs text-[#8A8378] mb-2">ไม่สามารถโหลดข่าวได้</p>
             <button
               onClick={load}
               className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
