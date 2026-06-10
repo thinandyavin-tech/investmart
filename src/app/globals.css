@@ -52,11 +52,29 @@ html.dark {
 }
 
 html {
-  background-color: #FBF7ED;
+  background-color: oklch(0.988 0.006 285);
 }
 
 body {
-  background-color: #FBF7ED;
+  background-color: oklch(0.988 0.006 285);
+
+  background-image:
+    /* purple glow — top-left */
+    radial-gradient(ellipse 75% 65% at -8% -5%,
+      oklch(0.88 0.055 295 / 0.22) 0%, transparent 65%),
+    /* indigo glow — top-right */
+    radial-gradient(ellipse 55% 45% at 108% 2%,
+      oklch(0.90 0.038 265 / 0.16) 0%, transparent 60%),
+    /* dot grid */
+    radial-gradient(circle,
+      oklch(0.72 0.025 285 / 0.10) 1px, transparent 1px);
+
+  background-size:
+    100% 100%, 100% 100%,
+    22px 22px;
+
+  background-attachment: fixed;
+
   color: #0F172A;
   touch-action: manipulation;
   overscroll-behavior: none;
