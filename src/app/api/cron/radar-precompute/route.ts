@@ -1,25 +1,33 @@
 /**
- * Chunked radar precompute — called by Vercel cron every 15 minutes.
+ * Radar precompute cron — runs twice daily (market open + afternoon).
  *
- * Each invocation processes ONE chunk (~40 tickers) per universe and returns.
- * A cursor in SiteCache tracks progress; the next invocation picks up where
- * the last left off. This keeps every invocation well under the timeout
- * regardless of universe size or BATCH_DELAY setting.
+ * Processes ALL chunks for each universe in one invocation by looping until
+ * the cursor resets to 0 (full cycle complete). Each loop iteration handles
+ * CHUNK_SIZE=40 tickers, so the function does short predictable bursts of
+ * work rather than one giant scan. Per-ticker try/catch means one bad ticker
+ * never aborts the run.
  *
- * SP500 (capped to 150) + NASDAQ100: one chunk each per invocation.
- * CEO (20 tickers): full scan each time (tiny, always completes).
- * SET50: skipped — Finnhub free tier doesn't serve .BK quotes.
+ * Timing (paid Finnhub, BATCH_DELAY=2100ms):
+ *   NASDAQ100 (95):  10 batches × 2.1s ≈ 21s
+ *   SP500 (capped 150): 15 batches × 2.1s ≈ 32s
+ *   CEO (20): <5s
+ *   Total per run: ~60s — safely under maxDuration=120
+ *
+ * Timing (free tier, BATCH_DELAY=10000ms):
+ *   NASDAQ100: ~100s  |  CEO: <15s  — SP500 is skipped when SKIP_SP500=true
+ *   or set FINNHUB_BATCH_DELAY_MS=3000 to use Finnhub's free 60req/min plan.
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import { scanChunk, scanUniverse } from "@/lib/radarScan";
+import { scanChunk, scanUniverse, resetCursor } from "@/lib/radarScan";
 import type { Universe } from "@/lib/stockUniverse";
 
 export const dynamic    = "force-dynamic";
-export const maxDuration = 60; // chunks complete in 8–40s; 60s is comfortable headroom
+export const maxDuration = 120;
 
-const CHUNK_UNIVERSES: readonly Universe[] = ["SP500", "NASDAQ100"] as const;
+const CHUNK_UNIVERSES: readonly Universe[] = ["NASDAQ100", "SP500"] as const;
 const FULL_UNIVERSES:  readonly Universe[] = ["CEO"] as const;
+const MAX_CHUNKS_PER_RUN = 20; // safety cap; normal runs complete in 3–4 chunks
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const secret = process.env.CRON_SECRET;
@@ -37,19 +45,37 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const summary: Record<string, unknown> = {};
 
+  // Run all chunks for each large universe until the full cycle completes
   for (const universe of CHUNK_UNIVERSES) {
     const t0 = Date.now();
+    let chunks = 0;
+    let lastResult: Awaited<ReturnType<typeof scanChunk>> | null = null;
+
     try {
-      const result = await scanChunk(universe, apiKey);
-      summary[universe] = { ...result, durationMs: Date.now() - t0 };
+      // Reset cursor so we always start a fresh cycle each cron run
+      await resetCursor(universe);
+
+      do {
+        lastResult = await scanChunk(universe, apiKey);
+        chunks++;
+      } while (!lastResult.cycleComplete && chunks < MAX_CHUNKS_PER_RUN);
+
+      summary[universe] = {
+        chunks,
+        cycleComplete: lastResult?.cycleComplete ?? false,
+        total:         lastResult?.total ?? 0,
+        durationMs:    Date.now() - t0,
+      };
     } catch (err) {
       summary[universe] = {
-        error: err instanceof Error ? err.message : String(err),
+        error:      err instanceof Error ? err.message : String(err),
+        chunks,
         durationMs: Date.now() - t0,
       };
     }
   }
 
+  // Full scans for small universes (CEO, 20 tickers — always fast)
   for (const universe of FULL_UNIVERSES) {
     const t0 = Date.now();
     try {
@@ -57,7 +83,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       summary[universe] = { scanned, total, durationMs: Date.now() - t0 };
     } catch (err) {
       summary[universe] = {
-        error: err instanceof Error ? err.message : String(err),
+        error:      err instanceof Error ? err.message : String(err),
         durationMs: Date.now() - t0,
       };
     }

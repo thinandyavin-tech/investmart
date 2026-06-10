@@ -6,11 +6,15 @@
     },
     {
       "path": "/api/cron/radar-precompute",
-      "schedule": "*/15 13-22 * * 1-5"
+      "schedule": "30 13 * * 1-5"
+    },
+    {
+      "path": "/api/cron/radar-precompute",
+      "schedule": "0 18 * * 1-5"
     },
     {
       "path": "/api/cron/check-alerts",
-      "schedule": "*/15 13-22 * * 1-5"
+      "schedule": "30 14 * * 1-5"
     }
   ]
 }
