@@ -291,31 +291,26 @@ export function RadarPage() {
     void fetchScan(universe);
   }, [universe, fetchScan]);
 
-  // Auto-poll when building or refreshing
+  // Poll only when building with no results yet — stops as soon as any data arrives.
+  // When stale/refreshing with existing results, the external scheduler handles updates;
+  // no client-side polling needed (prevents 429 on the scan endpoint).
   useEffect(() => {
-    const isBuilding = scanData?.building || scanData?.refreshing;
-    if (!isBuilding) {
+    const shouldPoll = scanData?.building === true && (scanData?.results?.length ?? 0) === 0;
+    if (!shouldPoll) {
       if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = null;
       return;
     }
-    pollRef.current = setInterval(() => void fetchScan(universe), 20_000);
+    pollRef.current = setInterval(() => void fetchScan(universe), 30_000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = null;
     };
-  }, [scanData?.building, scanData?.refreshing, universe, fetchScan]);
+  }, [scanData?.building, scanData?.results?.length, universe, fetchScan]);
 
-  // Manual refresh — resets cursor so next cron tick starts a fresh cycle
+  // Refresh — re-reads the cache only, never triggers a scan
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    try {
-      await fetch("/api/radar/trigger", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ universe }),
-      });
-    } catch { /* non-fatal */ }
     await fetchScan(universe);
     setRefreshing(false);
   }, [universe, fetchScan]);
