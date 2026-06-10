@@ -5,7 +5,6 @@ import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
-import { GlobalBackground } from "@/components/background/GlobalBackground";
 import "./globals.css";
 
 const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
@@ -74,7 +73,6 @@ export default function RootLayout({
         }}
       >
         <ThemeProvider>
-          <GlobalBackground />
           <UserProvider>
             {children}
             <OnboardingFlow />
