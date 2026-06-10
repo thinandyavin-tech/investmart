@@ -1,3 +1,15 @@
+/**
+ * Radar scan endpoint — reads from cache ONLY on the hot path.
+ *
+ * Architecture:
+ *  - GET ?universe=SP500 → instant read from L1 (memory) or L2 (DB)
+ *  - Cold cache: return {building:true} immediately, trigger precompute async
+ *  - Stale but usable: return stale data + trigger background refresh
+ *  - NEVER blocks the request for a live full-universe scan
+ *
+ * The actual scanning lives in /api/cron/radar-precompute (scheduled) or
+ * /api/radar/trigger (on-demand admin). This endpoint is read-only.
+ */
 import { NextRequest, NextResponse } from "next/server";
 
 import { type Universe } from "@/lib/stockUniverse";
@@ -8,7 +20,7 @@ import { scanUniverse, loadDbScan, saveDbScan, dbScanFresh, dbScanUsable } from 
 import { applyRateLimit } from "@/lib/rateLimit";
 
 export const dynamic    = "force-dynamic";
-export const maxDuration = 300; // full SP500 live scan takes ~110 s; SET50 ~20s
+export const maxDuration = 15; // reads only — should return in <1s from cache
 
 interface FilterOpts {
   minScore:   number;
@@ -32,16 +44,27 @@ function markNew(results: StockMetrics[], base: Set<string>): void {
   for (const s of results) s.isNew = base.size > 0 && !base.has(s.ticker);
 }
 
+function triggerBackgroundScan(universe: Universe, apiKey: string): void {
+  void (async () => {
+    try {
+      const { results, total } = await scanUniverse(universe, apiKey);
+      await saveDbScan(universe, results, total);
+      // Warm L1 with the no-filter set so next read is instant
+      const opts: FilterOpts = { minScore: 0, capSize: "ALL", filterDead: false };
+      setScan(l1Key(universe, opts), { results, total, scannedAt: new Date().toISOString(), refreshing: false });
+    } catch { /* non-fatal — cron will retry */ }
+  })();
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const limited = await applyRateLimit(request, "scan");
   if (limited) return limited;
 
   const params     = request.nextUrl.searchParams;
   const universe   = (params.get("universe") ?? "SP500") as Universe;
-  const minScore   = parseInt(params.get("minScore") ?? "20", 10);
+  const minScore   = parseInt(params.get("minScore") ?? "0", 10);
   const capSize    = (params.get("capSize") ?? "ALL") as CapSize;
   const filterDead = params.get("filterDead") !== "false";
-  const force      = params.get("force") === "true";
 
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "API not configured" }, { status: 500 });
@@ -50,51 +73,37 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const key  = l1Key(universe, opts);
   const base = getBaseline(key);
 
-  if (!force) {
-    // L1: in-process memory (hot path — same warm instance)
-    const l1 = getScan(key);
-    if (l1 && !isStale(l1)) {
-      return NextResponse.json({ ...l1, cached: true });
-    }
-
-    // L2: persistent DB (survives cold starts and multiple instances)
-    const db = await loadDbScan(universe);
-    if (db && dbScanUsable(db)) {
-      const filtered = applyFilters(db.results, opts);
-      markNew(filtered, base);
-      const entry: ScanEntry = {
-        results: filtered, total: db.total,
-        scannedAt: db.scannedAt, refreshing: false,
-      };
-
-      if (dbScanFresh(db)) {
-        setScan(key, entry);
-        return NextResponse.json({ ...entry, cached: true });
-      }
-
-      // Stale but usable: serve immediately, refresh DB in background
-      setScan(key, { ...entry, refreshing: true });
-      void (async () => {
-        try {
-          const { results, total } = await scanUniverse(universe, apiKey);
-          await saveDbScan(universe, results, total);
-          const refreshed = applyFilters(results, opts);
-          markNew(refreshed, base);
-          setScan(key, { results: refreshed, total, scannedAt: new Date().toISOString(), refreshing: false });
-        } catch { /* background refresh failed — next request will retry */ }
-      })();
-      return NextResponse.json({ ...entry, cached: true, refreshing: true });
-    }
+  // ── L1: in-process memory ─────────────────────────────────────────────────
+  const l1 = getScan(key);
+  if (l1 && !isStale(l1)) {
+    return NextResponse.json({ ...l1, cached: true, building: false });
   }
 
-  // No usable cache — run a live scan, persist to DB, return
-  const { results, scanned, total } = await scanUniverse(universe, apiKey);
-  await saveDbScan(universe, results, total).catch(() => { /* non-fatal */ });
-  const filtered = applyFilters(results, opts);
-  markNew(filtered, base);
-  const entry: ScanEntry = {
-    results: filtered, total, scannedAt: new Date().toISOString(), refreshing: false,
-  };
-  setScan(key, entry);
-  return NextResponse.json({ ...entry, scanned, cached: false });
+  // ── L2: persistent DB ─────────────────────────────────────────────────────
+  const db = await loadDbScan(universe);
+
+  if (db && dbScanUsable(db)) {
+    const filtered = applyFilters(db.results, opts);
+    markNew(filtered, base);
+    const entry: ScanEntry = {
+      results: filtered, total: db.total,
+      scannedAt: db.scannedAt, refreshing: false,
+    };
+
+    if (dbScanFresh(db)) {
+      setScan(key, entry);
+      return NextResponse.json({ ...entry, cached: true, refreshing: false, building: false });
+    }
+
+    setScan(key, { ...entry, refreshing: true });
+    triggerBackgroundScan(universe, apiKey);
+    return NextResponse.json({ ...entry, cached: true, refreshing: true, building: false });
+  }
+
+  // ── Cold cache — NON-BLOCKING ─────────────────────────────────────────────
+  triggerBackgroundScan(universe, apiKey);
+  return NextResponse.json({
+    results: [], total: 0, scannedAt: null,
+    cached: false, refreshing: false, building: true,
+  });
 }
