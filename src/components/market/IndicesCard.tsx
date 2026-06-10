@@ -52,51 +52,63 @@ function Sparkline({ prices, positive }: { prices: number[]; positive: boolean }
 export function IndicesCard() {
   const [indices, setIndices] = useState<IndexData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(false);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(false);
     fetch("/api/market/indices")
       .then((r) => r.json())
-      .then((d: { indices?: IndexData[] }) => {
-        setIndices(d.indices ?? []);
-      })
-      .catch(() => {})
+      .then((d: { indices?: IndexData[] }) => { setIndices(d.indices ?? []); })
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-slate-100">
-        <h2 className="text-xs font-bold uppercase tracking-widest">ดัชนีหลัก</h2>
+      <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">ดัชนีหลัก</h2>
+        <p className="text-[10px] text-[#8A8378] mt-0.5">Finnhub · อาจล่าช้า 15 นาที</p>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-[#E8E2D4]">
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center justify-between px-3 py-2.5">
-              <div className="h-3 w-20 bg-slate-200 animate-pulse rounded" />
-              <div className="h-3 w-16 bg-slate-200 animate-pulse rounded" />
+              <div className="h-3 w-20 skeleton rounded" />
+              <div className="h-3 w-16 skeleton rounded" />
             </div>
           ))}
         </div>
+      ) : error ? (
+        <div className="px-3 py-5 text-center">
+          <p className="text-xs text-[#8A8378] mb-2">โหลดข้อมูลไม่ได้</p>
+          <button
+            onClick={load}
+            className="text-xs font-bold text-[#5B8A2A] hover:underline focus-visible:underline"
+          >
+            ลองใหม่
+          </button>
+        </div>
       ) : indices.length === 0 ? (
-        <p className="px-3 py-4 text-xs text-slate-500 text-center">
-          ไม่สามารถโหลดข้อมูลดัชนีได้
-        </p>
+        <p className="px-3 py-5 text-xs text-[#8A8378] text-center">ไม่พบข้อมูลดัชนี</p>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-[#E8E2D4]">
           {indices.map(({ symbol, name, price, change, sparkline }) => {
             const positive = change >= 0;
             const changeColor = positive ? "#16A34A" : "#DC2626";
             return (
               <div key={symbol} className="flex items-center gap-3 px-3 py-2">
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold truncate">{name}</div>
-                  <div className="text-xs text-slate-500">{symbol}</div>
+                  <div className="text-xs font-bold truncate text-[#1F1A14]">{name}</div>
+                  <div className="text-[10px] text-[#8A8378]">{symbol}</div>
                 </div>
                 <Sparkline prices={sparkline} positive={positive} />
                 <div className="text-right flex-shrink-0">
                   <div
-                    className="text-xs font-bold"
+                    className="text-xs font-bold text-[#1F1A14]"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
                     ${price.toFixed(2)}

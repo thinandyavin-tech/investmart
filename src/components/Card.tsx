@@ -1,8 +1,8 @@
 import { HTMLAttributes } from "react";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "outline";
-  /** @deprecated offset is kept for backwards compatibility but has no visual effect */
+  variant?: "default" | "outline" | "ghost";
+  /** @deprecated kept for backwards compatibility, has no visual effect */
   offset?: "pink" | "none";
 }
 
@@ -16,8 +16,10 @@ export function Card({
 }: CardProps) {
   const base =
     variant === "outline"
-      ? "bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl"
-      : "bg-white/75 dark:bg-slate-900/70 backdrop-blur-md rounded-xl shadow-card border border-white/40 dark:border-slate-700/60";
+      ? "bg-transparent border border-[#E0D9CC]"
+      : variant === "ghost"
+        ? "bg-transparent"
+        : "bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card backdrop-blur-sm";
 
   return (
     <div className={`${base} ${className}`} {...props}>

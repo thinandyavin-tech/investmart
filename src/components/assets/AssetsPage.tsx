@@ -39,63 +39,58 @@ function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: s
 
 function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number; onTrade: (t: string, s: "BUY" | "SELL") => void }) {
   const [open, setOpen] = useState(false);
-  const pnlPos = h.unrealizedPnlUsd >= 0;
 
   return (
-    <div className="border-b border-slate-100 dark:border-slate-800">
+    <div className="border-b border-white/20 last:border-0">
       <button
-        className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/30 transition-colors text-left"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={`${h.companyName} ${open ? "ซ่อนรายละเอียด" : "แสดงรายละเอียด"}`}
       >
-        <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={32} />
+        <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={36} />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1">
-            <span className="font-semibold text-sm text-slate-900 dark:text-white">{h.ticker}</span>
-            <span className="text-xs text-slate-400 dark:text-slate-500">{h.weight.toFixed(1)}%</span>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-sm font-mono text-slate-900">{h.ticker}</span>
+            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${h.unrealizedPnlUsd >= 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+              {pctFmt(h.unrealizedPnlPct)}
+            </span>
           </div>
-          <div className="text-xs text-slate-400 dark:text-slate-500 truncate">{h.companyName}</div>
+          <div className="text-xs text-slate-500 truncate">{h.companyName} · {h.weight.toFixed(1)}% ของพอร์ต</div>
         </div>
-        <div className="text-right w-24 flex-shrink-0">
-          <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">{thb(h.holdingValueThb)}</div>
-          <div className={`text-xs ${clr(h.change1D)}`}>{pctFmt(h.change1D)}</div>
+        <div className="text-right flex-shrink-0">
+          <div className="text-sm font-bold font-mono text-slate-900">{thb(h.holdingValueThb)}</div>
+          <div className={`text-xs font-semibold ${clr(h.change1D)}`}>{pctFmt(h.change1D)} วันนี้</div>
         </div>
-        <div className={`text-right w-20 flex-shrink-0`}>
-          <div className={`text-sm font-semibold ${clr(h.unrealizedPnlUsd)}`}>
-            {h.unrealizedPnlUsd >= 0 ? "+" : "-"}{thb(h.unrealizedPnlThb)}
-          </div>
-          <div className={`text-xs ${clr(h.unrealizedPnlPct)}`}>{pctFmt(h.unrealizedPnlPct)}</div>
-        </div>
-        <span className={`text-slate-400 dark:text-slate-600 text-xs ml-1 transition-transform ${open ? "rotate-180" : ""}`}>▾</span>
+        <span className={`text-slate-400 text-xs ml-1 transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▾</span>
       </button>
 
       {open && (
-        <div className="px-4 pb-3 pt-1 bg-slate-50 dark:bg-slate-800/40 space-y-2">
-          <div className="grid grid-cols-4 gap-2 text-xs">
+        <div className="px-4 pb-4 pt-1 bg-white/20 space-y-3">
+          <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
             {[
-              ["ถือหุ้น",     `${h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })} หุ้น`],
-              ["ราคาปัจจุบัน", usd(h.currentPrice)],
-              ["ราคาเฉลี่ย",  usd(h.avgCost)],
-              ["ต้นทุนรวม",   usd(h.totalCostUsd)],
+              ["ถือหุ้น",      `${h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })} หุ้น`],
+              ["ราคาปัจจุบัน",  usd(h.currentPrice)],
+              ["ราคาเฉลี่ย",   usd(h.avgCost)],
+              ["ต้นทุนรวม",    usd(h.totalCostUsd)],
             ].map(([label, val]) => (
-              <div key={label} className="bg-white dark:bg-slate-800 rounded-lg p-2">
-                <div className="text-slate-400 dark:text-slate-500 mb-0.5">{label}</div>
-                <div className="font-mono font-semibold text-slate-800 dark:text-slate-200">{val}</div>
+              <div key={label as string} className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5 border border-white/40">
+                <div className="text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">{label}</div>
+                <div className="font-mono font-bold text-slate-800 text-xs">{val}</div>
               </div>
             ))}
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={() => onTrade(h.ticker, "BUY")}
-              className="flex-1 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
-            >
+            <button onClick={() => onTrade(h.ticker, "BUY")}
+              className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors shadow-sm">
               ซื้อเพิ่ม
             </button>
-            <button
-              onClick={() => onTrade(h.ticker, "SELL")}
-              className="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors"
-            >
+            <Link href={`/stock/${h.ticker}`}
+              className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors text-center shadow-sm">
+              ดูกราฟ
+            </Link>
+            <button onClick={() => onTrade(h.ticker, "SELL")}
+              className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors shadow-sm">
               ขาย
             </button>
           </div>
@@ -236,38 +231,62 @@ export function AssetsPage() {
   function closeTrade() { setBuySell(null); }
   function afterTrade() { setBuySell(null); void fetchData(); }
 
-  if (authLoading) return null;
+  if (authLoading) {
+    return (
+      <main className="px-4 pt-6 space-y-4 animate-pulse max-w-5xl mx-auto">
+        <div className="h-8 w-48 bg-white/40 rounded-xl" />
+        <div className="h-16 w-64 bg-white/40 rounded-2xl" />
+        <div className="flex gap-4">
+          <div className="h-10 flex-1 bg-white/30 rounded-xl" />
+          <div className="h-10 flex-1 bg-white/30 rounded-xl" />
+        </div>
+        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-white/30 rounded-xl" />)}
+      </main>
+    );
+  }
 
   if (!user) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <div className="text-4xl">🔒</div>
-        <p className="text-slate-600 dark:text-slate-400 text-center">กรุณาเข้าสู่ระบบเพื่อดูพอร์ตของคุณ</p>
-        <Link href="/signin" className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-sm transition-colors">
-          เข้าสู่ระบบ
-        </Link>
+      <main className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-4 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-white/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-3xl">📊</div>
+        <div>
+          <p className="text-lg font-bold text-slate-800 mb-1">ดูพอร์ตหุ้นของคุณ</p>
+          <p className="text-sm text-slate-500">เข้าสู่ระบบเพื่อซื้อขายหุ้น และติดตามพอร์ตแบบ real-time</p>
+        </div>
+        <div className="flex gap-3">
+          <Link href="/signup" className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold text-sm transition-colors">
+            สมัครฟรี
+          </Link>
+          <Link href="/signin" className="px-6 py-2.5 bg-white/60 backdrop-blur-md border border-white/30 text-slate-700 rounded-xl font-semibold text-sm hover:bg-white/80 transition-colors">
+            เข้าสู่ระบบ
+          </Link>
+        </div>
+        <p className="text-xs text-slate-400">เริ่มต้นด้วยเงินเสมือน ฿1,250,000 — ไม่ใช้เงินจริง</p>
       </main>
     );
   }
 
   if (loading) {
     return (
-      <main className="px-4 pt-4 space-y-3 animate-pulse">
-        <div className="h-40 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-        <div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-14 bg-slate-100 dark:bg-slate-800 rounded-xl" />
-        ))}
+      <main className="px-4 pt-4 space-y-3 animate-pulse max-w-5xl mx-auto">
+        <div className="h-6 w-40 bg-white/40 rounded-lg" />
+        <div className="h-14 w-56 bg-white/40 rounded-2xl" />
+        <div className="flex gap-3">
+          <div className="h-12 flex-1 bg-white/30 rounded-xl" />
+          <div className="h-12 flex-1 bg-white/30 rounded-xl" />
+        </div>
+        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-white/30 rounded-xl" />)}
       </main>
     );
   }
 
   if (error || !data) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-[60vh] gap-3 px-4">
-        <p className="text-red-500">{error ?? "ไม่พบข้อมูล"}</p>
+      <main className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
+        <div className="text-4xl">⚠️</div>
+        <p className="text-slate-700 font-semibold">{error ?? "ไม่พบข้อมูลพอร์ต"}</p>
         <button onClick={() => { setLoading(true); void fetchData(); }}
-          className="px-4 py-2 text-sm text-emerald-600 dark:text-emerald-400 underline">
+          className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-semibold transition-colors">
           ลองใหม่
         </button>
       </main>
@@ -291,30 +310,40 @@ export function AssetsPage() {
 
   return (
     <main className="min-h-screen pb-24 lg:pb-8">
-      {/* Header card */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 pt-4 pb-5">
+      {/* ── Hero header ──────────────────────────────────────────────────── */}
+      <div className="px-4 pt-5 pb-4 bg-white/60 backdrop-blur-md border-b border-white/20">
         <div className="max-w-5xl mx-auto">
-          <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">มูลค่าพอร์ตทั้งหมด · {asOfTime}</p>
-          <p className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
+          {/* Label row */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">มูลค่าพอร์ตทั้งหมด</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 font-semibold">เงินเสมือน</span>
+            <span className="text-xs text-slate-400 ml-auto">อัพเดต {asOfTime}</span>
+          </div>
+
+          {/* Hero value */}
+          <p className="text-4xl font-bold font-mono text-slate-900 tracking-tight mb-3">
             {thb(totalValueThb)}
           </p>
-          <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
-            <div>
-              <span className="text-slate-400 dark:text-slate-500 text-xs mr-1">วันนี้</span>
-              <span className={`font-semibold ${clr(change1DThb)}`}>
-                {change1DThb >= 0 ? "+" : "-"}{thb(change1DThb)}
-              </span>
-              <span className={`ml-1 text-xs ${clr(change1DPct)}`}>({pctFmt(change1DPct)})</span>
+
+          {/* P&L stats */}
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-6">
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40">
+              <p className="text-xs text-slate-500 mb-0.5">วันนี้</p>
+              <p className={`text-base font-bold font-mono ${clr(change1DThb)}`}>
+                {change1DThb >= 0 ? "+" : ""}{thb(change1DThb)}
+              </p>
+              <p className={`text-xs ${clr(change1DPct)}`}>{pctFmt(change1DPct)}</p>
             </div>
-            <div>
-              <span className="text-slate-400 dark:text-slate-500 text-xs mr-1">P/L</span>
-              <span className={`font-semibold ${clr(unrealizedPnlThb)}`}>
-                {unrealizedPnlThb >= 0 ? "+" : "-"}{thb(unrealizedPnlThb)}
-              </span>
-              <span className={`ml-1 text-xs ${clr(unrealizedPnlPct)}`}>({pctFmt(unrealizedPnlPct)})</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40">
+              <p className="text-xs text-slate-500 mb-0.5">กำไร/ขาดทุนรวม</p>
+              <p className={`text-base font-bold font-mono ${clr(unrealizedPnlThb)}`}>
+                {unrealizedPnlThb >= 0 ? "+" : ""}{thb(unrealizedPnlThb)}
+              </p>
+              <p className={`text-xs ${clr(unrealizedPnlPct)}`}>{pctFmt(unrealizedPnlPct)}</p>
             </div>
-            <div className="text-xs text-slate-400 dark:text-slate-500 self-center">
-              1 USD = {fxRate.toFixed(2)} THB
+            <div className="sm:flex-none bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40 col-span-2 sm:col-span-1">
+              <p className="text-xs text-slate-500 mb-0.5">อัตราแลกเปลี่ยน</p>
+              <p className="text-sm font-semibold font-mono text-slate-700">1 USD = {fxRate.toFixed(2)} THB</p>
             </div>
           </div>
         </div>
@@ -365,10 +394,15 @@ export function AssetsPage() {
                 <span className="w-4" />
               </div>
 
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+              <div className="bg-white/50 backdrop-blur-md rounded-2xl border border-white/30 overflow-hidden">
                 {sorted.length === 0 && (
-                  <div className="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">
-                    ยังไม่มีหุ้น — ไปซื้อหุ้นแรกได้เลย!
+                  <div className="text-center py-14 px-6">
+                    <div className="text-4xl mb-3">📈</div>
+                    <p className="text-base font-semibold text-slate-700 mb-1">ยังไม่มีหุ้นในพอร์ต</p>
+                    <p className="text-sm text-slate-500 mb-4">เริ่มซื้อหุ้นแรกด้วยเงินเสมือน ฿1,250,000</p>
+                    <Link href="/radar" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                      📡 ค้นหาหุ้นด้วย Radar
+                    </Link>
                   </div>
                 )}
                 {sorted.map((h) => (

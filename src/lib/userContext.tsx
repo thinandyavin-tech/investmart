@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { signOut as nextAuthSignOut } from "next-auth/react";
 
+import type { TierKey, BadgeKey } from "@/lib/traderTier";
+
 interface Holding {
   ticker:   string;
   shares:   number;
@@ -22,7 +24,9 @@ interface UserState {
   isDemo:           boolean;
   isAdmin:          boolean;
   tradeCount:       number;
-  lastNameChangeAt: string | null; // ISO string
+  lastNameChangeAt: string | null;
+  tier:             TierKey;
+  badges:           BadgeKey[];
 }
 
 interface UserContextValue {

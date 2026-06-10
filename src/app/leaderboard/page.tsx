@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { useUser } from "@/lib/userContext";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
+import { TierBadge } from "@/components/TierBadge";
+import type { TierKey } from "@/lib/traderTier";
 
 interface LeaderboardEntry {
   rank:     number;
@@ -12,8 +15,10 @@ interface LeaderboardEntry {
   name:     string | null;
   totalThb: number;
   pnl:      number;
+  pnlPct:   number;
   trades:   number;
   holdings: number;
+  tier:     TierKey;
 }
 
 const RANK_ICONS: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
@@ -110,6 +115,7 @@ export default function LeaderboardPage() {
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-bold text-xs">{displayName}</span>
+                        <TierBadge tier={e.tier} size="xs" />
                         {e.name && e.username && (
                           <span className="text-xs text-[#8A8378]">{handle}</span>
                         )}
@@ -129,7 +135,8 @@ export default function LeaderboardPage() {
                         className="text-xs"
                         style={{ color: e.pnl >= 0 ? "#5B8A2A" : "#DC2626" }}
                       >
-                        {e.pnl >= 0 ? "+" : ""}{formatTHB(e.pnl)}
+                        {e.pnl >= 0 ? "+" : ""}{formatTHB(e.pnl)}{" "}
+                        ({e.pnl >= 0 ? "+" : ""}{e.pnlPct?.toFixed(1) ?? "0.0"}%)
                       </div>
                     </td>
                     <td className="px-3 py-2.5 text-right text-xs text-[#8A8378] hidden sm:table-cell"

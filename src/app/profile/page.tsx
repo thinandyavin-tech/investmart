@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+
 import { useUser } from "@/lib/userContext";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { PortfolioChart } from "@/components/home/PortfolioChart";
 import { AiPortfolioCard } from "@/components/profile/AiPortfolioCard";
+import { TierBadge } from "@/components/TierBadge";
+import { getBadgeDef } from "@/lib/traderTier";
 
 const STARTING_THB = 1_250_000;
 const FALLBACK_FX  = 35.2;
@@ -63,9 +66,12 @@ export default function ProfilePage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h1 className="text-sm font-bold">
-                    {loading ? "กำลังโหลด..." : displayName}
-                  </h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-sm font-bold">
+                      {loading ? "กำลังโหลด..." : displayName}
+                    </h1>
+                    {!loading && user && <TierBadge tier={user.tier} size="xs" />}
+                  </div>
                   <p className="text-xs text-[#8A8378]">{loading ? "..." : handle}</p>
                 </div>
                 {!loading && user && (
@@ -86,6 +92,28 @@ export default function ProfilePage() {
             </div>
           </div>
         </Card>
+
+        {/* Badges */}
+        {!loading && user && user.badges.length > 0 && (
+          <Card className="p-3">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2">ความสำเร็จ</h2>
+            <div className="flex flex-wrap gap-2">
+              {user.badges.map((key) => {
+                const b = getBadgeDef(key);
+                return (
+                  <div
+                    key={key}
+                    title={b.desc}
+                    className="flex items-center gap-1.5 px-2 py-1 bg-[#F8F5EF] border border-[#E8E2D4] text-xs font-bold"
+                  >
+                    <span aria-hidden="true">{b.icon}</span>
+                    <span>{b.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
 
         {/* Portfolio Summary */}
         {!loading && user && (

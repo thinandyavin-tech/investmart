@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+
 import { FeedSection } from "@/components/social/FeedSection";
+import { TierBadge } from "@/components/TierBadge";
 import { useUser } from "@/lib/userContext";
+import type { TierKey } from "@/lib/traderTier";
 
 interface TraderProfile {
   id:             string;
@@ -16,6 +19,7 @@ interface TraderProfile {
   followerCount:  number;
   followingCount: number;
   tradeCount:     number;
+  tier:           TierKey;
   isFollowing:    boolean;
   isSelf:         boolean;
 }
@@ -153,17 +157,11 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
           </div>
         </div>
 
-        <p className="text-sm font-bold">{displayName}</p>
+        <div className="flex items-center gap-2 flex-wrap mt-1">
+          <p className="text-sm font-bold">{displayName}</p>
+          <TierBadge tier={profile.tier} size="xs" />
+        </div>
         <p className="text-xs text-[#8A8378]">{shortId}</p>
-
-        {isTrader && (
-          <span
-            className="inline-block mt-1 text-xs px-1.5 py-0.5 font-bold border rounded-sm"
-            style={{ borderColor: "#8B5CF6", color: "#8B5CF6" }}
-          >
-            TRADER
-          </span>
-        )}
 
         {profile.bio && (
           <p className="text-xs text-[#1F1A14] mt-2 leading-relaxed">{profile.bio}</p>

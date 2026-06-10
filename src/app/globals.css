@@ -181,6 +181,78 @@ html {
   }
 }
 
+/* ── Focus ring — visible for keyboard users, hidden for mouse ──────────── */
+:focus-visible {
+  outline: 2px solid #1F1A14;
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Links get an underline on focus-visible, not a box */
+a:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-underline-offset: 3px;
+}
+
+/* ── Interactive link and button base ───────────────────────────────────── */
+button, a, [role="button"] {
+  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+/* ── Price flash animation ──────────────────────────────────────────────── */
+@keyframes price-up {
+  0%   { background-color: rgba(91, 138, 42, 0.2); }
+  100% { background-color: transparent; }
+}
+@keyframes price-down {
+  0%   { background-color: rgba(220, 38, 38, 0.2); }
+  100% { background-color: transparent; }
+}
+.price-flash-up   { animation: price-up   600ms ease forwards; }
+.price-flash-down { animation: price-down 600ms ease forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .price-flash-up, .price-flash-down { animation: none; }
+}
+
+/* ── Skeleton shimmer ───────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #E8E2D4 25%, #F0EBE1 50%, #E8E2D4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; background: #E8E2D4; }
+}
+
+/* ── Input base — consistent across all pages ───────────────────────────── */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  border-color: #C8BFB0;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #1F1A14;
+  box-shadow: 0 0 0 2px rgba(31,26,20,0.12);
+}
+
 /* Respect reduced-motion preference for all transitions and animations */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

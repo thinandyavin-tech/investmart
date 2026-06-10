@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
+import { computeTier } from "@/lib/traderTier";
 
 const FALLBACK_FX = 35.2;
 
@@ -69,16 +71,21 @@ export async function GET(): Promise<NextResponse> {
         const priceUsd  = livePrice ?? h.avgCost;
         return sum + h.shares * priceUsd * FALLBACK_FX;
       }, 0);
-      const totalThb = u.cashThb + u.cashUsd * FALLBACK_FX + holdingValue;
-      const pnl      = totalThb - 1_250_000;
+      const totalThb   = u.cashThb + u.cashUsd * FALLBACK_FX + holdingValue;
+      const pnl        = totalThb - 1_250_000;
+      const pnlPct     = (pnl / 1_250_000) * 100;
+      const tradeCount = u._count.tradeHistory;
+      const tier       = computeTier({ pnlPct, tradeCount });
       return {
         id:       u.id.slice(-6),
         name:     u.name ?? "นักลงทุน",
         username: u.username,
         totalThb,
         pnl,
-        trades:   u._count.tradeHistory,
+        pnlPct,
+        trades:   tradeCount,
         holdings: u.holdings.length,
+        tier,
       };
     })
     .sort((a, b) => b.totalThb - a.totalThb)
