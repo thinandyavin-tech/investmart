@@ -17,16 +17,17 @@ type SortField = "rank" | "change" | "volume" | "score";
 
 interface ScanResponse {
   results:    StockMetrics[];
-  total:      number;
-  scannedAt:  string | null;
-  cached:     boolean;
-  refreshing: boolean;
-  building:   boolean;
+  total:        number;
+  scannedAt:    string | null;
+  cached:       boolean;
+  refreshing:   boolean;
+  building:     boolean;
+  scannedCount: number;
 }
 
 const UNIVERSES: { value: Universe; label: string; desc: string }[] = [
-  { value: "SP500",    label: "S&P 500",     desc: "503 หุ้น" },
-  { value: "NASDAQ100",label: "Nasdaq 100",  desc: "100 หุ้น" },
+  { value: "NASDAQ100",label: "Nasdaq 100",  desc: "95 หุ้น" },
+  { value: "SP500",    label: "S&P 500",     desc: "150 หุ้น" },
   { value: "CEO",      label: "CEO Picks",   desc: "20 หุ้น" },
   { value: "SET50",    label: "SET 50 ⚠️",    desc: "ข้อมูลล่าช้า" },
 ];
@@ -165,15 +166,18 @@ function WhyHere({ s }: { s: StockMetrics }) {
 
 // ─── Building / empty state ───────────────────────────────────────────────────
 
-function BuildingState({ universe }: { universe: Universe }) {
+function BuildingState({ universe, scannedCount, total }: {
+  universe: Universe;
+  scannedCount: number;
+  total: number;
+}) {
   if (universe === "SET50") {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-3">
         <span className="text-2xl">🇹🇭</span>
-        <p className="text-sm font-semibold text-slate-700">ข้อมูล SET50 ไม่พร้อมใช้งาน</p>
-        <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-          Finnhub free tier ไม่รองรับหุ้นไทย (.BK) — ต้องการ Finnhub Growth/Premium plan
-          สำหรับข้อมูล SET จริง
+        <p className="text-sm font-semibold text-[#1F1A14]">ข้อมูล SET50 ไม่พร้อมใช้งาน</p>
+        <p className="text-xs text-[#8A8378] max-w-sm leading-relaxed">
+          Finnhub free tier ไม่รองรับหุ้นไทย (.BK) · ต้องการ Finnhub Growth/Premium
         </p>
         <Link href="/browse?index=SET50" className="text-xs font-semibold text-violet-600 hover:underline mt-1">
           ดูรายชื่อ SET50 →
@@ -182,13 +186,34 @@ function BuildingState({ universe }: { universe: Universe }) {
     );
   }
 
+  const hasPartial = scannedCount > 0 && total > 0;
+
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-3">
-      <div className="w-8 h-8 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
-      <p className="text-sm font-semibold text-slate-700">กำลังสร้างผลสแกน…</p>
-      <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
-        การสแกนครั้งแรกใช้เวลา 1–2 นาที หน้านี้จะโหลดผลโดยอัตโนมัติ
-      </p>
+      {hasPartial ? (
+        <>
+          <p className="text-sm font-semibold text-[#1F1A14]">
+            สแกนแล้ว {scannedCount}/{total} หุ้น…
+          </p>
+          <div className="w-48 h-1.5 bg-[#E8E2D4] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-violet-500 rounded-full transition-all"
+              style={{ width: `${Math.round((scannedCount / total) * 100)}%` }}
+            />
+          </div>
+          <p className="text-xs text-[#8A8378]">ผลบางส่วนกำลังโหลด…</p>
+        </>
+      ) : (
+        <>
+          <p className="text-sm font-semibold text-[#1F1A14]">ยังไม่มีผลสแกน</p>
+          <p className="text-xs text-[#8A8378] max-w-xs leading-relaxed">
+            ผลสแกนจะอัพเดตทุก ~15 นาที ระหว่างตลาดเปิด
+          </p>
+          <p className="text-xs text-[#8A8378]">
+            (US market: จ.–ศ. 21:30–04:00 น. ตามเวลาไทย)
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -228,7 +253,7 @@ export function RadarPage() {
   const [error,     setError]     = useState<string | null>(null);
 
   // UI filters — applied client-side on the full cached set
-  const [universe,  setUniverse]  = useState<Universe>("SP500");
+  const [universe,  setUniverse]  = useState<Universe>("NASDAQ100");
   const [sector,    setSector]    = useState("ALL");
   const [category,  setCategory]  = useState<StockMetrics["category"] | "ALL">("ALL");
   const [minScore,  setMinScore]  = useState(0);
@@ -291,11 +316,15 @@ export function RadarPage() {
     };
   }, [scanData?.building, scanData?.refreshing, universe, fetchScan]);
 
-  // Manual refresh (triggers precompute + polls)
+  // Manual refresh — resets cursor so next cron tick starts a fresh cycle
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await fetch("/api/radar/trigger", { method: "POST" });
+      await fetch("/api/radar/trigger", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ universe }),
+      });
     } catch { /* non-fatal */ }
     await fetchScan(universe);
     setRefreshing(false);
@@ -345,10 +374,11 @@ export function RadarPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
-  const isBuilding   = scanData?.building === true;
-  const isRefreshing = scanData?.refreshing === true;
-  const scannedAt    = scanData?.scannedAt ?? null;
+  const isBuilding    = scanData?.building === true;
+  const isRefreshing  = scanData?.refreshing === true;
+  const scannedAt     = scanData?.scannedAt ?? null;
   const totalUniverse = scanData?.total ?? 0;
+  const scannedCount  = scanData?.scannedCount ?? 0;
 
   return (
     <div className="flex flex-col h-full">
@@ -361,15 +391,20 @@ export function RadarPage() {
               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-800">
                 📡 Radar — สัญญาณโมเมนตัม
               </h1>
-              <p className="text-[10px] text-slate-400 mt-0.5">
-                {loading ? "กำลังโหลด…" :
-                 isBuilding ? "กำลังสร้างผลสแกน…" :
-                 isRefreshing ? "กำลังอัพเดต…" :
-                 filtered.length > 0
-                   ? `${filtered.length.toLocaleString()} จาก ${totalUniverse.toLocaleString()} หุ้น · อัพเดต ${timeAgo(scannedAt)}`
-                   : allResults.length > 0
-                   ? `ไม่พบหุ้นตามเงื่อนไข · ลองลด minScore`
-                   : "ยังไม่มีข้อมูล"}
+              <p className="text-[10px] text-[#8A8378] mt-0.5">
+                {loading
+                  ? "กำลังโหลด…"
+                  : isBuilding && scannedCount > 0
+                  ? `สแกนแล้ว ${scannedCount}/${totalUniverse} หุ้น (กำลังอัพเดต)`
+                  : isBuilding
+                  ? "ผลสแกนจะอัพเดตทุก ~15 นาที"
+                  : isRefreshing
+                  ? `${allResults.length} หุ้น · กำลังรีเฟรช…`
+                  : filtered.length > 0
+                  ? `${filtered.length.toLocaleString()} จาก ${allResults.length.toLocaleString()} หุ้น · ${timeAgo(scannedAt)}`
+                  : allResults.length > 0
+                  ? "ไม่พบหุ้นตามเงื่อนไข · ลองลด minScore"
+                  : "ยังไม่มีข้อมูล"}
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -518,9 +553,9 @@ export function RadarPage() {
               </div>
             )}
 
-            {/* Building / SET50 unavailable */}
-            {!loading && !error && isBuilding && (
-              <BuildingState universe={universe} />
+            {/* Building / partial / SET50 unavailable */}
+            {!loading && !error && isBuilding && allResults.length === 0 && (
+              <BuildingState universe={universe} scannedCount={scannedCount} total={totalUniverse} />
             )}
 
             {/* Results */}
