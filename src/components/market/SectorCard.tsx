@@ -41,39 +41,50 @@ function Bar({ change, maxAbs }: { change: number; maxAbs: number }) {
 export function SectorCard() {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(false);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(false);
     fetch("/api/market/sectors")
       .then((r) => r.json())
       .then((d: { sectors?: Sector[] }) => setSectors(d.sectors ?? []))
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const maxAbs = sectors.reduce((m, s) => Math.max(m, Math.abs(s.change)), 0);
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-slate-100">
-        <h2 className="text-xs font-bold uppercase tracking-widest">Sector Performance</h2>
+      <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">Sector Performance</h2>
+        <p className="text-[10px] text-[#8A8378] mt-0.5">US Equity · Finnhub</p>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-[#E8E2D4]">
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="flex items-center gap-2 px-3 py-1.5">
-              <div className="h-2.5 w-24 bg-slate-200 animate-pulse rounded" />
-              <div className="h-2 flex-1 bg-slate-200 animate-pulse rounded" />
+              <div className="h-2.5 w-24 skeleton rounded" />
+              <div className="h-2 flex-1 skeleton rounded" />
             </div>
           ))}
         </div>
+      ) : error ? (
+        <div className="px-3 py-5 text-center">
+          <p className="text-xs text-[#8A8378] mb-2">โหลดข้อมูลไม่ได้</p>
+          <button onClick={load} className="text-xs font-bold text-[#5B8A2A] hover:underline">ลองใหม่</button>
+        </div>
       ) : sectors.length === 0 ? (
-        <div className="px-3 py-4 text-center">
-          <p className="text-xs text-slate-500 mb-1">ข้อมูล Sector ไม่พร้อมใช้งาน</p>
-          <p className="text-xs text-slate-400">Finnhub free tier ไม่รองรับ sector performance</p>
+        <div className="px-3 py-5 text-center">
+          <p className="text-xs text-[#8A8378] mb-1">ข้อมูล Sector ไม่พร้อมใช้งาน</p>
+          <p className="text-[10px] text-[#8A8378]">Finnhub free tier ไม่รองรับ sector performance</p>
         </div>
       ) : (
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-[#E8E2D4]">
           {sectors.map(({ name, change }) => {
             const positive    = change >= 0;
             const changeColor = positive ? "#16A34A" : "#DC2626";
@@ -81,7 +92,7 @@ export function SectorCard() {
 
             return (
               <div key={name} className="flex items-center gap-2 px-3 py-1.5">
-                <span className="text-xs text-slate-900 w-28 flex-shrink-0 truncate" title={name}>
+                <span className="text-xs text-[#1F1A14] w-28 flex-shrink-0 truncate" title={name}>
                   {thaiName}
                 </span>
                 <Bar change={change} maxAbs={maxAbs} />

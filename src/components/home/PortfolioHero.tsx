@@ -225,8 +225,8 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
 
   if (snapshots.length < 2) {
     return (
-      <div className="h-20 flex items-center justify-center border border-dashed border-slate-300 rounded-xl">
-        <p className="text-xs text-slate-400">กำลังสร้างประวัติ… จะแสดงหลังซื้อขาย 2 ครั้งขึ้นไป</p>
+      <div className="h-20 flex items-center justify-center border border-dashed border-[#C8BFB0]">
+        <p className="text-xs text-[#8A8378]">กำลังสร้างประวัติ… จะแสดงหลังซื้อขาย 2 ครั้งขึ้นไป</p>
       </div>
     );
   }
@@ -237,16 +237,16 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
       <div className="flex gap-3 mt-1">
         <div className="flex items-center gap-1">
           <div className="w-3 h-0.5 rounded-full bg-violet-500" />
-          <span className="text-[10px] text-slate-500">พอร์ตคุณ</span>
+          <span className="text-[10px] text-[#8A8378]">พอร์ตคุณ</span>
         </div>
         {hasSpyData && (
           <div className="flex items-center gap-1">
-            <div className="w-3 h-0.5 rounded-full bg-slate-400" />
-            <span className="text-[10px] text-slate-500">S&P 500 (SPY)</span>
+            <div className="w-3 h-0.5 rounded-full bg-[#8A8378]" />
+            <span className="text-[10px] text-[#8A8378]">S&P 500 (SPY)</span>
           </div>
         )}
         {!hasSpyData && snapshots.length >= 2 && (
-          <span className="text-[10px] text-slate-400 italic">เปรียบเทียบ SPY ไม่พร้อมใช้งาน</span>
+          <span className="text-[10px] text-[#8A8378] italic">เปรียบเทียบ SPY ไม่พร้อมใช้งาน</span>
         )}
       </div>
     </div>
@@ -257,12 +257,12 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
 
 function SkeletonHero() {
   return (
-    <div className="space-y-3 animate-pulse">
-      <div className="h-10 w-48 bg-slate-200/60 rounded-xl" />
-      <div className="h-5 w-32 bg-slate-200/40 rounded" />
-      <div className="h-4 w-full bg-slate-200/40 rounded-full" />
+    <div className="space-y-3" aria-hidden="true">
+      <div className="h-10 w-48 skeleton rounded" />
+      <div className="h-5 w-32 skeleton rounded" />
+      <div className="h-4 w-full skeleton rounded" />
       <div className="grid grid-cols-2 gap-2">
-        {[0,1,2,3].map(i => <div key={i} className="h-12 bg-slate-200/40 rounded-xl" />)}
+        {[0,1,2,3].map(i => <div key={i} className="h-12 skeleton rounded" />)}
       </div>
     </div>
   );
@@ -312,14 +312,14 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
   );
 
   if (unauthorized) return (
-    <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm p-5 text-center space-y-3">
-      <p className="text-sm font-bold text-slate-800">พอร์ตจำลองหุ้น US</p>
-      <p className="text-xs text-slate-500 leading-relaxed">
+    <div className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card p-5 text-center space-y-3">
+      <p className="text-sm font-bold text-[#1F1A14]">พอร์ตจำลองหุ้น US</p>
+      <p className="text-xs text-[#8A8378] leading-relaxed">
         เริ่มด้วย ฿1,250,000 · จำลองซื้อขายหุ้น US ฟรี · ไม่ใช้เงินจริง
       </p>
       <div className="flex gap-2 justify-center">
-        <Link href="/signin" className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-700 transition-colors">เข้าสู่ระบบ</Link>
-        <Link href="/signup" className="text-xs font-bold px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition-colors">สมัครฟรี</Link>
+        <Link href="/signin" className="text-xs font-bold px-4 py-2 bg-[#1F1A14] text-white hover:bg-[#302820] transition-colors">เข้าสู่ระบบ</Link>
+        <Link href="/signup" className="text-xs font-bold px-4 py-2 bg-violet-600 text-white hover:bg-violet-700 transition-colors">สมัครฟรี</Link>
       </div>
     </div>
   );
@@ -351,7 +351,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
     return (
       <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm p-5 space-y-3">
         <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-3xl font-black font-mono text-slate-900">{thb(totalValueThb)}</span>
+          <span className="text-3xl font-black font-mono text-[#1F1A14]">{thb(totalValueThb)}</span>
           <span className="text-xs text-slate-400">เงินสด (จำลอง)</span>
         </div>
         <p className="text-xs text-slate-500 leading-relaxed">
@@ -380,7 +380,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
               มูลค่าพอร์ต (จำลอง)
             </p>
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-3xl font-black font-mono text-slate-900">{thb(totalValueThb)}</span>
+              <span className="text-3xl font-black font-mono text-[#1F1A14]">{thb(totalValueThb)}</span>
               <span className="text-base font-bold font-mono" style={{ color: clr(change1DThb) }}>
                 {change1DThb >= 0 ? "+" : ""}{thb(change1DThb)}{" "}
                 <span className="text-sm">({pctFmt(change1DPct)} วันนี้)</span>
@@ -440,7 +440,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
           <div className={`rounded-xl px-3 py-2 text-xs leading-snug ${
             concentration.some(c => c.level === "high")
               ? "bg-amber-50 border border-amber-200 text-amber-700"
-              : "bg-slate-50 border border-slate-200 text-slate-600"
+              : "bg-[#F8F5EF] border border-[#E0D9CC] text-[#5A4E42]"
           }`}>
             <span className="font-semibold">สังเกต: </span>
             {concentration.map(c => c.text).join(" · ")}
@@ -451,7 +451,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
         {/* Top holdings */}
         {!compact && topHoldings.length > 0 && (
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8A8378] mb-1.5">
               ถือมากสุด
             </p>
             <div className="grid grid-cols-3 gap-2">
