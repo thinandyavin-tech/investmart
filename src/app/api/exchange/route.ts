@@ -4,9 +4,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
 import { applyRateLimit } from "@/lib/rateLimit";
+import { getTHBRate } from "@/lib/fxRate";
 
-const SUPPORTED      = ["THB", "USD"] as const;
-const FALLBACK_USDTHB = 35.2;
+const SUPPORTED = ["THB", "USD"] as const;
 
 const ExchangeSchema = z.object({
   fromCurrency: z.enum(SUPPORTED),
@@ -15,20 +15,8 @@ const ExchangeSchema = z.object({
 });
 
 async function fetchUsdThbRate(): Promise<number> {
-  const apiKey = process.env.FINNHUB_API_KEY;
-  if (!apiKey) return FALLBACK_USDTHB;
-  try {
-    const res  = await fetch(
-      `https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`,
-      { signal: AbortSignal.timeout(3000) },
-    );
-    if (!res.ok) return FALLBACK_USDTHB;
-    const data = (await res.json()) as { quote?: Record<string, number> };
-    const rate = data.quote?.["THB"];
-    return typeof rate === "number" && rate > 0 ? rate : FALLBACK_USDTHB;
-  } catch {
-    return FALLBACK_USDTHB;
-  }
+  const { rate } = await getTHBRate();
+  return rate;
 }
 
 export async function POST(request: NextRequest) {

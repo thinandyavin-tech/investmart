@@ -210,6 +210,18 @@ export function MarketsRail() {
         </div>
       </section>
 
+      {/* Economic calendar quick link */}
+      <Link
+        href="/calendar"
+        className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm p-3.5 flex items-center gap-3 hover:bg-white/80 transition-colors"
+      >
+        <span className="text-xl flex-shrink-0">📅</span>
+        <div>
+          <p className="text-xs font-bold text-slate-800">ปฏิทินเศรษฐกิจ</p>
+          <p className="text-[10px] text-slate-500">CPI · Fed · NFP · GDP · PMI</p>
+        </div>
+      </Link>
+
       {/* Martin CTA */}
       <Link
         href="/analyze"

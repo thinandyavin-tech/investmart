@@ -20,6 +20,7 @@ const menuItems: MenuItem[] = [
   { href: "/radar",         label: "เรดาร์แสกนหุ้น",    icon: "📡" },
   { href: "/browse",        label: "Browse Stocks",        icon: "🌐" },
   { href: "/market",        label: "ภาพรวมตลาด",         icon: "📈" },
+  { href: "/calendar",      label: "ปฏิทินเศรษฐกิจ",     icon: "📅" },
   { href: "/leaderboard",   label: "Leaderboard",          icon: "🏆" },
   { href: "/profile",       label: "โปรไฟล์",            icon: "👤" },
   { href: "/discover",      label: "Discover",             icon: "🔭" },

@@ -26,6 +26,12 @@ export interface LiveQuote {
   open:       number;
   timestamp:  number;   // unix seconds from Finnhub
   preMarket:  PreMarketData | null;
+  /** "finnhub" = near-real-time | "yahoo" = delayed ~15 min | "unavailable" */
+  source?:    "finnhub" | "yahoo" | "unavailable";
+  /** true when source is Yahoo (always delayed) */
+  delayed?:   boolean;
+  currency?:  string;
+  exchange?:  string;
 }
 
 export interface LiveQuoteResult {
@@ -39,15 +45,19 @@ export interface LiveQuoteResult {
 }
 
 interface RawQuote {
-  c:          number;
-  pc:         number;
-  d:          number;
-  dp:         number;
-  h:          number;
-  l:          number;
-  o:          number;
-  t:          number;
-  preMarket?: PreMarketData | null;
+  c:           number;
+  pc:          number;
+  d:           number;
+  dp:          number;
+  h:           number;
+  l:           number;
+  o:           number;
+  t:           number;
+  preMarket?:  PreMarketData | null;
+  source?:     "finnhub" | "yahoo" | "unavailable";
+  delayed?:    boolean;
+  currency?:   string;
+  exchange?:   string;
 }
 
 interface SseTickMessage {
@@ -72,6 +82,10 @@ function parseRawQuote(raw: RawQuote): LiveQuote {
     open:      raw.o,
     timestamp: raw.t,
     preMarket: raw.preMarket ?? null,
+    source:    raw.source,
+    delayed:   raw.delayed,
+    currency:  raw.currency,
+    exchange:  raw.exchange,
   };
 }
 

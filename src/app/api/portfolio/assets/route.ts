@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
+import { getTHBRate } from "@/lib/fxRate";
 
 export const dynamic = "force-dynamic";
 
@@ -61,18 +62,7 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   } catch { return null; }
 }
 
-async function getFxRate(apiKey: string | undefined): Promise<number> {
-  if (!apiKey) return 35.2;
-  try {
-    const r = await fetch(
-      `https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`,
-      { next: { revalidate: 300 } },
-    );
-    if (!r.ok) return 35.2;
-    const data = (await r.json()) as { quote?: Record<string, number> };
-    return data.quote?.THB ?? 35.2;
-  } catch { return 35.2; }
-}
+// FX rate now comes from getTHBRate() which tries BoT → Frankfurter → OpenER → Finnhub → fallback
 
 export async function GET(): Promise<NextResponse> {
   const userId = await getSessionUserId();
@@ -95,7 +85,7 @@ export async function GET(): Promise<NextResponse> {
   if (!user) return NextResponse.json({ error: "ไม่พบผู้ใช้" }, { status: 404 });
 
   const apiKey = process.env.FINNHUB_API_KEY;
-  const fxRate = await getFxRate(apiKey);
+  const { rate: fxRate } = await getTHBRate();
 
   const empty: AssetsPayload = {
     holdings: [], cashUsd: user.cashUsd, cashThb: user.cashThb, fxRate,

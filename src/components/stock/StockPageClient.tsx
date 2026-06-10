@@ -292,8 +292,12 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             )}
 
             {/* Live indicator */}
-            <div className="flex items-center gap-2 mt-2">
-              {isLive ? (
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {quote?.delayed ? (
+                <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                  ⏱ ราคาล่าช้า ~15 นาที
+                </span>
+              ) : isLive ? (
                 <span className="flex items-center gap-1 text-xs text-green-600 font-semibold">
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full bg-green-500"
@@ -306,6 +310,9 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                 <span className="text-xs text-slate-400 font-semibold uppercase tracking-wide">
                   ตลาดปิด
                 </span>
+              )}
+              {quote?.currency && quote.currency !== "USD" && (
+                <span className="text-xs text-slate-500">{quote.currency}</span>
               )}
               <LastUpdated date={lastUpdated} />
             </div>
