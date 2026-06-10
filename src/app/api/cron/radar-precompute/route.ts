@@ -19,15 +19,20 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import { scanChunk, scanUniverse, resetCursor } from "@/lib/radarScan";
+import { scanChunk, resetCursor } from "@/lib/radarScan";
 import type { Universe } from "@/lib/stockUniverse";
 
 export const dynamic    = "force-dynamic";
 export const maxDuration = 120;
 
-const CHUNK_UNIVERSES: readonly Universe[] = ["NASDAQ100", "SP500"] as const;
-const FULL_UNIVERSES:  readonly Universe[] = ["CEO"] as const;
+// All universes use chunked scanning — consistent, rate-limit-safe.
+// CEO (20 tickers) completes in a single chunk but uses the same path.
+const CHUNK_UNIVERSES: readonly Universe[] = ["NASDAQ100", "SP500", "CEO"] as const;
 const MAX_CHUNKS_PER_RUN = 20; // safety cap; normal runs complete in 3–4 chunks
+
+// Pause between universes so Finnhub rate limits recover.
+// After ~250 calls for NASDAQ100+SP500, CEO calls would be throttled without this.
+const INTER_UNIVERSE_PAUSE_MS = 8_000;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const secret = process.env.CRON_SECRET;
@@ -45,14 +50,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const summary: Record<string, unknown> = {};
 
-  // Run all chunks for each large universe until the full cycle completes
+  let first = true;
   for (const universe of CHUNK_UNIVERSES) {
+    // Pause between universes so Finnhub rate limits can recover.
+    // Skip before the first universe.
+    if (!first) await new Promise<void>((r) => setTimeout(r, INTER_UNIVERSE_PAUSE_MS));
+    first = false;
+
     const t0 = Date.now();
     let chunks = 0;
     let lastResult: Awaited<ReturnType<typeof scanChunk>> | null = null;
 
     try {
-      // Reset cursor so we always start a fresh cycle each cron run
       await resetCursor(universe);
 
       do {
@@ -70,20 +79,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       summary[universe] = {
         error:      err instanceof Error ? err.message : String(err),
         chunks,
-        durationMs: Date.now() - t0,
-      };
-    }
-  }
-
-  // Full scans for small universes (CEO, 20 tickers — always fast)
-  for (const universe of FULL_UNIVERSES) {
-    const t0 = Date.now();
-    try {
-      const { scanned, total } = await scanUniverse(universe, apiKey);
-      summary[universe] = { scanned, total, durationMs: Date.now() - t0 };
-    } catch (err) {
-      summary[universe] = {
-        error:      err instanceof Error ? err.message : String(err),
         durationMs: Date.now() - t0,
       };
     }
