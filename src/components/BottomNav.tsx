@@ -4,29 +4,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-  isPlus?: boolean;
-}
-
-const navItems: NavItem[] = [
-  { href: "/",        label: "หน้าหลัก", icon: <HomeIcon /> },
-  { href: "/assets",  label: "Assets",   icon: <PieIcon /> },
-  { href: "/compose", label: "Plus",     icon: null, isPlus: true },
-  { href: "/radar",   label: "เรดาร์",   icon: <RadarIcon /> },
-  { href: "/profile", label: "โปรไฟล์",  icon: <PersonIcon /> },
-];
+import { useI18n } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const navItems = [
+    { href: "/",        label: t.nav.home,   icon: <HomeIcon /> },
+    { href: "/assets",  label: t.nav.assets, icon: <PieIcon /> },
+    { href: "/compose", label: t.nav.compose, icon: null, isPlus: true },
+    { href: "/radar",   label: t.nav.radar,  icon: <RadarIcon /> },
+    { href: "/profile", label: t.nav.profile, icon: <PersonIcon /> },
+  ];
 
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center z-40 lg:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      aria-label="แถบนำทางล่าง"
+      aria-label={t.nav.bottomNav}
     >
       {navItems.map(({ href, label, icon, isPlus }) => {
         const active = pathname === href;
@@ -67,6 +64,11 @@ export function BottomNav() {
           </Link>
         );
       })}
+
+      {/* Language toggle — visible in bottom nav as a subtle chip */}
+      <div className="px-1 flex items-center justify-center min-h-[44px] flex-shrink-0">
+        <LanguageToggle size="sm" />
+      </div>
     </nav>
   );
 }

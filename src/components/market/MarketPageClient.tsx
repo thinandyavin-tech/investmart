@@ -7,6 +7,7 @@ import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { IndicesCard }        from "@/components/market/IndicesCard";
 import { SectorCard }         from "@/components/market/SectorCard";
 import { MarketNewsCard }     from "@/components/market/MarketNewsCard";
+import { useI18n }            from "@/lib/i18n";
 
 const TradingViewMarketOverview = dynamic(
   () => import("@/components/tradingview/TradingViewMarketOverview").then(m => m.TradingViewMarketOverview),
@@ -54,6 +55,7 @@ function SectionHeader({
 }
 
 export function MarketPageClient() {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col min-h-screen">
       <MarketStatusBanner />
@@ -61,12 +63,12 @@ export function MarketPageClient() {
       <div className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 flex flex-col gap-6">
 
         {/* ── Hero: Live multi-asset quote board ── */}
-        <section aria-label="ภาพรวมตลาดโลก">
+        <section aria-label={t.market.globalTitle}>
           <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
             <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
               <SectionHeader
-                title="ภาพรวมตลาดโลก · Global Markets"
-                subtitle="ข้อมูลสด · TradingView · Indices · Commodities · Currencies (USDTHB) · Crypto · Bonds · ETFs"
+                title={t.market.globalTitle}
+                subtitle={t.market.globalSubtitle}
               />
             </div>
             <div className="p-2">
@@ -76,12 +78,12 @@ export function MarketPageClient() {
         </section>
 
         {/* ── Market Movers ── */}
-        <section aria-label="หุ้นที่เคลื่อนไหวมากที่สุด">
+        <section aria-label={t.market.moversTitle}>
           <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
             <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
               <SectionHeader
-                title="Market Movers · Most Active · Top Gainers · Top Losers"
-                subtitle="ตลาดสหรัฐ US — รายการนี้ถูกครอบงำโดยหุ้น small-cap ที่ผันผวนสูง ดูเพื่อรับทราบความเคลื่อนไหว ไม่ใช่คำแนะนำ"
+                title={t.market.moversTitle}
+                subtitle={t.market.moversWarning}
               />
             </div>
             <div className="p-2">
@@ -101,12 +103,12 @@ export function MarketPageClient() {
         </div>
 
         {/* ── S&P 500 Heatmap ── */}
-        <section aria-label="Heatmap S&P 500">
+        <section aria-label="S&P 500 Heatmap">
           <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
             <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
               <SectionHeader
-                title="S&P 500 Heatmap"
-                subtitle="สี = % เปลี่ยนแปลงวันนี้ · ขนาด = Market Cap · กดดูรายละเอียด"
+                title={t.market.heatmapTitle}
+                subtitle={t.market.heatmapSubtitle}
                 action={
                   <Link
                     href="/browse"
@@ -131,19 +133,18 @@ export function MarketPageClient() {
         {/* ── Links ── */}
         <div className="flex flex-wrap gap-3 pb-2">
           <Link href="/calendar" className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline transition-colors">
-            ปฏิทินเศรษฐกิจ →
+            {t.market.calendarLink}
           </Link>
           <Link href="/news" className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline transition-colors">
-            ข่าวทั้งหมด →
+            {t.market.newsLink}
           </Link>
           <Link href="/screener" className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline transition-colors">
-            Stock Screener →
+            {t.market.screenerLink}
           </Link>
         </div>
 
         <p className="text-[10px] text-[#8A8378] text-center pb-2 leading-relaxed">
-          ข้อมูล TradingView widgets: real-time ·  ข้อมูล Finnhub (ดัชนี/sector): อาจล่าช้า 15–20 นาที
-          · ไม่ใช่คำแนะนำการลงทุน · InvestMart เป็น paper trading simulator เท่านั้น
+          {t.market.finnhubNote}
         </p>
       </div>
     </div>

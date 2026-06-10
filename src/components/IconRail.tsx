@@ -7,30 +7,33 @@ import { Logo } from "@/components/Logo";
 import { RetroMenu } from "@/components/RetroMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { useUser } from "@/lib/userContext";
-
-const icons = [
-  { href: "/", label: "หน้าหลัก", icon: <HomeIcon /> },
-  { href: "/assets", label: "Assets", icon: <PieIcon /> },
-  { href: "/radar", label: "เรดาร์", icon: <RadarIcon /> },
-  { href: "/news", label: "ข่าว", icon: <NewspaperIcon /> },
-  { href: "/chat", label: "แชท", icon: <ChatIcon /> },
-  { href: "/profile", label: "โปรไฟล์", icon: <PersonIcon /> },
-  { href: "/mail", label: "จดหมาย", icon: <MailIcon /> },
-  { href: "/exchange", label: "Exchange", icon: <ExchangeIcon /> },
-  { href: "/history", label: "ประวัติ", icon: <ClipboardIcon /> },
-  { href: "/leaderboard", label: "Leaderboard", icon: <TrophyIcon /> },
-  { href: "/search", label: "ค้นหา", icon: <SearchIcon /> },
-  { href: "/watchlist", label: "Watchlist", icon: <WatchlistIcon /> },
-  { href: "/screener",  label: "Screener",  icon: <ScreenerIcon /> },
-  { href: "/personas",  label: "Personas",  icon: <PersonasIcon /> },
-] as const;
+import { useI18n } from "@/lib/i18n";
 
 export function IconRail() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useUser();
+  const { t } = useI18n();
   const pathname = usePathname();
   const isAdmin = user?.isAdmin === true;
+
+  const icons = [
+    { href: "/",           label: t.nav.home,        icon: <HomeIcon /> },
+    { href: "/assets",     label: t.nav.assets,      icon: <PieIcon /> },
+    { href: "/radar",      label: t.nav.radar,       icon: <RadarIcon /> },
+    { href: "/news",       label: t.nav.news,        icon: <NewspaperIcon /> },
+    { href: "/chat",       label: t.nav.chat,        icon: <ChatIcon /> },
+    { href: "/profile",    label: t.nav.profile,     icon: <PersonIcon /> },
+    { href: "/mail",       label: t.nav.mail,        icon: <MailIcon /> },
+    { href: "/exchange",   label: t.nav.exchange,    icon: <ExchangeIcon /> },
+    { href: "/history",    label: t.nav.history,     icon: <ClipboardIcon /> },
+    { href: "/leaderboard",label: t.nav.leaderboard, icon: <TrophyIcon /> },
+    { href: "/search",     label: t.nav.search,      icon: <SearchIcon /> },
+    { href: "/watchlist",  label: t.nav.watchlist,   icon: <WatchlistIcon /> },
+    { href: "/screener",   label: t.nav.screener,    icon: <ScreenerIcon /> },
+    { href: "/personas",   label: t.nav.personas,    icon: <PersonasIcon /> },
+  ];
 
   function isActive(href: string): boolean {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -40,12 +43,12 @@ export function IconRail() {
     <>
       <nav
         className="fixed left-0 top-0 h-full w-12 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col items-center py-2 gap-1 z-40"
-        aria-label="แถบนำทางหลัก"
+        aria-label={t.nav.mainNav}
       >
         <button
           onClick={() => setMenuOpen(true)}
           className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          aria-label="เปิดเมนู"
+          aria-label={t.nav.openMenu}
         >
           <Logo size={20} />
         </button>
@@ -68,6 +71,7 @@ export function IconRail() {
         <div className="mt-auto mb-1 flex flex-col items-center gap-1">
           <NotificationBell size="md" />
           <ThemeToggle size="md" />
+          <LanguageToggle size="sm" />
           {isAdmin && (
             <Link
               href="/admin"

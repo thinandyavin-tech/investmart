@@ -4,6 +4,7 @@ import {
   useState, useEffect, useCallback, useRef, useMemo, useId
 } from "react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n";
 import { CategoryBadge } from "@/components/radar/CategoryBadge";
 import { ScoreBadge } from "@/components/radar/ScoreBadge";
 import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
@@ -25,12 +26,7 @@ interface ScanResponse {
   scannedCount: number;
 }
 
-const UNIVERSES: { value: Universe; label: string; desc: string }[] = [
-  { value: "NASDAQ100",label: "Nasdaq 100",  desc: "95 หุ้น" },
-  { value: "SP500",    label: "S&P 500",     desc: "150 หุ้น" },
-  { value: "CEO",      label: "CEO Picks",   desc: "20 หุ้น" },
-  { value: "SET50",    label: "SET 50 ⚠️",    desc: "ข้อมูลล่าช้า" },
-];
+// Universe labels are rendered via t.radar.universe / t.radar.universeDesc in the component
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: "rank",   label: "Score" },
@@ -171,16 +167,16 @@ function BuildingState({ universe, scannedCount, total }: {
   scannedCount: number;
   total: number;
 }) {
+  const { t } = useI18n();
+
   if (universe === "SET50") {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-3">
         <span className="text-2xl">🇹🇭</span>
-        <p className="text-sm font-semibold text-[#1F1A14]">ข้อมูล SET50 ไม่พร้อมใช้งาน</p>
-        <p className="text-xs text-[#8A8378] max-w-sm leading-relaxed">
-          Finnhub free tier ไม่รองรับหุ้นไทย (.BK) · ต้องการ Finnhub Growth/Premium
-        </p>
+        <p className="text-sm font-semibold text-[#1F1A14]">{t.radar.set50Title}</p>
+        <p className="text-xs text-[#8A8378] max-w-sm leading-relaxed">{t.radar.set50Desc}</p>
         <Link href="/browse?index=SET50" className="text-xs font-semibold text-violet-600 hover:underline mt-1">
-          ดูรายชื่อ SET50 →
+          {t.radar.set50Browse}
         </Link>
       </div>
     );
@@ -192,26 +188,20 @@ function BuildingState({ universe, scannedCount, total }: {
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-3">
       {hasPartial ? (
         <>
-          <p className="text-sm font-semibold text-[#1F1A14]">
-            สแกนแล้ว {scannedCount}/{total} หุ้น…
-          </p>
+          <p className="text-sm font-semibold text-[#1F1A14]">{t.radar.scanning(scannedCount, total)}</p>
           <div className="w-48 h-1.5 bg-[#E8E2D4] rounded-full overflow-hidden">
             <div
               className="h-full bg-violet-500 rounded-full transition-all"
               style={{ width: `${Math.round((scannedCount / total) * 100)}%` }}
             />
           </div>
-          <p className="text-xs text-[#8A8378]">ผลบางส่วนกำลังโหลด…</p>
+          <p className="text-xs text-[#8A8378]">{t.radar.updating}</p>
         </>
       ) : (
         <>
-          <p className="text-sm font-semibold text-[#1F1A14]">ยังไม่มีผลสแกน</p>
-          <p className="text-xs text-[#8A8378] max-w-xs leading-relaxed">
-            ผลสแกนจะอัพเดตทุก ~15 นาที ระหว่างตลาดเปิด
-          </p>
-          <p className="text-xs text-[#8A8378]">
-            (US market: จ.–ศ. 21:30–04:00 น. ตามเวลาไทย)
-          </p>
+          <p className="text-sm font-semibold text-[#1F1A14]">{t.radar.noResults}</p>
+          <p className="text-xs text-[#8A8378] max-w-xs leading-relaxed">{t.radar.building}</p>
+          <p className="text-xs text-[#8A8378]">{t.radar.buildingMarket}</p>
         </>
       )}
     </div>
@@ -374,6 +364,7 @@ export function RadarPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
+  const { t } = useI18n();
   const isBuilding    = scanData?.building === true;
   const isRefreshing  = scanData?.refreshing === true;
   const scannedAt     = scanData?.scannedAt ?? null;
@@ -393,18 +384,18 @@ export function RadarPage() {
               </h1>
               <p className="text-[10px] text-[#8A8378] mt-0.5">
                 {loading
-                  ? "กำลังโหลด…"
+                  ? t.common.loading
                   : isBuilding && scannedCount > 0
-                  ? `สแกนแล้ว ${scannedCount}/${totalUniverse} หุ้น (กำลังอัพเดต)`
+                  ? t.radar.scanning(scannedCount, totalUniverse)
                   : isBuilding
-                  ? "ผลสแกนจะอัพเดตทุก ~15 นาที"
+                  ? t.radar.building
                   : isRefreshing
-                  ? `${allResults.length} หุ้น · กำลังรีเฟรช…`
+                  ? `${allResults.length} · ${t.radar.updating}`
                   : filtered.length > 0
-                  ? `${filtered.length.toLocaleString()} จาก ${allResults.length.toLocaleString()} หุ้น · ${timeAgo(scannedAt)}`
+                  ? t.radar.results(filtered.length, allResults.length, timeAgo(scannedAt))
                   : allResults.length > 0
-                  ? "ไม่พบหุ้นตามเงื่อนไข · ลองลด minScore"
-                  : "ยังไม่มีข้อมูล"}
+                  ? t.radar.noResultsFilter
+                  : t.radar.noResults}
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -415,27 +406,29 @@ export function RadarPage() {
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:border-violet-400 hover:text-violet-700 disabled:opacity-40 transition-colors"
                 aria-label="รีเฟรชผลสแกน"
               >
-                {refreshing ? "⟳ สแกน…" : "⟳ รีเฟรช"}
+                {refreshing ? t.radar.scanning2 : t.radar.refreshBtn}
               </button>
             </div>
           </div>
 
           {/* Universe tabs */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="เลือก Universe">
-            {UNIVERSES.map(u => (
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Universe">
+            {(["NASDAQ100", "SP500", "CEO", "SET50"] as Universe[]).map(u => (
               <button
-                key={u.value}
+                key={u}
                 role="tab"
-                aria-selected={universe === u.value}
-                onClick={() => setUniverse(u.value)}
+                aria-selected={universe === u}
+                onClick={() => setUniverse(u)}
                 className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                  universe === u.value
+                  universe === u
                     ? "bg-violet-600 text-white border-violet-600"
                     : "border-slate-200 text-slate-600 hover:border-violet-300 bg-white"
                 }`}
               >
-                {u.label}
-                <span className="ml-1 opacity-60 font-normal">{u.desc}</span>
+                {(t.radar.universe as Record<string, string>)[u] ?? u}
+                <span className="ml-1 opacity-60 font-normal">
+                  {(t.radar.universeDesc as Record<string, string>)[u] ?? ""}
+                </span>
               </button>
             ))}
           </div>

@@ -2,25 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
+import { useI18n } from "@/lib/i18n";
 
 interface Sector {
   name:   string;
   change: number;
 }
 
-const THAI_NAMES: Record<string, string> = {
-  "Technology":             "เทคโนโลยี",
-  "Healthcare":             "สุขภาพ",
-  "Financial Services":     "การเงิน",
-  "Consumer Cyclical":      "สินค้าวงจร",
-  "Communication Services": "สื่อสาร",
-  "Industrials":            "อุตสาหกรรม",
-  "Consumer Defensive":     "สินค้าจำเป็น",
-  "Energy":                 "พลังงาน",
-  "Basic Materials":        "วัสดุ",
-  "Real Estate":            "อสังหาริมทรัพย์",
-  "Utilities":              "สาธารณูปโภค",
-};
+// Sector display names are handled via t.market.sectors in the component
 
 function Bar({ change, maxAbs }: { change: number; maxAbs: number }) {
   const pct   = maxAbs > 0 ? Math.abs(change) / maxAbs : 0;
@@ -42,6 +31,7 @@ export function SectorCard() {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
+  const { t } = useI18n();
 
   function load() {
     setLoading(true);
@@ -60,8 +50,8 @@ export function SectorCard() {
   return (
     <Card className="overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">Sector Performance</h2>
-        <p className="text-[10px] text-[#8A8378] mt-0.5">US Equity · Finnhub</p>
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.market.sectorTitle}</h2>
+        <p className="text-[10px] text-[#8A8378] mt-0.5">{t.market.sectorSubtitle}</p>
       </div>
 
       {loading ? (
@@ -76,19 +66,19 @@ export function SectorCard() {
       ) : error ? (
         <div className="px-3 py-5 text-center">
           <p className="text-xs text-[#8A8378] mb-2">โหลดข้อมูลไม่ได้</p>
-          <button onClick={load} className="text-xs font-bold text-[#5B8A2A] hover:underline">ลองใหม่</button>
+          <button onClick={load} className="text-xs font-bold text-[#5B8A2A] hover:underline">{t.errors.retry}</button>
         </div>
       ) : sectors.length === 0 ? (
         <div className="px-3 py-5 text-center">
-          <p className="text-xs text-[#8A8378] mb-1">ข้อมูล Sector ไม่พร้อมใช้งาน</p>
-          <p className="text-[10px] text-[#8A8378]">Finnhub free tier ไม่รองรับ sector performance</p>
+          <p className="text-xs text-[#8A8378] mb-1">{t.market.noSectorData}</p>
+          <p className="text-[10px] text-[#8A8378]">Finnhub free tier</p>
         </div>
       ) : (
         <div className="divide-y divide-[#E8E2D4]">
           {sectors.map(({ name, change }) => {
             const positive    = change >= 0;
             const changeColor = positive ? "#16A34A" : "#DC2626";
-            const thaiName    = THAI_NAMES[name] ?? name;
+            const thaiName    = (t.market.sectors as Record<string, string>)[name] ?? name;
 
             return (
               <div key={name} className="flex items-center gap-2 px-3 py-1.5">

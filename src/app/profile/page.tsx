@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
@@ -26,6 +27,7 @@ function Avatar({ initial }: { initial: string }) {
 
 export default function ProfilePage() {
   const { user, loading, initDemo, signOut } = useUser();
+  const { t } = useI18n();
 
   const initial     = user ? (user.name?.[0] ?? user.username?.[0] ?? "D").toUpperCase() : "?";
   const displayName = user?.name ?? user?.username ?? "นักลงทุน";
@@ -47,10 +49,10 @@ export default function ProfilePage() {
         {!loading && user && !user.username && !user.isDemo && (
           <Card className="p-3 flex items-center justify-between gap-3" style={{ borderColor: "#5B8A2A", borderWidth: 2 }}>
             <p className="text-xs text-[#1F1A14] leading-relaxed">
-              <span className="font-bold">ยินดีต้อนรับ!</span> ตั้ง username เพื่อให้คนอื่นหาคุณเจอได้
+              <span className="font-bold">{t.auth.welcomeNew.split("!")[0]}!</span>{" "}{t.auth.welcomeNew.split("! ")[1]}
             </p>
             <Link href="/settings/id">
-              <OffsetButton size="sm" variant="lime">ตั้งเลย</OffsetButton>
+              <OffsetButton size="sm" variant="lime">{t.auth.setNow}</OffsetButton>
             </Link>
           </Card>
         )}
@@ -68,7 +70,7 @@ export default function ProfilePage() {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-sm font-bold">
-                      {loading ? "กำลังโหลด..." : displayName}
+                      {loading ? t.common.loading : displayName}
                     </h1>
                     {!loading && user && <TierBadge tier={user.tier} size="xs" />}
                   </div>
@@ -76,7 +78,7 @@ export default function ProfilePage() {
                 </div>
                 {!loading && user && (
                   <Link href="/profile/edit">
-                    <OffsetButton size="sm">แก้ไข</OffsetButton>
+                    <OffsetButton size="sm">{t.common.edit}</OffsetButton>
                   </Link>
                 )}
               </div>
@@ -85,8 +87,8 @@ export default function ProfilePage() {
               )}
               {!loading && !user?.bio && user && (
                 <p className="text-xs italic text-[#8A8378] mt-1.5">
-                  ยังไม่มี bio —{" "}
-                  <Link href="/profile/edit" className="underline text-[#5B8A2A]">เพิ่มเลย</Link>
+                  {t.profile.noBio}
+                  <Link href="/profile/edit" className="underline text-[#5B8A2A]">{t.profile.addBio}</Link>
                 </p>
               )}
             </div>
@@ -96,10 +98,11 @@ export default function ProfilePage() {
         {/* Badges */}
         {!loading && user && user.badges.length > 0 && (
           <Card className="p-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2">ความสำเร็จ</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2">{t.profile.achievements}</h2>
             <div className="flex flex-wrap gap-2">
               {user.badges.map((key) => {
                 const b = getBadgeDef(key);
+                const label = (t.profile.badges as Record<string, string>)[key] ?? b.label;
                 return (
                   <div
                     key={key}
@@ -107,7 +110,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-1.5 px-2 py-1 bg-[#F8F5EF] border border-[#E8E2D4] text-xs font-bold"
                   >
                     <span aria-hidden="true">{b.icon}</span>
-                    <span>{b.label}</span>
+                    <span>{label}</span>
                   </div>
                 );
               })}
@@ -119,8 +122,8 @@ export default function ProfilePage() {
         {!loading && user && (
           <Card className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">มูลค่าพอร์ต (cost basis)</h2>
-              <span className="text-xs text-[#8A8378]">เทรดทั้งหมด {user.tradeCount} ครั้ง</span>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378]">{t.profile.portfolioTitle}</h2>
+              <span className="text-xs text-[#8A8378]">{t.profile.totalTrades} {user.tradeCount}</span>
             </div>
             <div className="flex items-end gap-3 mb-3">
               <div>
@@ -134,7 +137,7 @@ export default function ProfilePage() {
                   {pnlPos ? "+" : ""}{Math.round(pnl).toLocaleString("th-TH")} ({pnlPos ? "+" : ""}{pnlPct.toFixed(2)}%)
                 </div>
               </div>
-              <div className="text-xs text-[#8A8378] mb-0.5">เทียบกับ ฿1,250,000 เริ่มต้น</div>
+              <div className="text-xs text-[#8A8378] mb-0.5">{t.profile.vsBaseline}</div>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
@@ -150,14 +153,14 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
-                <div className="text-xs text-[#8A8378] uppercase tracking-wide">หุ้น ({user.holdings.length})</div>
+                <div className="text-xs text-[#8A8378] uppercase tracking-wide">{t.profile.stockCount(user.holdings.length)}</div>
                 <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ${costBasis.toFixed(0)}
                 </div>
               </div>
             </div>
             <p className="text-xs text-[#8A8378] mt-2">
-              ราคาต้นทุน (cost basis) · ไม่ใช่ราคาตลาดปัจจุบัน · FX ≈ {FALLBACK_FX} THB/USD
+              {t.profile.costBasis} · {t.profile.fxNote(FALLBACK_FX)}
             </p>
           </Card>
         )}
@@ -169,13 +172,13 @@ export default function ProfilePage() {
         {!loading && user && user.holdings.length > 0 && (
           <Card className="overflow-hidden">
             <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
-              <h2 className="text-xs font-bold uppercase tracking-widest">หุ้นที่ถืออยู่</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest">{t.profile.holdings}</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs min-w-[280px]">
                 <thead>
                   <tr className="border-b border-[#E8E2D4]">
-                    {["หุ้น", "จำนวน", "ต้นทุน/หุ้น", "มูลค่า USD"].map((h) => (
+                    {[t.stock.price, t.trade.shares, t.trade.avgCost, "USD"].map((h) => (
                       <th key={h} className="text-left px-3 py-1.5 text-xs text-[#8A8378] uppercase tracking-wide font-bold">
                         {h}
                       </th>
@@ -208,14 +211,14 @@ export default function ProfilePage() {
 
         {/* Actions */}
         <Card className="p-3">
-          <h2 className="text-xs font-bold uppercase tracking-widest mb-2">เครื่องมือ Simulator</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest mb-2">{t.profile.toolsTitle}</h2>
           {[
-            { href: "/radar",       label: "เรดาร์แสกนหุ้น", icon: "📡" },
-            { href: "/market",      label: "ภาพรวมตลาด",      icon: "📈" },
-            { href: "/exchange",    label: "แลกเปลี่ยนเงิน", icon: "💱" },
-            { href: "/history",     label: "ประวัติซื้อขาย", icon: "📋" },
-            { href: "/watchlist",   label: "Watchlist",         icon: "👁" },
-            { href: "/leaderboard", label: "Leaderboard",        icon: "🏆" },
+            { href: "/radar",       label: t.profile.tools.radar,       icon: "📡" },
+            { href: "/market",      label: t.profile.tools.market,      icon: "📈" },
+            { href: "/exchange",    label: t.profile.tools.exchange,    icon: "💱" },
+            { href: "/history",     label: t.profile.tools.history,     icon: "📋" },
+            { href: "/watchlist",   label: t.profile.tools.watchlist,   icon: "👁" },
+            { href: "/leaderboard", label: t.profile.tools.leaderboard, icon: "🏆" },
           ].map(({ href, label, icon }) => (
             <Link
               key={href}
@@ -234,12 +237,12 @@ export default function ProfilePage() {
           <div className="flex gap-2">
             <Link href="/settings/id" className="flex-1">
               <OffsetButton variant="black" className="w-full text-center text-xs">
-                ตั้งค่าไอดี
+                {t.profile.settingsId}
               </OffsetButton>
             </Link>
             <Link href="/profile/edit" className="flex-1">
               <OffsetButton variant="lime" className="w-full text-center text-xs">
-                แก้ไขโปรไฟล์
+                {t.profile.editBtn}
               </OffsetButton>
             </Link>
           </div>
@@ -253,7 +256,7 @@ export default function ProfilePage() {
               className="flex-1 text-center text-xs"
               onClick={() => void signOut()}
             >
-              ออกจากระบบ
+              {t.profile.signOutBtn}
             </OffsetButton>
           </div>
         )}
@@ -261,13 +264,13 @@ export default function ProfilePage() {
         {/* Login prompt */}
         {!loading && !user && (
           <Card className="p-4 text-center flex flex-col gap-2">
-            <p className="text-xs text-[#8A8378]">เข้าสู่ระบบเพื่อดูพอร์ตของคุณ</p>
+            <p className="text-xs text-[#8A8378]">{t.profile.signInPrompt}</p>
             <div className="flex gap-2 justify-center">
               <Link href="/signin">
-                <OffsetButton variant="black">เข้าสู่ระบบ</OffsetButton>
+                <OffsetButton variant="black">{t.common.signIn}</OffsetButton>
               </Link>
               <Link href="/signup">
-                <OffsetButton variant="lime">สมัครสมาชิก</OffsetButton>
+                <OffsetButton variant="lime">{t.common.signUp}</OffsetButton>
               </Link>
             </div>
             <p className="text-xs text-[#8A8378]">หรือ{" "}

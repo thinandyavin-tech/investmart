@@ -18,29 +18,32 @@ import { BRAND_NAME_UPPER } from "@/lib/brand";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const QUICK_ACTIONS = [
-  { href: "/radar",       label: "เรดาร์",     icon: "📡" },
-  { href: "/screener",    label: "สกรีนเนอร์", icon: "🔍" },
-  { href: "/market",      label: "ตลาด",       icon: "📈" },
-  { href: "/exchange",    label: "แลกเงิน",    icon: "💱" },
-  { href: "/history",     label: "ประวัติ",    icon: "📋" },
-  { href: "/leaderboard", label: "อันดับ",      icon: "🏆" },
-  { href: "/watchlist",   label: "Watchlist",  icon: "👁️" },
-  { href: "/mail",        label: "จดหมาย",    icon: "✉️" },
-] as const;
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useI18n } from "@/lib/i18n";
 
 export function HomeMobile() {
   const { user, loading } = useUser();
+  const { t } = useI18n();
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen]   = useState(false);
   const [noticeVisible, setNoticeVisible] = useState(true);
   const [holdingsOpen, setHoldingsOpen]   = useState(false);
 
+  const QUICK_ACTIONS = [
+    { href: "/radar",       label: t.home.quickActions.radar,       icon: "📡" },
+    { href: "/screener",    label: t.home.quickActions.screener,     icon: "🔍" },
+    { href: "/market",      label: t.home.quickActions.market,       icon: "📈" },
+    { href: "/exchange",    label: t.home.quickActions.exchange,     icon: "💱" },
+    { href: "/history",     label: t.home.quickActions.history,      icon: "📋" },
+    { href: "/leaderboard", label: t.home.quickActions.leaderboard,  icon: "🏆" },
+    { href: "/watchlist",   label: t.home.quickActions.watchlist,    icon: "👁️" },
+    { href: "/mail",        label: t.home.quickActions.mail,         icon: "✉️" },
+  ];
+
   const initial     = user ? ((user.name?.[0] ?? "D").toUpperCase()) : "N";
   const displayName = user
     ? `${user.username || user.name} #${user.id.slice(-4)}`
-    : "เด็กฝึกหุ้น #----";
+    : "InvestMart #----";
 
   return (
     <div className="flex flex-col min-h-screen relative">
@@ -69,12 +72,13 @@ export function HomeMobile() {
             <Link
               href="/search"
               className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors"
-              aria-label="ค้นหาหุ้น"
+              aria-label={t.nav.search}
             >
               <SearchIcon size={18} />
             </Link>
             <NotificationBell size="sm" />
             <ThemeToggle size="sm" />
+            <LanguageToggle size="sm" />
           </div>
         </header>
 
@@ -167,6 +171,7 @@ interface TickerCount { ticker: string; count: number; }
 
 function TrendingTickerBar() {
   const [tickers, setTickers] = useState<TickerCount[]>([]);
+  const { t } = useI18n();
 
   useEffect(() => {
     fetch("/api/discover")
@@ -180,7 +185,7 @@ function TrendingTickerBar() {
   return (
     <div className="mx-3 mb-3">
       <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-        หุ้นถูกพูดถึงมากสุด
+        {t.home.trending}
       </p>
       <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
         {tickers.map(({ ticker, count }) => (
@@ -226,9 +231,9 @@ function ProfileSection({
   loggedIn, noticeVisible, onDismissNotice, onLogin,
   holdingsOpen, onToggleHoldings,
 }: ProfileSectionProps) {
+  const { t } = useI18n();
   return (
     <div className="px-4 pt-4 pb-3 flex flex-col gap-3">
-      {/* Avatar + name row */}
       <div className="flex items-center gap-3">
         <div className="w-14 h-14 rounded-full border-2 border-green-500 p-0.5 flex-shrink-0">
           <div
@@ -241,8 +246,10 @@ function ProfileSection({
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">{loading ? "กำลังโหลด..." : displayName}</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">พอร์ตหุ้นอเมริกา (จำลอง)</p>
+          <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">
+            {loading ? t.common.loading : displayName}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.home.simulatedPortfolio}</p>
         </div>
 
         {loggedIn && (
@@ -250,21 +257,20 @@ function ProfileSection({
             href="/u/me"
             className="flex-shrink-0 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 hover:border-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
           >
-            โปรไฟล์
+            {t.nav.profile}
           </Link>
         )}
       </div>
 
-      {/* Stats row */}
       <div className="grid grid-cols-3 gap-2">
-        <StatChip label="เงินสด (฿)" value={loading ? "..." : `฿${(cashThb / 1000).toFixed(0)}K`} mono />
-        <StatChip label="เงินสด ($)" value={loading ? "..." : `$${cashUsd.toFixed(0)}`}         mono />
+        <StatChip label={t.home.cashThb} value={loading ? "..." : `฿${(cashThb / 1000).toFixed(0)}K`} mono />
+        <StatChip label={t.home.cashUsd} value={loading ? "..." : `$${cashUsd.toFixed(0)}`} mono />
         <button
           onClick={onToggleHoldings}
           className="flex flex-col items-center justify-center p-2 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl text-center hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
           aria-expanded={holdingsOpen}
         >
-          <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">ถือหุ้น</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide leading-tight">{t.home.holdings}</span>
           <span className="text-xs font-bold text-slate-900 dark:text-slate-100" style={{ fontFamily: "var(--font-mono)" }}>
             {loading ? "..." : holdings.length}
           </span>
@@ -272,16 +278,15 @@ function ProfileSection({
         </button>
       </div>
 
-      {/* Collapsible holdings list */}
       {holdingsOpen && !loading && (
         <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl overflow-hidden">
           {holdings.length === 0 ? (
-            <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-3">ยังไม่มีหุ้นในพอร์ต</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-3">{t.home.noHoldings}</p>
           ) : (
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-700">
-                  {["หุ้น", "หุ้น", "ต้นทุน"].map((h, i) => (
+                  {[t.stock.price, t.profile.holdings, t.trade.avgCost].map((h, i) => (
                     <th key={i} className="text-left px-2 py-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">
                       {h}
                     </th>
@@ -304,26 +309,22 @@ function ProfileSection({
         </div>
       )}
 
-      {/* Login CTA */}
       {!loggedIn && !loading && (
         <button
           className="w-full py-2.5 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-lg transition-colors"
           onClick={onLogin}
         >
-          ▶ เข้าสู่ระบบเพื่อเริ่มเล่น simulator
+          {t.home.loginCta}
         </button>
       )}
 
       {!loggedIn && !loading && noticeVisible && (
         <div className="flex items-center justify-between px-3 py-2 text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-xl">
-          <span className="text-slate-500 dark:text-slate-400">
-            <span className="font-bold text-slate-900 dark:text-slate-100">ใหม่!</span>{" "}
-            คุณกำลังใช้งานไอดีแบบไม่ได้ล็อกอินอยู่
-          </span>
+          <span className="text-slate-500 dark:text-slate-400">{t.home.newUserNotice}</span>
           <button
             className="ml-2 text-slate-400 font-bold hover:text-slate-700 dark:hover:text-slate-200 flex-shrink-0"
             onClick={onDismissNotice}
-            aria-label="ปิดประกาศ"
+            aria-label={t.common.close}
           >
             ×
           </button>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { TierBadge } from "@/components/TierBadge";
@@ -29,6 +30,7 @@ function formatTHB(n: number): string {
 
 export default function LeaderboardPage() {
   const { user, loading: userLoading } = useUser();
+  const { t } = useI18n();
   const [entries, setEntries]          = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading]          = useState(true);
   const [error, setError]              = useState(false);
@@ -51,10 +53,8 @@ export default function LeaderboardPage() {
     <AppShell>
       <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
         <div>
-          <h1 className="text-xs font-bold uppercase tracking-widest">Leaderboard — อันดับนักลงทุน</h1>
-          <p className="text-xs text-[#8A8378] mt-0.5">
-            จัดอันดับจากมูลค่าพอร์ตทั้งหมด · คำนวณจากราคาต้นทุน ไม่ใช่ราคาตลาดปัจจุบัน
-          </p>
+          <h1 className="text-xs font-bold uppercase tracking-widest">{t.leaderboard.title}</h1>
+          <p className="text-xs text-[#8A8378] mt-0.5">{t.leaderboard.subtitle}</p>
         </div>
 
         <Card className="overflow-hidden">
@@ -62,9 +62,9 @@ export default function LeaderboardPage() {
             <thead>
               <tr className="border-b border-[#1F1A14] bg-[#1F1A14] text-[#F3EDE0]">
                 <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">#</th>
-                <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">ผู้ใช้</th>
-                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide">มูลค่าพอร์ต</th>
-                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide hidden sm:table-cell">เทรด</th>
+                <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">{t.leaderboard.user}</th>
+                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide">{t.leaderboard.portfolio}</th>
+                <th className="text-right px-3 py-2 text-xs uppercase tracking-wide hidden sm:table-cell">{t.leaderboard.trades}</th>
               </tr>
             </thead>
             <tbody>
@@ -84,7 +84,7 @@ export default function LeaderboardPage() {
               {!loading && error && (
                 <tr>
                   <td colSpan={4} className="px-3 py-6 text-center text-xs text-[#8A8378]">
-                    โหลดข้อมูลไม่ได้ กรุณาลองใหม่
+                    {t.leaderboard.loadFailed}
                   </td>
                 </tr>
               )}
@@ -92,7 +92,7 @@ export default function LeaderboardPage() {
               {!loading && !error && entries.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-3 py-6 text-center text-xs text-[#8A8378]">
-                    ยังไม่มีข้อมูล
+                    {t.leaderboard.noData}
                   </td>
                 </tr>
               )}
@@ -124,7 +124,7 @@ export default function LeaderboardPage() {
                             className="text-xs px-1.5 py-0.5 font-bold"
                             style={{ background: "#9BE15D", color: "#1F1A14" }}
                           >
-                            คุณ
+                            {t.leaderboard.you}
                           </span>
                         )}
                       </div>

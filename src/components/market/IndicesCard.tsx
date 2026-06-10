@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
+import { useI18n } from "@/lib/i18n";
 
 interface IndexData {
   symbol:    string;
@@ -53,6 +54,7 @@ export function IndicesCard() {
   const [indices, setIndices] = useState<IndexData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
+  const { t } = useI18n();
 
   function load() {
     setLoading(true);
@@ -69,8 +71,8 @@ export function IndicesCard() {
   return (
     <Card className="overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">ดัชนีหลัก</h2>
-        <p className="text-[10px] text-[#8A8378] mt-0.5">Finnhub · อาจล่าช้า 15 นาที</p>
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.market.indicesTitle}</h2>
+        <p className="text-[10px] text-[#8A8378] mt-0.5">{t.market.indicesSubtitle}</p>
       </div>
 
       {loading ? (
@@ -84,16 +86,16 @@ export function IndicesCard() {
         </div>
       ) : error ? (
         <div className="px-3 py-5 text-center">
-          <p className="text-xs text-[#8A8378] mb-2">โหลดข้อมูลไม่ได้</p>
+          <p className="text-xs text-[#8A8378] mb-2">{t.errors.loadFailed}</p>
           <button
             onClick={load}
             className="text-xs font-bold text-[#5B8A2A] hover:underline focus-visible:underline"
           >
-            ลองใหม่
+            {t.errors.retry}
           </button>
         </div>
       ) : indices.length === 0 ? (
-        <p className="px-3 py-5 text-xs text-[#8A8378] text-center">ไม่พบข้อมูลดัชนี</p>
+        <p className="px-3 py-5 text-xs text-[#8A8378] text-center">{t.common.noData}</p>
       ) : (
         <div className="divide-y divide-[#E8E2D4]">
           {indices.map(({ symbol, name, price, change, sparkline }) => {

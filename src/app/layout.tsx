@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Inter, JetBrains_Mono } from "next/font/google";
 import { UserProvider } from "@/lib/userContext";
+import { I18nProvider } from "@/lib/i18n";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -58,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="th"
+      lang="en"
       className={`${notoSansThai.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
@@ -72,6 +73,7 @@ export default function RootLayout({
             "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif",
         }}
       >
+        <I18nProvider>
         <ThemeProvider>
           <UserProvider>
             {children}
@@ -80,6 +82,7 @@ export default function RootLayout({
             <Analytics />
           </UserProvider>
         </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );
