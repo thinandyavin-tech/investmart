@@ -131,13 +131,14 @@ export function RadarMovers() {
   const [tab,      setTab]      = useState<Tab>("gainers");
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchMovers = useCallback(async () => {
+  const fetchMovers = useCallback(async (force = false) => {
     setError(null);
     try {
-      const res  = await fetch("/api/radar/movers");
+      const url  = force ? "/api/radar/movers?force=1" : "/api/radar/movers";
+      const res  = await fetch(url);
       if (!res.ok) { setError(t.errors.loadFailed); return; }
       const json = (await res.json()) as MoversResponse;
-      if (json.error) { setError(json.error); return; }
+      if (json.error && !json.gainers?.length) { setError(json.error); return; }
       setData(json);
     } catch {
       setError(t.errors.noConnection);
@@ -150,7 +151,7 @@ export function RadarMovers() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchMovers();
+    await fetchMovers(true);
     setRefreshing(false);
   };
 
@@ -261,10 +262,9 @@ export function RadarMovers() {
           {/* Building / empty */}
           {!loading && !error && building && (
             <div className="flex flex-col items-center py-16 gap-3 text-center px-4">
-              <p className="text-sm font-semibold text-[#1F1A14]">No data yet</p>
+              <p className="text-sm font-semibold text-[#1F1A14]">Fetching movers…</p>
               <p className="text-xs text-[#8A8378] max-w-xs leading-relaxed">
-                Market movers update every 30 minutes via the scheduler.
-                First data arrives after the scheduler runs.
+                Loading the latest gainers, losers, and most-active stocks from FMP.
               </p>
             </div>
           )}
