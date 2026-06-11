@@ -23,7 +23,7 @@ import { useI18n } from "@/lib/i18n";
 
 export function HomeMobile() {
   const { user, loading } = useUser();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen]   = useState(false);
   const [noticeVisible, setNoticeVisible] = useState(true);
@@ -99,7 +99,7 @@ export function HomeMobile() {
       </div>
 
       {/* Market status */}
-      <TradingViewTickerTape className="border-b border-white/20" />
+      <TradingViewTickerTape className="border-b border-white/20" locale={lang} />
       <MarketStatusBanner />
 
       {/* Profile + balance */}

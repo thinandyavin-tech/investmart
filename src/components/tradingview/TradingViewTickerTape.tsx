@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface TradingViewTickerTapeProps {
   theme?:    "light" | "dark";
+  locale?:   string;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ const SYMBOLS = [
 
 export function TradingViewTickerTape({
   theme     = "light",
+  locale    = "en",
   className = "",
 }: TradingViewTickerTapeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,12 +50,12 @@ export function TradingViewTickerTape({
       isTransparent:  true,
       displayMode:    "adaptive",
       colorTheme:     theme,
-      locale:         "th_TH",
+      locale:         locale === "th" ? "th" : "en",
     });
     container.appendChild(script);
 
     return () => { container.innerHTML = ""; };
-  }, [theme]);
+  }, [theme, locale]);
 
   return (
     <div

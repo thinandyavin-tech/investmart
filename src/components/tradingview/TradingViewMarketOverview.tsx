@@ -3,8 +3,9 @@
 import { useEffect, useRef } from "react";
 
 interface TradingViewMarketOverviewProps {
-  theme?: "light" | "dark";
+  theme?:  "light" | "dark";
   height?: number;
+  locale?: string;
 }
 
 /**
@@ -15,29 +16,31 @@ interface TradingViewMarketOverviewProps {
 export function TradingViewMarketOverview({
   theme  = "light",
   height = 400,
+  locale = "en",
 }: TradingViewMarketOverviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mountedRef   = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current || mountedRef.current) return;
-    mountedRef.current = true;
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.innerHTML = "";
 
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
     script.type = "text/javascript";
     script.async = true;
     script.innerHTML = JSON.stringify({
-      colorTheme:    theme,
-      dateRange:     "12M",
-      showChart:     true,
-      locale:        "en",
-      largeChartUrl: "",
-      isTransparent: true,
-      showSymbolLogo: true,
+      colorTheme:          theme,
+      dateRange:           "12M",
+      showChart:           true,
+      locale:              locale === "th" ? "th" : "en",
+      largeChartUrl:       "",
+      isTransparent:       true,
+      showSymbolLogo:      true,
       showFloatingTooltip: false,
-      width:  "100%",
-      height: `${height}`,
+      width:               "100%",
+      height:              `${height}`,
       tabs: [
         {
           title: "Indices",
@@ -66,11 +69,11 @@ export function TradingViewMarketOverview({
         {
           title: "Bonds",
           symbols: [
-            { s: "CBOT:ZN1!",                     d: "10-Year T-Note" },
-            { s: "CBOT:ZB1!",                     d: "T-Bond" },
-            { s: "EUREX:FGBL1!",                  d: "Euro Bund" },
-            { s: "EUREX:FBTP1!",                  d: "Euro BTP" },
-            { s: "EUREX:FGBM1!",                  d: "Euro BOBL" },
+            { s: "CBOT:ZN1!",      d: "10-Year T-Note" },
+            { s: "CBOT:ZB1!",      d: "T-Bond" },
+            { s: "EUREX:FGBL1!",   d: "Euro Bund" },
+            { s: "EUREX:FBTP1!",   d: "Euro BTP" },
+            { s: "EUREX:FGBM1!",   d: "Euro BOBL" },
           ],
           originalTitle: "Bonds",
         },
@@ -101,20 +104,22 @@ export function TradingViewMarketOverview({
         {
           title: "Commodities",
           symbols: [
-            { s: "COMEX:GC1!",    d: "Gold" },
-            { s: "COMEX:SI1!",    d: "Silver" },
-            { s: "NYMEX:CL1!",    d: "Crude Oil (WTI)" },
-            { s: "NYMEX:NG1!",    d: "Natural Gas" },
-            { s: "CBOT:ZW1!",     d: "Wheat" },
-            { s: "CBOT:ZC1!",     d: "Corn" },
+            { s: "COMEX:GC1!",  d: "Gold" },
+            { s: "COMEX:SI1!",  d: "Silver" },
+            { s: "NYMEX:CL1!",  d: "Crude Oil (WTI)" },
+            { s: "NYMEX:NG1!",  d: "Natural Gas" },
+            { s: "CBOT:ZW1!",   d: "Wheat" },
+            { s: "CBOT:ZC1!",   d: "Corn" },
           ],
           originalTitle: "Commodities",
         },
       ],
     });
 
-    containerRef.current.appendChild(script);
-  }, [theme, height]);
+    container.appendChild(script);
+
+    return () => { container.innerHTML = ""; };
+  }, [theme, height, locale]);
 
   return (
     <div className="tradingview-widget-container" ref={containerRef} style={{ height }}>

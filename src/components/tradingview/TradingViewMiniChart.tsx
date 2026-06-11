@@ -6,6 +6,7 @@ interface TradingViewMiniChartProps {
   ticker:    string;
   height?:   number;
   theme?:    "light" | "dark";
+  locale?:   string;
   className?: string;
 }
 
@@ -13,6 +14,7 @@ export function TradingViewMiniChart({
   ticker,
   height    = 220,
   theme     = "light",
+  locale    = "en",
   className = "",
 }: TradingViewMiniChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +37,7 @@ export function TradingViewMiniChart({
       symbol:            ticker,
       width:             "100%",
       height:            height,
-      locale:            "th_TH",
+      locale:            locale === "th" ? "th_TH" : "en",
       dateRange:         "3M",
       colorTheme:        theme,
       isTransparent:     true,
@@ -45,7 +47,7 @@ export function TradingViewMiniChart({
     container.appendChild(script);
 
     return () => { container.innerHTML = ""; };
-  }, [ticker, theme, height]);
+  }, [ticker, theme, height, locale]);
 
   return (
     <div

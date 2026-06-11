@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/Card";
 import { FeedSection } from "@/components/social/FeedSection";
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
@@ -8,42 +11,28 @@ import { DailyDigestCard } from "@/components/home/DailyDigestCard";
 import { PortfolioHero } from "@/components/home/PortfolioHero";
 import { NewsForwardSection } from "@/components/home/NewsForwardSection";
 import { MarketsRail } from "@/components/home/MarketsRail";
-import Link from "next/link";
 import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
 
 export function HomeDesktop() {
   const { loading } = useUser();
+  const { lang } = useI18n();
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Full-width ticker tape */}
       <div className="px-6 pt-4 pb-0 max-w-6xl mx-auto w-full">
-        <TradingViewTickerTape />
+        <TradingViewTickerTape locale={lang} />
       </div>
 
-      {/* 2-col layout: content + market rail */}
       <div className="flex flex-1 gap-6 px-6 py-4 max-w-6xl mx-auto w-full">
-
-        {/* Main content column */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
           <MarketStatusBanner />
-
-          {/* Portfolio Hero — shows for all users (handles logged-out state internally) */}
           {!loading && <PortfolioHero />}
-
           <ActionButtons />
-
-          {/* AI digest */}
           <DailyDigestCard />
-
-          {/* News-forward — hero + grid */}
           <NewsForwardSection />
-
-          {/* Social feed */}
           <PostsCard />
         </section>
 
-        {/* Right rail: markets + curated screens */}
         <div className="w-72 flex-shrink-0">
           <MarketsRail />
         </div>
@@ -54,90 +43,14 @@ export function HomeDesktop() {
   );
 }
 
-function AboutCard({ bio }: { bio: string }) {
-  return (
-    <Card className="p-5">
-      <h2 className="text-xs font-semibold uppercase tracking-widest mb-3 border-b border-white/30 pb-2 text-slate-400">
-        เกี่ยวกับฉัน
-      </h2>
-      {bio ? (
-        <p className="text-sm leading-relaxed text-slate-700">{bio}</p>
-      ) : (
-        <>
-          <p className="text-sm italic text-slate-400 mb-3">
-            ยังไม่มีคำบรรยาย — เขียนแนะนำตัวเองด้วยตัวอักษรเท่านั้น
-          </p>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            InvestMart เป็นโซเชียลมีเดียหุ้นที่ใช้ตัวอักษรล้วน ไม่มีรูปโปรไฟล์ ไม่มีอีโมจิ
-          </p>
-        </>
-      )}
-    </Card>
-  );
-}
-
-
-interface Holding {
-  ticker:   string;
-  shares:   number;
-  avgCost:  number;
-  currency: string;
-}
-
-function StatCards({
-  loading,
-  cashThb,
-  cashUsd,
-  holdings,
-  tradeCount,
-}: {
-  loading:    boolean;
-  cashThb:    number | null;
-  cashUsd:    number | null;
-  holdings:   Holding[];
-  tradeCount: number;
-}) {
-  const stats = [
-    {
-      label: "เงินสด (THB)",
-      value: loading ? "..." : cashThb != null ? `฿${cashThb.toLocaleString("th-TH")}` : "฿1,250,000",
-      mono:  true,
-    },
-    {
-      label: "เงินสด (USD)",
-      value: loading ? "..." : cashUsd != null ? `$${cashUsd.toFixed(2)}` : "$0",
-      mono:  true,
-    },
-    { label: "จำนวนหุ้น",      value: loading ? "..." : String(holdings.length) },
-    { label: "คำสั่งซื้อขาย",  value: loading ? "..." : String(tradeCount)      },
-  ];
-
-  return (
-    <div className="grid grid-cols-4 gap-3">
-      {stats.map(({ label, value, mono }) => (
-        <Card key={label} className="p-4 text-center">
-          <div className="text-xs text-slate-500 uppercase tracking-widest mb-1.5 font-medium">
-            {label}
-          </div>
-          <div
-            className="text-lg font-bold text-slate-900"
-            style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}
-          >
-            {value}
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
 function ActionButtons() {
+  const { t } = useI18n();
   const actions = [
-    { href: "/radar",       label: "เรดาร์แสกนหุ้น", icon: "📡" },
-    { href: "/market",      label: "ภาพรวมตลาด",      icon: "📈" },
-    { href: "/exchange",    label: "แลกเปลี่ยนเงิน",  icon: "💱" },
-    { href: "/history",     label: "ประวัติซื้อขาย",  icon: "📋" },
-    { href: "/leaderboard", label: "Leaderboard",       icon: "🏆" },
+    { href: "/radar",       label: t.desktop.actions.radar,    icon: "📡" },
+    { href: "/market",      label: t.desktop.actions.market,   icon: "📈" },
+    { href: "/exchange",    label: t.desktop.actions.exchange,  icon: "💱" },
+    { href: "/history",     label: t.desktop.actions.history,   icon: "📋" },
+    { href: "/leaderboard", label: t.nav.leaderboard,           icon: "🏆" },
   ];
 
   return (
@@ -148,7 +61,7 @@ function ActionButtons() {
           href={href}
           className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 hover:bg-white/70 transition-colors group"
         >
-          <span className="text-xl">{icon}</span>
+          <span className="text-xl" aria-hidden="true">{icon}</span>
           <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-900 text-center leading-tight">{label}</span>
         </Link>
       ))}
@@ -156,48 +69,12 @@ function ActionButtons() {
   );
 }
 
-function HoldingsCard({ holdings, loading }: { holdings: Holding[]; loading: boolean }) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-semibold text-slate-700">หุ้นที่ถืออยู่</h2>
-        <Link href="/assets" className="text-xs text-violet-600 hover:text-violet-800 font-semibold transition-colors">ดูพอร์ตเต็ม →</Link>
-      </div>
-      {loading ? (
-        <div className="text-sm text-slate-400 text-center py-4">กำลังโหลด...</div>
-      ) : holdings.length === 0 ? (
-        <div className="text-sm text-slate-400 text-center py-4">ยังไม่มีหุ้นในพอร์ต</div>
-      ) : (
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b border-white/30">
-              {["หุ้น", "จำนวน", "ต้นทุนเฉลี่ย"].map((h) => (
-                <th key={h} className="text-left py-2 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {holdings.map((h) => (
-              <tr key={h.ticker} className="border-b border-white/20 last:border-0">
-                <td className="py-2 font-bold text-slate-900">{h.ticker}</td>
-                <td className="py-2 text-slate-600 font-mono">{h.shares}</td>
-                <td className="py-2 text-slate-600 font-mono">${h.avgCost.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </Card>
-  );
-}
-
 function PostsCard() {
+  const { t } = useI18n();
   return (
     <Card className="overflow-hidden">
-      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-slate-100">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-500">บทความและโพสต์</h2>
+      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8A8378]">{t.desktop.postsTitle}</h2>
       </div>
       <FeedSection showComposer={true} />
     </Card>
@@ -205,29 +82,30 @@ function PostsCard() {
 }
 
 function HomeFooter() {
+  const { t } = useI18n();
+  const links = [
+    { href: "/",          label: t.desktop.footerLinks.home },
+    { href: "/radar",     label: t.desktop.footerLinks.radar },
+    { href: "/market",    label: t.desktop.footerLinks.market },
+    { href: "/exchange",  label: "Exchange" },
+    { href: "/history",   label: t.desktop.footerLinks.history },
+    { href: "/about",     label: t.desktop.footerLinks.about },
+    { href: "/privacy",   label: t.desktop.footerLinks.privacy },
+    { href: "/terms",     label: t.desktop.footerLinks.terms },
+  ];
+
   return (
     <footer className="border-t border-white/30 bg-white/50 backdrop-blur-md px-6 py-4 mt-4">
       <div className="max-w-5xl mx-auto">
-        <p className="text-xs text-slate-900 font-semibold mb-1">
-          InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา
-        </p>
+        <p className="text-xs text-slate-900 font-semibold mb-1">InvestMart</p>
         <div className="flex flex-wrap gap-3 text-xs mb-2">
-          {[
-            { href: "/",          label: "หน้าหลัก" },
-            { href: "/radar",     label: "เรดาร์แสกนหุ้น" },
-            { href: "/market",    label: "ภาพรวมตลาด" },
-            { href: "/exchange",  label: "Exchange" },
-            { href: "/history",   label: "ประวัติซื้อขาย" },
-            { href: "/about",     label: "เกี่ยวกับ" },
-            { href: "/privacy",   label: "ความเป็นส่วนตัว" },
-            { href: "/terms",     label: "ข้อกำหนด" },
-          ].map(({ href, label }) => (
+          {links.map(({ href, label }) => (
             <Link key={href} href={href} className="text-slate-400 hover:text-slate-700 underline underline-offset-2">
               {label}
             </Link>
           ))}
         </div>
-        <p className="text-xs text-slate-400">© 2026 InvestMart · investmart.vercel.app · ข้อมูลเพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน</p>
+        <p className="text-xs text-slate-400">{t.desktop.disclaimer}</p>
       </div>
     </footer>
   );

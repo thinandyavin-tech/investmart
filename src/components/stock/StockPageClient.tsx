@@ -11,6 +11,7 @@ import { ReverseDCF }       from "@/components/stock/ReverseDCF";
 import { WhyMovingCard }    from "@/components/stock/WhyMovingCard";
 import { StockInfographic } from "@/components/stock/StockInfographic";
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { TradingViewChart } from "@/components/tradingview/TradingViewChart";
 
@@ -86,6 +87,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
     useLiveQuote(TICKER_RE.test(ticker) ? ticker : null);
 
   const { user } = useUser();
+  const { lang } = useI18n();
   const [watched, setWatched]           = useState(false);
   const [watchLoading, setWatchLoading] = useState(false);
 
@@ -428,7 +430,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           )}
         </div>
         {useTVChart ? (
-          <TradingViewChart ticker={ticker} height={420} />
+          <TradingViewChart ticker={ticker} height={420} locale={lang} />
         ) : (
           <>
             {chartMode === "Price" && (

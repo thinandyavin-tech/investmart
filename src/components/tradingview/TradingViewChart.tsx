@@ -6,6 +6,7 @@ interface TradingViewChartProps {
   ticker:    string;
   height?:   number;
   theme?:    "light" | "dark";
+  locale?:   string;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export function TradingViewChart({
   ticker,
   height    = 400,
   theme     = "light",
+  locale    = "en",
   className = "",
 }: TradingViewChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ export function TradingViewChart({
       timezone:              "America/New_York",
       theme:                 theme,
       style:                 "1",
-      locale:                "th_TH",
+      locale:                locale === "th" ? "th_TH" : "en",
       enable_publishing:     false,
       hide_top_toolbar:      false,
       hide_legend:           false,
@@ -64,7 +66,7 @@ export function TradingViewChart({
       container.innerHTML = "";
       scriptRef.current = null;
     };
-  }, [ticker, theme]);
+  }, [ticker, theme, locale]);
 
   return (
     <div

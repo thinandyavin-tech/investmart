@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 interface TradingViewHeatmapProps {
   theme?:  "light" | "dark";
   height?: number;
+  locale?: string;
 }
 
 /**
@@ -15,38 +16,42 @@ interface TradingViewHeatmapProps {
 export function TradingViewHeatmap({
   theme  = "light",
   height = 500,
+  locale = "en",
 }: TradingViewHeatmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mountedRef   = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current || mountedRef.current) return;
-    mountedRef.current = true;
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.innerHTML = "";
 
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js";
     script.type = "text/javascript";
     script.async = true;
     script.innerHTML = JSON.stringify({
-      exchanges:     [],
-      dataSource:    "SPX500",
-      grouping:      "sector",
-      blockSize:     "market_cap_basic",
-      blockColor:    "change",
-      locale:        "en",
-      symbolUrl:     "",
-      colorTheme:    theme,
-      hasTopBar:     true,
-      isDataSetEnabled: false,
-      isZoomEnabled: true,
-      hasSymbolTooltip: true,
-      isMonoSize:    false,
-      width:         "100%",
-      height:        `${height}`,
+      exchanges:           [],
+      dataSource:          "SPX500",
+      grouping:            "sector",
+      blockSize:           "market_cap_basic",
+      blockColor:          "change",
+      locale:              locale === "th" ? "th" : "en",
+      symbolUrl:           "",
+      colorTheme:          theme,
+      hasTopBar:           true,
+      isDataSetEnabled:    false,
+      isZoomEnabled:       true,
+      hasSymbolTooltip:    true,
+      isMonoSize:          false,
+      width:               "100%",
+      height:              `${height}`,
     });
 
-    containerRef.current.appendChild(script);
-  }, [theme, height]);
+    container.appendChild(script);
+
+    return () => { container.innerHTML = ""; };
+  }, [theme, height, locale]);
 
   return (
     <div className="tradingview-widget-container" ref={containerRef} style={{ height }}>

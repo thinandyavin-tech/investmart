@@ -55,7 +55,7 @@ function SectionHeader({
 }
 
 export function MarketPageClient() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <div className="flex flex-col min-h-screen">
       <MarketStatusBanner />
@@ -72,7 +72,7 @@ export function MarketPageClient() {
               />
             </div>
             <div className="p-2">
-              <TradingViewMarketOverview height={460} />
+              <TradingViewMarketOverview height={460} locale={lang} />
             </div>
           </div>
         </section>
@@ -87,7 +87,7 @@ export function MarketPageClient() {
               />
             </div>
             <div className="p-2">
-              <TradingViewHotlists height={380} />
+              <TradingViewHotlists height={380} locale={lang} />
             </div>
           </div>
         </section>
@@ -120,7 +120,7 @@ export function MarketPageClient() {
               />
             </div>
             <div className="p-2">
-              <TradingViewHeatmap height={500} />
+              <TradingViewHeatmap height={500} locale={lang} />
             </div>
           </div>
         </section>

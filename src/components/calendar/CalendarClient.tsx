@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n";
 
 const TradingViewEconomicCalendar = dynamic(
   () => import("@/components/tradingview/TradingViewEconomicCalendar")
@@ -11,39 +12,34 @@ const TradingViewEconomicCalendar = dynamic(
 );
 
 export function CalendarClient() {
+  const { t, lang } = useI18n();
   const [highImpactOnly, setHighImpactOnly] = useState(false);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest text-slate-800 mb-1">
-            ปฏิทินเศรษฐกิจโลก · Economic Calendar
+            {t.calendar.title}
           </h1>
           <p className="text-xs text-slate-500">
-            CPI · Fed · NFP · GDP · PMI · ECB · BoE · BoJ · BoT และอื่นๆ · จาก TradingView
+            {t.calendar.subtitle}
           </p>
         </div>
         <Link
           href="/market"
           className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors"
         >
-          ← ภาพรวมตลาด
+          ← {t.nav.market}
         </Link>
       </div>
 
-      {/* Data source note */}
       <div className="rounded-xl bg-blue-50/60 border border-blue-200 px-4 py-2.5 text-xs text-blue-700">
-        <strong>แหล่งข้อมูล:</strong> TradingView Economic Calendar (ฟรี, ไม่ต้องใช้ API key)
-        · ครอบคลุม US, EU, UK, Japan, China, Canada, Australia, Thailand
-        · วันที่/เวลาเป็น ET ·
-        ตัวเลขที่ออกมาจริงอาจต่างจากตัวเลขคาดการณ์
+        {t.calendar.sourceNote}
       </div>
 
-      {/* Filter toggle */}
       <div className="flex items-center gap-3">
-        <span className="text-xs text-slate-600 font-medium">แสดง:</span>
+        <span className="text-xs text-slate-600 font-medium">{t.calendar.show}:</span>
         <button
           onClick={() => setHighImpactOnly(false)}
           className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
@@ -52,7 +48,7 @@ export function CalendarClient() {
               : "border-slate-200 text-slate-600 hover:border-violet-300"
           }`}
         >
-          ทุกกิจกรรม
+          {t.calendar.allEvents}
         </button>
         <button
           onClick={() => setHighImpactOnly(true)}
@@ -62,20 +58,20 @@ export function CalendarClient() {
               : "border-slate-200 text-slate-600 hover:border-slate-400"
           }`}
         >
-          🔴 High Impact เท่านั้น
+          {t.calendar.highImpact}
         </button>
       </div>
 
-      {/* Calendar widget */}
       <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
         <TradingViewEconomicCalendar
           height={650}
+          locale={lang}
           highImpactOnly={highImpactOnly}
         />
       </div>
 
       <p className="text-xs text-slate-400 text-center">
-        ข้อมูลจาก TradingView · เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน
+        {t.calendar.disclaimer}
       </p>
     </div>
   );

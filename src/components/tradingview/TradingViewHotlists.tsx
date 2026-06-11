@@ -5,15 +5,21 @@ import { useEffect, useRef } from "react";
 interface TradingViewHotlistsProps {
   theme?:  "light" | "dark";
   height?: number;
+  locale?: string;
 }
 
-export function TradingViewHotlists({ theme = "light", height = 400 }: TradingViewHotlistsProps) {
+export function TradingViewHotlists({
+  theme  = "light",
+  height = 400,
+  locale = "en",
+}: TradingViewHotlistsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mountedRef   = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current || mountedRef.current) return;
-    mountedRef.current = true;
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.innerHTML = "";
 
     const script = document.createElement("script");
     script.src   = "https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js";
@@ -24,7 +30,7 @@ export function TradingViewHotlists({ theme = "light", height = 400 }: TradingVi
       dateRange:           "1D",
       exchange:            "US",
       showChart:           true,
-      locale:              "en",
+      locale:              locale === "th" ? "th" : "en",
       largeChartUrl:       "",
       isTransparent:       true,
       showSymbolLogo:      false,
@@ -38,12 +44,14 @@ export function TradingViewHotlists({ theme = "light", height = 400 }: TradingVi
       belowLineFillColorGrowingBottom:"rgba(41,191,99,0)",
       belowLineFillColorFallingBottom:"rgba(255,74,104,0)",
       symbolActiveColor:   "rgba(41,191,99,0.12)",
-      width:  "100%",
-      height: `${height}`,
+      width:               "100%",
+      height:              `${height}`,
     });
 
-    containerRef.current.appendChild(script);
-  }, [theme, height]);
+    container.appendChild(script);
+
+    return () => { container.innerHTML = ""; };
+  }, [theme, height, locale]);
 
   return (
     <div className="tradingview-widget-container" ref={containerRef} style={{ height }}>

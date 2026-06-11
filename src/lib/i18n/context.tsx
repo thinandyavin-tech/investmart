@@ -6,16 +6,21 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 
 import { translations, type Lang, type Translations } from "./translations";
+import { makeFormatUtils, type FormatUtils } from "./format";
 
 const STORAGE_KEY = "investmart_lang";
+const COOKIE_NAME = "investmart_lang";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 interface I18nContextValue {
   lang:    Lang;
   t:       Translations;
+  format:  FormatUtils;
   setLang: (l: Lang) => void;
   toggle:  () => void;
 }
@@ -23,23 +28,32 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue>({
   lang:    "en",
   t:       translations.en,
+  format:  makeFormatUtils("en"),
   setLang: () => {},
   toggle:  () => {},
 });
+
+function readSavedLang(): Lang {
+  try {
+    const fromStorage = localStorage.getItem(STORAGE_KEY) as Lang | null;
+    if (fromStorage === "th" || fromStorage === "en") return fromStorage;
+  } catch { /* SSR or private browsing */ }
+  return "en";
+}
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved === "th") setLangState("th");
-    } catch { /* SSR or private browsing */ }
+    setLangState(readSavedLang());
   }, []);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    try { localStorage.setItem(STORAGE_KEY, l); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(STORAGE_KEY, l);
+      document.cookie = `${COOKIE_NAME}=${l};path=/;max-age=${COOKIE_MAX_AGE};SameSite=Lax`;
+    } catch { /* private browsing */ }
   }, []);
 
   const toggle = useCallback(() => {
@@ -47,9 +61,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, [lang, setLang]);
 
   const t = translations[lang];
+  const format = useMemo(() => makeFormatUtils(lang), [lang]);
 
   return (
-    <I18nContext.Provider value={{ lang, t, setLang, toggle }}>
+    <I18nContext.Provider value={{ lang, t, format, setLang, toggle }}>
       {children}
     </I18nContext.Provider>
   );
