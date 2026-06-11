@@ -1,31 +1,64 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
 import type { AnalysisResult } from "@/app/api/news/analyze/route";
 
-const RELIABILITY_CFG = {
-  "สูง":     { label: "น่าเชื่อถือสูง",   bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
-  "ปานกลาง": { label: "ปานกลาง",          bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
-  "ต่ำ":     { label: "น่าเชื่อถือต่ำ",   bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
+// Color configs keyed by Thai AI output values — locale-independent
+const RELIABILITY_COLORS = {
+  "สูง":     { bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
+  "ปานกลาง": { bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
+  "ต่ำ":     { bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
 } as const;
 
-const IMPACT_CFG = {
-  "บวก":      { label: "บวก ▲",     bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
-  "ลบ":       { label: "ลบ ▼",      bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
-  "เป็นกลาง": { label: "เป็นกลาง —", bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
+const IMPACT_COLORS = {
+  "บวก":      { bg: "#ECFDF5", text: "#065F46", border: "#5B8A2A" },
+  "ลบ":       { bg: "#FEF2F2", text: "#991B1B", border: "#DC2626" },
+  "เป็นกลาง": { bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
 } as const;
 
-const CONTENT_TYPE_CFG = {
-  "รายงานข่าว":    { label: "รายงานข่าว",    bg: "#EFF6FF", text: "#1D4ED8", border: "#3B82F6" },
-  "บทวิเคราะห์":   { label: "บทวิเคราะห์",   bg: "#F5F3FF", text: "#6D28D9", border: "#8B5CF6" },
-  "ข่าวลือ":        { label: "ข่าวลือ",        bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
-  "ประชาสัมพันธ์":  { label: "ประชาสัมพันธ์",  bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
+const CONTENT_TYPE_COLORS = {
+  "รายงานข่าว":    { bg: "#EFF6FF", text: "#1D4ED8", border: "#3B82F6" },
+  "บทวิเคราะห์":   { bg: "#F5F3FF", text: "#6D28D9", border: "#8B5CF6" },
+  "ข่าวลือ":        { bg: "#FFFBEB", text: "#92400E", border: "#D97706" },
+  "ประชาสัมพันธ์":  { bg: "#F9FAFB", text: "#374151", border: "#9CA3AF" },
 } as const;
 
-const CONFIDENCE_CFG = {
-  "สูง":     { label: "ความมั่นใจ: สูง",    text: "#065F46" },
-  "ปานกลาง": { label: "ความมั่นใจ: ปานกลาง", text: "#92400E" },
-  "ต่ำ":     { label: "ความมั่นใจ: ต่ำ",    text: "#991B1B" },
+// Locale-dependent display labels
+const RELIABILITY_LABELS = {
+  en: { "สูง": "High · Reliable", "ปานกลาง": "Medium", "ต่ำ": "Low · Less Reliable" },
+  th: { "สูง": "น่าเชื่อถือสูง",  "ปานกลาง": "ปานกลาง", "ต่ำ": "น่าเชื่อถือต่ำ" },
+} as const;
+
+const IMPACT_LABELS = {
+  en: { "บวก": "Positive ▲", "ลบ": "Negative ▼", "เป็นกลาง": "Neutral —" },
+  th: { "บวก": "บวก ▲",      "ลบ": "ลบ ▼",       "เป็นกลาง": "เป็นกลาง —" },
+} as const;
+
+const CONTENT_TYPE_LABELS = {
+  en: {
+    "รายงานข่าว":    "News Report",
+    "บทวิเคราะห์":   "Analysis",
+    "ข่าวลือ":        "Rumor",
+    "ประชาสัมพันธ์":  "PR",
+  },
+  th: {
+    "รายงานข่าว":    "รายงานข่าว",
+    "บทวิเคราะห์":   "บทวิเคราะห์",
+    "ข่าวลือ":        "ข่าวลือ",
+    "ประชาสัมพันธ์":  "ประชาสัมพันธ์",
+  },
+} as const;
+
+const CONFIDENCE_LABELS = {
+  en: { "สูง": "Confidence: High", "ปานกลาง": "Confidence: Medium", "ต่ำ": "Confidence: Low" },
+  th: { "สูง": "ความมั่นใจ: สูง",  "ปานกลาง": "ความมั่นใจ: ปานกลาง", "ต่ำ": "ความมั่นใจ: ต่ำ" },
+} as const;
+
+const CONFIDENCE_COLORS = {
+  "สูง":     "#065F46",
+  "ปานกลาง": "#92400E",
+  "ต่ำ":     "#991B1B",
 } as const;
 
 export interface NewsArticleInput {
@@ -76,38 +109,52 @@ interface ResultPanelProps {
 }
 
 function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProps) {
-  const relCfg  = RELIABILITY_CFG[result.reliability]           ?? RELIABILITY_CFG["ปานกลาง"];
-  const impCfg  = IMPACT_CFG[result.market_impact.direction]    ?? IMPACT_CFG["เป็นกลาง"];
-  const ctCfg   = CONTENT_TYPE_CFG[result.content_type]         ?? CONTENT_TYPE_CFG["รายงานข่าว"];
-  const confCfg = CONFIDENCE_CFG[result.confidence]             ?? CONFIDENCE_CFG["ปานกลาง"];
+  const { lang } = useI18n();
+
+  const relColors  = RELIABILITY_COLORS[result.reliability]           ?? RELIABILITY_COLORS["ปานกลาง"];
+  const impColors  = IMPACT_COLORS[result.market_impact.direction]    ?? IMPACT_COLORS["เป็นกลาง"];
+  const ctColors   = CONTENT_TYPE_COLORS[result.content_type]         ?? CONTENT_TYPE_COLORS["รายงานข่าว"];
+  const confColor  = CONFIDENCE_COLORS[result.confidence]             ?? CONFIDENCE_COLORS["ปานกลาง"];
+
+  const relLabel  = RELIABILITY_LABELS[lang][result.reliability]           ?? result.reliability;
+  const impLabel  = IMPACT_LABELS[lang][result.market_impact.direction]    ?? result.market_impact.direction;
+  const ctLabel   = CONTENT_TYPE_LABELS[lang][result.content_type]         ?? result.content_type;
+  const confLabel = CONFIDENCE_LABELS[lang][result.confidence]             ?? result.confidence;
+
+  const summaryLabel    = lang === "en" ? "Summary"     : "สรุปข่าว";
+  const stockImpactLabel = lang === "en" ? "Stock impact:" : "ผลต่อหุ้น:";
+  const sourceText      = lang === "en" ? "Source:"     : "แหล่งข่าว:";
+  const readOriginal    = lang === "en" ? "Read original ↗" : "อ่านต้นฉบับ ↗";
+  const cachedLabel     = lang === "en" ? "· cached"    : "· แคช";
+  const ariaLabel       = lang === "en" ? "AI analysis result" : "ผลการวิเคราะห์ AI";
 
   return (
     <div
       className="mt-2 border-l-2 overflow-hidden"
-      style={{ borderColor: relCfg.border }}
+      style={{ borderColor: relColors.border }}
       role="region"
-      aria-label="ผลการวิเคราะห์ AI"
+      aria-label={ariaLabel}
     >
       {/* Chip row */}
       <div
         className="px-3 py-2 flex flex-wrap gap-1.5 items-center"
-        style={{ background: relCfg.bg }}
+        style={{ background: relColors.bg }}
       >
-        <Chip color={relCfg} title={result.reliability_reason_th}>{relCfg.label}</Chip>
-        <Chip color={ctCfg}>{ctCfg.label}</Chip>
-        <Chip color={impCfg} title={result.market_impact.reason_th}>{impCfg.label}</Chip>
-        <span className="text-xs font-bold" style={{ color: confCfg.text }}>
-          · {confCfg.label}
+        <Chip color={relColors} title={result.reliability_reason_th}>{relLabel}</Chip>
+        <Chip color={ctColors}>{ctLabel}</Chip>
+        <Chip color={impColors} title={result.market_impact.reason_th}>{impLabel}</Chip>
+        <span className="text-xs font-bold" style={{ color: confColor }}>
+          · {confLabel}
         </span>
-        {cached && <span className="text-xs text-[#8A8378]">· แคช</span>}
+        {cached && <span className="text-xs text-[#8A8378]">{cachedLabel}</span>}
       </div>
 
       {/* Reliability reason */}
       <div
         className="px-3 py-1.5 border-b border-[#E8E2D4]"
-        style={{ background: relCfg.bg }}
+        style={{ background: relColors.bg }}
       >
-        <p className="text-xs leading-snug" style={{ color: relCfg.text }}>
+        <p className="text-xs leading-snug" style={{ color: relColors.text }}>
           {result.reliability_reason_th}
         </p>
       </div>
@@ -115,14 +162,14 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
       {/* Market impact reason */}
       <div className="px-3 py-1.5 bg-[#F9F7F2] border-b border-[#E8E2D4]">
         <p className="text-xs leading-snug text-[#8A8378]">
-          <span className="font-bold" style={{ color: impCfg.text }}>ผลต่อหุ้น: </span>
+          <span className="font-bold" style={{ color: impColors.text }}>{stockImpactLabel} </span>
           {result.market_impact.reason_th}
         </p>
       </div>
 
       {/* Summary */}
       <div className="px-3 py-2 bg-[#F9F7F2]">
-        <p className="text-xs font-bold uppercase tracking-wide text-[#8A8378] mb-1">สรุปข่าว</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-[#8A8378] mb-1">{summaryLabel}</p>
         <p className="text-xs leading-relaxed text-[#1F1A14]">{result.summary_th}</p>
       </div>
 
@@ -130,14 +177,14 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
       <div className="px-3 py-2 bg-[#F3EDE0] border-t border-[#E8E2D4]">
         <p className="text-xs text-[#8A8378] leading-relaxed">{result.disclaimer_th}</p>
         <p className="text-xs text-[#8A8378] mt-0.5">
-          แหล่งข่าว: {sourceLabel}{" · "}
+          {sourceText} {sourceLabel}{" · "}
           <a
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="underline font-bold text-[#1F1A14]"
           >
-            อ่านต้นฉบับ ↗
+            {readOriginal}
           </a>
         </p>
       </div>
@@ -146,11 +193,21 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
 }
 
 export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnalysisPanelProps) {
+  const { lang } = useI18n();
   const [state, setState] = useState<State>({ phase: "idle" });
+
+  const analyzing = lang === "en" ? "Analysing…" : "กำลังวิเคราะห์...";
+  const hideAi    = lang === "en" ? "✦ Hide AI"  : "✦ ซ่อน AI";
+  const showAi    = lang === "en" ? "✦ AI Analysis" : "✦ วิเคราะห์ข่าวด้วย AI";
+  const retryBtn  = lang === "en" ? "Retry" : "ลองใหม่";
+  const closeBtn  = lang === "en" ? "Close" : "ปิด";
+  const ariaLabel = lang === "en"
+    ? `AI analysis: ${article.headline}`
+    : `วิเคราะห์ข่าวด้วย AI: ${article.headline}`;
 
   async function analyze() {
     if (state.phase === "open") { setState({ phase: "idle" }); return; }
-    if (state.phase === "loading") return; // prevent double-tap
+    if (state.phase === "loading") return;
 
     setState({ phase: "loading" });
 
@@ -159,6 +216,7 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       snippet:        article.snippet ?? "",
       source:         article.source,
       ticker:         ticker ?? "",
+      locale:         lang,
       otherHeadlines: (otherHeadlines ?? []).filter(h => h !== article.headline),
     };
 
@@ -171,17 +229,21 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       if (!res.ok) {
         const err = (await res.json().catch(() => ({}))) as { error?: string; retryAfter?: number };
         const msg = res.status === 429
-          ? `ระบบ AI กำลังใช้งานหนัก 🙏 รอ ${err.retryAfter ?? 60} วินาที แล้วลองใหม่`
-          : (err.error ?? "AI ไม่พร้อมใช้งาน");
+          ? lang === "en"
+            ? `AI is busy 🙏 Wait ${err.retryAfter ?? 60}s then try again`
+            : `ระบบ AI กำลังใช้งานหนัก 🙏 รอ ${err.retryAfter ?? 60} วินาที แล้วลองใหม่`
+          : (err.error ?? (lang === "en" ? "AI unavailable" : "AI ไม่พร้อมใช้งาน"));
         setState({ phase: "error", message: msg });
         return;
       }
       const data = (await res.json()) as AnalysisResult & { cached?: boolean };
       setState({ phase: "open", result: data, cached: data.cached ?? false });
     } catch {
-      setState({ phase: "error", message: "ไม่สามารถเชื่อมต่อได้" });
+      setState({
+        phase: "error",
+        message: lang === "en" ? "Connection failed" : "ไม่สามารถเชื่อมต่อได้",
+      });
     }
-    // Note: no finally needed — every path above sets state explicitly
   }
 
   return (
@@ -195,9 +257,9 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
             : "border-slate-300 text-slate-500 hover:border-violet-300 hover:text-violet-600"
         }`}
         aria-expanded={state.phase === "open"}
-        aria-label={`วิเคราะห์ข่าวด้วย AI: ${article.headline}`}
+        aria-label={ariaLabel}
       >
-        {state.phase === "loading" ? "กำลังวิเคราะห์..." : state.phase === "open" ? "✦ ซ่อน AI" : "✦ วิเคราะห์ข่าวด้วย AI"}
+        {state.phase === "loading" ? analyzing : state.phase === "open" ? hideAi : showAi}
       </button>
 
       {state.phase === "loading" && (
@@ -216,8 +278,8 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       {state.phase === "error" && (
         <div className="mt-1.5 flex items-center gap-2 flex-wrap">
           <p className="text-xs text-red-600">{state.message}</p>
-          <button onClick={() => void analyze()} className="text-xs text-red-700 underline font-semibold">ลองใหม่</button>
-          <button onClick={() => setState({ phase: "idle" })} className="text-xs text-slate-500 underline">ปิด</button>
+          <button onClick={() => void analyze()} className="text-xs text-red-700 underline font-semibold">{retryBtn}</button>
+          <button onClick={() => setState({ phase: "idle" })} className="text-xs text-slate-500 underline">{closeBtn}</button>
         </div>
       )}
 

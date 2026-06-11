@@ -14,9 +14,10 @@ const MAX_SOURCE    = 80;
 const MAX_OTHER     = 10;
 const MAX_OTHER_LEN = 120;
 
-// Canonical disclaimer — always injected server-side, never left to the model
-const DISCLAIMER =
+const DISCLAIMER_TH =
   "AI ประเมินความน่าเชื่อถือของแหล่งข่าวและสรุปเนื้อหา ไม่ใช่การยืนยันว่าข่าวจริงหรือเท็จ และไม่ใช่คำแนะนำการลงทุน · อ่านต้นฉบับเพื่อตัดสินใจเอง";
+const DISCLAIMER_EN =
+  "AI assesses source reliability and summarises content — not a verification of truth/falsehood and not investment advice · Read the original article before making any decisions.";
 
 const AnalysisSchema = z.object({
   summary_th:            z.string().min(1),
@@ -40,15 +41,42 @@ interface CacheEntry {
 
 const cache = new Map<string, CacheEntry>();
 
-function cacheKey(headline: string, source: string): string {
-  return createHash("sha256").update(`${headline}\0${source}`).digest("hex");
+function cacheKey(headline: string, source: string, locale: string): string {
+  return createHash("sha256").update(`${locale}\0${headline}\0${source}`).digest("hex");
 }
 
 function isStale(entry: CacheEntry): boolean {
   return Date.now() - entry.cachedAt > CACHE_TTL_MS;
 }
 
-const SYSTEM_PROMPT = `You are a financial-news analyst for InvestMart, a Thai stock learning platform. You receive a news article's headline, snippet, source name, ticker, and other recent headlines about the same stock. Respond ONLY with valid JSON in the exact schema below, in Thai.
+function buildAnalysisPrompt(locale: "en" | "th"): string {
+  if (locale === "en") {
+    return `You are a financial-news analyst for InvestMart, a stock learning platform. You receive a news article's headline, snippet, source name, ticker, and other recent headlines about the same stock. Respond ONLY with valid JSON in the exact schema below. All text fields must be written in English.
+
+RULES:
+- You CANNOT verify whether the news is factually true or false. NEVER output a true/false verdict. Assess only how reliable and credible the SOURCE and article appear.
+- reliability: judge source reputation (major wire/established outlet = สูง; unknown/blog/PR = ต่ำ), content type, hype, and corroboration. Rate สูง/ปานกลาง/ต่ำ with one concise English reason.
+- summary_th: 2–4 short, neutral English sentences IN YOUR OWN WORDS. Cover: what happened, who/what is affected, why it matters for the stock. If headline-only, say so and reduce confidence. Do not invent details.
+- market_impact direction: บวก/ลบ/เป็นกลาง for the stock. One-line English reason, never a price prediction.
+- confidence: lower when info is thin, source unknown, or content is promotional.
+- Be decisive but honest about uncertainty. Never fabricate. No investment advice.
+
+Respond with exactly this JSON structure (no extra keys, no markdown):
+{
+  "summary_th": "2–4 sentence English summary",
+  "reliability": "สูง|ปานกลาง|ต่ำ",
+  "reliability_reason_th": "One English sentence reason",
+  "content_type": "รายงานข่าว|บทวิเคราะห์|ข่าวลือ|ประชาสัมพันธ์",
+  "market_impact": {
+    "direction": "บวก|ลบ|เป็นกลาง",
+    "reason_th": "One English sentence reason"
+  },
+  "confidence": "สูง|ปานกลาง|ต่ำ",
+  "disclaimer_th": "placeholder"
+}`;
+  }
+
+  return `You are a financial-news analyst for InvestMart, a Thai stock learning platform. You receive a news article's headline, snippet, source name, ticker, and other recent headlines about the same stock. Respond ONLY with valid JSON in the exact schema below, in Thai.
 
 RULES:
 - You CANNOT verify whether the news is factually true or false. NEVER output a จริง/ปลอม (true/false) verdict. Assess only how reliable and credible the SOURCE and article appear.
@@ -71,6 +99,7 @@ Respond with exactly this JSON structure (no extra keys, no markdown):
   "confidence": "สูง|ปานกลาง|ต่ำ",
   "disclaimer_th": "placeholder"
 }`;
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const limited = await applyRateLimit(request, "news");
@@ -97,6 +126,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     ? raw["source"].trim().slice(0, MAX_SOURCE)     : "unknown";
   const ticker   = typeof raw["ticker"]   === "string"
     ? raw["ticker"].trim().slice(0, 15)             : "";
+  const locale: "en" | "th" = raw["locale"] === "en" ? "en" : "th";
   const otherRaw = Array.isArray(raw["otherHeadlines"])
     ? (raw["otherHeadlines"] as unknown[]) : [];
   const otherHeadlines = otherRaw
@@ -108,7 +138,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "headline required" }, { status: 400 });
   }
 
-  const key    = cacheKey(headline, source);
+  const key    = cacheKey(headline, source, locale);
   const cached = cache.get(key);
   if (cached && !isStale(cached)) {
     return NextResponse.json({ ...cached.result, cached: true });
@@ -127,7 +157,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   ].filter(Boolean).join("\n");
 
   try {
-    const text = await generateText(userMessage, SYSTEM_PROMPT, {
+    const text = await generateText(userMessage, buildAnalysisPrompt(locale), {
       maxTokens:   600,
       temperature: 0.3,
       jsonMode:    true,
@@ -139,9 +169,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "invalid AI response" }, { status: 502 });
     }
 
-    // Always inject the canonical disclaimer — never trust the model's text
+    // Always inject the canonical disclaimer server-side — never trust the model's text
     if (typeof parsed === "object" && parsed !== null) {
-      (parsed as Record<string, unknown>)["disclaimer_th"] = DISCLAIMER;
+      (parsed as Record<string, unknown>)["disclaimer_th"] =
+        locale === "en" ? DISCLAIMER_EN : DISCLAIMER_TH;
     }
 
     const validated = AnalysisSchema.safeParse(parsed);
@@ -153,9 +184,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ...validated.data, cached: false });
   } catch (err) {
     console.error("[news/analyze] Groq error:", err instanceof Error ? err.message : err);
-    return NextResponse.json(
-      { error: "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง" },
-      { status: 503 }
-    );
+    const errMsg = locale === "en"
+      ? "AI temporarily unavailable — please try again"
+      : "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง";
+    return NextResponse.json({ error: errMsg }, { status: 503 });
   }
 }

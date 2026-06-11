@@ -15,6 +15,7 @@ const BodySchema = z.object({
     content: z.string().max(12000), // AI replies can reach ~8k chars at maxTokens:2500
   })).min(1).max(MAX_MESSAGES),
   ticker: z.string().regex(/^[A-Z][A-Z.\-]{0,9}$/).optional(),
+  locale: z.enum(["en", "th"]).optional(),
 });
 
 // ─── Ticker extraction ──────────────────────────────────────────────────────
@@ -140,13 +141,16 @@ async function buildTickerBlock(ticker: string, apiKey: string): Promise<string>
 
 // ─── System prompt ───────────────────────────────────────────────────────────
 
-function buildSystemPrompt(liveBlocks: string[]): string {
+function buildSystemPrompt(liveBlocks: string[], locale: "en" | "th" = "th"): string {
   const dataSection = liveBlocks.length > 0
     ? `\n\n--- LIVE MARKET DATA (use ONLY these figures for all stock-specific facts) ---\n${liveBlocks.join("\n\n")}\n--- END LIVE MARKET DATA ---`
     : "\n\n(No live market data for this turn. If asked for stock-specific figures, tell the user clearly that live data is unavailable — do not invent or recall any figures from training memory.)";
 
-  return `คุณคือ Martin — นักวิเคราะห์หุ้น AI ระดับ senior buy-side analyst ประจำ InvestMart
-ตอบเป็นภาษาไทยเสมอ ยกเว้นผู้ใช้เขียนภาษาอังกฤษมาก็ตอบภาษาอังกฤษ
+  const langDirective = locale === "en"
+    ? "You are Martin — a senior buy-side analyst AI at InvestMart. ALWAYS respond in English, regardless of what language the user writes in."
+    : "คุณคือ Martin — นักวิเคราะห์หุ้น AI ระดับ senior buy-side analyst ประจำ InvestMart\nตอบเป็นภาษาไทยเสมอ ไม่ว่าผู้ใช้จะเขียนภาษาอะไรก็ตาม";
+
+  return `${langDirective}
 
 ═══ กระบวนการคิดก่อนตอบ (ทำทุกครั้ง ไม่แสดงในคำตอบ) ═══
 ก่อนเริ่มพิมพ์คำตอบ ให้คิดผ่านขั้นตอนต่อไปนี้ภายในใจ:
@@ -248,7 +252,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: "invalid request" }, { status: 422 });
   }
 
-  const { messages, ticker: pageTicker } = parsed.data;
+  const { messages, ticker: pageTicker, locale = "th" } = parsed.data;
 
   // Collect tickers: page context + $TICKER mentions in latest user message
   const lastUser  = [...messages].reverse().find(m => m.role === "user");
@@ -260,7 +264,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     allTickers.map(t => buildTickerBlock(t, finnhubKey))
   );
 
-  const systemPrompt = buildSystemPrompt(liveBlocks);
+  const systemPrompt = buildSystemPrompt(liveBlocks, locale);
 
   const history = messages.slice(-20).map(m => ({
     role:    m.role as "user" | "assistant",

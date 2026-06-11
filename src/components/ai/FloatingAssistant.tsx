@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useI18n } from "@/lib/i18n";
 
 const StockInfographic = dynamic(
   () => import("@/components/stock/StockInfographic").then(m => m.StockInfographic),
@@ -129,6 +130,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
 
 export function FloatingAssistant() {
   const pathname      = usePathname();
+  const { lang }      = useI18n();
   const contextTicker = tickerFromPath(pathname);
 
   const [isOpen,    setIsOpen]    = useState(false);
@@ -190,7 +192,7 @@ export function FloatingAssistant() {
       const res = await fetch("/api/ai/chat", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ messages: outgoing, ticker: contextTicker }),
+        body:    JSON.stringify({ messages: outgoing, ticker: contextTicker, locale: lang }),
         signal:  ctrl.signal,
       });
 
