@@ -38,13 +38,8 @@ export const metadata: Metadata = {
     "US stock social network · Paper trading simulator · AI momentum radar",
   metadataBase: new URL("https://investmart.vercel.app"),
   icons: {
-    icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32",   type: "image/png" },
-      { url: "/favicon.png",       sizes: "any",      type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    icon:  "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     type:      "website",
