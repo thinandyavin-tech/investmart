@@ -61,10 +61,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const GUEST_STORAGE_KEY = "investmart_guest_id";
+
   const initDemo = useCallback(async () => {
     setLoading(true);
     try {
-      await fetch("/api/demo/init", { method: "POST" });
+      // Retrieve or generate a per-browser UUID for this guest
+      let guestId = localStorage.getItem(GUEST_STORAGE_KEY);
+      if (!guestId) {
+        guestId = crypto.randomUUID();
+        localStorage.setItem(GUEST_STORAGE_KEY, guestId);
+      }
+      await fetch("/api/demo/init", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ guestId }),
+      });
       await refreshUser();
     } finally {
       setLoading(false);
@@ -77,22 +89,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  // Auto-create a demo session for new visitors so posting always works.
-  // Real sign-in (Google / email) replaces the demo session.
+  // Load user on mount — no auto-create; welcome page handles guest init
   useEffect(() => {
     async function init() {
       try {
         const res  = await fetch("/api/user/me");
         const data = (await res.json()) as { user: UserState | null };
-        if (data.user) {
-          setUser(data.user);
-          setLoading(false);
-          return;
-        }
-        await fetch("/api/demo/init", { method: "POST" });
-        const res2  = await fetch("/api/user/me");
-        const data2 = (await res2.json()) as { user: UserState | null };
-        setUser(data2.user);
+        setUser(data.user);
       } catch {
         setUser(null);
       } finally {

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link }             from "@/i18n/navigation";
+import { useI18n }          from "@/lib/i18n";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
 
 interface Article {
@@ -137,6 +138,7 @@ function SecondaryArticle({ article, allHeadlines }: SecondaryArticleProps) {
 }
 
 export function NewsForwardSection() {
+  const { t }                   = useI18n();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(false);
@@ -161,11 +163,11 @@ export function NewsForwardSection() {
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-[#E8E2D4] flex items-center justify-between">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">ข่าวเด่น</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">{t.homeStrings.hotNews}</h2>
           <p className="text-xs text-slate-400 mt-0.5">Finnhub · ตรวจสอบก่อนตัดสินใจ</p>
         </div>
         <Link href="/news" className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors">
-          ข่าวทั้งหมด →
+          {t.homeStrings.allNews}
         </Link>
       </div>
 
@@ -177,16 +179,16 @@ export function NewsForwardSection() {
           </>
         ) : error ? (
           <div className="text-center py-4">
-            <p className="text-xs text-[#8A8378] mb-2">ไม่สามารถโหลดข่าวได้</p>
+            <p className="text-xs text-[#8A8378] mb-2">{t.homeStrings.loadError}</p>
             <button
               onClick={load}
               className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
             >
-              ลองใหม่
+              {t.common.retry}
             </button>
           </div>
         ) : articles.length === 0 ? (
-          <p className="text-xs text-slate-400 text-center py-4">ยังไม่มีข่าวเด่นตอนนี้</p>
+          <p className="text-xs text-slate-400 text-center py-4">{t.homeStrings.noNews}</p>
         ) : (
           <>
             {featured && (

@@ -1,27 +1,31 @@
 import { prisma } from "@/lib/prisma";
 
-const DEMO_USER_EMAIL = "demo@investneet.local";
+// Guest emails use a unique UUID per browser — never a shared account
+const GUEST_EMAIL_PREFIX = "guest_";
+const GUEST_EMAIL_SUFFIX = "@investneet.guest";
 
-export async function getOrCreateDemoUser() {
-  const existing = await prisma.user.findUnique({
-    where: { email: DEMO_USER_EMAIL },
-  });
+export function guestEmail(guestId: string): string {
+  return `${GUEST_EMAIL_PREFIX}${guestId}${GUEST_EMAIL_SUFFIX}`;
+}
+
+export async function getOrCreateGuestUser(guestId: string) {
+  const email = guestEmail(guestId);
+  const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return existing;
 
   return prisma.user.create({
     data: {
-      email:    DEMO_USER_EMAIL,
-      name:     "Demo User",
-      username: "demo",
-      cashThb:  1_250_000,
-      cashUsd:  0,
+      email,
+      name:    "Guest",
+      cashThb: 1_250_000,
+      cashUsd: 0,
     },
   });
 }
 
-export async function getDemoUserId(): Promise<string | null> {
+export async function getGuestUserId(guestId: string): Promise<string | null> {
   const user = await prisma.user.findUnique({
-    where:  { email: DEMO_USER_EMAIL },
+    where:  { email: guestEmail(guestId) },
     select: { id: true },
   });
   return user?.id ?? null;

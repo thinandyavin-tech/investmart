@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link }             from "@/i18n/navigation";
+import { useI18n }          from "@/lib/i18n";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
 
 interface Article {
@@ -33,6 +34,7 @@ function extractTickers(text: string): string[] {
 }
 
 export function HotNewsSection() {
+  const { t }                   = useI18n();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(false);
@@ -54,11 +56,11 @@ export function HotNewsSection() {
     <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
       <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">ข่าวเด่นวันนี้</h2>
-          <p className="text-xs text-slate-500 mt-0.5">จาก Finnhub · ตรวจสอบก่อนตัดสินใจลงทุน</p>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">{t.homeStrings.hotNews}</h2>
+          <p className="text-xs text-slate-500 mt-0.5">{t.common.source}: Finnhub</p>
         </div>
         <Link href="/market" className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors">
-          ดูทั้งหมด →
+          {t.homeStrings.allNews}
         </Link>
       </div>
 
@@ -73,17 +75,17 @@ export function HotNewsSection() {
         </div>
       ) : error ? (
         <div className="px-3 py-4 text-center">
-          <p className="text-xs text-slate-500 mb-2">ไม่สามารถโหลดข่าวได้</p>
+          <p className="text-xs text-slate-500 mb-2">{t.homeStrings.loadError}</p>
           <button
             onClick={load}
             className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
           >
-            ลองใหม่
+            {t.common.retry}
           </button>
         </div>
       ) : articles.length === 0 ? (
         <p className="px-3 py-4 text-xs text-slate-500 text-center">
-          ยังไม่มีข่าวเด่นตอนนี้
+          {t.homeStrings.noNews}
         </p>
       ) : (
         <div>

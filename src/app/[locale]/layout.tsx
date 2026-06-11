@@ -1,13 +1,14 @@
-import { NextIntlClientProvider } from "next-intl";
-import { UserProvider }           from "@/lib/userContext";
-import { I18nProvider }           from "@/lib/i18n";
-import { OnboardingFlow }         from "@/components/OnboardingFlow";
-import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
-import { ThemeProvider }          from "@/components/ThemeProvider";
-import { Analytics }              from "@vercel/analytics/react";
-import type { Lang }              from "@/lib/i18n";
-import { LangAttrSetter }         from "@/components/LangAttrSetter";
-import { routing }                from "@/i18n/routing";
+import { NextIntlClientProvider }  from "next-intl";
+import { UserProvider }            from "@/lib/userContext";
+import { I18nProvider }            from "@/lib/i18n";
+import { OnboardingFlow }          from "@/components/OnboardingFlow";
+import { ServiceWorkerRegistrar }  from "@/components/ServiceWorkerRegistrar";
+import { ThemeProvider }           from "@/components/ThemeProvider";
+import { CookieConsentBanner }     from "@/components/CookieConsentBanner";
+import { Analytics }               from "@vercel/analytics/react";
+import type { Lang }               from "@/lib/i18n";
+import { LangAttrSetter }          from "@/components/LangAttrSetter";
+import { routing }                 from "@/i18n/routing";
 
 interface Props {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <UserProvider>
             {children}
             <OnboardingFlow />
+            <CookieConsentBanner />
             <ServiceWorkerRegistrar />
             <Analytics />
           </UserProvider>

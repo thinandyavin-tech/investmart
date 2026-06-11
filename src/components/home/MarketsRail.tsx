@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link }    from "@/i18n/navigation";
+import { useI18n } from "@/lib/i18n";
 
 interface IndexData {
   symbol:   string;
@@ -96,6 +97,7 @@ function SkeletonRows({ n }: { n: number }) {
 }
 
 export function MarketsRail() {
+  const { t } = useI18n();
   const [indices, setIndices]   = useState<IndexData[]>([]);
   const [movers,  setMovers]    = useState<MoversData | null>(null);
   const [idxLoad, setIdxLoad]   = useState(true);
@@ -146,7 +148,7 @@ export function MarketsRail() {
       {/* Top movers */}
       <section className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card overflow-hidden">
         <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">ผู้นำวันนี้</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.homeStrings.topMovers}</h2>
         </div>
         <div className="px-3 py-2">
           {movLoad ? (
@@ -175,7 +177,7 @@ export function MarketsRail() {
       {/* Curated screens */}
       <section className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card overflow-hidden">
         <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">สกรีนอัลกอริทึม</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.homeStrings.algorithmScan}</h2>
           <p className="text-[10px] text-[#8A8378] mt-0.5">สัญญาณจากข้อมูลจริง · ไม่ใช่คำแนะนำลงทุน</p>
         </div>
         <div className="p-3 space-y-2">
