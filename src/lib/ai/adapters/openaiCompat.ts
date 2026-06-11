@@ -47,8 +47,9 @@ export class OpenAICompatAdapter implements ProviderAdapter {
     private readonly baseUrl: string,
     private readonly defaultModel: string,
     private readonly apiKey: string,
+    name?: string,
   ) {
-    this.name = `local:${defaultModel}`;
+    this.name = name ?? `local:${defaultModel}`;
   }
 
   async complete(req: AIRequest, signal?: AbortSignal): Promise<string> {

@@ -8,7 +8,7 @@ const TIMEOUT_MS    = 15_000;
 
 function isRetryable(err: unknown): boolean {
   if (err instanceof Error) {
-    return /429|quota|Resource has been exhausted|overloaded/i.test(err.message);
+    return /429|quota|Resource has been exhausted|overloaded|limit:\s*0|too many requests/i.test(err.message);
   }
   return false;
 }

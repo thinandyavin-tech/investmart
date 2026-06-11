@@ -7,46 +7,68 @@ import type { AIRequest, ProviderAdapter } from "./types";
 // Re-export so callers can import from one place
 export type { AIRequest } from "./types";
 
-type BuiltInProvider = "groq" | "gemini" | "local";
+// ── Provider base URLs and default models ─────────────────────────────────────
+
+const CEREBRAS_BASE_URL    = "https://api.cerebras.ai/v1";
+const CEREBRAS_DEFAULT_MODEL = "llama-3.3-70b";
+
+const NVIDIA_NIM_BASE_URL     = "https://integrate.api.nvidia.com/v1";
+const NVIDIA_NIM_DEFAULT_MODEL = "meta/llama-3.1-8b-instruct";
+
+// ── Chain construction ────────────────────────────────────────────────────────
+
+type BuiltInProvider = "cerebras" | "groq" | "nvidia" | "gemini" | "local";
 
 function buildAdapter(name: BuiltInProvider): ProviderAdapter | null {
   switch (name) {
+    case "cerebras": {
+      const key = process.env.CEREBRAS_API_KEY;
+      if (!key) return null;
+      return new OpenAICompatAdapter(CEREBRAS_BASE_URL, CEREBRAS_DEFAULT_MODEL, key, "cerebras");
+    }
     case "groq": {
       const key = process.env.GROQ_API_KEY;
       return key ? new GroqAdapter(key) : null;
+    }
+    case "nvidia": {
+      const key = process.env.NVIDIA_NIM_API_KEY;
+      if (!key) return null;
+      return new OpenAICompatAdapter(NVIDIA_NIM_BASE_URL, NVIDIA_NIM_DEFAULT_MODEL, key, "nvidia-nim");
     }
     case "gemini": {
       const key = process.env.GEMINI_API_KEY;
       return key ? new GeminiAdapter(key) : null;
     }
     case "local": {
+      // Only available outside Vercel (dev/self-hosted). Vercel cannot reach localhost.
+      if (process.env.VERCEL) return null;
       const baseUrl = process.env.LOCAL_AI_BASE_URL;
       const model   = process.env.LOCAL_AI_MODEL   ?? "llama3";
       const apiKey  = process.env.LOCAL_AI_API_KEY ?? "";
-      return baseUrl ? new OpenAICompatAdapter(baseUrl, model, apiKey) : null;
+      return baseUrl ? new OpenAICompatAdapter(baseUrl, model, apiKey, "local") : null;
     }
   }
 }
 
 function parseProvider(raw: string): BuiltInProvider | null {
-  const v = raw.trim().toLowerCase();
-  if (v === "groq" || v === "gemini" || v === "local") return v;
-  return null;
+  const v = raw.trim().toLowerCase() as BuiltInProvider;
+  const valid: BuiltInProvider[] = ["cerebras", "groq", "nvidia", "gemini", "local"];
+  return valid.includes(v) ? v : null;
 }
 
 /**
- * Builds the ordered list of provider adapters from env config.
+ * Builds the ordered provider chain from env config.
  *
- * AI_PRIMARY  — first provider to try (default: groq)
- * AI_FALLBACK — comma-separated fallback providers (default: gemini)
+ * AI_PRIMARY  — first provider (default: cerebras)
+ * AI_FALLBACK — comma-separated fallbacks (default: groq,nvidia,gemini)
  *
- * Any provider that is missing its API key/URL is silently skipped.
- * The two built-in providers (groq + gemini) are always appended as last-resort
- * fallbacks if they have credentials and haven't already been included.
+ * Default order (highest-capacity first): Cerebras → Groq → NVIDIA NIM → Gemini
+ * Any provider missing its API key is silently skipped.
+ * Local/Ollama is excluded on Vercel (process.env.VERCEL is set).
  */
 function buildChain(): ProviderAdapter[] {
-  const primaryName  = parseProvider(process.env.AI_PRIMARY  ?? "groq")   ?? "groq";
-  const fallbackNames = (process.env.AI_FALLBACK ?? "gemini")
+  const primaryName = parseProvider(process.env.AI_PRIMARY ?? "cerebras") ?? "cerebras";
+  const fallbackNames = (process.env.AI_FALLBACK ?? "groq,nvidia,gemini")
     .split(",")
     .map((s) => parseProvider(s))
     .filter((n): n is BuiltInProvider => n !== null);
@@ -64,15 +86,22 @@ function buildChain(): ProviderAdapter[] {
   tryAdd(primaryName);
   for (const name of fallbackNames) tryAdd(name);
 
-  // Append any credentialed built-in provider not yet in the chain as last resort
-  for (const name of ["groq", "gemini", "local"] as BuiltInProvider[]) {
+  // Append any credentialed built-in (not local) as last resort
+  for (const name of ["cerebras", "groq", "nvidia", "gemini"] as BuiltInProvider[]) {
     tryAdd(name);
+  }
+
+  // Local only in dev (already guarded in buildAdapter, but make intent explicit)
+  tryAdd("local");
+
+  if (adapters.length === 0) {
+    console.warn("[ai] No providers configured — set CEREBRAS_API_KEY, GROQ_API_KEY, or GEMINI_API_KEY");
   }
 
   return adapters;
 }
 
-// Cached after first call; rebuilt on cold start (env vars are fixed per deploy)
+// Cached after first call; rebuilt on cold start (env vars fixed per deploy)
 let _chain: ProviderAdapter[] | null = null;
 
 function getChain(): ProviderAdapter[] {
@@ -80,19 +109,19 @@ function getChain(): ProviderAdapter[] {
   return _chain;
 }
 
-/** Log which provider handled a call — no secrets, no prompt content. */
+/** Log provider usage — no secrets, no prompt content. */
 function logCall(provider: string, latencyMs: number, fallback: boolean): void {
   // eslint-disable-next-line no-console
   console.info(`[ai] provider=${provider} latency=${latencyMs}ms fallback=${fallback}`);
 }
 
 /**
- * Runs a non-streaming completion through the provider chain.
- * Tries each adapter in order; moves to the next on RetryableError.
+ * Non-streaming completion through the provider chain.
+ * Tries each adapter in order; advances on RetryableError.
  */
 export async function executeComplete(req: AIRequest): Promise<{ result: string; provider: string }> {
   const chain = getChain();
-  if (chain.length === 0) throw new Error("No AI providers configured — set GROQ_API_KEY or GEMINI_API_KEY");
+  if (chain.length === 0) throw new Error("No AI providers configured");
 
   const errors: string[] = [];
 
@@ -106,7 +135,7 @@ export async function executeComplete(req: AIRequest): Promise<{ result: string;
       return { result, provider: adapter.name };
     } catch (err) {
       if (err instanceof RetryableError) {
-        errors.push(err.message);
+        errors.push(`${adapter.name}: ${err.message}`);
         continue;
       }
       throw err;
@@ -117,9 +146,8 @@ export async function executeComplete(req: AIRequest): Promise<{ result: string;
 }
 
 /**
- * Streams text chunks through the provider chain.
- * Falls back to the next adapter only if the failure occurs before any chunk is yielded.
- * Mid-stream errors are propagated as-is.
+ * Streaming text through the provider chain.
+ * Falls back only before the first chunk is yielded; mid-stream errors propagate.
  */
 export async function *executeStream(
   req: AIRequest,
@@ -142,13 +170,13 @@ export async function *executeStream(
         }
         yield { chunk, provider: adapter.name };
       }
-      return; // stream completed successfully
+      return;
     } catch (err) {
       if (!hasYielded && err instanceof RetryableError) {
-        errors.push(err.message);
-        continue; // try next adapter before any output was sent
+        errors.push(`${adapter.name}: ${err.message}`);
+        continue;
       }
-      throw err; // non-retryable or mid-stream error
+      throw err;
     }
   }
 
