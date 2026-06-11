@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { generateText } from "@/lib/aiService";
 import { applyRateLimit } from "@/lib/rateLimit";
+import { stripHtml }     from "@/lib/newsUtils";
 
 const MAX_HEADLINE = 300;
 const MAX_SNIPPET  = 500;
@@ -61,8 +62,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "headline required" }, { status: 400 });
   }
 
-  const safeHeadline = headline.trim().slice(0, MAX_HEADLINE);
-  const safeSnippet  = typeof snippet === "string" ? snippet.trim().slice(0, MAX_SNIPPET) : "";
+  const safeHeadline = stripHtml(headline.trim()).slice(0, MAX_HEADLINE);
+  const safeSnippet  = typeof snippet === "string" ? stripHtml(snippet.trim()).slice(0, MAX_SNIPPET) : "";
   const safeSource   = typeof source  === "string" ? source.trim().slice(0, 80) : "unknown";
   const safeTicker   = typeof ticker  === "string" ? ticker.trim().slice(0, 15) : "";
 

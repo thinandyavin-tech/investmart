@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { newsTeaser }   from "@/lib/newsUtils";
 
 export const revalidate = 120;
 
@@ -48,7 +49,7 @@ export async function GET(): Promise<NextResponse> {
         source:   a.source,
         url:      a.url,
         datetime: a.datetime,
-        summary:  a.summary ?? "",
+        summary:  newsTeaser(a.summary ?? ""),
       }));
 
     return NextResponse.json(

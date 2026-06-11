@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/Card";
+import { Card }             from "@/components/Card";
+import { newsTeaser }       from "@/lib/newsUtils";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
 
 interface Article {
@@ -87,7 +88,7 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
                 {a.source} · {timeAgo(a.datetime)}
               </p>
               <NewsAnalysisPanel
-                article={{ id: a.id, headline: a.headline, source: a.source, url: a.url, snippet: a.summary }}
+                article={{ id: a.id, headline: a.headline, source: a.source, url: a.url, snippet: newsTeaser(a.summary) }}
                 ticker={ticker}
                 otherHeadlines={allHeadlines}
               />

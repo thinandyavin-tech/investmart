@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
-import { useI18n } from "@/lib/i18n";
+import { useI18n }           from "@/lib/i18n";
+import { newsTeaser }        from "@/lib/newsUtils";
 import type { NewsArticleInput } from "@/components/NewsAnalysisPanel";
 
 interface SectorNewsArticle {
@@ -157,7 +158,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
     headline: a.headline,
     source:   a.source,
     url:      a.url,
-    snippet:  a.summary,
+    snippet:  newsTeaser(a.summary),
   };
 
   return (
@@ -187,7 +188,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
 
       {a.summary && (
         <p className="text-xs text-slate-500 mt-1.5 leading-relaxed line-clamp-2">
-          {a.summary}
+          {newsTeaser(a.summary)}
         </p>
       )}
 

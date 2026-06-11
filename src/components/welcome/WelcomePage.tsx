@@ -61,14 +61,90 @@ export function WelcomePage() {
   }, [email, password, router, wt]);
 
   return (
-    <div className="min-h-screen bg-[#0A0F1A] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(74,222,128,0.07) 0%, transparent 70%)",
-        }}
-      />
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden" style={{ background: "#0B1220" }}>
+
+      {/* ── Simulated blurred app dashboard in background ── */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+
+        {/* Ticker tape strip */}
+        <div className="absolute top-0 left-0 right-0 h-8 bg-[#0F1A2E] border-b border-[#1E3A5F] opacity-70 flex items-center gap-6 px-4 overflow-hidden">
+          {["NVDA +3.2%", "AAPL +1.1%", "TSLA -0.8%", "MSFT +2.4%", "META +1.7%", "GOOGL +0.9%", "AMZN +1.3%", "S&P +0.6%"].map((t) => (
+            <span key={t} className="text-[9px] font-mono text-[#4ADE80] whitespace-nowrap opacity-80">{t}</span>
+          ))}
+        </div>
+
+        {/* Left sidebar cards */}
+        <div className="absolute left-4 top-16 w-44 flex flex-col gap-2 opacity-40 blur-[3px]">
+          {/* Portfolio card */}
+          <div className="bg-[#0F1A2E] border border-[#1E3A5F] rounded p-3">
+            <p className="text-[8px] text-[#4A6A8A] uppercase tracking-widest mb-1">Portfolio</p>
+            <p className="text-sm font-bold font-mono text-[#4ADE80]">฿1,347,820</p>
+            <p className="text-[9px] text-[#4ADE80]">+7.8% ▲</p>
+          </div>
+          {/* Holdings mini list */}
+          <div className="bg-[#0F1A2E] border border-[#1E3A5F] rounded p-2 flex flex-col gap-1">
+            {["NVDA · $892", "AAPL · $445", "TSLA · $212"].map(h => (
+              <div key={h} className="flex justify-between text-[8px] font-mono">
+                <span className="text-[#8A9EB8]">{h.split(" · ")[0]}</span>
+                <span className="text-[#4ADE80]">{h.split(" · ")[1]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Center chart (candlestick mockup) */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-20 w-72 opacity-30 blur-[2px]">
+          <div className="bg-[#0F1A2E] border border-[#1E3A5F] rounded p-3">
+            <div className="flex items-end gap-[2px] h-20">
+              {[30,45,35,60,42,70,55,80,65,90,75,100,85,72,95,110,88,120,105,130].map((h, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-0" style={{ height: 120 }}>
+                  <div style={{ height: `${130 - h}px` }} />
+                  <div
+                    className="w-full rounded-[1px]"
+                    style={{ height: `${h * 0.6}px`, background: i % 3 === 1 ? "#4ADE80" : "#EF4444", opacity: 0.8 }}
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-[8px] text-[#4A6A8A] mt-1 text-center font-mono">NVDA · 3M</p>
+          </div>
+        </div>
+
+        {/* Right side — news cards */}
+        <div className="absolute right-4 top-16 w-52 flex flex-col gap-2 opacity-35 blur-[3px]">
+          {[
+            { t: "Fed holds rates steady amid inflation concerns", s: "Reuters · 2m ago" },
+            { t: "NVIDIA beats Q4 earnings, raises guidance", s: "Bloomberg · 15m ago" },
+            { t: "S&P 500 hits new all-time high on tech rally", s: "CNBC · 1h ago" },
+          ].map(({ t: title, s: src }) => (
+            <div key={title} className="bg-[#0F1A2E] border border-[#1E3A5F] rounded p-2">
+              <p className="text-[8px] text-[#C0D0E0] leading-snug mb-1 line-clamp-2">{title}</p>
+              <p className="text-[7px] text-[#4A6A8A]">{src}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom radar scan strip */}
+        <div className="absolute bottom-16 left-4 right-4 opacity-25 blur-[2px]">
+          <div className="bg-[#0F1A2E] border border-[#1E3A5F] rounded p-2 flex gap-3 overflow-hidden">
+            {["NVDA", "AAPL", "MSFT", "TSLA", "META", "AMZN", "GOOGL", "AMD"].map(t => (
+              <div key={t} className="flex flex-col items-center gap-0.5 flex-shrink-0">
+                <span className="text-[8px] font-mono font-bold text-[#4ADE80]">{t}</span>
+                <span className="text-[7px] text-[#4A6A8A]">▲{(Math.random() * 5).toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Global frosted-glass overlay */}
+        <div className="absolute inset-0" style={{ backdropFilter: "blur(12px)", background: "rgba(11,18,32,0.72)" }} />
+
+        {/* Radial green glow */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 60% 40% at 50% 35%, rgba(74,222,128,0.06) 0%, transparent 70%)" }}
+        />
+      </div>
 
       <div className="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
 

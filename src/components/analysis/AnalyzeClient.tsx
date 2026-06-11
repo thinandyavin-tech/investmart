@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useRouter }     from "@/i18n/navigation";
+import { useRouter }      from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { newsTeaser }      from "@/lib/newsUtils";
 import dynamic from "next/dynamic";
 import { ScenarioTable } from "./ScenarioTable";
 import type { AnalysisResponse } from "@/app/api/analyze/[ticker]/route";
@@ -419,7 +420,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
 
           {/* Summary */}
           <Section title="สรุปภาพรวม" icon="✦">
-            <p className="text-sm text-slate-700 leading-relaxed">{a.summary}</p>
+            <p className="text-sm text-slate-700 leading-relaxed">{newsTeaser(a.summary)}</p>
           </Section>
 
           {/* Bull / Bear signals */}

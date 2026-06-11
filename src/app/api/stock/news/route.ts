@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { applyRateLimit } from "@/lib/rateLimit";
+import { newsTeaser }     from "@/lib/newsUtils";
 
 const TICKER_RE    = /^[A-Z][A-Z0-9.\-]{0,9}$/;
 const MAX_ARTICLES = 10;
@@ -31,7 +32,7 @@ function mapArticle(a: FinnhubArticle) {
     source:   a.source,
     url:      a.url,
     datetime: a.datetime,
-    summary:  a.summary?.slice(0, 200) ?? "",
+    summary:  newsTeaser(a.summary ?? ""),
   };
 }
 

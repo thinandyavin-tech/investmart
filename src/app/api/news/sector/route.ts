@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { newsTeaser }               from "@/lib/newsUtils";
 
 export const dynamic    = "force-dynamic";
 export const revalidate = 300; // 5 min CDN TTL
@@ -57,7 +58,7 @@ async function fetchCompanyNews(ticker: string, apiKey: string): Promise<SectorN
     );
     if (!res.ok) return [];
     const raw = (await res.json()) as FinnhubArticle[];
-    return raw.slice(0, 6).map(a => ({ ...a, ticker, summary: a.summary?.slice(0, 250) ?? "" }));
+    return raw.slice(0, 6).map(a => ({ ...a, ticker, summary: newsTeaser(a.summary ?? "") }));
   } catch {
     return [];
   }
@@ -80,7 +81,7 @@ async function fetchGeneralNews(apiKey: string): Promise<SectorNewsArticle[]> {
       .filter(a => { if (!a.id || !a.headline || seen.has(a.id)) return false; seen.add(a.id); return true; })
       .sort((a, b) => b.datetime - a.datetime)
       .slice(0, 30)
-      .map(a => ({ ...a, ticker: null, summary: a.summary?.slice(0, 250) ?? "" }));
+      .map(a => ({ ...a, ticker: null, summary: newsTeaser(a.summary ?? "") }));
   } catch {
     return [];
   }

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Link }             from "@/i18n/navigation";
-import { useI18n }          from "@/lib/i18n";
+import { Link }              from "@/i18n/navigation";
+import { useI18n }           from "@/lib/i18n";
+import { newsTeaser }        from "@/lib/newsUtils";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
 
 interface Article {
@@ -79,7 +80,7 @@ function FeaturedArticle({ article, allHeadlines }: FeaturedArticleProps) {
         </h2>
       </a>
       {article.summary && (
-        <p className="text-xs text-[#5A4E42] leading-relaxed mb-2 line-clamp-2">{article.summary}</p>
+        <p className="text-xs text-[#5A4E42] leading-relaxed mb-2 line-clamp-2">{newsTeaser(article.summary)}</p>
       )}
       <div className="flex items-center flex-wrap gap-2 text-xs text-[#8A8378] mb-2">
         <span className="font-medium">{article.source}</span>

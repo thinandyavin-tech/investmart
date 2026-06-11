@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { generateText } from "@/lib/aiService";
 import { applyRateLimit } from "@/lib/rateLimit";
+import { stripHtml }     from "@/lib/newsUtils";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -119,9 +120,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const raw = body as Record<string, unknown>;
   const headline = typeof raw["headline"] === "string"
-    ? raw["headline"].trim().slice(0, MAX_HEADLINE) : "";
+    ? stripHtml(raw["headline"].trim()).slice(0, MAX_HEADLINE) : "";
   const snippet  = typeof raw["snippet"]  === "string"
-    ? raw["snippet"].trim().slice(0, MAX_SNIPPET)   : "";
+    ? stripHtml(raw["snippet"].trim()).slice(0, MAX_SNIPPET)   : "";
   const source   = typeof raw["source"]   === "string"
     ? raw["source"].trim().slice(0, MAX_SOURCE)     : "unknown";
   const ticker   = typeof raw["ticker"]   === "string"
