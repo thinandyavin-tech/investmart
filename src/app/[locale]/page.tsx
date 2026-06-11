@@ -13,7 +13,7 @@ export default async function HomePage() {
   const hasSession = !!(jar.get("demo_user_id") || jar.get("next-auth.session-token") || jar.get("__Secure-next-auth.session-token"));
 
   if (!hasSession) {
-    redirect("/signin");
+    redirect("/api/demo/auto-guest");
   }
 
   return (
