@@ -1,7 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import type React from "react";
 
 import { useI18n } from "@/lib/i18n";

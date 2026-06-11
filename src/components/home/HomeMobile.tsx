@@ -111,7 +111,7 @@ export function HomeMobile() {
         loggedIn={user !== null && !user.isDemo}
         noticeVisible={noticeVisible}
         onDismissNotice={() => setNoticeVisible(false)}
-        onLogin={() => router.push("/signin")}
+        onLogin={() => router.push(user?.isDemo ? "/signup" : "/signin")}
         holdingsOpen={holdingsOpen}
         onToggleHoldings={() => setHoldingsOpen((v) => !v)}
       />
