@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card } from "@/components/Card";
+import { useI18n } from "@/lib/i18n";
 
 interface Post {
   id:        string;
@@ -33,17 +34,22 @@ interface DiscoverData {
   trendingTickers: TickerCount[];
 }
 
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1)  return "เมื่อกี้";
-  if (m < 60) return `${m}น. ที่แล้ว`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}ช. ที่แล้ว`;
-  return `${Math.floor(h / 24)}ว. ที่แล้ว`;
+function useRelativeTime() {
+  const { t } = useI18n();
+  return (iso: string): string => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return t.time.now;
+    if (m < 60) return t.time.minutesAgo(m);
+    const h = Math.floor(m / 60);
+    if (h < 24) return t.time.hoursAgo(h);
+    return t.time.daysAgo(Math.floor(h / 24));
+  };
 }
 
 export function DiscoverClient() {
+  const { t } = useI18n();
+  const relativeTime = useRelativeTime();
   const [data, setData]       = useState<DiscoverData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
@@ -155,12 +161,12 @@ export function DiscoverClient() {
             </h2>
             {data.trendingPosts.length === 0 ? (
               <Card className="p-4 text-center">
-                <p className="text-xs text-[#8A8378]">ยังไม่มีโพสต์ในช่วงนี้</p>
+                <p className="text-xs text-[#8A8378]">{t.social.emptyFeed}</p>
               </Card>
             ) : (
               <div className="flex flex-col gap-2">
                 {data.trendingPosts.map((post) => {
-                  const author = post.user.name ?? post.user.username ?? "นักลงทุน";
+                  const author = post.user.name ?? post.user.username ?? t.social.user;
                   const handle = post.user.username ? `@${post.user.username}` : "";
                   return (
                     <Card key={post.id} className="p-3">

@@ -384,11 +384,22 @@ export const translations = {
     // ── Exchange ──────────────────────────────────────────────────────────────
     // ── Search ────────────────────────────────────────────────────────────────
     search: {
-      placeholder:   "Search stocks — AAPL, NVDA, TSLA…",
-      recent:        "Recent searches",
-      noResults:     "No results for",
-      allExchanges:  "All exchanges",
+      placeholder:    "Search stocks — AAPL, NVDA, TSLA…",
+      recent:         "Recent searches",
+      noResults:      "No results for",
+      allExchanges:   "All exchanges",
       suggestionsNote:"S&P 500 · Nasdaq 100 · SET 50",
+      title:          "Search stocks",
+      searchBtn:      "Search",
+      searchAria:     "Search stocks",
+      recentDropdown: "Recent searches",
+      noMatch:        "No stocks found",
+      popularTitle:   "Popular stocks",
+      notFound:       (t: string) => `Stock ${t} not found`,
+      networkError:   "Something went wrong — try again",
+      openFull:       (t: string) => `Open full ${t} page →`,
+      radarDesc:      "Scan for momentum",
+      screenerDesc:   "Filter by criteria",
     },
 
     // ── Screener ──────────────────────────────────────────────────────────────
@@ -425,11 +436,42 @@ export const translations = {
 
     // ── Chat / Martin ─────────────────────────────────────────────────────────
     chat: {
-      title:         "Martin AI",
-      placeholder:   "Ask Martin about any stock…",
-      disclaimer:    "AI-generated · not investment advice · always verify",
-      thinking:      "Martin is thinking…",
-      errorQuota:    "AI quota reached — try again later",
+      title:            "Martin AI",
+      placeholder:      "Ask Martin about any stock…",
+      disclaimer:       "AI-generated · not investment advice · always verify",
+      thinking:         "Martin is thinking…",
+      errorQuota:       "AI quota reached — try again later",
+      communityTitle:   "Chat · InvestMart",
+      communityDesc:    "Chat with other investors · Get market updates from the system",
+      you:              "You",
+      user:             "User",
+      send:             "Send",
+      sendError:        "Could not send",
+      networkError:     "Something went wrong — try again",
+      inputPlaceholder: "Type a message… (Enter to send)",
+      loginPrompt:      "Sign in to send messages",
+      empty:            "No messages yet · Be the first to chat!",
+      systemNote:       "System sends a daily market summary after ET close · Not investment advice",
+    },
+
+    // ── News ──────────────────────────────────────────────────────────────────
+    news: {
+      pageTitle:   "Market News · InvestMart",
+      pageSubtitle:"Latest news from Finnhub · Not investment advice",
+      loadError:   "Could not load news",
+      empty:       "No recent news in this category",
+      tabs: {
+        all:      "All",
+        tech:     "Technology",
+        finance:  "Finance",
+        health:   "Health",
+        biotech:  "Biotech",
+        energy:   "Energy",
+        consumer: "Consumer",
+        indust:   "Industry",
+        space:    "Space",
+        crypto:   "Crypto",
+      },
     },
 
     // ── Errors / States ───────────────────────────────────────────────────────
@@ -1013,11 +1055,22 @@ export const translations = {
     },
 
     search: {
-      placeholder:   "ค้นหาหุ้น — AAPL, NVDA, TSLA…",
-      recent:        "ค้นหาล่าสุด",
-      noResults:     "ไม่พบ",
-      allExchanges:  "ทุกตลาด",
+      placeholder:    "ค้นหาหุ้น — AAPL, NVDA, TSLA…",
+      recent:         "ค้นหาล่าสุด",
+      noResults:      "ไม่พบ",
+      allExchanges:   "ทุกตลาด",
       suggestionsNote:"S&P 500 · Nasdaq 100 · SET 50",
+      title:          "ค้นหาหุ้น",
+      searchBtn:      "ค้นหา",
+      searchAria:     "ค้นหาหุ้น",
+      recentDropdown: "ค้นหาล่าสุด",
+      noMatch:        "ไม่พบหุ้นที่ตรงกัน",
+      popularTitle:   "หุ้นยอดนิยม",
+      notFound:       (t: string) => `ไม่พบหุ้น ${t}`,
+      networkError:   "เกิดข้อผิดพลาด กรุณาลองใหม่",
+      openFull:       (t: string) => `เปิดหน้าหุ้นเต็ม ${t} →`,
+      radarDesc:      "สแกนหาโมเมนตัม",
+      screenerDesc:   "กรองตามเงื่อนไข",
     },
 
     screener: {
@@ -1050,11 +1103,41 @@ export const translations = {
     },
 
     chat: {
-      title:         "Martin AI",
-      placeholder:   "ถาม Martin เกี่ยวกับหุ้นที่ต้องการ…",
-      disclaimer:    "AI สร้าง · ไม่ใช่คำแนะนำการลงทุน · ตรวจสอบก่อนเสมอ",
-      thinking:      "Martin กำลังคิด…",
-      errorQuota:    "โควต้า AI หมดแล้ว — ลองใหม่ภายหลัง",
+      title:            "Martin AI",
+      placeholder:      "ถาม Martin เกี่ยวกับหุ้นที่ต้องการ…",
+      disclaimer:       "AI สร้าง · ไม่ใช่คำแนะนำการลงทุน · ตรวจสอบก่อนเสมอ",
+      thinking:         "Martin กำลังคิด…",
+      errorQuota:       "โควต้า AI หมดแล้ว — ลองใหม่ภายหลัง",
+      communityTitle:   "แชท · InvestMart",
+      communityDesc:    "พูดคุยกับนักลงทุนคนอื่น · รับข่าวสารตลาดจากระบบ",
+      you:              "คุณ",
+      user:             "ผู้ใช้",
+      send:             "ส่ง",
+      sendError:        "ส่งไม่ได้",
+      networkError:     "เกิดข้อผิดพลาด ลองใหม่อีกครั้ง",
+      inputPlaceholder: "พิมพ์ข้อความ… (กด Enter เพื่อส่ง)",
+      loginPrompt:      "เข้าสู่ระบบเพื่อส่งข้อความ",
+      empty:            "ยังไม่มีข้อความ · เป็นคนแรกที่พูดคุย!",
+      systemNote:       "ระบบจะส่งสรุปตลาดหุ้นทุกวันหลังปิดตลาด ET · ไม่ใช่คำแนะนำลงทุน",
+    },
+
+    news: {
+      pageTitle:    "ข่าวตลาด · InvestMart",
+      pageSubtitle: "ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน",
+      loadError:    "ไม่สามารถโหลดข่าวได้",
+      empty:        "ยังไม่มีข่าวล่าสุดในหมวดนี้",
+      tabs: {
+        all:      "ทั้งหมด",
+        tech:     "เทคโนโลยี",
+        finance:  "การเงิน",
+        health:   "สุขภาพ",
+        biotech:  "ไบโอเทค",
+        energy:   "พลังงาน",
+        consumer: "ผู้บริโภค",
+        indust:   "อุตสาหกรรม",
+        space:    "อวกาศ",
+        crypto:   "คริปโต",
+      },
     },
 
     errors: {

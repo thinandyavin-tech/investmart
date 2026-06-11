@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { NewsAnalysisPanel } from "@/components/NewsAnalysisPanel";
+import { useI18n } from "@/lib/i18n";
 import type { NewsArticleInput } from "@/components/NewsAnalysisPanel";
 
 interface SectorNewsArticle {
@@ -15,37 +16,31 @@ interface SectorNewsArticle {
 }
 
 interface Tab {
-  key:   string;
-  label: string;
-  icon:  string;
+  key:  string;
+  icon: string;
 }
 
 const TABS: Tab[] = [
-  { key: "all",      label: "ทั้งหมด",      icon: "🌐" },
-  { key: "tech",     label: "เทคโนโลยี",    icon: "💻" },
-  { key: "finance",  label: "การเงิน",       icon: "🏦" },
-  { key: "health",   label: "สุขภาพ",        icon: "🏥" },
-  { key: "biotech",  label: "ไบโอเทค",       icon: "🧬" },
-  { key: "energy",   label: "พลังงาน",       icon: "⚡" },
-  { key: "consumer", label: "ผู้บริโภค",     icon: "🛒" },
-  { key: "indust",   label: "อุตสาหกรรม",   icon: "⚙️" },
-  { key: "space",    label: "อวกาศ",         icon: "🚀" },
-  { key: "crypto",   label: "คริปโต",        icon: "🪙" },
+  { key: "all",      icon: "🌐" },
+  { key: "tech",     icon: "💻" },
+  { key: "finance",  icon: "🏦" },
+  { key: "health",   icon: "🏥" },
+  { key: "biotech",  icon: "🧬" },
+  { key: "energy",   icon: "⚡" },
+  { key: "consumer", icon: "🛒" },
+  { key: "indust",   icon: "⚙️" },
+  { key: "space",    icon: "🚀" },
+  { key: "crypto",   icon: "🪙" },
 ];
 
-function timeAgo(unixSecs: number): string {
-  const diff = Math.floor(Date.now() / 1000 - unixSecs);
-  if (diff < 60)    return "เพิ่งนี้";
-  if (diff < 3600)  return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} ชม.ที่แล้ว`;
-  return `${Math.floor(diff / 86400)} วันที่แล้ว`;
-}
-
 export function NewsPage() {
-  const [activeTab, setActiveTab]     = useState("all");
-  const [articles, setArticles]       = useState<SectorNewsArticle[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(false);
+  const { t } = useI18n();
+  const nt = t.news;
+
+  const [activeTab, setActiveTab] = useState("all");
+  const [articles, setArticles]   = useState<SectorNewsArticle[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState(false);
 
   const loadNews = useCallback(async (sector: string) => {
     setLoading(true);
@@ -72,27 +67,30 @@ export function NewsPage() {
     <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
       <div className="border-b border-white/20 bg-white/60 backdrop-blur-md px-4 py-2.5 flex-shrink-0">
-        <h1 className="text-xs font-bold uppercase tracking-widest">ข่าวตลาด · InvestMart</h1>
-        <p className="text-xs text-slate-500 mt-0.5">ข่าวล่าสุดจาก Finnhub · ไม่ใช่คำแนะนำลงทุน</p>
+        <h1 className="text-xs font-bold uppercase tracking-widest">{nt.pageTitle}</h1>
+        <p className="text-xs text-slate-500 mt-0.5">{nt.pageSubtitle}</p>
       </div>
 
       {/* Industry tabs */}
       <div className="border-b border-white/20 bg-white/60 backdrop-blur-md flex-shrink-0 overflow-x-auto">
         <div className="flex min-w-max">
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => handleTab(tab.key)}
-              className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
-                activeTab === tab.key
-                  ? "bg-violet-600 text-white"
-                  : "text-slate-500 hover:bg-white/30 hover:text-slate-900"
-              }`}
-            >
-              <span className="mr-1">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map(tab => {
+            const label = nt.tabs[tab.key as keyof typeof nt.tabs];
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTab(tab.key)}
+                className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
+                  activeTab === tab.key
+                    ? "bg-violet-600 text-white"
+                    : "text-slate-500 hover:bg-white/30 hover:text-slate-900"
+                }`}
+              >
+                <span className="mr-1">{tab.icon}</span>
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -112,19 +110,19 @@ export function NewsPage() {
 
         {!loading && error && (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <p className="text-xs text-red-600">ไม่สามารถโหลดข่าวได้</p>
+            <p className="text-xs text-red-600">{nt.loadError}</p>
             <button
               onClick={() => void loadNews(activeTab)}
               className="text-xs border border-slate-300 px-3 py-1 hover:bg-slate-900 hover:text-white transition-colors"
             >
-              ลองใหม่
+              {t.common.retry}
             </button>
           </div>
         )}
 
         {!loading && !error && articles.length === 0 && (
           <div className="flex items-center justify-center py-16">
-            <p className="text-xs text-slate-500">ยังไม่มีข่าวล่าสุดในหมวดนี้</p>
+            <p className="text-xs text-slate-500">{nt.empty}</p>
           </div>
         )}
 
@@ -144,12 +142,22 @@ export function NewsPage() {
 }
 
 function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle; otherHeadlines: string[] }) {
+  const { t, lang } = useI18n();
+
+  function timeAgo(unixSecs: number): string {
+    const diff = Math.floor(Date.now() / 1000 - unixSecs);
+    if (diff < 60)    return t.time.now;
+    if (diff < 3600)  return t.time.minutesAgo(Math.floor(diff / 60));
+    if (diff < 86400) return t.time.hoursAgo(Math.floor(diff / 3600));
+    return t.time.daysAgo(Math.floor(diff / 86400));
+  }
+
   const panelArticle: NewsArticleInput = {
-    id:      a.id,
+    id:       a.id,
     headline: a.headline,
-    source:  a.source,
-    url:     a.url,
-    snippet: a.summary,
+    source:   a.source,
+    url:      a.url,
+    snippet:  a.summary,
   };
 
   return (
@@ -159,7 +167,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
         target="_blank"
         rel="noopener noreferrer"
         className="block group"
-        aria-label={`${a.headline} — เปิดในแท็บใหม่`}
+        aria-label={`${a.headline} — ${lang === "th" ? "เปิดในแท็บใหม่" : "open in new tab"}`}
       >
         <p className="text-sm leading-snug text-slate-900 group-hover:underline mb-1.5">
           {a.headline}

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
+import { useI18n } from "@/lib/i18n";
 import type { StockMetrics } from "@/lib/momentum";
 
 interface QuoteData { c: number; pc: number; v: number; }
@@ -67,7 +68,9 @@ function ExchangeBadge({ exchange }: { exchange: string }) {
 }
 
 export function SearchClient() {
-  const router                           = useRouter();
+  const router    = useRouter();
+  const { t } = useI18n();
+  const sc = t.search;
   const [query, setQuery]               = useState("");
   const [loading, setLoading]           = useState(false);
   const [stock, setStock]               = useState<StockMetrics | null>(null);
@@ -135,7 +138,7 @@ export function SearchClient() {
         profile?: { name?: string; exchange?: string; marketCapitalization?: number };
       };
 
-      if (!quote.c) { setError(`ไม่พบหุ้น ${t}`); return; }
+      if (!quote.c) { setError(sc.notFound(t)); return; }
 
       const change1D = quote.pc > 0 ? ((quote.c - quote.pc) / quote.pc) * 100 : 0;
       setStock({
@@ -149,7 +152,7 @@ export function SearchClient() {
         exchange: profRes.profile?.exchange ?? "US",
       });
     } catch {
-      setError("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      setError(sc.networkError);
     } finally {
       setLoading(false);
     }
@@ -179,7 +182,7 @@ export function SearchClient() {
   return (
     <div className="px-4 py-5 max-w-2xl mx-auto w-full">
       {/* Page title */}
-      <h1 className="text-lg font-bold text-slate-800 mb-4">ค้นหาหุ้น</h1>
+      <h1 className="text-lg font-bold text-slate-800 mb-4">{sc.title}</h1>
 
       {/* Search bar */}
       <div ref={containerRef} className="relative mb-6">
@@ -192,12 +195,12 @@ export function SearchClient() {
               onChange={(e) => { setQuery(e.target.value); setShowSugg(true); }}
               onFocus={() => setShowSugg(true)}
               onKeyDown={handleKeyDown}
-              placeholder="ชื่อบริษัท หรือ ticker เช่น Apple, AAPL, NVDA..."
+              placeholder={sc.placeholder}
               maxLength={40}
               autoComplete="off"
               spellCheck={false}
               className="w-full bg-white/70 backdrop-blur-md border border-white/40 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-400 transition shadow-sm"
-              aria-label="ค้นหาหุ้น"
+              aria-label={sc.searchAria}
               aria-autocomplete="list"
               aria-controls="search-suggestions"
               aria-activedescendant={activeIdx >= 0 ? `sugg-${activeIdx}` : undefined}
@@ -212,7 +215,7 @@ export function SearchClient() {
             disabled={loading || !query.trim()}
             className="px-5 py-3 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl disabled:opacity-40 transition shadow-sm"
           >
-            {loading ? "…" : "ค้นหา"}
+            {loading ? "…" : sc.searchBtn}
           </button>
         </form>
 
@@ -226,7 +229,7 @@ export function SearchClient() {
           >
             {query.length === 0 && recent.length > 0 && (
               <li className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100">
-                ค้นหาล่าสุด
+                {sc.recentDropdown}
               </li>
             )}
             {(query.length === 0
@@ -252,7 +255,7 @@ export function SearchClient() {
               </li>
             ))}
             {query.length > 0 && suggestions.length === 0 && !suggLoading && (
-              <li className="px-4 py-4 text-sm text-slate-400 text-center">ไม่พบหุ้นที่ตรงกัน</li>
+              <li className="px-4 py-4 text-sm text-slate-400 text-center">{sc.noMatch}</li>
             )}
           </ul>
         )}
@@ -273,7 +276,7 @@ export function SearchClient() {
             href={`/stock/${stock.ticker}`}
             className="mt-2 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition"
           >
-            เปิดหน้าหุ้นเต็ม {stock.ticker} →
+            {sc.openFull(stock.ticker)}
           </Link>
         </div>
       )}
@@ -281,7 +284,7 @@ export function SearchClient() {
       {/* Popular stocks grid — shown when no search active */}
       {!stock && !loading && query.length === 0 && (
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">หุ้นยอดนิยม</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{sc.popularTitle}</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {POPULAR.map(({ ticker, name }) => (
               <button
@@ -298,7 +301,7 @@ export function SearchClient() {
           {/* Recent searches */}
           {recent.length > 0 && (
             <div className="mt-5">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">ค้นหาล่าสุด</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{sc.recent}</h2>
               <div className="flex flex-wrap gap-2">
                 {recent.map((t) => (
                   <button
@@ -319,14 +322,14 @@ export function SearchClient() {
               <span className="text-lg">📡</span>
               <div>
                 <p className="text-sm font-semibold text-slate-800">Radar</p>
-                <p className="text-xs text-slate-500">สแกนหาโมเมนตัม</p>
+                <p className="text-xs text-slate-500">{sc.radarDesc}</p>
               </div>
             </Link>
             <Link href="/screener" className="flex items-center gap-2 px-4 py-3 bg-white/60 backdrop-blur-md border border-white/30 rounded-xl hover:bg-white/80 transition-colors">
               <span className="text-lg">🔍</span>
               <div>
                 <p className="text-sm font-semibold text-slate-800">Screener</p>
-                <p className="text-xs text-slate-500">กรองตามเงื่อนไข</p>
+                <p className="text-xs text-slate-500">{sc.screenerDesc}</p>
               </div>
             </Link>
           </div>
