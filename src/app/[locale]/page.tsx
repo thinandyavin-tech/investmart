@@ -1,9 +1,8 @@
-import { redirect }          from "next/navigation";
-import { cookies }             from "next/headers";
-import { AppShell }            from "@/components/AppShell";
-import { HomeDesktop }         from "@/components/home/HomeDesktop";
-import { HomeMobile }          from "@/components/home/HomeMobile";
-import { GuestUpgradeBanner }  from "@/components/welcome/GuestUpgradeBanner";
+import { redirect }   from "next/navigation";
+import { cookies }    from "next/headers";
+import { AppShell }   from "@/components/AppShell";
+import { HomeDesktop } from "@/components/home/HomeDesktop";
+import { HomeMobile }  from "@/components/home/HomeMobile";
 
 export const metadata = {
   title: "InvestMart",
@@ -18,16 +17,13 @@ export default async function HomePage() {
   }
 
   return (
-    <>
-      <GuestUpgradeBanner />
-      <AppShell>
-        <div className="hidden lg:block">
-          <HomeDesktop />
-        </div>
-        <div className="block lg:hidden">
-          <HomeMobile />
-        </div>
-      </AppShell>
-    </>
+    <AppShell>
+      <div className="hidden lg:block">
+        <HomeDesktop />
+      </div>
+      <div className="block lg:hidden">
+        <HomeMobile />
+      </div>
+    </AppShell>
   );
 }
