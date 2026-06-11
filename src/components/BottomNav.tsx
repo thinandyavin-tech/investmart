@@ -6,9 +6,13 @@ import type React from "react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
+const AUTH_PATHS = new Set(["/signin", "/signup"]);
+
 export function BottomNav() {
   const pathname = usePathname();
   const { t } = useI18n();
+
+  if (AUTH_PATHS.has(pathname)) return null;
 
   const navItems = [
     { href: "/",        label: t.nav.home,   icon: <HomeIcon /> },
