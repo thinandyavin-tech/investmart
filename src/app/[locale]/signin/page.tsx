@@ -31,7 +31,7 @@ const OAUTH_ERRORS: Record<string, string> = {
 function SignInForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const { refreshUser } = useUser();
+  const { refreshUser, initDemo } = useUser();
 
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +40,17 @@ function SignInForm() {
     return OAUTH_ERRORS[code] ?? (code ? OAUTH_ERRORS.Default : "");
   });
   const [loading,  setLoading]  = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  async function handleGuest() {
+    setGuestLoading(true);
+    try {
+      await initDemo();
+      router.replace("/");
+    } finally {
+      setGuestLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -133,6 +144,20 @@ function SignInForm() {
           เข้าสู่ระบบด้วย Google
         </button>
       </Card>
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-[#E8E2D4]" />
+        <span className="text-xs text-[#8A8378]">หรือ</span>
+        <div className="flex-1 h-px bg-[#E8E2D4]" />
+      </div>
+
+      <button
+        onClick={() => void handleGuest()}
+        disabled={guestLoading || loading}
+        className="w-full py-2.5 text-xs font-semibold text-[#8A8378] border border-[#E8E2D4] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors disabled:opacity-40"
+      >
+        {guestLoading ? "กำลังโหลด..." : "ทดลองใช้งาน (ไม่ต้องสมัคร)"}
+      </button>
 
       <p className="text-xs text-center text-[#8A8378]">
         ยังไม่มีบัญชี?{" "}
