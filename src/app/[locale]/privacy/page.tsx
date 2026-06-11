@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 import { MarketStatusBanner } from "@/components/market/MarketStatusBanner";
 import { IndicesCard }        from "@/components/market/IndicesCard";

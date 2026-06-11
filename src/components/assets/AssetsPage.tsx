@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useUser } from "@/lib/userContext";
 import { BuySellModal } from "@/components/assets/BuySellModal";
 import { PortfolioAnalytics } from "@/components/assets/PortfolioAnalytics";

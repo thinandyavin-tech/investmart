@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
 
 // ─── Formatters ────────────────────────────────────────────────────────────────

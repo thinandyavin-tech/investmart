@@ -1,31 +1,25 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Inter, JetBrains_Mono } from "next/font/google";
-import { UserProvider } from "@/lib/userContext";
-import { I18nProvider } from "@/lib/i18n";
-import { OnboardingFlow } from "@/components/OnboardingFlow";
-import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
 
 const notoSansThai = Noto_Sans_Thai({
-  subsets: ["thai", "latin"],
+  subsets:  ["thai", "latin"],
   variable: "--font-noto-thai",
-  weight: ["400", "500", "600", "700"],
+  weight:   ["400", "500", "600", "700"],
 });
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets:  ["latin"],
   variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
+  weight:   ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
+  subsets:  ["latin"],
   variable: "--font-mono",
-  weight: ["400", "500"],
+  weight:   ["400", "500"],
 });
 
 export const viewport: Viewport = {
@@ -37,52 +31,37 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "InvestMart",
+    default:  "InvestMart",
     template: "%s — InvestMart",
   },
   description:
-    "เว็บโซเชียลมีเดียหุ้นอเมริกา · ดู PNL ranking holdings ของเทรดเดอร์ · วิเคราะห์หุ้นด้วย AI บน InvestMart",
+    "US stock social network · Paper trading simulator · AI momentum radar",
   metadataBase: new URL("https://investmart.vercel.app"),
   openGraph: {
-    type: "website",
-    locale: "th_TH",
-    url: "https://investmart.vercel.app",
-    siteName: "InvestMart",
-    images: [{ url: "/og-image.jpg" }],
+    type:      "website",
+    url:       "https://investmart.vercel.app",
+    siteName:  "InvestMart",
+    images:    [{ url: "/og-image.jpg" }],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${notoSansThai.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Inline script prevents FOUC when dark mode is the user's stored preference */}
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
       </head>
       <body
         className="min-h-full flex flex-col text-slate-900 dark:text-slate-100"
-        style={{
-          fontFamily:
-            "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif",
-        }}
+        style={{ fontFamily: "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif" }}
       >
-        <I18nProvider>
-        <ThemeProvider>
-          <UserProvider>
-            {children}
-            <OnboardingFlow />
-            <ServiceWorkerRegistrar />
-            <Analytics />
-          </UserProvider>
-        </ThemeProvider>
-        </I18nProvider>
+        {children}
       </body>
     </html>
   );

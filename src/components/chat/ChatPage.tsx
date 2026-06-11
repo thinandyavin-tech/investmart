@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useUser } from "@/lib/userContext";
 import { useI18n } from "@/lib/i18n";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 interface ChatAuthor {
   id:       string;

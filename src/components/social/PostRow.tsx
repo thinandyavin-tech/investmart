@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+
 import { relativeTime, MAX_CONTENT } from "@/lib/postUtils";
+import { useI18n } from "@/lib/i18n";
 
 export interface QuotedPost {
   id:        string;
@@ -61,13 +63,14 @@ function renderContent(text: string) {
 }
 
 export function PostRow({ post, showReply = true }: PostRowProps) {
+  const { t } = useI18n();
   const [liked, setLiked]           = useState(post.liked);
   const [likeCount, setLikeCount]   = useState(post.likeCount);
   const [bookmarked, setBookmarked] = useState(post.bookmarked);
   const [busy, setBusy]             = useState(false);
   const [quoting, setQuoting]       = useState(false);
 
-  const username    = post.author.username ?? post.author.name ?? "ผู้ใช้";
+  const username    = post.author.username ?? post.author.name ?? t.social.user;
   const displayId   = `#${post.author.id.slice(-4)}`;
   const initial     = (post.author.name?.[0] ?? "U").toUpperCase();
   const isTrader    = (post.author.tradeCount ?? 0) > 0;
@@ -104,7 +107,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
   return (
     <article className="px-4 py-3 border-b border-[#E8E2D4]">
       <div className="flex gap-3">
-        <Link href={`/u/${post.author.username ?? post.author.id}`} aria-label={`โปรไฟล์ของ ${username}`}>
+        <Link href={`/u/${post.author.username ?? post.author.id}`} aria-label={t.social.profileAria(username)}>
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
             style={{ background: avatarColor }}
@@ -162,7 +165,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
               onClick={toggleLike}
               disabled={busy}
               className={`flex items-center gap-1 text-xs transition-colors ${liked ? "text-[#E5484D]" : "text-[#8A8378] hover:text-[#E5484D]"}`}
-              aria-label={liked ? "เอาถูกใจออก" : "ถูกใจ"}
+              aria-label={liked ? t.social.likeAriaUnlike : t.social.likeAriaLike}
               aria-pressed={liked}
             >
               <HeartIcon filled={liked} />
@@ -172,7 +175,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             {showReply && (
               <button
                 className="flex items-center gap-1 text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors"
-                aria-label="แสดงความคิดเห็น"
+                aria-label={t.social.commentAria}
               >
                 <CommentIcon />
                 <span>{post.commentCount > 0 ? post.commentCount : ""}</span>
@@ -182,7 +185,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
             <button
               onClick={() => setQuoting((v) => !v)}
               className={`flex items-center gap-1 text-xs transition-colors ${quoting ? "text-[#1F1A14]" : "text-[#8A8378] hover:text-[#1F1A14]"}`}
-              aria-label="อ้างอิงโพสต์"
+              aria-label={t.social.quoteAria}
               aria-pressed={quoting}
             >
               <QuoteIcon />
@@ -193,7 +196,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
               onClick={toggleBookmark}
               disabled={busy}
               className={`flex items-center gap-1 text-xs transition-colors ml-auto ${bookmarked ? "text-[#8B5CF6]" : "text-[#8A8378] hover:text-[#8B5CF6]"}`}
-              aria-label={bookmarked ? "เอาออกจากบันทึก" : "บันทึกโพสต์"}
+              aria-label={bookmarked ? t.social.unbookmarkAria : t.social.bookmarkAria}
               aria-pressed={bookmarked}
             >
               <BookmarkIcon filled={bookmarked} />
@@ -213,7 +216,8 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
 }
 
 function QuotedPostCard({ post }: { post: QuotedPost }) {
-  const author = post.author.username ?? post.author.name ?? "ผู้ใช้";
+  const { t } = useI18n();
+  const author = post.author.username ?? post.author.name ?? t.social.user;
   return (
     <div className="mt-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
       <div className="flex items-center gap-1.5 mb-1">
@@ -229,6 +233,7 @@ function QuotedPostCard({ post }: { post: QuotedPost }) {
 }
 
 function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClose: () => void }) {
+  const { t } = useI18n();
   const [content, setContent] = useState("");
   const [submitting, setSubmit] = useState(false);
   const [error, setError]       = useState("");
@@ -245,10 +250,10 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
         body:    JSON.stringify({ content, quotedPostId }),
       });
       const data = await res.json() as { error?: string };
-      if (!res.ok) { setError(data.error ?? "เกิดข้อผิดพลาด"); return; }
+      if (!res.ok) { setError(data.error ?? t.social.postError); return; }
       onClose();
     } catch {
-      setError("เชื่อมต่อไม่ได้");
+      setError(t.social.connectError);
     } finally {
       setSubmit(false);
     }
@@ -259,19 +264,19 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="เพิ่มความคิดเห็นของคุณ..."
+        placeholder={t.social.commentPlaceholder}
         rows={3}
         maxLength={MAX_CONTENT}
         autoFocus
         className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
-        aria-label="ความคิดเห็นสำหรับโพสต์อ้างอิง"
+        aria-label={t.social.commentLabel}
       />
       <div className="flex items-center gap-2 mt-1.5">
         <span className={`text-xs font-bold ${remaining < 0 ? "text-[#E5484D]" : "text-[#8A8378]"}`}>
           {remaining}
         </span>
         <button onClick={onClose} className="ml-auto text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors">
-          ยกเลิก
+          {t.social.cancel}
         </button>
         <button
           onClick={submit}
@@ -279,7 +284,7 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
           className="px-3 py-1 text-xs font-bold text-white bg-[#1F1A14] disabled:opacity-40 transition-opacity"
           aria-busy={submitting}
         >
-          {submitting ? "..." : "โพสต์"}
+          {submitting ? "..." : t.social.postBtn}
         </button>
       </div>
       {error && <p className="text-xs text-[#E5484D] mt-1" role="alert">{error}</p>}

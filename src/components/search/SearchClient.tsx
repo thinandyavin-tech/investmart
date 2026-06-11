@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
 import { useI18n } from "@/lib/i18n";
 import type { StockMetrics } from "@/lib/momentum";

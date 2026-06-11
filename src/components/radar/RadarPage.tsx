@@ -3,7 +3,7 @@
 import {
   useState, useEffect, useCallback, useRef, useMemo, useId
 } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useI18n } from "@/lib/i18n";
 import { CategoryBadge } from "@/components/radar/CategoryBadge";
 import { ScoreBadge } from "@/components/radar/ScoreBadge";

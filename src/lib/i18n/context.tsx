@@ -13,8 +13,7 @@ import {
 import { translations, type Lang, type Translations } from "./translations";
 import { makeFormatUtils, type FormatUtils } from "./format";
 
-const STORAGE_KEY = "investmart_lang";
-const COOKIE_NAME = "investmart_lang";
+const COOKIE_NAME    = "investmart_lang";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 interface I18nContextValue {
@@ -33,25 +32,22 @@ const I18nContext = createContext<I18nContextValue>({
   toggle:  () => {},
 });
 
-function readSavedLang(): Lang {
-  try {
-    const fromStorage = localStorage.getItem(STORAGE_KEY) as Lang | null;
-    if (fromStorage === "th" || fromStorage === "en") return fromStorage;
-  } catch { /* SSR or private browsing */ }
-  return "en";
+interface I18nProviderProps {
+  children:      ReactNode;
+  initialLocale?: Lang;
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+export function I18nProvider({ children, initialLocale = "en" }: I18nProviderProps) {
+  const [lang, setLangState] = useState<Lang>(initialLocale);
 
+  // Sync when URL-driven locale changes (e.g., after router.replace)
   useEffect(() => {
-    setLangState(readSavedLang());
-  }, []);
+    setLangState(initialLocale);
+  }, [initialLocale]);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
     try {
-      localStorage.setItem(STORAGE_KEY, l);
       document.cookie = `${COOKIE_NAME}=${l};path=/;max-age=${COOKIE_MAX_AGE};SameSite=Lax`;
     } catch { /* private browsing */ }
   }, []);
@@ -60,7 +56,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLang(lang === "en" ? "th" : "en");
   }, [lang, setLang]);
 
-  const t = translations[lang];
+  const t      = translations[lang];
   const format = useMemo(() => makeFormatUtils(lang), [lang]);
 
   return (

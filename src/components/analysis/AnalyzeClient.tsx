@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter }     from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ScenarioTable } from "./ScenarioTable";
 import type { AnalysisResponse } from "@/app/api/analyze/[ticker]/route";

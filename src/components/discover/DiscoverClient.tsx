@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Card } from "@/components/Card";
 import { useI18n } from "@/lib/i18n";
 

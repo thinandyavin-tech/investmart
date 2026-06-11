@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useUser } from "@/lib/userContext";
 import { useI18n } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";

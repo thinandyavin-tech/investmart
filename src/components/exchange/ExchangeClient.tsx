@@ -1,16 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 
 const CURRENCIES = ["THB", "USD", "EUR", "GBP", "JPY"] as const;
 type Currency = (typeof CURRENCIES)[number];
 
 export function ExchangeClient() {
   const { user, loading: userLoading, refreshUser } = useUser();
+  const { t } = useI18n();
 
   const [fromCurrency, setFromCurrency] = useState<Currency>("THB");
   const [toCurrency, setToCurrency]     = useState<Currency>("USD");
@@ -50,13 +53,9 @@ export function ExchangeClient() {
   async function executeExchange() {
     if (!user) { setShowLoginPrompt(true); return; }
     const amt = parseFloat(amount);
-    if (isNaN(amt) || amt <= 0) { setMsg("กรุณากรอกจำนวนเงิน"); return; }
-    if (!["THB", "USD"].includes(fromCurrency)) {
-      setMsg("รองรับเฉพาะ THB และ USD ในการแลกเปลี่ยนจากพอร์ต"); return;
-    }
-    if (!["THB", "USD"].includes(toCurrency)) {
-      setMsg("รองรับเฉพาะ THB และ USD ในการรับ"); return;
-    }
+    if (isNaN(amt) || amt <= 0) { setMsg(t.exchange.enterAmount); return; }
+    if (!["THB", "USD"].includes(fromCurrency)) { setMsg(t.exchange.onlyTHBUSD); return; }
+    if (!["THB", "USD"].includes(toCurrency))   { setMsg(t.exchange.onlyTHBUSDReceive); return; }
     setExchanging(true); setMsg("");
     try {
       const res  = await fetch("/api/exchange", {
@@ -65,12 +64,15 @@ export function ExchangeClient() {
         body:    JSON.stringify({ fromCurrency, toCurrency, amount: amt, rate }),
       });
       const data = (await res.json()) as { error?: string; cashThb?: number; cashUsd?: number };
-      if (!res.ok) { setMsg(data.error ?? "เกิดข้อผิดพลาด"); }
+      if (!res.ok) { setMsg(data.error ?? t.exchange.genericError); }
       else {
-        setMsg(`แลกเปลี่ยนสำเร็จ ✓ · THB: ฿${(data.cashThb ?? 0).toLocaleString()} · USD: $${(data.cashUsd ?? 0).toFixed(2)}`);
+        setMsg(t.exchange.success(
+          (data.cashThb ?? 0).toLocaleString(),
+          (data.cashUsd ?? 0).toFixed(2),
+        ));
         await refreshUser();
       }
-    } catch { setMsg("เกิดข้อผิดพลาด"); }
+    } catch { setMsg(t.exchange.genericError); }
     finally { setExchanging(false); }
   }
 
@@ -78,13 +80,13 @@ export function ExchangeClient() {
     <div className="p-4 max-w-md mx-auto">
       {showLoginPrompt && (
         <LoginPromptModal
-          message="เข้าสู่ระบบเพื่อแลกเปลี่ยนเงินในพอร์ตจำลอง · เริ่มต้นด้วย ฿1,250,000"
+          message={t.exchange.loginMessage}
           onClose={() => setShowLoginPrompt(false)}
         />
       )}
-      <h1 className="text-xs font-bold uppercase tracking-widest mb-1">แลกเปลี่ยนเงิน · Exchange</h1>
+      <h1 className="text-xs font-bold uppercase tracking-widest mb-1">{t.exchange.title}</h1>
       <p className="text-xs text-[#8A8378] mb-4">
-        อัตราโดยประมาณ · แหล่งข้อมูล: <span className="font-bold">{source || "..."}</span>
+        {t.exchange.rateLabel} <span className="font-bold">{source || "..."}</span>
       </p>
 
       {/* Current balances */}
@@ -109,7 +111,7 @@ export function ExchangeClient() {
         <div className="flex gap-2">
           <div className="flex-1">
             <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-amount">
-              จำนวน
+              {t.exchange.amountLabel}
             </label>
             <input
               id="from-amount"
@@ -123,7 +125,7 @@ export function ExchangeClient() {
           </div>
           <div>
             <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="from-currency">
-              จาก
+              {t.exchange.fromLabel}
             </label>
             <select
               id="from-currency"
@@ -141,7 +143,7 @@ export function ExchangeClient() {
           <button
             onClick={() => { setFromCurrency(toCurrency); setToCurrency(fromCurrency); }}
             className="text-sm px-3 py-1 border border-[#1F1A14] font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"
-            aria-label="สลับสกุลเงิน"
+            aria-label={t.exchange.swapAria}
           >
             ⇄
           </button>
@@ -150,7 +152,7 @@ export function ExchangeClient() {
 
         <div className="flex gap-2 items-end">
           <div className="flex-1">
-            <div className="text-xs text-[#8A8378] uppercase tracking-wide mb-1">ผลลัพธ์</div>
+            <div className="text-xs text-[#8A8378] uppercase tracking-wide mb-1">{t.exchange.resultLabel}</div>
             <div className="text-2xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               {loading ? "..." : result.toLocaleString("en-US", { maximumFractionDigits: 2 })}
             </div>
@@ -160,7 +162,7 @@ export function ExchangeClient() {
           </div>
           <div>
             <label className="text-xs text-[#8A8378] uppercase tracking-wide block mb-1" htmlFor="to-currency">
-              เป็น
+              {t.exchange.toLabel}
             </label>
             <select
               id="to-currency"
@@ -175,7 +177,7 @@ export function ExchangeClient() {
 
         {!user && !userLoading ? (
           <OffsetButton variant="lime" className="w-full text-center" onClick={() => setShowLoginPrompt(true)}>
-            เข้าสู่ระบบเพื่อแลกเงิน
+            {t.exchange.loginToExchange}
           </OffsetButton>
         ) : (
           <OffsetButton
@@ -184,7 +186,7 @@ export function ExchangeClient() {
             onClick={executeExchange}
             disabled={exchanging}
           >
-            {exchanging ? "กำลังแลกเปลี่ยน..." : "อัพเดทยอดคงเหลือ"}
+            {exchanging ? t.exchange.updating : t.exchange.updateBalance}
           </OffsetButton>
         )}
 
@@ -197,14 +199,14 @@ export function ExchangeClient() {
           </p>
         )}
         <p className="text-xs text-[#8A8378] text-center">
-          อัตราแลกเปลี่ยนโดยประมาณ
+          {t.exchange.rateNote}
         </p>
       </Card>
 
       {/* Rate table */}
       <Card className="mt-4 overflow-hidden">
         <div className="px-3 py-2 border-b border-[#1F1A14] text-xs font-bold uppercase tracking-wide bg-[#1F1A14] text-[#F3EDE0]">
-          อัตราแลกเปลี่ยน (base USD)
+          {t.exchange.rateBase}
         </div>
         {Object.entries(rates)
           .filter(([k]) => k.startsWith("USD") && k !== "USDUSD")

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+
 import { Card } from "@/components/Card";
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 
 interface Trade {
   id:        string;
@@ -61,6 +63,7 @@ function computeAnalytics(trades: Trade[]): Analytics {
 
 export function HistoryClient() {
   const { user } = useUser();
+  const { t } = useI18n();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,23 +85,21 @@ export function HistoryClient() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-xs font-bold uppercase tracking-widest mb-1">ประวัติซื้อขาย</h1>
-      <p className="text-xs text-[#8A8378] mb-4">
-        รายการซื้อขายทั้งหมด
-      </p>
+      <h1 className="text-xs font-bold uppercase tracking-widest mb-1">{t.history.title}</h1>
+      <p className="text-xs text-[#8A8378] mb-4">{t.history.subtitle}</p>
 
       {!user && !loading && (
         <Card className="p-4 text-center mb-4 flex flex-col gap-2">
-          <p className="text-xs text-[#8A8378]">เข้าสู่ระบบเพื่อดูประวัติการซื้อขาย</p>
+          <p className="text-xs text-[#8A8378]">{t.history.loginPrompt}</p>
           <div className="flex gap-2 justify-center">
             <Link href="/signin">
               <span className="inline-block px-4 py-2 text-xs font-bold bg-[#1F1A14] text-white border-2 border-[#1F1A14]" style={{ boxShadow: "2px 2px 0 #5B8A2A" }}>
-                เข้าสู่ระบบ
+                {t.common.signIn}
               </span>
             </Link>
             <Link href="/signup">
               <span className="inline-block px-4 py-2 text-xs font-bold border-2 border-[#5B8A2A] text-[#5B8A2A] hover:bg-[#9BE15D] transition-colors">
-                สมัครสมาชิก
+                {t.common.signUp}
               </span>
             </Link>
           </div>
@@ -106,13 +107,11 @@ export function HistoryClient() {
       )}
 
       {loading ? (
-        <div className="text-xs text-[#8A8378] text-center py-8">กำลังโหลด...</div>
+        <div className="text-xs text-[#8A8378] text-center py-8">{t.common.loading}</div>
       ) : trades.length === 0 ? (
         <Card className="p-6 text-center">
-          <p className="text-xs text-[#8A8378]">ยังไม่มีประวัติการซื้อขาย</p>
-          <p className="text-xs text-[#8A8378] mt-1">
-            ซื้อหุ้นครั้งแรกจากหน้าเรดาร์เพื่อเริ่มต้น
-          </p>
+          <p className="text-xs text-[#8A8378]">{t.history.empty}</p>
+          <p className="text-xs text-[#8A8378] mt-1">{t.history.emptyCta}</p>
         </Card>
       ) : (
         <>
@@ -121,11 +120,11 @@ export function HistoryClient() {
             <h2 className="text-xs font-bold uppercase tracking-widest mb-3 text-[#8A8378]">Portfolio Summary</h2>
             <div className="grid grid-cols-2 gap-3 mb-3">
               {[
-                { label: "ซื้อทั้งหมด",      value: `$${analytics.totalBought.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                { label: "ขายทั้งหมด",       value: `$${analytics.totalSold.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                { label: "Cost Basis (ถือ)",  value: `$${analytics.costBasis.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
-                { label: "จำนวน order",       value: String(analytics.tradeCount) },
-                { label: "หุ้นที่เคยซื้อ",    value: `${analytics.uniqueTickers} ตัว` },
+                { label: t.history.totalBought, value: `$${analytics.totalBought.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                { label: t.history.totalSold,   value: `$${analytics.totalSold.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                { label: t.history.costBasis,   value: `$${analytics.costBasis.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                { label: t.history.orderCount,  value: String(analytics.tradeCount) },
+                { label: t.history.uniqueTickers, value: `${analytics.uniqueTickers}${t.history.uniqueTickerSuffix}` },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col gap-0.5">
                   <span className="text-xs text-[#8A8378] uppercase tracking-wide">{label}</span>
@@ -136,7 +135,7 @@ export function HistoryClient() {
             {analytics.holdings.length > 0 && (
               <div>
                 <div className="text-xs font-bold uppercase tracking-wide text-[#8A8378] mb-1.5">
-                  ถือครองอยู่ ({analytics.holdings.length} ตัว)
+                  {t.history.holdingCount(analytics.holdings.length)}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {analytics.holdings.map((h) => (
@@ -146,13 +145,13 @@ export function HistoryClient() {
                       className="flex items-center gap-1.5 border border-[#1F1A14] px-2 py-1 text-xs hover:bg-[#1F1A14] hover:text-white transition-colors"
                     >
                       <span className="font-bold">{h.ticker}</span>
-                      <span className="text-[#8A8378]">{h.shares.toFixed(2)} หุ้น</span>
+                      <span className="text-[#8A8378]">{t.history.sharesUnit(h.shares.toFixed(2))}</span>
                       <span style={{ fontFamily: "var(--font-mono)" }}>@ ${h.avgCost.toFixed(2)}</span>
                     </Link>
                   ))}
                 </div>
                 <p className="text-xs text-[#8A8378] mt-1.5">
-                  ต้นทุนเฉลี่ย (cost basis) · ไม่ใช่ราคาตลาดปัจจุบัน
+                  {t.history.costBasisNote}
                 </p>
               </div>
             )}

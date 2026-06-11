@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useUser } from "@/lib/userContext";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";

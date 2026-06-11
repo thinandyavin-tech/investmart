@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 import { useI18n } from "@/lib/i18n";
 import type { Mover, MoversCache } from "@/app/api/radar/movers/route";

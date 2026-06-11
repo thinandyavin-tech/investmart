@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { InfographicCard, InfographicsResponse } from "@/app/api/news/infographics/route";
 
 // ─── Category icons (SVG inline, accessible) ─────────────────────────────────

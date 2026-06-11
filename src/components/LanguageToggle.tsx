@@ -1,17 +1,26 @@
 "use client";
 
-import { useI18n } from "@/lib/i18n";
+import { useI18n }                from "@/lib/i18n";
+import { useRouter, usePathname } from "@/i18n/navigation";
+import type { AppLocale }         from "@/i18n/routing";
 
 interface LanguageToggleProps {
   size?: "sm" | "md";
 }
 
 export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
-  const { lang, toggle } = useI18n();
+  const { lang } = useI18n();
+  const router   = useRouter();
+  const pathname = usePathname();
 
   const base = size === "sm"
     ? "text-[10px] px-1.5 py-0.5 min-h-[24px]"
     : "text-xs px-2 py-1 min-h-[28px]";
+
+  function toggle() {
+    const nextLocale: AppLocale = lang === "en" ? "th" : "en";
+    router.replace(pathname, { locale: nextLocale });
+  }
 
   return (
     <button
