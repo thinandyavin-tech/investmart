@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { OffsetButton } from "@/components/OffsetButton";
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 
 export const ONBOARDING_DONE_KEY = "investmart_onboarded_v1";
 const LEGACY_KEY  = "investmart_onboarding_v1";
@@ -38,27 +39,25 @@ function buildSteps(user: { isDemo: boolean; username: string | null } | null): 
 // ─── Step content components ───────────────────────────────────────────────
 
 function WelcomeStep() {
+  const { t } = useI18n();
+  const ob = t.onboarding;
+  const features = [ob.featureRadar, ob.featureTrade, ob.featureSocial] as [string, string, string][];
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <h2 className="text-sm font-bold text-[#1F1A14]">ยินดีต้อนรับสู่ InvestMart</h2>
-        <p className="text-xs text-[#8A8378] leading-relaxed">
-          แพลตฟอร์มเรียนรู้การลงทุนหุ้นสหรัฐสำหรับนักลงทุนไทย มีสามอย่างหลักที่ควรรู้ก่อน
-        </p>
+        <h2 className="text-sm font-bold text-[#1F1A14]">{ob.welcome}</h2>
+        <p className="text-xs text-[#8A8378] leading-relaxed">{ob.welcomeDesc}</p>
       </div>
 
       <div className="border border-dashed border-[#5B8A2A] bg-[#F8FDF2] rounded p-3 flex flex-col gap-1">
-        <p className="text-xs font-bold text-[#5B8A2A] uppercase tracking-widest">พอร์ตเริ่มต้น</p>
+        <p className="text-xs font-bold text-[#5B8A2A] uppercase tracking-widest">{ob.portfolioLabel}</p>
         <p className="text-xl font-bold" style={{ fontFamily: "var(--font-mono)" }}>฿1,250,000</p>
-        <p className="text-xs text-[#8A8378]">เงินจำลองทั้งหมด — ไม่มีเงินจริงเข้ามาเกี่ยวข้องเลย</p>
+        <p className="text-xs text-[#8A8378]">{ob.portfolioNote}</p>
       </div>
 
       <ul className="flex flex-col gap-2 text-xs">
-        {([
-          ["📡", "เรดาร์ AI", "สแกนหุ้นใน S&P 500 / Nasdaq ที่มี momentum ผิดปกติ คัดมาให้ดูง่าย"],
-          ["💹", "ซื้อขายจำลอง", "ราคาหุ้นเป็นข้อมูลจริงจาก API แต่เงินที่ใช้เป็นเงินสมมติทั้งสิ้น"],
-          ["👥", "ชุมชนนักเรียนรู้", "โพสต์ไอเดีย ติดตามเทรดเดอร์คนอื่น และดู leaderboard"],
-        ] as const).map(([icon, title, desc]) => (
+        {features.map(([icon, title, desc]) => (
           <li key={title} className="flex gap-2 items-start">
             <span className="flex-shrink-0 text-sm">{icon}</span>
             <span><span className="font-bold">{title}</span> — {desc}</span>
@@ -67,8 +66,7 @@ function WelcomeStep() {
       </ul>
 
       <p className="text-xs text-[#8A8378] border-t border-[#E8E2D4] pt-2">
-        ผลการเทรดจำลองไม่ได้รับประกันว่าจะสะท้อนผลการลงทุนจริง
-        InvestMart ไม่ใช่บริษัทหลักทรัพย์และไม่ได้รับใบอนุญาต
+        {ob.disclaimer}
       </p>
     </div>
   );
@@ -82,19 +80,19 @@ interface UsernameStepProps {
 }
 
 function UsernameStep({ value, onChange, error, inputRef }: UsernameStepProps) {
+  const { t } = useI18n();
+  const ob = t.onboarding;
+
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">เลือก Username</h2>
-        <p className="text-xs text-[#8A8378] leading-relaxed">
-          ชื่อที่คนอื่นจะเห็นในชุมชน เปลี่ยนได้ในภายหลัง (มีระยะรอระหว่างการเปลี่ยน)
-          ข้ามหากยังไม่แน่ใจ
-        </p>
+        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">{ob.usernameTitle}</h2>
+        <p className="text-xs text-[#8A8378] leading-relaxed">{ob.usernameDesc}</p>
       </div>
 
       <div>
         <label htmlFor="ob-username" className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1">
-          Username (ข้ามได้)
+          {ob.usernameLabel}
         </label>
         <div className="flex items-center border-2 border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
           <span className="px-2 py-2 text-xs text-[#8A8378] border-r-2 border-[#1F1A14] select-none">@</span>
@@ -119,9 +117,7 @@ function UsernameStep({ value, onChange, error, inputRef }: UsernameStepProps) {
         )}
       </div>
 
-      <p className="text-xs text-[#8A8378]">
-        3–30 ตัวอักษร · ใช้ a-z, 0-9, _ เท่านั้น · ไม่มีช่องว่าง
-      </p>
+      <p className="text-xs text-[#8A8378]">{ob.usernameFormat}</p>
     </div>
   );
 }
@@ -133,19 +129,20 @@ interface WatchlistStepProps {
 }
 
 function WatchlistStep({ selected, onToggle, canSave }: WatchlistStepProps) {
+  const { t } = useI18n();
+  const ob = t.onboarding;
+
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">เพิ่มหุ้นที่สนใจ</h2>
-        <p className="text-xs text-[#8A8378]">
-          เลือกหุ้นที่อยากติดตาม แอปจะไม่ว่างเปล่าตั้งแต่วันแรก ข้ามได้ถ้าจะเลือกเองทีหลัง
-        </p>
+        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">{ob.watchlistTitle}</h2>
+        <p className="text-xs text-[#8A8378]">{ob.watchlistDesc}</p>
       </div>
 
       <div
         className="grid grid-cols-3 gap-1.5"
         role="group"
-        aria-label="เลือกหุ้นสำหรับ Watchlist"
+        aria-label={ob.watchlistAria}
       >
         {STARTER_TICKERS.map(({ ticker, name }) => {
           const active = selected.has(ticker);
@@ -169,38 +166,37 @@ function WatchlistStep({ selected, onToggle, canSave }: WatchlistStepProps) {
       </div>
 
       {!canSave && selected.size > 0 && (
-        <p className="text-xs text-[#8A8378]">
-          เข้าสู่ระบบเพื่อบันทึก Watchlist ของคุณ
-        </p>
+        <p className="text-xs text-[#8A8378]">{ob.watchlistLogin}</p>
       )}
     </div>
   );
 }
 
 function ActionStep() {
+  const { t } = useI18n();
+  const ob = t.onboarding;
+
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">พร้อมแล้ว — เริ่มได้เลย</h2>
-        <p className="text-xs text-[#8A8378] leading-relaxed">
-          ผลตอบแทนจำลองไม่ใช่คำแนะนำการลงทุน · ทุกอย่างในนี้เป็นเพื่อการเรียนรู้เท่านั้น
-        </p>
+        <h2 className="text-sm font-bold text-[#1F1A14] mb-1">{ob.actionTitle}</h2>
+        <p className="text-xs text-[#8A8378] leading-relaxed">{ob.actionDesc}</p>
       </div>
 
       <div className="flex flex-col gap-2">
         <Link href="/radar" className="block">
           <OffsetButton variant="lime" className="w-full text-center text-xs">
-            📡 เปิดเรดาร์สแกนหุ้น
+            {ob.radarBtn}
           </OffsetButton>
         </Link>
         <Link href="/market" className="block">
           <OffsetButton variant="black" className="w-full text-center text-xs">
-            📈 ดูภาพรวมตลาดวันนี้
+            {ob.marketBtn}
           </OffsetButton>
         </Link>
         <Link href="/learn" className="block">
           <OffsetButton variant="white" className="w-full text-center text-xs">
-            📚 เรียนรู้คำศัพท์ก่อน
+            {ob.learnBtn}
           </OffsetButton>
         </Link>
       </div>
@@ -212,16 +208,18 @@ function ActionStep() {
 
 export function OnboardingFlow() {
   const { user, loading, refreshUser } = useUser();
+  const { t } = useI18n();
+  const ob = t.onboarding;
   const pathname = usePathname();
-  const [visible,         setVisible]  = useState(false);
-  const [stepIdx,         setStepIdx]  = useState(0);
-  const [dir,             setDir]      = useState<"fwd" | "back">("fwd");
-  const [username,        setUsername] = useState("");
-  const [usernameError,   setUnError]  = useState("");
-  const [busy,            setBusy]     = useState(false);
-  const [selected,        setSelected] = useState<Set<string>>(new Set());
-  const inputRef  = useRef<HTMLInputElement>(null);
-  const firstBtn  = useRef<HTMLButtonElement>(null);
+  const [visible,       setVisible]  = useState(false);
+  const [stepIdx,       setStepIdx]  = useState(0);
+  const [dir,           setDir]      = useState<"fwd" | "back">("fwd");
+  const [username,      setUsername] = useState("");
+  const [usernameError, setUnError]  = useState("");
+  const [busy,          setBusy]     = useState(false);
+  const [selected,      setSelected] = useState<Set<string>>(new Set());
+  const inputRef = useRef<HTMLInputElement>(null);
+  const firstBtn = useRef<HTMLButtonElement>(null);
 
   const steps = buildSteps(user);
   const step  = steps[stepIdx] ?? "action";
@@ -229,7 +227,7 @@ export function OnboardingFlow() {
 
   useEffect(() => {
     if (loading) return;
-    if (pathname !== "/") return;           // only show on home page
+    if (pathname !== "/") return;
     if (localStorage.getItem(ONBOARDING_DONE_KEY)) return;
     localStorage.removeItem(LEGACY_KEY);
     setVisible(true);
@@ -242,19 +240,19 @@ export function OnboardingFlow() {
 
   useEffect(() => {
     if (!visible) return;
-    setTimeout(() => {
-      (inputRef.current ?? firstBtn.current)?.focus();
-    }, 220);
-  }, [stepIdx, visible]);
-
-  useEffect(() => {
-    if (!visible) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") dismiss();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [visible, dismiss]);
+
+  useEffect(() => {
+    if (!visible) return;
+    setTimeout(() => {
+      (inputRef.current ?? firstBtn.current)?.focus();
+    }, 220);
+  }, [stepIdx, visible]);
 
   function toggleTicker(ticker: string) {
     setSelected((prev) => {
@@ -267,7 +265,7 @@ export function OnboardingFlow() {
   async function advance() {
     if (step === "username" && username.trim()) {
       if (!USERNAME_RE.test(username.trim())) {
-        setUnError("3-30 ตัวอักษร a-z 0-9 _ เท่านั้น");
+        setUnError(ob.usernameError);
         return;
       }
       setBusy(true);
@@ -279,12 +277,12 @@ export function OnboardingFlow() {
         });
         if (!res.ok) {
           const d = (await res.json()) as { error?: string };
-          setUnError(d.error ?? "เกิดข้อผิดพลาด");
+          setUnError(d.error ?? ob.usernameApiError);
           return;
         }
         await refreshUser();
       } catch {
-        setUnError("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        setUnError(ob.usernameNetError);
         return;
       } finally {
         setBusy(false);
@@ -293,11 +291,11 @@ export function OnboardingFlow() {
 
     if (step === "watchlist" && selected.size > 0 && user && !user.isDemo) {
       void Promise.all(
-        Array.from(selected).map((t) =>
+        Array.from(selected).map((ticker) =>
           fetch("/api/watchlist", {
             method:  "POST",
             headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify({ ticker: t }),
+            body:    JSON.stringify({ ticker }),
           }),
         ),
       );
@@ -330,18 +328,18 @@ export function OnboardingFlow() {
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="เริ่มต้นใช้งาน InvestMart"
+        aria-label={ob.welcome}
       >
         {/* Title bar */}
         <div className="flex items-center justify-between px-3 py-1.5 bg-[#000080]">
           <span className="text-white text-xs font-bold tracking-widest">
-            INVESTMART — ขั้นตอน {stepIdx + 1}/{steps.length}
+            {ob.step(stepIdx + 1, steps.length)}
           </span>
           <button
             ref={firstBtn}
             onClick={dismiss}
             className="text-white text-xs border border-[#8080FF] bg-[#0000C0] px-2 py-0.5 hover:bg-[#000080] focus:outline-none focus:ring-1 focus:ring-white"
-            aria-label="ปิดและข้าม"
+            aria-label={ob.closeSkip}
           >
             ×
           </button>
@@ -390,7 +388,7 @@ export function OnboardingFlow() {
               onClick={back}
               className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline"
             >
-              ← กลับ
+              {ob.back}
             </button>
           )}
           {step !== "action" && (
@@ -398,7 +396,7 @@ export function OnboardingFlow() {
               onClick={dismiss}
               className="text-xs text-[#8A8378] hover:text-[#1F1A14] hover:underline focus:outline-none focus:underline ml-auto"
             >
-              ข้าม
+              {ob.skip}
             </button>
           )}
           {step !== "action" && (
@@ -408,7 +406,7 @@ export function OnboardingFlow() {
               onClick={() => void advance()}
               disabled={busy}
             >
-              {busy ? "..." : isLast ? "เสร็จ" : "ถัดไป →"}
+              {busy ? "..." : isLast ? ob.done : ob.next}
             </OffsetButton>
           )}
           {step === "action" && (
@@ -416,7 +414,7 @@ export function OnboardingFlow() {
               onClick={dismiss}
               className="text-xs text-[#8A8378] hover:underline mx-auto focus:outline-none focus:underline"
             >
-              ปิด · ไม่แสดงอีก
+              {ob.dismissFinal}
             </button>
           )}
         </div>

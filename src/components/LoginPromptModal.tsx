@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { useUser } from "@/lib/userContext";
+import { useI18n } from "@/lib/i18n";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 
 interface LoginPromptModalProps {
@@ -13,6 +14,7 @@ interface LoginPromptModalProps {
 
 export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPromptModalProps) {
   const { initDemo } = useUser();
+  const { t } = useI18n();
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(dialogRef, true, onClose);
 
@@ -28,7 +30,7 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="เข้าสู่ระบบเพื่อดำเนินการต่อ"
+      aria-label={t.loginModal.aria}
     >
       <div
         ref={dialogRef}
@@ -46,7 +48,7 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
           <button
             onClick={onClose}
             className="text-white text-xs border border-[#8080FF] bg-[#0000C0] px-2 py-0.5 hover:bg-[#000080]"
-            aria-label="ปิด"
+            aria-label={t.loginModal.closeAria}
           >
             ×
           </button>
@@ -61,7 +63,7 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
                 className="block w-full border-2 border-[#1F1A14] bg-[#1F1A14] text-white text-xs font-bold px-4 py-2.5 text-center hover:bg-[#2F2A24] transition-colors"
                 style={{ boxShadow: "2px 2px 0 #5B8A2A" }}
               >
-                เข้าสู่ระบบ
+                {t.loginModal.signIn}
               </span>
             </Link>
             <Link href="/signup" onClick={onClose} className="block">
@@ -69,19 +71,19 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
                 className="block w-full border-2 border-[#5B8A2A] text-[#5B8A2A] text-xs font-bold px-4 py-2.5 text-center hover:bg-[#9BE15D] transition-colors"
                 style={{ boxShadow: "2px 2px 0 #5B8A2A" }}
               >
-                สมัครสมาชิก ฟรี
+                {t.loginModal.signUp}
               </span>
             </Link>
           </div>
 
           {withDemo && (
             <p className="text-xs text-[#8A8378] text-center">
-              ยังไม่พร้อมสมัคร?{" "}
+              {t.loginModal.notReady}{" "}
               <button
                 onClick={() => void handleDemo()}
                 className="underline text-[#5B8A2A] font-bold"
               >
-                ลองเล่น Demo
+                {t.loginModal.tryDemo}
               </button>
             </p>
           )}

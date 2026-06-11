@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n";
 import type { ReactNode } from "react";
 
 interface BrandPillDropdownProps {
@@ -15,28 +16,29 @@ interface DropdownItem {
   soon?: boolean;
 }
 
-const ITEMS: DropdownItem[] = [
-  { href: "/",          label: "หน้าหลัก",       icon: <HomeIcon /> },
-  { href: "/market",    label: "ภาพรวมตลาด",      icon: <ChartIcon /> },
-  { href: "/radar",     label: "เรดาร์แสกนหุ้น", icon: <RadarIcon /> },
-  { href: "/compose",   label: "โพส",              icon: <PencilIcon /> },
-  { href: "/discover",  label: "Discover",          icon: <DiscoverIcon /> },
-  { href: "/watchlist", label: "Watchlist",          icon: <WatchlistIcon /> },
-  { href: "/mail",      label: "จดหมาย",          icon: <MailIcon /> },
-  { href: "/saved",     label: "หน้าบันทึกโพส",  icon: <BookmarkIcon /> },
-  { href: "/profile",   label: "หน้าโปรไฟล์",    icon: <PersonIcon /> },
-  { href: "/about",     label: "เกี่ยวกับ",       icon: <InfoIcon /> },
-];
-
 export function BrandPillDropdown({ onClose }: BrandPillDropdownProps) {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const ITEMS: DropdownItem[] = [
+    { href: "/",          label: t.nav.home,     icon: <HomeIcon /> },
+    { href: "/market",    label: t.nav.market,   icon: <ChartIcon /> },
+    { href: "/radar",     label: t.nav.radar,    icon: <RadarIcon /> },
+    { href: "/compose",   label: t.nav.compose,  icon: <PencilIcon /> },
+    { href: "/discover",  label: t.nav.discover, icon: <DiscoverIcon /> },
+    { href: "/watchlist", label: t.nav.watchlist, icon: <WatchlistIcon /> },
+    { href: "/mail",      label: t.nav.mail,     icon: <MailIcon /> },
+    { href: "/saved",     label: t.nav.saved,    icon: <BookmarkIcon /> },
+    { href: "/profile",   label: t.nav.profile,  icon: <PersonIcon /> },
+    { href: "/about",     label: t.nav.about,    icon: <InfoIcon /> },
+  ];
 
   return (
     <div
       className="w-56 bg-white/80 backdrop-blur-md rounded-xl overflow-hidden"
       style={{ boxShadow: "0 8px 32px rgba(31,26,20,0.20), 0 2px 8px rgba(31,26,20,0.10)" }}
       role="menu"
-      aria-label="เมนูหลัก InvestMart"
+      aria-label="InvestMart"
     >
       {ITEMS.map(({ href, label, icon, soon }) => {
         if (soon) {
@@ -55,7 +57,7 @@ export function BrandPillDropdown({ onClose }: BrandPillDropdownProps) {
                 className="ml-auto text-xs px-1.5 py-0.5 font-bold rounded"
                 style={{ background: "#FFD9E8", color: "#D6336C" }}
               >
-                SOON
+                {t.common.comingSoon}
               </span>
             </div>
           );
