@@ -2,9 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
+import dynamic from "next/dynamic";
 
 import { useI18n } from "@/lib/i18n";
 import type { Mover, MoversCache } from "@/app/api/radar/movers/route";
+
+const TradingViewHotlists = dynamic(
+  () => import("@/components/tradingview/TradingViewHotlists").then(m => m.TradingViewHotlists),
+  { ssr: false },
+);
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -124,7 +130,7 @@ const TAB_COLORS: Record<Tab, string> = {
 };
 
 export function RadarMovers() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [data,     setData]     = useState<MoversResponse | null>(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -173,9 +179,11 @@ export function RadarMovers() {
                 {loading
                   ? t.common.loading
                   : building
-                  ? "Data updates every 30 min"
+                  ? "Fetching from FMP…"
+                  : data?.stale && data?.error
+                  ? `Stale data · ${timeAgo(data.updatedAt)} · refresh failed`
                   : data?.stale
-                  ? `${timeAgo(data.updatedAt)} · refreshing…`
+                  ? `${timeAgo(data.updatedAt)} · stale`
                   : `Daily snapshot · updated ${timeAgo(data?.updatedAt)} · FMP`}
               </p>
             </div>
@@ -245,6 +253,19 @@ export function RadarMovers() {
           {/* Loading */}
           {loading && <SkeletonRows />}
 
+          {/* Stale warning banner */}
+          {!loading && !error && data?.stale && data?.error && (
+            <div className="px-3 py-2 bg-amber-50 border-b border-amber-200 flex items-center justify-between gap-2">
+              <p className="text-[10px] text-amber-800 flex-1">{data.error}</p>
+              <button
+                onClick={() => void handleRefresh()}
+                className="text-[10px] font-bold text-amber-700 hover:underline flex-shrink-0"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
           {/* Error */}
           {!loading && error && (
             <div className="flex flex-col items-center py-16 gap-3 text-center px-4">
@@ -259,13 +280,13 @@ export function RadarMovers() {
             </div>
           )}
 
-          {/* Building / empty */}
+          {/* FMP unavailable — show TradingView Hotlists as real-data fallback */}
           {!loading && !error && building && (
-            <div className="flex flex-col items-center py-16 gap-3 text-center px-4">
-              <p className="text-sm font-semibold text-[#1F1A14]">Fetching movers…</p>
-              <p className="text-xs text-[#8A8378] max-w-xs leading-relaxed">
-                Loading the latest gainers, losers, and most-active stocks from FMP.
+            <div className="px-3 py-3">
+              <p className="text-[10px] text-[#8A8378] mb-2">
+                FMP data unavailable · showing live TradingView hotlists instead
               </p>
+              <TradingViewHotlists height={420} locale={lang} />
             </div>
           )}
 
