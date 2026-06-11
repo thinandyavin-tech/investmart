@@ -22,10 +22,10 @@ function GoogleIcon() {
 }
 
 const OAUTH_ERRORS: Record<string, string> = {
-  OAuthAccountNotLinked: "อีเมลนี้ผูกกับบัญชีอื่นอยู่แล้ว กรุณาใช้วิธีเดิมที่เคยสมัคร",
-  AccessDenied:          "ยังไม่ได้รับอนุญาต — ระบบอยู่ระหว่างทดสอบ กรุณาติดต่อผู้ดูแล",
-  Verification:          "ลิงก์ยืนยันหมดอายุ กรุณาลองใหม่อีกครั้ง",
-  Default:               "เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง",
+  OAuthAccountNotLinked: "This email is linked to another account. Please use your original sign-in method.",
+  AccessDenied:          "Access not yet granted — the app is in testing. Please contact the admin.",
+  Verification:          "Verification link expired. Please try again.",
+  Default:               "Sign-in error. Please try again.",
 };
 
 function SignInForm() {
@@ -65,7 +65,7 @@ function SignInForm() {
     });
 
     if (result?.error) {
-      setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      setError("Incorrect email or password.");
       setLoading(false);
       return;
     }
@@ -78,15 +78,15 @@ function SignInForm() {
   return (
     <div className="max-w-sm mx-auto px-4 py-8 flex flex-col gap-4">
       <div>
-        <h1 className="text-xs font-bold uppercase tracking-widest">เข้าสู่ระบบ</h1>
-        <p className="text-xs text-[#8A8378] mt-0.5">InvestMart — เว็บโซเชียลมีเดียหุ้นอเมริกา</p>
+        <h1 className="text-xs font-bold uppercase tracking-widest">Sign in</h1>
+        <p className="text-xs text-[#8A8378] mt-0.5">InvestMart — US stock social network</p>
       </div>
 
       <Card className="p-4">
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-3">
           <div>
             <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-email">
-              อีเมล
+              Email
             </label>
             <input
               id="signin-email"
@@ -102,7 +102,7 @@ function SignInForm() {
 
           <div>
             <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="signin-password">
-              รหัสผ่าน
+              Password
             </label>
             <input
               id="signin-password"
@@ -127,13 +127,13 @@ function SignInForm() {
             className="w-full"
             disabled={loading || !email.trim() || !password}
           >
-            {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+            {loading ? "Signing in…" : "Sign in"}
           </OffsetButton>
         </form>
       </Card>
 
       <Card className="p-4 flex flex-col gap-3">
-        <p className="text-xs text-[#8A8378] text-center uppercase tracking-wide">หรือเข้าสู่ระบบด้วย</p>
+        <p className="text-xs text-[#8A8378] text-center uppercase tracking-wide">or continue with</p>
         <button
           onClick={() => void signIn("google", { callbackUrl: "/profile" })}
           className="w-full flex items-center justify-center gap-2 border-2 border-[#1F1A14] bg-white px-3 py-2.5 text-xs font-bold hover:bg-[#F3EDE0] transition-colors"
@@ -141,13 +141,13 @@ function SignInForm() {
           type="button"
         >
           <GoogleIcon />
-          เข้าสู่ระบบด้วย Google
+          Continue with Google
         </button>
       </Card>
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-[#E8E2D4]" />
-        <span className="text-xs text-[#8A8378]">หรือ</span>
+        <span className="text-xs text-[#8A8378]">or</span>
         <div className="flex-1 h-px bg-[#E8E2D4]" />
       </div>
 
@@ -156,13 +156,13 @@ function SignInForm() {
         disabled={guestLoading || loading}
         className="w-full py-2.5 text-xs font-semibold text-[#8A8378] border border-[#E8E2D4] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors disabled:opacity-40"
       >
-        {guestLoading ? "กำลังโหลด..." : "ทดลองใช้งาน (ไม่ต้องสมัคร)"}
+        {guestLoading ? "Loading…" : "Continue as Guest"}
       </button>
 
       <p className="text-xs text-center text-[#8A8378]">
-        ยังไม่มีบัญชี?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/signup" className="font-bold text-[#5B8A2A] underline">
-          สมัครสมาชิก
+          Sign up
         </Link>
       </p>
 
