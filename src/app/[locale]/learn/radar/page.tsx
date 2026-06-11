@@ -107,8 +107,8 @@ export default function RadarTransparencyPage() {
         </Card>
 
         {/* Limits — the honest part */}
-        <Card className="p-4 flex flex-col gap-3 border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400">
+        <Card className="p-4 flex flex-col gap-3 border-2 border-amber-200 bg-amber-50">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-amber-700">
             ⚠️ ข้อจำกัดที่ต้องรู้
           </h2>
           <ul className="flex flex-col gap-2.5 text-xs">
@@ -121,7 +121,7 @@ export default function RadarTransparencyPage() {
             ] as const).map((line) => (
               <li key={line} className="flex gap-2 items-start">
                 <span className="flex-shrink-0 text-amber-600 font-bold">·</span>
-                <span className="text-[#1F1A14] dark:text-slate-200 leading-relaxed">{line}</span>
+                <span className="text-[#1F1A14] leading-relaxed">{line}</span>
               </li>
             ))}
           </ul>

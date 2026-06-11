@@ -15,7 +15,7 @@ export default function PrivacyPage() {
     <AppShell>
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
 
-        <div className="rounded border border-amber-300 bg-amber-50 dark:bg-amber-950 dark:border-amber-700 p-3 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+        <div className="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800 leading-relaxed">
           {isEn ? (
             <><strong>Template — not legal advice.</strong> Must be reviewed against Thailand&apos;s PDPA and applicable laws before public launch.</>
           ) : (

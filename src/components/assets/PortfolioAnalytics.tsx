@@ -73,10 +73,10 @@ function DonutChart({ holdings }: { holdings: EnrichedHolding[] }) {
               onMouseLeave={() => setHovered(null)}
             />
           ))}
-          <text x="80" y="76" textAnchor="middle" className="text-xs fill-slate-600 dark:fill-slate-400" fontSize="10">
+          <text x="80" y="76" textAnchor="middle" className="text-xs fill-slate-600" fontSize="10">
             {hoveredSlice ? hoveredSlice.label : "พอร์ต"}
           </text>
-          <text x="80" y="90" textAnchor="middle" className="font-bold fill-slate-900 dark:fill-slate-100" fontSize="13">
+          <text x="80" y="90" textAnchor="middle" className="font-bold fill-slate-900" fontSize="13">
             {hoveredSlice ? `${hoveredSlice.pct.toFixed(1)}%` : `${holdings.length} หุ้น`}
           </text>
         </svg>
@@ -86,8 +86,8 @@ function DonutChart({ holdings }: { holdings: EnrichedHolding[] }) {
         {arcs.slice(0, 8).map((arc) => (
           <li key={arc.label} className="flex items-center gap-2 text-xs min-w-0">
             <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: arc.color }} />
-            <span className="truncate text-slate-700 dark:text-slate-300 flex-1">{arc.label}</span>
-            <span className="font-mono text-slate-500 dark:text-slate-400 flex-shrink-0">{arc.pct.toFixed(1)}%</span>
+            <span className="truncate text-slate-700 flex-1">{arc.label}</span>
+            <span className="font-mono text-slate-500 flex-shrink-0">{arc.pct.toFixed(1)}%</span>
           </li>
         ))}
       </ul>
@@ -98,7 +98,7 @@ function DonutChart({ holdings }: { holdings: EnrichedHolding[] }) {
 function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
   if (snapshots.length < 2) {
     return (
-      <div className="flex items-center justify-center h-24 text-sm text-slate-400 dark:text-slate-500">
+      <div className="flex items-center justify-center h-24 text-sm text-slate-400">
         กำลังสะสมข้อมูลประวัติ — จะแสดงกราฟเมื่อมีการเทรดมากพอ
       </div>
     );
@@ -133,7 +133,7 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
         <span className={`text-sm font-semibold ${isUp ? "text-emerald-500" : "text-red-500"}`}>
           {isUp ? "+" : ""}{pct.toFixed(2)}%
         </span>
-        <span className="text-xs text-slate-400 dark:text-slate-500">
+        <span className="text-xs text-slate-400">
           ตั้งแต่เริ่มต้น ({snapshots.length} จุดข้อมูล)
         </span>
       </div>
@@ -153,10 +153,10 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
 
 function StatRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3">
-      <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{label}</div>
-      <div className="font-semibold text-slate-900 dark:text-white text-sm">{value}</div>
-      {sub && <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{sub}</div>}
+    <div className="bg-slate-50 rounded-xl p-3">
+      <div className="text-xs text-slate-500 mb-0.5">{label}</div>
+      <div className="font-semibold text-slate-900 text-sm">{value}</div>
+      {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
     </div>
   );
 }
@@ -207,15 +207,15 @@ export function PortfolioAnalytics({ data }: PortfolioAnalyticsProps) {
   return (
     <div className="space-y-5 pb-24 lg:pb-8">
       {/* Allocation donut */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
+      <div className="bg-white rounded-2xl border border-slate-100 p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-sm">สัดส่วนการลงทุน</h3>
-          <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 text-xs">
+          <h3 className="font-semibold text-slate-800 text-sm">สัดส่วนการลงทุน</h3>
+          <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 text-xs">
             {(["stock", "sector"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setDonutMode(m)}
-                className={`px-2.5 py-1 rounded-md transition-colors ${donutMode === m ? "bg-white dark:bg-slate-700 shadow-sm font-medium text-slate-800 dark:text-white" : "text-slate-500 dark:text-slate-400"}`}
+                className={`px-2.5 py-1 rounded-md transition-colors ${donutMode === m ? "bg-white shadow-sm font-medium text-slate-800" : "text-slate-500"}`}
               >
                 {m === "stock" ? "หุ้น" : "Sector"}
               </button>
@@ -224,19 +224,19 @@ export function PortfolioAnalytics({ data }: PortfolioAnalyticsProps) {
         </div>
         {displayHoldings.length > 0
           ? <DonutChart holdings={displayHoldings} />
-          : <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-6">ยังไม่มีหุ้น</p>
+          : <p className="text-sm text-slate-400 text-center py-6">ยังไม่มีหุ้น</p>
         }
       </div>
 
       {/* Performance chart */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-sm mb-3">ประสิทธิภาพพอร์ต</h3>
+      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+        <h3 className="font-semibold text-slate-800 text-sm mb-3">ประสิทธิภาพพอร์ต</h3>
         <PerformanceChart snapshots={snapshots} />
       </div>
 
       {/* Stats */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
-        <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-sm mb-3">สถิติ</h3>
+      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+        <h3 className="font-semibold text-slate-800 text-sm mb-3">สถิติ</h3>
         <div className="grid grid-cols-2 gap-2">
           <StatRow
             label="มูลค่ารวมทั้งหมด"

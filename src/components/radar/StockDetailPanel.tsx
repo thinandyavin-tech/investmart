@@ -9,7 +9,8 @@ import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
 import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
-import { useUser } from "@/lib/userContext";
+import { useUser }      from "@/lib/userContext";
+import { useI18n }      from "@/lib/i18n";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
 import type { MaConfig } from "@/components/PriceChart";
@@ -66,6 +67,8 @@ function formatCap(capM: number): string {
 
 export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPanelProps) {
   const { user, refreshUser } = useUser();
+  const { t } = useI18n();
+  const rd = t.radar.detail;
   const { quote, flash, isLive } = useLiveQuote(stock.ticker);
 
   const livePrice     = quote?.price     ?? stock.price;
@@ -136,7 +139,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       const data = (await res.json()) as { reason: string };
       setAiReason(data.reason ?? "");
     } catch {
-      setAiReason("ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้");
+      setAiReason(rd.loadAiError);
     } finally {
       setLoadingAi(false);
     }
@@ -145,7 +148,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   async function executeTrade(side: "BUY" | "SELL") {
     if (!user) { setShowLoginPrompt(true); return; }
     const sharesNum = parseFloat(shares);
-    if (isNaN(sharesNum) || sharesNum <= 0) { setTradeMsg("กรุณากรอกจำนวนหุ้น"); return; }
+    if (isNaN(sharesNum) || sharesNum <= 0) { setTradeMsg(rd.sharesRequired); return; }
     setTrading(true);
     setTradeMsg("");
     try {
@@ -156,7 +159,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       });
       const data = (await res.json()) as { error?: string; cashUsd?: number };
       if (!res.ok) {
-        setTradeMsg(data.error ?? "เกิดข้อผิดพลาด");
+        setTradeMsg(data.error ?? rd.tradeError);
       } else {
         setTradeMsg(
           side === "BUY"
@@ -166,7 +169,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
         await refreshUser();
       }
     } catch {
-      setTradeMsg("เกิดข้อผิดพลาดในการส่งคำสั่ง");
+      setTradeMsg(rd.tradeError);
     } finally {
       setTrading(false);
     }
@@ -179,7 +182,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
     <div className="p-4 flex flex-col gap-3 text-slate-900">
       {showLoginPrompt && (
         <LoginPromptModal
-          message="เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง · เริ่มต้นด้วย ฿1,250,000"
+          message={rd.loginToTrade}
           onClose={() => setShowLoginPrompt(false)}
         />
       )}
@@ -381,7 +384,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       <div className="border border-slate-200 rounded-xl p-4 bg-white flex flex-col gap-3">
         {!user ? (
           <div className="text-center">
-            <p className="text-xs text-slate-500 mb-2">เข้าสู่ระบบเพื่อซื้อขายหุ้นจำลอง</p>
+            <p className="text-xs text-slate-500 mb-2">{rd.loginToTrade}</p>
             <OffsetButton variant="lime" onClick={() => setShowLoginPrompt(true)}>
               เข้าสู่ระบบ
             </OffsetButton>
@@ -453,7 +456,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
           </h3>
           {!aiReason && (
             <OffsetButton size="sm" onClick={loadAiReason} disabled={loadingAi}>
-              {loadingAi ? "กำลังวิเคราะห์..." : "วิเคราะห์ AI"}
+              {loadingAi ? rd.analyzingAi : rd.analyzeAi}
             </OffsetButton>
           )}
         </div>

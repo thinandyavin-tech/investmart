@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import type { PostData } from "@/components/social/PostRow";
-import { MAX_CONTENT } from "@/lib/postUtils";
+import { MAX_CONTENT }   from "@/lib/postUtils";
+import { useI18n }       from "@/lib/i18n";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
-
-const TOPICS = ["หุ้น", "Macro", "เทคนิค", "ข่าว", "แชร์พอร์ต", "คำถาม"] as const;
 
 interface PostComposerProps {
   onPublished?: (post: PostData) => void;
@@ -16,6 +15,9 @@ interface PostComposerProps {
 }
 
 export function PostComposer({ onPublished, placeholder, compact = false, quotePost }: PostComposerProps) {
+  const { t } = useI18n();
+  const sc = t.social;
+  const topics = sc.topics as readonly string[];
   const [content, setContent]   = useState("");
   const [ticker, setTicker]     = useState("");
   const [topic, setTopic]       = useState("");
@@ -42,7 +44,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       });
       const data = (await res.json()) as PostData & { error?: string };
       if (!res.ok) {
-        setError(data.error ?? "เกิดข้อผิดพลาด");
+        setError(data.error ?? sc.postError);
         return;
       }
       setContent("");
@@ -50,7 +52,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       setTopic("");
       onPublished?.(data);
     } catch {
-      setError("เชื่อมต่อไม่ได้");
+      setError(sc.connectError);
     } finally {
       setSubmit(false);
     }
@@ -67,7 +69,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       {quotePost && (
         <div className="mb-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
           <p className="text-xs font-bold text-[#8A8378] mb-0.5">
-            อ้างอิงโพสต์ของ {quotePost.author.username ?? quotePost.author.name ?? "ผู้ใช้"}
+            {sc.quoteRefPrefix} {quotePost.author.username ?? quotePost.author.name ?? sc.user}
           </p>
           <p className="text-xs text-[#1F1A14] leading-relaxed line-clamp-2 break-words">{quotePost.content}</p>
         </div>
@@ -76,11 +78,11 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder={quotePost ? "เพิ่มความคิดเห็นของคุณ..." : (placeholder ?? "แบ่งปันมุมมองการลงทุน...")}
+        placeholder={quotePost ? sc.commentPlaceholder : (placeholder ?? sc.composePlaceholder)}
         rows={compact ? 3 : 5}
         maxLength={MAX_CONTENT}
         className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
-        aria-label="เนื้อหาโพสต์"
+        aria-label={sc.commentLabel}
       />
 
       <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -97,10 +99,10 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           className="bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-xs focus:outline-none focus:border-[#1F1A14] transition-colors"
-          aria-label="หัวข้อ"
+          aria-label={sc.topicLabel}
         >
-          <option value="">หัวข้อ (ไม่บังคับ)</option>
-          {TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
+          <option value="">{sc.topicLabel} ({t.common.optional})</option>
+          {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
         </select>
 
         <span
@@ -117,7 +119,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
           className="px-4 py-1.5 text-xs font-bold text-white bg-[#1F1A14] border border-[#1F1A14] shadow-offset-lime disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
           aria-busy={submitting}
         >
-          {submitting ? "กำลังโพสต์..." : "โพสต์"}
+          {submitting ? sc.submitting : sc.postBtn}
         </button>
       </div>
 

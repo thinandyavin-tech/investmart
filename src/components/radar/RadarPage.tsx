@@ -149,12 +149,13 @@ function StockRow({ s, rank, selected, onSelect }: StockRowProps) {
 // ─── Why-it's-here line ───────────────────────────────────────────────────────
 
 function WhyHere({ s }: { s: StockMetrics }) {
+  const { t, lang } = useI18n();
   const parts: string[] = [];
-  if (Math.abs(s.change1D) >= 1) parts.push(`${fmtPct(s.change1D)} วันนี้`);
-  if (s.volumeSurge >= 1.5) parts.push(`วอลุ่ม ${fmtVol(s.volumeSurge)} ค่าเฉลี่ย`);
+  if (Math.abs(s.change1D) >= 1) parts.push(`${fmtPct(s.change1D)} ${lang === "th" ? "วันนี้" : "today"}`);
+  if (s.volumeSurge >= 1.5) parts.push(`Vol ${fmtVol(s.volumeSurge)}x avg`);
   if (s.rsi > 70)  parts.push("RSI overbought");
   if (s.rsi < 30)  parts.push("RSI oversold");
-  if (s.isNew)     parts.push("ใหม่วันนี้");
+  if (s.isNew)     parts.push(t.radar.newToday);
   return parts.length > 0
     ? <span className="text-[10px] text-violet-500">{parts.join(" · ")}</span>
     : null;
@@ -269,14 +270,14 @@ export function RadarPage() {
       const res  = await fetch(`/api/radar/scan?universe=${univ}&minScore=0&filterDead=false`);
       if (!res.ok) {
         const b = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(b.error ?? "ไม่สามารถโหลดผลสแกนได้");
+        setError(b.error ?? t.radar.loadError);
         return;
       }
       const data = (await res.json()) as ScanResponse;
       setScanData(data);
       if (data.results.length > 0 && !selected) setSelected(data.results[0]);
     } catch {
-      setError("ไม่สามารถเชื่อมต่อได้");
+      setError(t.radar.networkError);
     } finally {
       setLoading(false);
     }
@@ -399,7 +400,7 @@ export function RadarPage() {
                 onClick={() => void handleRefresh()}
                 disabled={refreshing || isBuilding}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:border-violet-400 hover:text-violet-700 disabled:opacity-40 transition-colors"
-                aria-label="รีเฟรชผลสแกน"
+                aria-label={t.radar.refreshAria}
               >
                 {refreshing ? t.radar.scanning2 : t.radar.refreshBtn}
               </button>
@@ -439,9 +440,9 @@ export function RadarPage() {
               type="search"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="ค้นหา ticker / ชื่อ"
+              placeholder={t.radar.filters.search}
               className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
-              aria-label="ค้นหาหุ้น"
+              aria-label={t.search.searchAria}
             />
 
             {/* Min score */}
@@ -481,7 +482,7 @@ export function RadarPage() {
               value={category}
               onChange={e => setCategory(e.target.value as StockMetrics["category"] | "ALL")}
               className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
-              aria-label="กรองตามหมวด"
+              aria-label={t.radar.filterCatAria}
             >
               <option value="ALL">ทุกหมวด</option>
               <option value="TOP100">🏆 Top 100</option>
@@ -495,7 +496,7 @@ export function RadarPage() {
               value={sector}
               onChange={e => setSector(e.target.value)}
               className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
-              aria-label="กรองตาม Sector"
+              aria-label={t.radar.filterSecAria}
             >
               <option value="ALL">ทุก Sector</option>
               {ALL_SECTORS.filter(s => s !== "Other" && s !== "ETF").map(s => (
@@ -518,7 +519,7 @@ export function RadarPage() {
           ref={listRef}
           className="flex-1 min-w-0 overflow-y-auto"
           role="listbox"
-          aria-label="ผลสแกน Radar"
+          aria-label={t.radar.resultsAria}
         >
           <div className="max-w-5xl mx-auto">
             {/* Loading skeletons */}
@@ -690,7 +691,7 @@ export function RadarPage() {
               <button
                 onClick={() => setDetailOpen(false)}
                 className="text-slate-400 hover:text-slate-700 w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100"
-                aria-label="ปิด"
+                aria-label={t.common.close}
               >
                 ✕
               </button>

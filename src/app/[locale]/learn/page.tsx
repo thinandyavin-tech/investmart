@@ -53,7 +53,7 @@ export default function LearnPage() {
                 <span className="text-2xl flex-shrink-0">{s.icon}</span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100">
+                    <h2 className="text-xs font-bold text-[#1F1A14]">
                       {s.title}
                     </h2>
                     <span

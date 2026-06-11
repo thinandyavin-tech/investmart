@@ -72,7 +72,7 @@ export default function AboutPage() {
               ["Next.js / Tailwind","Framework หลักของเว็บไซต์"],
             ] as const).map(([source, desc]) => (
               <div key={source} className="flex gap-3">
-                <span className="font-bold text-[#1F1A14] dark:text-slate-200 w-32 flex-shrink-0">{source}</span>
+                <span className="font-bold text-[#1F1A14] w-32 flex-shrink-0">{source}</span>
                 <span className="text-[#8A8378]">{desc}</span>
               </div>
             ))}

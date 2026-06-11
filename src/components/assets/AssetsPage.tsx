@@ -1,23 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@/i18n/navigation";
-import { useUser } from "@/lib/userContext";
-import { BuySellModal } from "@/components/assets/BuySellModal";
+import { Link }             from "@/i18n/navigation";
+import { useUser }          from "@/lib/userContext";
+import { useI18n }          from "@/lib/i18n";
+import { BuySellModal }     from "@/components/assets/BuySellModal";
 import { PortfolioAnalytics } from "@/components/assets/PortfolioAnalytics";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
 
 type SortKey = "value" | "pnl" | "change1d" | "weight" | "name";
 type Tab      = "holdings" | "analytics";
 
-const SORT_LABELS: Record<SortKey, string> = {
-  value: "มูลค่า", pnl: "P/L %", change1d: "1D %", weight: "น้ำหนัก", name: "ชื่อ",
-};
-
 const thb  = (v: number) => `฿${Math.abs(v).toLocaleString("th-TH", { maximumFractionDigits: 0 })}`;
 const usd  = (v: number) => `$${Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pctFmt = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
-const clr  = (v: number) => v >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400";
+const clr  = (v: number) => v >= 0 ? "text-emerald-600" : "text-red-500";
 
 function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: string | null; size?: number }) {
   const [err, setErr] = useState(false);
@@ -30,7 +27,7 @@ function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: s
   }
   return (
     <div aria-hidden="true"
-      className="rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 dark:text-slate-400 flex-shrink-0"
+      className="rounded-md bg-slate-100 flex items-center justify-center font-bold text-slate-500 flex-shrink-0"
       style={{ width: size, height: size, fontSize: Math.round(size * 0.38) }}>
       {ticker[0]}
     </div>
@@ -38,6 +35,8 @@ function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: s
 }
 
 function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number; onTrade: (t: string, s: "BUY" | "SELL") => void }) {
+  const { t: i18nT } = useI18n();
+  const ac = i18nT.assets;
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,7 +45,7 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
         className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/30 transition-colors text-left"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-label={`${h.companyName} ${open ? "ซ่อนรายละเอียด" : "แสดงรายละเอียด"}`}
+        aria-label={`${h.companyName} ${open ? ac.row.hideDetail : ac.row.showDetail}`}
       >
         <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={36} />
         <div className="flex-1 min-w-0">
@@ -69,10 +68,10 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
         <div className="px-4 pb-4 pt-1 bg-white/20 space-y-3">
           <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
             {[
-              ["ถือหุ้น",      `${h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })} หุ้น`],
-              ["ราคาปัจจุบัน",  usd(h.currentPrice)],
-              ["ราคาเฉลี่ย",   usd(h.avgCost)],
-              ["ต้นทุนรวม",    usd(h.totalCostUsd)],
+              [ac.row.currentPrice, usd(h.currentPrice)],
+              [ac.avgCost,          usd(h.avgCost)],
+              [ac.row.totalCost,    usd(h.totalCostUsd)],
+              [ac.shares,           ac.row.heldShares(h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 }))],
             ].map(([label, val]) => (
               <div key={label as string} className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5 border border-white/40">
                 <div className="text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">{label}</div>
@@ -101,6 +100,12 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
 }
 
 function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHolding[]; cashUsd: number; onTrade: (t: string, s: "BUY" | "SELL") => void }) {
+  const { t: i18nT } = useI18n();
+  const ac = i18nT.assets;
+  const SORT_LABELS: Record<SortKey, string> = {
+    value: ac.col.value, pnl: ac.col.pnl, change1d: ac.col.change1d,
+    weight: ac.col.weight, name: ac.col.name,
+  };
   const [sortBy, setSortBy]   = useState<SortKey>("value");
   const [sortDir, setSortDir] = useState<1 | -1>(-1);
 
@@ -121,51 +126,51 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
   });
 
   const th = (key: SortKey, label: string, align = "text-right") => (
-    <th className={`px-3 py-2 ${align} text-xs font-medium text-slate-400 dark:text-slate-500 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 select-none whitespace-nowrap`}
+    <th className={`px-3 py-2 ${align} text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-700 select-none whitespace-nowrap`}
       onClick={() => toggleSort(key)}>
       {label}{sortBy === key ? (sortDir === -1 ? " ▾" : " ▴") : ""}
     </th>
   );
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800">
+    <div className="overflow-x-auto rounded-2xl border border-slate-100">
       <table className="w-full text-sm">
-        <thead className="bg-slate-50 dark:bg-slate-800/60">
+        <thead className="bg-slate-50">
           <tr>
-            {th("name",     "หุ้น",       "text-left")}
-            {th("weight",   "น้ำหนัก")}
-            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400 dark:text-slate-500">หุ้น</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400 dark:text-slate-500">ราคาเฉลี่ย</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400 dark:text-slate-500">ต้นทุนรวม</th>
-            {th("change1d", "ราคา / 1D")}
-            {th("value",    "มูลค่า THB")}
-            {th("pnl",      "P/L")}
+            {th("name",     ac.col.name,     "text-left")}
+            {th("weight",   ac.col.weight)}
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.shares}</th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.avgCost}</th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.row.totalCost}</th>
+            {th("change1d", ac.col.change1d)}
+            {th("value",    ac.col.value)}
+            {th("pnl",      ac.col.pnl)}
             <th className="px-3 py-2" />
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody className="bg-white divide-y divide-slate-100">
           {sorted.map((h) => (
-            <tr key={h.ticker} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <tr key={h.ticker} className="hover:bg-slate-50 transition-colors">
               <td className="px-3 py-2.5">
                 <div className="flex items-center gap-2">
                   <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={28} />
                   <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">{h.ticker}</div>
-                    <div className="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[120px]">{h.companyName}</div>
+                    <div className="font-semibold text-slate-900">{h.ticker}</div>
+                    <div className="text-xs text-slate-400 truncate max-w-[120px]">{h.companyName}</div>
                   </div>
                 </div>
               </td>
-              <td className="px-3 py-2.5 text-right text-slate-500 dark:text-slate-400">{h.weight.toFixed(1)}%</td>
-              <td className="px-3 py-2.5 text-right font-mono text-slate-700 dark:text-slate-300">{h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })}</td>
-              <td className="px-3 py-2.5 text-right font-mono text-slate-600 dark:text-slate-400">{usd(h.avgCost)}</td>
-              <td className="px-3 py-2.5 text-right font-mono text-slate-600 dark:text-slate-400">{usd(h.totalCostUsd)}</td>
+              <td className="px-3 py-2.5 text-right text-slate-500">{h.weight.toFixed(1)}%</td>
+              <td className="px-3 py-2.5 text-right font-mono text-slate-700">{h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })}</td>
+              <td className="px-3 py-2.5 text-right font-mono text-slate-600">{usd(h.avgCost)}</td>
+              <td className="px-3 py-2.5 text-right font-mono text-slate-600">{usd(h.totalCostUsd)}</td>
               <td className="px-3 py-2.5 text-right">
-                <div className="font-mono text-slate-800 dark:text-slate-200">{usd(h.currentPrice)}</div>
+                <div className="font-mono text-slate-800">{usd(h.currentPrice)}</div>
                 <div className={`text-xs ${clr(h.change1D)}`}>{pctFmt(h.change1D)}</div>
               </td>
               <td className="px-3 py-2.5 text-right">
-                <div className="font-semibold text-slate-800 dark:text-slate-200">{thb(h.holdingValueThb)}</div>
-                <div className="text-xs text-slate-400 dark:text-slate-500">{usd(h.holdingValueUsd)}</div>
+                <div className="font-semibold text-slate-800">{thb(h.holdingValueThb)}</div>
+                <div className="text-xs text-slate-400">{usd(h.holdingValueUsd)}</div>
               </td>
               <td className="px-3 py-2.5 text-right">
                 <div className={`font-semibold ${clr(h.unrealizedPnlUsd)}`}>
@@ -176,20 +181,20 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
               <td className="px-3 py-2.5">
                 <div className="flex gap-1">
                   <button onClick={() => onTrade(h.ticker, "BUY")}
-                    className="px-2 py-1 text-xs rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 font-medium transition-colors">
+                    className="px-2 py-1 text-xs rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition-colors">
                     ซื้อ
                   </button>
                   <button onClick={() => onTrade(h.ticker, "SELL")}
-                    className="px-2 py-1 text-xs rounded-md bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 font-medium transition-colors">
+                    className="px-2 py-1 text-xs rounded-md bg-red-50 hover:bg-red-100 text-red-600 font-medium transition-colors">
                     ขาย
                   </button>
                 </div>
               </td>
             </tr>
           ))}
-          <tr className="bg-slate-50 dark:bg-slate-800/40">
-            <td className="px-3 py-2.5 text-sm text-slate-500 dark:text-slate-400 font-medium" colSpan={6}>เงินสด USD</td>
-            <td className="px-3 py-2.5 text-right font-semibold text-slate-700 dark:text-slate-300" colSpan={3}>
+          <tr className="bg-slate-50">
+            <td className="px-3 py-2.5 text-sm text-slate-500 font-medium" colSpan={6}>เงินสด USD</td>
+            <td className="px-3 py-2.5 text-right font-semibold text-slate-700" colSpan={3}>
               {usd(cashUsd)}
             </td>
           </tr>
@@ -201,6 +206,12 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
 
 export function AssetsPage() {
   const { user, loading: authLoading } = useUser();
+  const { t, format } = useI18n();
+  const ac = t.assets;
+  const SORT_LABELS: Record<SortKey, string> = {
+    value: ac.col.value, pnl: ac.col.pnl, change1d: ac.col.change1d,
+    weight: ac.col.weight, name: ac.col.name,
+  };
   const [data,     setData]     = useState<AssetsPayload | null>(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -212,11 +223,11 @@ export function AssetsPage() {
   const fetchData = useCallback(async () => {
     try {
       const res  = await fetch("/api/portfolio/assets");
-      if (!res.ok) { setError("โหลดข้อมูลไม่สำเร็จ"); return; }
+      if (!res.ok) { setError(ac.loadError); return; }
       const json = await res.json() as AssetsPayload;
       setData(json);
       setError(null);
-    } catch { setError("เชื่อมต่อไม่ได้"); }
+    } catch { setError(ac.networkError); }
     finally { setLoading(false); }
   }, []);
 
@@ -284,7 +295,7 @@ export function AssetsPage() {
     return (
       <main className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
         <div className="text-4xl">⚠️</div>
-        <p className="text-slate-700 font-semibold">{error ?? "ไม่พบข้อมูลพอร์ต"}</p>
+        <p className="text-slate-700 font-semibold">{error ?? ac.notFound}</p>
         <button onClick={() => { setLoading(true); void fetchData(); }}
           className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-semibold transition-colors">
           ลองใหม่
@@ -351,11 +362,11 @@ export function AssetsPage() {
 
       {/* Tabs */}
       <div className="max-w-5xl mx-auto px-4 mt-4">
-        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-1 w-fit mb-4">
-          {(["holdings", "analytics"] as Tab[]).map((t) => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === t ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"}`}>
-              {t === "holdings" ? "หุ้น" : "วิเคราะห์"}
+        <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit mb-4">
+          {(["holdings", "analytics"] as Tab[]).map((tabKey) => (
+            <button key={tabKey} onClick={() => setTab(tabKey)}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === tabKey ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
+              {tabKey === "holdings" ? ac.tabs.holdings : ac.tabs.analysis}
             </button>
           ))}
         </div>
@@ -367,27 +378,27 @@ export function AssetsPage() {
             {/* Mobile */}
             <div className="lg:hidden">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-400 dark:text-slate-500">{holdings.length} หุ้น</span>
+                <span className="text-xs text-slate-400">{holdings.length} หุ้น</span>
                 <div className="flex items-center gap-2">
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortKey)}
-                    aria-label="เรียงตาม"
-                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    aria-label={ac.row.sortAria}
+                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 bg-white text-slate-700">
                     {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
                     ))}
                   </select>
                   <button
                     onClick={() => setSortDir((d) => (d === 1 ? -1 : 1))}
-                    aria-label={sortDir === -1 ? "เรียงน้อยไปมาก" : "เรียงมากไปน้อย"}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    aria-label={sortDir === -1 ? ac.row.sortDirAsc : ac.row.sortDirDesc}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                     {sortDir === -1 ? "↓" : "↑"}
                   </button>
                 </div>
               </div>
 
-              <div className="flex text-xs text-slate-400 dark:text-slate-500 px-4 pb-1 gap-2">
+              <div className="flex text-xs text-slate-400 px-4 pb-1 gap-2">
                 <span className="flex-1">ชื่อหุ้น</span>
                 <span className="w-24 text-right">มูลค่า</span>
                 <span className="w-20 text-right">P/L</span>
@@ -410,24 +421,24 @@ export function AssetsPage() {
                 ))}
                 {/* Cash rows */}
                 {cashUsd > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                    <div className="w-8 h-8 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm flex-shrink-0">💵</div>
+                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 bg-slate-50/50">
+                    <div className="w-8 h-8 rounded-md bg-green-100 flex items-center justify-center text-sm flex-shrink-0">💵</div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">เงินสด USD</div>
+                      <div className="text-sm font-semibold text-slate-700">เงินสด USD</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-mono text-slate-700 dark:text-slate-300">{usd(cashUsd)}</div>
+                      <div className="text-sm font-mono text-slate-700">{usd(cashUsd)}</div>
                     </div>
                   </div>
                 )}
                 {cashThb > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                    <div className="w-8 h-8 rounded-md bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-sm flex-shrink-0">🇹🇭</div>
+                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 bg-slate-50/50">
+                    <div className="w-8 h-8 rounded-md bg-yellow-100 flex items-center justify-center text-sm flex-shrink-0">🇹🇭</div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">เงินสด THB</div>
+                      <div className="text-sm font-semibold text-slate-700">เงินสด THB</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-mono text-slate-700 dark:text-slate-300">{thb(cashThb)}</div>
+                      <div className="text-sm font-mono text-slate-700">{thb(cashThb)}</div>
                     </div>
                   </div>
                 )}

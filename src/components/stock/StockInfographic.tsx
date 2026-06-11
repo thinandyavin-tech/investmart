@@ -36,7 +36,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center gap-0.5 min-w-0">
       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 leading-none">{label}</span>
-      <span className="text-sm font-bold font-mono text-slate-900 dark:text-slate-100 leading-tight">{value}</span>
+      <span className="text-sm font-bold font-mono text-slate-900 leading-tight">{value}</span>
     </div>
   );
 }

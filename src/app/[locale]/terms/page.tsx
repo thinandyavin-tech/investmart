@@ -16,7 +16,7 @@ export default function TermsPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-5">
 
         {/* Legal review notice — always visible */}
-        <div className="rounded border border-amber-300 bg-amber-50 dark:bg-amber-950 dark:border-amber-700 p-3 text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+        <div className="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800 leading-relaxed">
           {isEn ? (
             <><strong>Template — not legal advice.</strong> This is a starter document. Because InvestMart handles user accounts and Google profile data for users in Thailand, it must be reviewed and adapted against Thailand's PDPA (Personal Data Protection Act) and any other applicable laws before public launch. Do not rely on this document without legal review.</>
           ) : (

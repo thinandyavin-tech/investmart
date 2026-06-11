@@ -65,30 +65,30 @@ export function BuySellModal({
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full sm:w-96 bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-xl p-6 pb-8 sm:pb-6">
+      <div className="w-full sm:w-96 bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 pb-8 sm:pb-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold dark:text-white">
+          <h2 className="text-lg font-bold">
             <span className={isBuy ? "text-emerald-600" : "text-red-500"}>{isBuy ? "ซื้อ" : "ขาย"}</span>
             {" "}{ticker}
           </h2>
           <button
             onClick={onClose}
             aria-label="ปิด"
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500"
           >
             ✕
           </button>
         </div>
 
-        <div className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-          <span className="font-mono text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="text-sm text-slate-500 mb-4">
+          <span className="font-mono text-slate-800 font-semibold">
             ${currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           {" "}ต่อหุ้น
         </div>
 
         <div className="mb-4">
-          <label htmlFor="shares-input" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="shares-input" className="block text-sm font-medium text-slate-700 mb-1.5">
             จำนวนหุ้น
           </label>
           <input
@@ -101,18 +101,18 @@ export function BuySellModal({
             onChange={(e) => setShares(e.target.value)}
             onKeyDown={handleKey}
             placeholder="0"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 
         <div className="space-y-1.5 text-sm mb-5">
           {isBuy ? (
             <>
-              <div className="flex justify-between text-slate-500 dark:text-slate-400">
+              <div className="flex justify-between text-slate-500">
                 <span>เงิน USD ที่มี</span>
                 <span className="font-mono">${availableUsd.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-semibold text-slate-800 dark:text-slate-200">
+              <div className="flex justify-between font-semibold text-slate-800">
                 <span>มูลค่ารวม</span>
                 <span className={`font-mono ${total > availableUsd ? "text-red-500" : ""}`}>
                   ${total.toFixed(2)}
@@ -121,17 +121,17 @@ export function BuySellModal({
             </>
           ) : (
             <>
-              <div className="flex justify-between text-slate-500 dark:text-slate-400">
+              <div className="flex justify-between text-slate-500">
                 <span>หุ้นที่ถือ</span>
                 <span className="font-mono">{availableShares.toFixed(4)} หุ้น</span>
               </div>
-              <div className="flex justify-between font-semibold text-slate-800 dark:text-slate-200">
+              <div className="flex justify-between font-semibold text-slate-800">
                 <span>มูลค่าที่ขาย</span>
                 <span className="font-mono">${total.toFixed(2)}</span>
               </div>
             </>
           )}
-          <div className="flex justify-between text-slate-400 dark:text-slate-500 text-xs">
+          <div className="flex justify-between text-slate-400 text-xs">
             <span>≈ ฿</span>
             <span className="font-mono">{(total * fxRate).toLocaleString("th-TH", { maximumFractionDigits: 0 })}</span>
           </div>

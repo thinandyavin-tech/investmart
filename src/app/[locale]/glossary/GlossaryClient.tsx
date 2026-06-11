@@ -165,7 +165,7 @@ export function GlossaryClient() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="ค้นหาคำศัพท์ เช่น RSI, โมเมนตัม, EPS..."
-            className="w-full pl-8 pr-3 py-2 text-xs border-2 border-[#1F1A14] bg-[#FBF7ED] dark:bg-slate-800 dark:border-slate-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5B8A2A] rounded"
+            className="w-full pl-8 pr-3 py-2 text-xs border-2 border-[#1F1A14] bg-[#FBF7ED] focus:outline-none focus:ring-2 focus:ring-[#5B8A2A] rounded"
           />
         </div>
         {q.trim() && (
@@ -192,12 +192,12 @@ export function GlossaryClient() {
                   className="p-3 scroll-mt-4"
                 >
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-1">
-                    <span className="font-bold text-xs text-[#1F1A14] dark:text-slate-100">{term.th}</span>
+                    <span className="font-bold text-xs text-[#1F1A14]">{term.th}</span>
                     <span className="text-xs text-[#8A8378]">{term.en}</span>
                   </div>
-                  <p className="text-xs text-[#8A8378] dark:text-slate-400 leading-relaxed">{term.body}</p>
+                  <p className="text-xs text-[#8A8378] leading-relaxed">{term.body}</p>
                   {term.example && (
-                    <p className="mt-1.5 text-xs text-[#5B8A2A] dark:text-emerald-400 leading-relaxed border-l-2 border-[#5B8A2A] dark:border-emerald-600 pl-2">
+                    <p className="mt-1.5 text-xs text-[#5B8A2A] leading-relaxed border-l-2 border-[#5B8A2A] pl-2">
                       {term.example}
                     </p>
                   )}

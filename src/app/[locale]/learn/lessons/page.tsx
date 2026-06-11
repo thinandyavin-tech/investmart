@@ -107,7 +107,7 @@ export default function LessonsPage() {
             <div className="flex items-center gap-2">
               <span className="text-2xl">{lesson.icon}</span>
               <div>
-                <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100">
+                <h2 className="text-xs font-bold text-[#1F1A14]">
                   {lesson.title}
                 </h2>
                 <span className="text-xs text-[#8A8378]">อ่าน ~{lesson.readTime}</span>

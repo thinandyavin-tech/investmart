@@ -49,24 +49,24 @@ export function EarningsCalendarCard() {
   if (!loading && groups.length === 0) return null;
 
   return (
-    <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/30 dark:border-slate-700/40 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-slate-700">
-        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+    <div className="bg-white/50 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
+        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
           Earnings สัปดาห์นี้
         </span>
-        <span className="text-slate-300 dark:text-slate-600 text-xs">·</span>
-        <span className="text-xs text-slate-400 dark:text-slate-500">7 วันข้างหน้า</span>
+        <span className="text-slate-300 text-xs">·</span>
+        <span className="text-xs text-slate-400">7 วันข้างหน้า</span>
       </div>
 
       {loading ? (
-        <div className="px-3 py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+        <div className="px-3 py-4 text-center text-xs text-slate-400">
           กำลังโหลด...
         </div>
       ) : (
-        <div className="divide-y divide-slate-100 dark:divide-slate-700">
+        <div className="divide-y divide-slate-100">
           {groups.map(({ date, label, events }) => (
             <div key={date} className="px-3 py-2">
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1.5">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
                 {label}
               </p>
               <div className="flex flex-col gap-0.5">
@@ -74,23 +74,23 @@ export function EarningsCalendarCard() {
                   <Link
                     key={e.symbol}
                     href={`/stock/${e.symbol}`}
-                    className="flex items-center justify-between py-0.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded transition-colors"
+                    className="flex items-center justify-between py-0.5 hover:bg-slate-50 rounded transition-colors"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 w-16 truncate">
+                      <span className="text-xs font-bold text-slate-900 w-16 truncate">
                         {e.symbol}
                       </span>
                       <HourBadge hour={e.hour} />
                     </div>
                     <div className="flex items-center gap-3 text-right">
                       {e.epsEstimate !== null && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          EPS <span className="font-semibold text-slate-700 dark:text-slate-300">${e.epsEstimate.toFixed(2)}</span>
+                        <span className="text-xs text-slate-500">
+                          EPS <span className="font-semibold text-slate-700">${e.epsEstimate.toFixed(2)}</span>
                         </span>
                       )}
                       {e.revenueEstimate !== null && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          Rev <span className="font-semibold text-slate-700 dark:text-slate-300">{formatRevenue(e.revenueEstimate)}</span>
+                        <span className="text-xs text-slate-500">
+                          Rev <span className="font-semibold text-slate-700">{formatRevenue(e.revenueEstimate)}</span>
                         </span>
                       )}
                     </div>
@@ -108,14 +108,14 @@ export function EarningsCalendarCard() {
 function HourBadge({ hour }: { hour: string }) {
   if (hour === "bmo") {
     return (
-      <span className="text-xs font-semibold px-1 py-0.5 rounded bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+      <span className="text-xs font-semibold px-1 py-0.5 rounded bg-amber-50 text-amber-600">
         ก่อนเปิด
       </span>
     );
   }
   if (hour === "amc") {
     return (
-      <span className="text-xs font-semibold px-1 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+      <span className="text-xs font-semibold px-1 py-0.5 rounded bg-indigo-50 text-indigo-600">
         หลังปิด
       </span>
     );

@@ -72,7 +72,7 @@ export default function FaqPage() {
         <div className="flex flex-col gap-3">
           {FAQS.map(({ q, a }) => (
             <Card key={q} className="p-4 flex flex-col gap-2">
-              <h2 className="text-xs font-bold text-[#1F1A14] dark:text-slate-100 leading-snug">
+              <h2 className="text-xs font-bold text-[#1F1A14] leading-snug">
                 {q}
               </h2>
               <div className="flex flex-col gap-1.5">

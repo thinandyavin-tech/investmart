@@ -86,7 +86,7 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
       <div className="max-w-[88%]">
         <p className="text-xs font-bold text-violet-400 mb-0.5">Martin</p>
         {content ? (
-          <p className="text-xs leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words">
+          <p className="text-xs leading-relaxed text-slate-800 whitespace-pre-wrap break-words">
             {content}
           </p>
         ) : (
@@ -289,7 +289,7 @@ export function FloatingAssistant() {
             className="fixed z-50 flex flex-col
               inset-x-0 bottom-0 h-[88vh] rounded-t-2xl
               lg:inset-x-auto lg:bottom-24 lg:right-6 lg:w-96 lg:h-[600px] lg:rounded-2xl
-              bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/30 dark:border-slate-700/40
+              bg-white/80 backdrop-blur-xl border border-white/30
               shadow-2xl shadow-slate-900/20"
             role="dialog"
             aria-modal="true"
@@ -355,7 +355,7 @@ export function FloatingAssistant() {
             </div>
 
             {/* Input area */}
-            <div className="flex-shrink-0 border-t border-white/20 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md p-3 rounded-b-2xl">
+            <div className="flex-shrink-0 border-t border-white/20 bg-white/40 backdrop-blur-md p-3 rounded-b-2xl">
               <div className="flex gap-2 items-end">
                 <textarea
                   ref={inputRef}
@@ -367,7 +367,7 @@ export function FloatingAssistant() {
                   placeholder={contextTicker ? `ถามเกี่ยวกับ $${contextTicker}...` : "ถามเกี่ยวกับหุ้น, กราฟ, ข่าว..."}
                   disabled={streaming}
                   rows={2}
-                  className="flex-1 text-xs border border-white/30 bg-white/60 dark:bg-slate-700/60 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 disabled:opacity-50 text-slate-800 dark:text-slate-200 placeholder:text-slate-400"
+                  className="flex-1 text-xs border border-white/30 bg-white/60 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 disabled:opacity-50 text-slate-800 placeholder:text-slate-400"
                   aria-label="พิมพ์คำถาม"
                 />
                 <button

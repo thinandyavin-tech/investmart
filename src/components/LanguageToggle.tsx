@@ -19,6 +19,10 @@ export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
 
   function toggle() {
     const nextLocale: AppLocale = lang === "en" ? "th" : "en";
+    // Persist so next-intl middleware keeps the user on the right locale
+    try {
+      document.cookie = `NEXT_LOCALE=${nextLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+    } catch { /* private browsing */ }
     router.replace(pathname, { locale: nextLocale });
   }
 

@@ -62,7 +62,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
       </head>
       <body
-        className="min-h-full flex flex-col text-slate-900 dark:text-slate-100"
+        className="min-h-full flex flex-col text-slate-900"
         style={{ fontFamily: "var(--font-noto-thai), var(--font-inter), system-ui, sans-serif" }}
       >
         {children}

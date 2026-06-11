@@ -21,7 +21,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center z-40 lg:hidden"
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center z-40 lg:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label={t.nav.bottomNav}
     >
@@ -52,12 +52,12 @@ export function BottomNav() {
             key={href}
             href={href}
             className={`flex-1 flex flex-col items-center justify-center min-h-[44px] gap-0.5 text-xs transition-colors ${
-              active ? "text-green-600 dark:text-green-400 font-semibold" : "text-slate-400 dark:text-slate-500"
+              active ? "text-green-600 font-semibold" : "text-slate-400"
             }`}
             aria-label={label}
             aria-current={active ? "page" : undefined}
           >
-            <span className={active ? "text-green-600 dark:text-green-400" : "text-slate-400 dark:text-slate-500"}>
+            <span className={active ? "text-green-600" : "text-slate-400"}>
               {icon}
             </span>
             <span>{label}</span>

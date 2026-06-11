@@ -3,10 +3,8 @@ import { UserProvider }            from "@/lib/userContext";
 import { I18nProvider }            from "@/lib/i18n";
 import { OnboardingFlow }          from "@/components/OnboardingFlow";
 import { ServiceWorkerRegistrar }  from "@/components/ServiceWorkerRegistrar";
-import { ThemeProvider }           from "@/components/ThemeProvider";
 import { CookieConsentBanner }     from "@/components/CookieConsentBanner";
 import { Analytics }               from "@vercel/analytics/react";
-import type { Lang }               from "@/lib/i18n";
 import { LangAttrSetter }          from "@/components/LangAttrSetter";
 import { routing }                 from "@/i18n/routing";
 
@@ -21,23 +19,21 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
-  const lang: Lang = locale === "th" ? "th" : "en";
 
   return (
-    // NextIntlClientProvider gives locale context to next-intl's Link/useRouter
-    // We pass empty messages — translations live in our own i18n system
+    // NextIntlClientProvider exposes useLocale() to all client components.
+    // I18nProvider reads locale from useLocale() — always in sync with URL.
+    // Empty messages: translations live in our own catalog (translations.ts).
     <NextIntlClientProvider locale={locale} messages={{}}>
-      <I18nProvider initialLocale={lang}>
+      <I18nProvider>
         <LangAttrSetter locale={locale} />
-        <ThemeProvider>
-          <UserProvider>
-            {children}
-            <OnboardingFlow />
-            <CookieConsentBanner />
-            <ServiceWorkerRegistrar />
-            <Analytics />
-          </UserProvider>
-        </ThemeProvider>
+        <UserProvider>
+          {children}
+          <OnboardingFlow />
+          <CookieConsentBanner />
+          <ServiceWorkerRegistrar />
+          <Analytics />
+        </UserProvider>
       </I18nProvider>
     </NextIntlClientProvider>
   );
