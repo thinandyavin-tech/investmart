@@ -9,8 +9,8 @@ export type { AIRequest } from "./types";
 
 // ── Provider base URLs and default models ─────────────────────────────────────
 
-const CEREBRAS_BASE_URL    = "https://api.cerebras.ai/v1";
-const CEREBRAS_DEFAULT_MODEL = "llama-3.3-70b";
+const CEREBRAS_BASE_URL      = "https://api.cerebras.ai/v1";
+const CEREBRAS_DEFAULT_MODEL = "gpt-oss-120b";
 
 const NVIDIA_NIM_BASE_URL     = "https://integrate.api.nvidia.com/v1";
 const NVIDIA_NIM_DEFAULT_MODEL = "meta/llama-3.1-8b-instruct";
