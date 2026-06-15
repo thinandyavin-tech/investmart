@@ -1,19 +1,18 @@
 /**
- * Satori PNG endpoint — renders the infographic as a crisp PNG image.
- * Uses next/og (Satori) with embedded Noto Sans Thai font so Thai text is always correct.
- * Numbers come from the data layer, never from the LLM.
+ * Satori PNG endpoint — direct Finnhub fetch, no self-referential call, no LLM.
+ * Renders in <5s on edge runtime. The inline StockInfographic has the AI narrative;
+ * this PNG is the shareable data snapshot with correct Thai via embedded fonts.
  *
  * GET /api/stock/infographic/og?ticker=NVDA&locale=en&format=square|portrait
  */
 import { ImageResponse } from "next/og";
 import { NextRequest }   from "next/server";
-import type { InfographicData } from "../route";
 
-export const runtime = "edge";
+export const runtime    = "edge";
+export const maxDuration = 15;
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
-// ── Design tokens ──────────────────────────────────────────────────────────────
 const CREAM  = "#FBF7ED";
 const INK    = "#1A1A1A";
 const ACCENT = "#8B5CF6";
@@ -21,261 +20,196 @@ const MUTED  = "#6B6B6B";
 const GAIN   = "#1F9D55";
 const LOSS   = "#D64545";
 const BORDER = "#E4DDD2";
+const CREAM2 = "#F3EDE0";
 
-// ── Font loader (cached per edge worker) ──────────────────────────────────────
-let _fontRegular: ArrayBuffer | null = null;
-let _fontBold:    ArrayBuffer | null = null;
+// Font cache (per edge worker instance)
+let _reg:  ArrayBuffer | null = null;
+let _bold: ArrayBuffer | null = null;
 
-async function loadFonts(origin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> {
-  if (_fontRegular && _fontBold) return { regular: _fontRegular, bold: _fontBold };
-  const [reg, bold] = await Promise.all([
-    fetch(new URL("/fonts/NotoSansThai-Regular.ttf", origin)).then(r => r.arrayBuffer()),
-    fetch(new URL("/fonts/NotoSansThai-Bold.ttf",    origin)).then(r => r.arrayBuffer()),
+async function loadFonts(origin: string): Promise<[ArrayBuffer, ArrayBuffer]> {
+  if (_reg && _bold) return [_reg, _bold];
+  const [r, b] = await Promise.all([
+    fetch(new URL("/fonts/NotoSansThai-Regular.ttf", origin)).then(f => f.arrayBuffer()),
+    fetch(new URL("/fonts/NotoSansThai-Bold.ttf",    origin)).then(f => f.arrayBuffer()),
   ]);
-  _fontRegular = reg;
-  _fontBold    = bold;
-  return { regular: reg, bold };
+  _reg = r; _bold = b;
+  return [r, b];
 }
 
-// ── Sparkline SVG ─────────────────────────────────────────────────────────────
+interface FhQuote  { c: number; dp: number | null; pc: number }
+interface FhMetric {
+  peBasicExclExtraTTM?: number;
+  marketCapitalization?: number;
+  "52WeekHigh"?: number;
+  "52WeekLow"?: number;
+  "10DayAverageTradingVolume"?: number;
+  epsGrowth3Y?: number;
+}
+interface FhProfile { name?: string; finnhubIndustry?: string; exchange?: string }
 
-function sparklinePath(prices: number[], W: number, H: number): string {
-  if (prices.length < 2) return "";
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const rng = max - min || 1;
-  return prices
-    .map((p, i) => {
-      const x = (i / (prices.length - 1)) * W;
-      const y = H - ((p - min) / rng) * H;
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(" ");
+async function fetchJ<T>(url: string): Promise<T | null> {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(5_000) });
+    return r.ok ? (await r.json() as T) : null;
+  } catch { return null; }
 }
 
-// ── Thesis keyword renderer ────────────────────────────────────────────────────
-
-function Thesis({ text, fontSize }: { text: string; fontSize: number }) {
-  const parts = text.split(/\*\*([^*]+)\*\*/);
-  return (
-    <span style={{ fontSize, color: INK, lineHeight: 1.4 }}>
-      {parts.map((part, i) =>
-        i % 2 === 1
-          ? <span key={i} style={{ color: ACCENT, fontWeight: 700 }}>{part}</span>
-          : part
-      )}
-    </span>
-  );
+function fmtCap(mc: number | undefined): string {
+  if (!mc) return "N/A";
+  if (mc >= 1_000_000) return `$${(mc / 1_000_000).toFixed(1)}T`;
+  if (mc >= 1_000)     return `$${(mc / 1_000).toFixed(1)}B`;
+  return `$${mc.toFixed(0)}M`;
 }
-
-// ── Stat cell ─────────────────────────────────────────────────────────────────
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 0 }}>
-      <span style={{ fontSize: 13, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      <span style={{ fontSize: 13, color: MUTED, textTransform: "uppercase" as const, letterSpacing: "0.12em", fontWeight: 600 }}>
         {label}
       </span>
-      <span style={{ fontSize: 20, color: INK, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
-        {value}
-      </span>
+      <span style={{ fontSize: 22, color: INK, fontWeight: 700 }}>{value}</span>
     </div>
   );
 }
-
-// ── Main template ─────────────────────────────────────────────────────────────
-
-function InfographicTemplate({
-  data,
-  width,
-  height,
-}: {
-  data: InfographicData;
-  width: number;
-  height: number;
-}) {
-  const { narrative } = data;
-  const pad = 60;
-  const inner = width - pad * 2;
-
-  const up    = !data.priceUnavailable && !data.noChangeData && data.change1D >= 0;
-  const clr   = data.priceUnavailable  ? MUTED
-               : data.noChangeData      ? "#D97706"
-               : up                     ? GAIN : LOSS;
-  const sign  = data.change1D >= 0 ? "+" : "";
-  const sparkColor = up ? GAIN : LOSS;
-
-  const sparkW = 160;
-  const sparkH = 56;
-  const path   = sparklinePath(data.sparkline, sparkW, sparkH);
-
-  const highlights = narrative.highlights.slice(0, 3);
-
-  return (
-    <div
-      style={{
-        display:         "flex",
-        flexDirection:   "column",
-        width,
-        height,
-        background:      CREAM,
-        padding:         pad,
-        fontFamily:      "NotoSansThai",
-        boxSizing:       "border-box",
-      }}
-    >
-      {/* ── Eyebrow row ─────────────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <span style={{ fontSize: 12, color: MUTED, textTransform: "uppercase", letterSpacing: "0.18em", fontWeight: 600 }}>
-          {narrative.eyebrow}
-        </span>
-        <span style={{ fontSize: 12, color: ACCENT, fontWeight: 700, letterSpacing: "0.12em" }}>
-          INVESTMART ✦ Martin
-        </span>
-      </div>
-
-      {/* ── Accent rule ─────────────────────────────────────────────────── */}
-      <div style={{ width: inner, height: 2, background: ACCENT, marginBottom: 20 }} />
-
-      {/* ── Company + price row ─────────────────────────────────────────── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
-          <span style={{ fontSize: 40, color: INK, fontWeight: 700, lineHeight: 1.1 }}>{data.ticker}</span>
-          <span style={{ fontSize: 16, color: MUTED, fontWeight: 400 }}>{data.companyName}</span>
-          <span style={{ fontSize: 12, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>
-            {data.sector} · {data.exchange}
-          </span>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-          {data.priceUnavailable ? (
-            <span style={{ fontSize: 16, color: MUTED }}>Price unavailable</span>
-          ) : (
-            <>
-              <span style={{ fontSize: 40, color: INK, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
-                ${data.price.toFixed(2)}
-              </span>
-              {data.noChangeData ? (
-                <span style={{ fontSize: 14, color: "#D97706", fontWeight: 600 }}>New listing</span>
-              ) : (
-                <span style={{ fontSize: 20, color: clr, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
-                  {up ? "▲" : "▼"} {sign}{data.change1D.toFixed(2)}%
-                </span>
-              )}
-              {/* Sparkline */}
-              {path && (
-                <svg width={sparkW} height={sparkH} style={{ marginTop: 4 }}>
-                  <path d={path} fill="none" stroke={sparkColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
-                </svg>
-              )}
-              <span style={{ fontSize: 11, color: MUTED }}>3-month</span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* ── Metrics grid ────────────────────────────────────────────────── */}
-      <div style={{
-        display: "flex", justifyContent: "space-between",
-        background: "#F3EDE0", border: `1px solid ${BORDER}`,
-        padding: "18px 24px", marginBottom: 20,
-      }}>
-        <StatCell label="Mkt Cap"  value={data.marketCap} />
-        <StatCell label="P/E TTM"  value={data.pe} />
-        <StatCell label="PEG"      value={data.peg} />
-        <StatCell label="52W High" value={data.week52High ? `$${data.week52High.toFixed(0)}` : "N/A"} />
-        <StatCell label="52W Low"  value={data.week52Low  ? `$${data.week52Low.toFixed(0)}`  : "N/A"} />
-        <StatCell label="RSI-14"   value={data.rsi !== null ? String(data.rsi) : "N/A"} />
-      </div>
-
-      {/* ── Thin rule ───────────────────────────────────────────────────── */}
-      <div style={{ width: inner, height: 1, background: BORDER, marginBottom: 20 }} />
-
-      {/* ── Thesis ──────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 11, color: ACCENT, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.15em", display: "block", marginBottom: 8 }}>
-          ✦ Martin's Observation
-        </span>
-        <Thesis text={narrative.thesis} fontSize={18} />
-      </div>
-
-      {/* ── Highlights ──────────────────────────────────────────────────── */}
-      {highlights.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-          {highlights.map((h, i) => (
-            <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ color: ACCENT, fontWeight: 700, fontSize: 14, lineHeight: 1.5, flexShrink: 0 }}>▸</span>
-              <span style={{ fontSize: 15, color: INK, lineHeight: 1.5 }}>{h}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── What to watch ───────────────────────────────────────────────── */}
-      {narrative.watch && (
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 16, padding: "10px 14px", background: "#EDE8F8", borderLeft: `3px solid ${ACCENT}` }}>
-          <span style={{ fontSize: 11, color: ACCENT, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", lineHeight: 1.8 }}>Watch</span>
-          <span style={{ fontSize: 14, color: INK, lineHeight: 1.6 }}>{narrative.watch}</span>
-        </div>
-      )}
-
-      {/* ── Spacer ──────────────────────────────────────────────────────── */}
-      <div style={{ flex: 1 }} />
-
-      {/* ── Footer ──────────────────────────────────────────────────────── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, borderTop: `1px solid ${BORDER}`, paddingTop: 14 }}>
-        <span style={{ fontSize: 11, color: MUTED }}>
-          Data: Finnhub · {new Date(data.generatedAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" })} ET
-        </span>
-        <span style={{ fontSize: 11, color: MUTED }}>
-          For learning only · not investment advice · InvestMart
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ── Route handler ─────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest): Promise<Response> {
-  const { searchParams } = request.nextUrl;
+  const { searchParams, origin } = request.nextUrl;
   const ticker   = (searchParams.get("ticker") ?? "").toUpperCase();
   const locale   = searchParams.get("locale") === "en" ? "en" : "th";
   const portrait = searchParams.get("format") === "portrait";
 
-  if (!TICKER_RE.test(ticker)) {
-    return new Response("invalid ticker", { status: 400 });
-  }
+  if (!TICKER_RE.test(ticker)) return new Response("invalid ticker", { status: 400 });
 
-  const origin = request.nextUrl.origin;
-  const width  = 1080;
-  const height = portrait ? 1350 : 1080;
+  const apiKey = process.env.FINNHUB_API_KEY ?? "";
+  const fBase  = "https://finnhub.io/api/v1";
+  const W = 1080, H = portrait ? 1350 : 1080;
+  const pad = 60, inner = W - pad * 2;
 
   try {
-    // Load data and fonts in parallel
-    const [fonts, data] = await Promise.all([
+    const [[fontReg, fontBold], quote, metR, profR] = await Promise.all([
       loadFonts(origin),
-      fetch(new URL(`/api/stock/infographic?ticker=${ticker}&locale=${locale}`, origin))
-        .then(r => r.json() as Promise<InfographicData>),
+      fetchJ<FhQuote>(`${fBase}/quote?symbol=${ticker}&token=${apiKey}`),
+      fetchJ<{ metric?: FhMetric }>(`${fBase}/stock/metric?symbol=${ticker}&metric=all&token=${apiKey}`),
+      fetchJ<FhProfile>(`${fBase}/stock/profile2?symbol=${ticker}&token=${apiKey}`),
     ]);
 
-    if (!data || "error" in data) {
-      return new Response("data unavailable", { status: 503 });
-    }
+    const met   = metR?.metric ?? null;
+    const price = quote?.c ?? 0;
+    const chg   = quote?.dp ?? 0;
+    const noPrice = !quote || price === 0;
+    const noChg   = !noPrice && (quote?.pc === 0) && (quote?.dp === null);
+    const up    = !noPrice && !noChg && chg >= 0;
+    const clr   = noPrice ? MUTED : noChg ? "#D97706" : up ? GAIN : LOSS;
+    const sign  = chg >= 0 ? "+" : "";
+
+    const company  = profR?.name ?? ticker;
+    const sector   = profR?.finnhubIndustry ?? "N/A";
+    const exchange = profR?.exchange ?? "US";
+    const eyebrow  = locale === "en" ? "STOCK SNAPSHOT" : "ภาพรวมหุ้น";
+
+    const cap = fmtCap(met?.marketCapitalization);
+    const pe  = met?.peBasicExclExtraTTM ? `${met.peBasicExclExtraTTM.toFixed(1)}x` : "N/A";
+    const peg = (met?.peBasicExclExtraTTM && met?.epsGrowth3Y && met.epsGrowth3Y > 0)
+      ? `${(met.peBasicExclExtraTTM / met.epsGrowth3Y).toFixed(2)}x` : "N/A";
+    const hi  = met?.["52WeekHigh"] ? `$${met["52WeekHigh"].toFixed(0)}` : "N/A";
+    const lo  = met?.["52WeekLow"]  ? `$${met["52WeekLow"].toFixed(0)}`  : "N/A";
+    const vol = met?.["10DayAverageTradingVolume"]
+      ? `${((met["10DayAverageTradingVolume"] * 1000) / 1_000_000).toFixed(1)}M` : "N/A";
+
+    const disclaimer = locale === "th"
+      ? "เพื่อการศึกษาเท่านั้น · ไม่ใช่คำแนะนำการลงทุน · InvestMart"
+      : "For learning only · not investment advice · InvestMart";
+
+    const ctaText = locale === "th"
+      ? `เปิดแอปเพื่อดู AI analysis จาก Martin · กราฟแบบ interactive · Paper trading`
+      : `Open the app for Martin's AI analysis, scenarios, and interactive chart.`;
 
     return new ImageResponse(
-      <InfographicTemplate data={data} width={width} height={height} />,
+      (
+        <div style={{ display: "flex", flexDirection: "column", width: W, height: H, background: CREAM, padding: pad, fontFamily: "NotoSansThai", boxSizing: "border-box" as const }}>
+
+          {/* Eyebrow */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <span style={{ fontSize: 13, color: MUTED, textTransform: "uppercase" as const, letterSpacing: "0.18em", fontWeight: 600 }}>{eyebrow}</span>
+            <span style={{ fontSize: 13, color: ACCENT, fontWeight: 700, letterSpacing: "0.12em" }}>INVESTMART ✦ Martin</span>
+          </div>
+
+          {/* Accent rule */}
+          <div style={{ width: inner, height: 2, background: ACCENT, marginBottom: 28 }} />
+
+          {/* Company + price */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <span style={{ fontSize: 56, color: INK, fontWeight: 700, lineHeight: 1 }}>{ticker}</span>
+              <span style={{ fontSize: 19, color: MUTED }}>{company}</span>
+              <span style={{ fontSize: 13, color: MUTED, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
+                {sector} · {exchange}
+              </span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+              {noPrice ? (
+                <span style={{ fontSize: 18, color: MUTED }}>Price unavailable</span>
+              ) : (
+                <>
+                  <span style={{ fontSize: 56, color: INK, fontWeight: 700 }}>${price.toFixed(2)}</span>
+                  {noChg ? (
+                    <span style={{ fontSize: 18, color: "#D97706", fontWeight: 600 }}>New listing · no prior close</span>
+                  ) : (
+                    <span style={{ fontSize: 26, color: clr, fontWeight: 700 }}>
+                      {up ? "▲" : "▼"} {sign}{Math.abs(chg).toFixed(2)}%
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Metrics grid */}
+          <div style={{ display: "flex", justifyContent: "space-between", background: CREAM2, border: `1px solid ${BORDER}`, padding: "24px 36px", marginBottom: 32 }}>
+            <StatCell label="Mkt Cap"  value={cap} />
+            <StatCell label="P/E TTM"  value={pe} />
+            <StatCell label="PEG"      value={peg} />
+            <StatCell label="52W High" value={hi} />
+            <StatCell label="52W Low"  value={lo} />
+            <StatCell label="10D Vol"  value={vol} />
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: inner, height: 1, background: BORDER, marginBottom: 28 }} />
+
+          {/* CTA box */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "22px 28px", background: "#EDE8F8", borderLeft: `4px solid ${ACCENT}`, marginBottom: 28 }}>
+            <span style={{ fontSize: 13, color: ACCENT, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.15em" }}>
+              ✦ Martin · AI Analysis
+            </span>
+            <span style={{ fontSize: 18, color: INK, lineHeight: 1.5 }}>{ctaText}</span>
+            <span style={{ fontSize: 14, color: ACCENT, fontWeight: 600 }}>
+              investmart.vercel.app/stock/{ticker}
+            </span>
+          </div>
+
+          {/* Spacer */}
+          <div style={{ display: "flex", flexGrow: 1 }} />
+
+          {/* Footer */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, borderTop: `1px solid ${BORDER}`, paddingTop: 18 }}>
+            <span style={{ fontSize: 13, color: MUTED }}>
+              Data: Finnhub · {new Date().toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "America/New_York" })} ET
+            </span>
+            <span style={{ fontSize: 13, color: MUTED }}>{disclaimer}</span>
+          </div>
+        </div>
+      ),
       {
-        width,
-        height,
+        width: W, height: H,
         fonts: [
-          { name: "NotoSansThai", data: fonts.regular, weight: 400, style: "normal" },
-          { name: "NotoSansThai", data: fonts.bold,    weight: 700, style: "normal" },
+          { name: "NotoSansThai", data: fontReg,  weight: 400, style: "normal" },
+          { name: "NotoSansThai", data: fontBold, weight: 700, style: "normal" },
         ],
       },
     );
   } catch (err) {
-    console.error("[infographic/og]", err);
+    console.error("[og]", err);
     return new Response("render failed", { status: 500 });
   }
 }
