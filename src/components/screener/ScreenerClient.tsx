@@ -3,37 +3,53 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { ALL_SECTORS } from "@/lib/stockUniverse";
-import type { ScreenerRow } from "@/app/api/screener/route";
+import type { ScreenerTicker } from "@/app/api/screener/route";
 import type { MetricsRow } from "@/app/api/screener/metrics/route";
 import type { Universe } from "@/lib/stockUniverse";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type SortField = "ticker" | "change1D" | "price" | "marketCap" | "momentumScore" | "qualityScore" | "pe" | "peg" | "beta";
+interface QuoteRow {
+  ticker:        string;
+  name:          string;
+  sector:        string;
+  price:         number;
+  change1D:      number;
+  volume:        number;
+  marketCap:     number;
+  momentumScore: number;
+  qualityScore:  number;
+  breakoutScore: number;
+  volumeSurge:   number;
+  stale:         boolean;
+}
+
+type SortField = "ticker" | "change1D" | "price" | "marketCap" | "momentumScore" | "qualityScore" | "pe" | "beta";
 type SortDir   = "asc" | "desc";
 type CapSize   = "ALL" | "SMALL" | "MID" | "BIG";
 
 const CAP_SMALL = 300_000_000;
 const CAP_MID   = 100_000_000_000;
+const PAGE_SIZE  = 25;
 
 interface Filters {
-  universe:     Universe;
-  sectors:      Set<string>;
-  capSize:      CapSize;
-  minChange:    string;
-  maxChange:    string;
-  minScore:     string;
-  minPE:        string;
-  maxPE:        string;
-  minBeta:      string;
-  maxBeta:      string;
+  universe:  Universe;
+  sectors:   Set<string>;
+  capSize:   CapSize;
+  minChange: string;
+  maxChange: string;
+  minScore:  string;
+  minPE:     string;
+  maxPE:     string;
+  minBeta:   string;
+  maxBeta:   string;
 }
 
 function defaultFilters(): Filters {
   return {
-    universe: "SP500",
-    sectors:  new Set<string>(),
-    capSize:  "ALL",
+    universe:  "SP500",
+    sectors:   new Set<string>(),
+    capSize:   "ALL",
     minChange: "",
     maxChange: "",
     minScore:  "",
@@ -65,55 +81,47 @@ function scoreColor(s: number): string {
   return "#8A8378";
 }
 
-// ─── Filter/Sort logic ────────────────────────────────────────────────────────
-
 function applyFilters(
-  rows:    ScreenerRow[],
+  loaded: QuoteRow[],
   metrics: Map<string, MetricsRow>,
-  f:       Filters
-): ScreenerRow[] {
+  f: Filters,
+): QuoteRow[] {
   const minCh   = f.minChange !== "" ? parseFloat(f.minChange) : -Infinity;
   const maxCh   = f.maxChange !== "" ? parseFloat(f.maxChange) :  Infinity;
   const minSc   = f.minScore  !== "" ? parseInt(f.minScore, 10) : 0;
-  const minPE   = f.minPE     !== "" ? parseFloat(f.minPE)   : -Infinity;
-  const maxPE   = f.maxPE     !== "" ? parseFloat(f.maxPE)   :  Infinity;
-  const minBeta = f.minBeta   !== "" ? parseFloat(f.minBeta) : -Infinity;
-  const maxBeta = f.maxBeta   !== "" ? parseFloat(f.maxBeta) :  Infinity;
+  const minPE   = f.minPE     !== "" ? parseFloat(f.minPE)     : -Infinity;
+  const maxPE   = f.maxPE     !== "" ? parseFloat(f.maxPE)     :  Infinity;
+  const minBeta = f.minBeta   !== "" ? parseFloat(f.minBeta)   : -Infinity;
+  const maxBeta = f.maxBeta   !== "" ? parseFloat(f.maxBeta)   :  Infinity;
 
-  return rows.filter((r) => {
+  return loaded.filter(r => {
     if (f.sectors.size > 0 && !f.sectors.has(r.sector)) return false;
-    if (f.capSize === "SMALL" && r.marketCap >= CAP_SMALL)               return false;
+    if (f.capSize === "SMALL" && r.marketCap >= CAP_SMALL)                          return false;
     if (f.capSize === "MID"   && (r.marketCap < CAP_SMALL || r.marketCap >= CAP_MID)) return false;
-    if (f.capSize === "BIG"   && r.marketCap < CAP_MID)                  return false;
-    if (r.change1D < minCh || r.change1D > maxCh)          return false;
-    if (r.momentumScore < minSc)                            return false;
-
+    if (f.capSize === "BIG"   && r.marketCap < CAP_MID)                             return false;
+    if (r.change1D < minCh || r.change1D > maxCh) return false;
+    if (r.momentumScore < minSc)                   return false;
     const m = metrics.get(r.ticker);
     if (m) {
       if (m.pe   !== null && (m.pe   < minPE   || m.pe   > maxPE))   return false;
       if (m.beta !== null && (m.beta < minBeta || m.beta > maxBeta)) return false;
     }
-
     return true;
   });
 }
 
-function applySort(rows: ScreenerRow[], metrics: Map<string, MetricsRow>, field: SortField, dir: SortDir): ScreenerRow[] {
+function applySort(rows: QuoteRow[], metrics: Map<string, MetricsRow>, field: SortField, dir: SortDir): QuoteRow[] {
   const mult = dir === "asc" ? 1 : -1;
   return [...rows].sort((a, b) => {
-    let av: number, bv: number;
-    if (field === "pe" || field === "peg" || field === "beta") {
+    if (field === "ticker") return mult * a.ticker.localeCompare(b.ticker);
+    if (field === "pe" || field === "beta") {
       const am = metrics.get(a.ticker);
       const bm = metrics.get(b.ticker);
-      av = (field === "pe" ? am?.pe : field === "peg" ? am?.peg : am?.beta) ?? -Infinity;
-      bv = (field === "pe" ? bm?.pe : field === "peg" ? bm?.peg : bm?.beta) ?? -Infinity;
-    } else if (field === "ticker") {
-      return mult * a.ticker.localeCompare(b.ticker);
-    } else {
-      av = a[field] as number;
-      bv = b[field] as number;
+      const av = (field === "pe" ? am?.pe : am?.beta) ?? -Infinity;
+      const bv = (field === "pe" ? bm?.pe : bm?.beta) ?? -Infinity;
+      return mult * (av - bv);
     }
-    return mult * (av - bv);
+    return mult * ((a[field] as number) - (b[field] as number));
   });
 }
 
@@ -121,13 +129,7 @@ function applySort(rows: ScreenerRow[], metrics: Map<string, MetricsRow>, field:
 
 function SortHeader({
   label, field, current, dir, onClick,
-}: {
-  label:   string;
-  field:   SortField;
-  current: SortField;
-  dir:     SortDir;
-  onClick: (f: SortField) => void;
-}) {
+}: { label: string; field: SortField; current: SortField; dir: SortDir; onClick: (f: SortField) => void }) {
   const active = current === field;
   return (
     <th
@@ -141,64 +143,171 @@ function SortHeader({
   );
 }
 
+function SkeletonRow({ rank }: { rank: number }) {
+  return (
+    <tr className="border-b border-white/20">
+      <td className="px-2 py-1.5 text-slate-400">{rank}</td>
+      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-16 bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-12 bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-10 bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#E8E2D4] animate-pulse rounded" /></td>
+    </tr>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ScreenerClient() {
-  const [rows, setRows]         = useState<ScreenerRow[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [scannedAt, setScannedAt] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  // Static ticker list — loaded once per universe switch (no Finnhub)
+  const [tickerList,   setTickerList]   = useState<ScreenerTicker[]>([]);
+  const [listLoading,  setListLoading]  = useState(true);
+  const [listError,    setListError]    = useState(false);
+  const [generatedAt,  setGeneratedAt]  = useState<string | null>(null);
 
-  const [filters, setFilters]   = useState<Filters>(defaultFilters);
-  const [sortField, setSortField] = useState<SortField>("momentumScore");
-  const [sortDir, setSortDir]   = useState<SortDir>("desc");
+  // Live quote map — populated page-by-page from /api/screener/quotes
+  const [quotes,       setQuotes]       = useState<Map<string, QuoteRow>>(new Map());
+  const [loadedUpTo,   setLoadedUpTo]   = useState(0);
+  const [quotesLoading, setQuotesLoading] = useState(false);
+  const [fetchedAt,    setFetchedAt]    = useState<string | null>(null);
 
-  const [metrics, setMetrics]   = useState<Map<string, MetricsRow>>(new Map());
+  const [filters,    setFilters]    = useState<Filters>(defaultFilters);
+  const [sortField,  setSortField]  = useState<SortField>("momentumScore");
+  const [sortDir,    setSortDir]    = useState<SortDir>("desc");
+  const [showFilters, setShowFilters] = useState(true);
+
+  const [metrics,       setMetrics]       = useState<Map<string, MetricsRow>>(new Map());
   const [metricsLoading, setMetricsLoading] = useState(false);
 
-  const [showFilters, setShowFilters] = useState(true);
-  const [page, setPage]           = useState(1);
-  const PAGE_SIZE = 50;
+  // ── Load ticker list (static, fast) ─────────────────────────────────────────
 
-  const fetchRows = useCallback((universe: Universe) => {
-    setLoading(true);
+  const loadTickerList = useCallback((universe: Universe) => {
+    setListLoading(true);
+    setListError(false);
+    setTickerList([]);
+    setQuotes(new Map());
+    setLoadedUpTo(0);
+    setFetchedAt(null);
+
     fetch(`/api/screener?universe=${universe}`)
-      .then((r) => r.json())
-      .then((d: { rows?: ScreenerRow[]; scannedAt?: string; refreshing?: boolean }) => {
-        setRows(d.rows ?? []);
-        setScannedAt(d.scannedAt ?? null);
-        setRefreshing(d.refreshing ?? false);
+      .then(r => r.json())
+      .then((d: { tickers?: ScreenerTicker[]; generatedAt?: string }) => {
+        setTickerList(d.tickers ?? []);
+        setGeneratedAt(d.generatedAt ?? null);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => setListError(true))
+      .finally(() => setListLoading(false));
   }, []);
 
   useEffect(() => {
-    fetchRows(filters.universe);
-  }, [filters.universe, fetchRows]);
+    loadTickerList(filters.universe);
+  }, [filters.universe, loadTickerList]);
+
+  // ── Auto-load first page of quotes once ticker list arrives ──────────────────
+
+  useEffect(() => {
+    if (tickerList.length === 0 || loadedUpTo > 0) return;
+    void loadMoreQuotes(tickerList, 0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tickerList]);
+
+  // ── Load next page of quotes ──────────────────────────────────────────────────
+
+  const loadMoreQuotes = useCallback(async (list: ScreenerTicker[], from: number) => {
+    const batch = list.slice(from, from + PAGE_SIZE);
+    if (batch.length === 0) return;
+
+    setQuotesLoading(true);
+    try {
+      const params = batch.map(t => t.ticker).join(",");
+      const res = await fetch(`/api/screener/quotes?tickers=${encodeURIComponent(params)}`);
+      if (!res.ok) return;
+      const data = (await res.json()) as { rows?: QuoteRow[]; fetchedAt?: string };
+      setQuotes(prev => {
+        const next = new Map(prev);
+        for (const row of data.rows ?? []) next.set(row.ticker, row);
+        return next;
+      });
+      setFetchedAt(data.fetchedAt ?? null);
+      setLoadedUpTo(from + batch.length);
+    } finally {
+      setQuotesLoading(false);
+    }
+  }, []);
+
+  function handleLoadMore() {
+    void loadMoreQuotes(tickerList, loadedUpTo);
+  }
+
+  // ── Derived display data ──────────────────────────────────────────────────────
+
+  // Loaded rows = tickers we have a quote for
+  const loadedRows = useMemo<QuoteRow[]>(() => {
+    const out: QuoteRow[] = [];
+    for (let i = 0; i < loadedUpTo; i++) {
+      const t = tickerList[i];
+      if (!t) continue;
+      const q = quotes.get(t.ticker);
+      if (q) out.push(q);
+    }
+    return out;
+  }, [tickerList, quotes, loadedUpTo]);
+
+  // Pending rows = requested but no quote returned (filtered out by Finnhub as c=0)
+  const pendingCount = Math.max(0, loadedUpTo - quotes.size);
 
   const filtered = useMemo(
-    () => applySort(applyFilters(rows, metrics, filters), metrics, sortField, sortDir),
-    [rows, metrics, filters, sortField, sortDir]
+    () => applySort(applyFilters(loadedRows, metrics, filters), metrics, sortField, sortDir),
+    [loadedRows, metrics, filters, sortField, sortDir]
   );
 
-  const pageRows  = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore   = filtered.length > pageRows.length;
-
+  const hasMore = loadedUpTo < tickerList.length;
+  const hasMetrics = metrics.size > 0;
   const hasMetricsFilters = filters.minPE !== "" || filters.maxPE !== "" ||
                             filters.minBeta !== "" || filters.maxBeta !== "";
 
+  // ── Sort ──────────────────────────────────────────────────────────────────────
+
+  function toggleSort(field: SortField) {
+    if (sortField === field) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDir("desc");
+    }
+  }
+
+  // ── Sector filter ─────────────────────────────────────────────────────────────
+
+  function toggleSector(s: string) {
+    setFilters(f => {
+      const next = new Set(f.sectors);
+      if (next.has(s)) next.delete(s); else next.add(s);
+      return { ...f, sectors: next };
+    });
+  }
+
+  function setFilter<K extends keyof Omit<Filters, "sectors" | "universe">>(
+    key: K, val: Filters[K]
+  ) {
+    setFilters(f => ({ ...f, [key]: val }));
+  }
+
+  // ── Metrics (optional) ────────────────────────────────────────────────────────
+
   async function loadMetrics() {
     setMetricsLoading(true);
-    const tickers = filtered.slice(0, 40).map((r) => r.ticker);
+    const tickers = filtered.slice(0, 40).map(r => r.ticker);
     try {
       const res  = await fetch("/api/screener/metrics", {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ tickers }),
+        body: JSON.stringify({ tickers }),
       });
       const data = (await res.json()) as { metrics?: MetricsRow[] };
-      setMetrics((prev) => {
+      setMetrics(prev => {
         const next = new Map(prev);
         for (const m of data.metrics ?? []) next.set(m.ticker, m);
         return next;
@@ -210,33 +319,18 @@ export function ScreenerClient() {
     }
   }
 
-  function toggleSort(field: SortField) {
-    if (sortField === field) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortField(field);
-      setSortDir("desc");
-    }
-    setPage(1);
+  // ── Timestamp display ─────────────────────────────────────────────────────────
+
+  function fmtTime(iso: string | null): string {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleTimeString("en-US", {
+      hour: "2-digit", minute: "2-digit",
+      timeZone: "America/New_York",
+      hour12: false,
+    }) + " ET";
   }
 
-  function toggleSector(s: string) {
-    setFilters((f) => {
-      const next = new Set(f.sectors);
-      if (next.has(s)) next.delete(s); else next.add(s);
-      return { ...f, sectors: next };
-    });
-    setPage(1);
-  }
-
-  function setFilter<K extends keyof Omit<Filters, "sectors" | "universe">>(
-    key: K, val: Filters[K]
-  ) {
-    setFilters((f) => ({ ...f, [key]: val }));
-    setPage(1);
-  }
-
-  const hasMetrics = metrics.size > 0;
+  // ─── Render ────────────────────────────────────────────────────────────────────
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col gap-4">
@@ -245,25 +339,25 @@ export function ScreenerClient() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-sm font-bold uppercase tracking-widest">Stock Screener</h1>
-          {scannedAt && (
+          {fetchedAt && (
             <p className="text-xs text-slate-500">
-              {refreshing ? "กำลังอัพเดท..." : `อัพเดทเมื่อ ${new Date(scannedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`}
+              Live quotes as of {fmtTime(fetchedAt)} · matches stock page · {quotes.size} loaded
             </p>
           )}
         </div>
         <div className="flex gap-2 items-center">
           <button
-            onClick={() => setShowFilters((v) => !v)}
+            onClick={() => setShowFilters(v => !v)}
             className="text-xs font-bold px-2 py-1 border border-slate-700 hover:bg-slate-900 hover:text-white transition-colors"
           >
             {showFilters ? "ซ่อนตัวกรอง" : "แสดงตัวกรอง"}
           </button>
           <button
-            onClick={() => fetchRows(filters.universe)}
-            disabled={loading}
+            onClick={() => loadTickerList(filters.universe)}
+            disabled={listLoading || quotesLoading}
             className="text-xs font-bold px-2 py-1 border border-slate-700 bg-white/60 hover:bg-slate-900 hover:text-white transition-colors disabled:opacity-40"
           >
-            {loading ? "..." : "รีเฟรช"}
+            {listLoading ? "..." : "รีเฟรช"}
           </button>
         </div>
       </div>
@@ -275,15 +369,15 @@ export function ScreenerClient() {
           {/* Universe */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold uppercase tracking-wide text-slate-500 w-16">Universe</span>
-            {(["SP500", "NASDAQ100", "CEO"] as const).map((u) => (
+            {(["SP500", "NASDAQ100", "CEO"] as const).map(u => (
               <button
                 key={u}
-                onClick={() => { setFilters((f) => ({ ...f, universe: u })); setPage(1); }}
+                onClick={() => setFilters(f => ({ ...f, universe: u }))}
                 className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
-                  background:   filters.universe === u ? "#1F1A14" : "#FBF7ED",
-                  color:        filters.universe === u ? "#fff" : "#1F1A14",
-                  borderColor:  "#1F1A14",
+                  background:  filters.universe === u ? "#1F1A14" : "#FBF7ED",
+                  color:       filters.universe === u ? "#fff" : "#1F1A14",
+                  borderColor: "#1F1A14",
                 }}
               >
                 {u}
@@ -295,7 +389,7 @@ export function ScreenerClient() {
           <div className="flex items-start gap-2 flex-wrap">
             <span className="text-xs font-bold uppercase tracking-wide text-slate-500 w-16 pt-0.5">Sector</span>
             <div className="flex gap-1 flex-wrap">
-              {ALL_SECTORS.map((s) => (
+              {ALL_SECTORS.map(s => (
                 <button
                   key={s}
                   onClick={() => toggleSector(s)}
@@ -311,7 +405,7 @@ export function ScreenerClient() {
               ))}
               {filters.sectors.size > 0 && (
                 <button
-                  onClick={() => { setFilters((f) => ({ ...f, sectors: new Set() })); setPage(1); }}
+                  onClick={() => setFilters(f => ({ ...f, sectors: new Set() }))}
                   className="text-xs text-[#DC2626] hover:underline"
                 >
                   ล้าง
@@ -324,14 +418,14 @@ export function ScreenerClient() {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold uppercase tracking-wide text-slate-500 w-16">Cap</span>
             {([
-              { v: "ALL", l: "ทั้งหมด" },
+              { v: "ALL",   l: "ทั้งหมด" },
               { v: "SMALL", l: "Small <$300M" },
               { v: "MID",   l: "Mid $300M–$100B" },
               { v: "BIG",   l: "Big $100B+" },
             ] as const).map(({ v, l }) => (
               <button
                 key={v}
-                onClick={() => { setFilter("capSize", v); }}
+                onClick={() => setFilter("capSize", v)}
                 className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
                   background:  filters.capSize === v ? "#1F1A14" : "#FBF7ED",
@@ -346,142 +440,128 @@ export function ScreenerClient() {
 
           {/* Numeric filters */}
           <div className="flex gap-3 flex-wrap items-end">
-            {/* Change % */}
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Change %</span>
               <div className="flex gap-1 items-center">
-                <input
-                  type="number" step="0.5"
-                  placeholder="min"
-                  value={filters.minChange}
-                  onChange={(e) => setFilter("minChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="Change minimum %"
-                />
+                <input type="number" step="0.5" placeholder="min" value={filters.minChange}
+                  onChange={e => setFilter("minChange", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="Change minimum %" />
                 <span className="text-xs text-slate-500">–</span>
-                <input
-                  type="number" step="0.5"
-                  placeholder="max"
-                  value={filters.maxChange}
-                  onChange={(e) => setFilter("maxChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="Change maximum %"
-                />
+                <input type="number" step="0.5" placeholder="max" value={filters.maxChange}
+                  onChange={e => setFilter("maxChange", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="Change maximum %" />
               </div>
             </div>
-
-            {/* Min score */}
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Score min</span>
-              <input
-                type="number" min="0" max="100" step="5"
-                placeholder="0"
-                value={filters.minScore}
-                onChange={(e) => setFilter("minScore", e.target.value)}
-                className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                aria-label="Minimum momentum score"
-              />
+              <input type="number" min="0" max="100" step="5" placeholder="0" value={filters.minScore}
+                onChange={e => setFilter("minScore", e.target.value)}
+                className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                aria-label="Minimum momentum score" />
             </div>
-
-            {/* P/E */}
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wide text-slate-500">P/E</span>
               <div className="flex gap-1 items-center">
-                <input
-                  type="number" step="1"
-                  placeholder="min"
-                  value={filters.minPE}
-                  onChange={(e) => setFilter("minPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="P/E minimum"
-                />
+                <input type="number" step="1" placeholder="min" value={filters.minPE}
+                  onChange={e => setFilter("minPE", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="P/E minimum" />
                 <span className="text-xs text-slate-500">–</span>
-                <input
-                  type="number" step="1"
-                  placeholder="max"
-                  value={filters.maxPE}
-                  onChange={(e) => setFilter("maxPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="P/E maximum"
-                />
+                <input type="number" step="1" placeholder="max" value={filters.maxPE}
+                  onChange={e => setFilter("maxPE", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="P/E maximum" />
               </div>
             </div>
-
-            {/* Beta */}
             <div className="flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Beta</span>
               <div className="flex gap-1 items-center">
-                <input
-                  type="number" step="0.1"
-                  placeholder="min"
-                  value={filters.minBeta}
-                  onChange={(e) => setFilter("minBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="Beta minimum"
-                />
+                <input type="number" step="0.1" placeholder="min" value={filters.minBeta}
+                  onChange={e => setFilter("minBeta", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="Beta minimum" />
                 <span className="text-xs text-slate-500">–</span>
-                <input
-                  type="number" step="0.1"
-                  placeholder="max"
-                  value={filters.maxBeta}
-                  onChange={(e) => setFilter("maxBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A] focus:border-[#5B8A2A]"
-                  aria-label="Beta maximum"
-                />
+                <input type="number" step="0.1" placeholder="max" value={filters.maxBeta}
+                  onChange={e => setFilter("maxBeta", e.target.value)}
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  aria-label="Beta maximum" />
               </div>
             </div>
           </div>
 
-          {/* Metrics load */}
           <div className="flex items-center gap-3 pt-1 border-t border-white/30">
             <button
               onClick={() => void loadMetrics()}
-              disabled={metricsLoading || loading}
+              disabled={metricsLoading || listLoading || filtered.length === 0}
               className="text-xs font-bold px-2 py-1 border border-[#5B8A2A] text-[#5B8A2A] hover:bg-[#5B8A2A] hover:text-white transition-colors disabled:opacity-40"
             >
-              {metricsLoading ? "กำลังโหลด..." : hasMetrics ? "รีโหลด P/E, PEG & Beta" : "โหลด P/E, PEG & Beta (top 40)"}
+              {metricsLoading ? "กำลังโหลด..." : hasMetrics ? "รีโหลด P/E & Beta" : "โหลด P/E & Beta (top 40)"}
             </button>
             {hasMetricsFilters && !hasMetrics && (
-              <span className="text-xs text-[#D97706]">โหลด P/E, PEG & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
+              <span className="text-xs text-[#D97706]">โหลด P/E & Beta ก่อนกรองด้วยค่าเหล่านี้</span>
             )}
           </div>
         </div>
       )}
 
-      {/* Results count */}
-      <div className="flex items-center justify-between">
+      {/* Results summary */}
+      <div className="flex items-center justify-between flex-wrap gap-1">
         <p className="text-xs text-slate-500">
-          {loading ? "กำลังสแกน..." : `${filtered.length.toLocaleString()} หุ้น จาก ${rows.length.toLocaleString()}`}
+          {listLoading
+            ? "กำลังโหลด..."
+            : `${filtered.length} ผลลัพธ์ จาก ${quotes.size} โหลดแล้ว · รวม ${tickerList.length} หุ้น`}
+          {pendingCount > 0 && ` · ${pendingCount} ไม่มีข้อมูลราคา`}
         </p>
-        {filters.sectors.size > 0 || filters.capSize !== "ALL" || filters.minScore || filters.minChange || filters.maxChange ? (
+        {(filters.sectors.size > 0 || filters.capSize !== "ALL" || filters.minScore || filters.minChange || filters.maxChange) && (
           <button
-            onClick={() => { setFilters(defaultFilters()); setPage(1); }}
+            onClick={() => setFilters(defaultFilters())}
             className="text-xs text-[#DC2626] hover:underline"
           >
             ล้างตัวกรองทั้งหมด
           </button>
-        ) : null}
+        )}
       </div>
 
-      {/* Table */}
-      {loading ? (
+      {/* Error state */}
+      {listError && (
+        <div className="text-center py-10">
+          <p className="text-sm text-slate-600">โหลดข้อมูลไม่สำเร็จ</p>
+          <button
+            onClick={() => loadTickerList(filters.universe)}
+            className="mt-2 text-xs text-[#5B8A2A] hover:underline"
+          >
+            ลองอีกครั้ง
+          </button>
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {listLoading && !listError && (
         <div className="flex flex-col gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-8 bg-[#E8E2D4] animate-pulse rounded" style={{ opacity: 1 - i * 0.1 }} />
           ))}
-          <p className="text-xs text-slate-500 text-center">กำลังดึงข้อมูลจาก Finnhub (~10 วินาที)</p>
+          <p className="text-xs text-slate-500 text-center">กำลังโหลดรายชื่อหุ้น...</p>
         </div>
-      ) : filtered.length === 0 ? (
+      )}
+
+      {/* Empty state after load */}
+      {!listLoading && !listError && filtered.length === 0 && quotes.size > 0 && (
         <div className="text-center py-12">
           <p className="text-xs text-slate-500">ไม่พบหุ้นที่ตรงกับตัวกรอง</p>
           <button
-            onClick={() => { setFilters(defaultFilters()); setPage(1); }}
+            onClick={() => setFilters(defaultFilters())}
             className="mt-2 text-xs text-[#5B8A2A] hover:underline"
           >
             ล้างตัวกรอง
           </button>
         </div>
-      ) : (
+      )}
+
+      {/* Table */}
+      {!listLoading && !listError && (filtered.length > 0 || quotesLoading) && (
         <>
           <div className="overflow-x-auto -mx-4 px-4">
             <table className="w-full text-xs border-collapse" style={{ minWidth: "640px" }}>
@@ -498,21 +578,17 @@ export function ScreenerClient() {
                   {hasMetrics && (
                     <>
                       <SortHeader label="P/E"  field="pe"   current={sortField} dir={sortDir} onClick={toggleSort} />
-                      <SortHeader label="PEG"  field="peg"  current={sortField} dir={sortDir} onClick={toggleSort} />
                       <SortHeader label="Beta" field="beta" current={sortField} dir={sortDir} onClick={toggleSort} />
                     </>
                   )}
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row, idx) => {
+                {filtered.map((row, idx) => {
                   const m        = metrics.get(row.ticker);
                   const positive = row.change1D >= 0;
                   return (
-                    <tr
-                      key={row.ticker}
-                      className="border-b border-white/30 hover:bg-white/60 transition-colors"
-                    >
+                    <tr key={row.ticker} className="border-b border-white/30 hover:bg-white/60 transition-colors">
                       <td className="px-2 py-1.5 text-slate-500">{idx + 1}</td>
                       <td className="px-2 py-1.5">
                         <Link
@@ -522,22 +598,17 @@ export function ScreenerClient() {
                         >
                           {row.ticker}
                         </Link>
+                        <p className="text-[10px] text-slate-400 truncate max-w-[120px]">{row.name}</p>
                       </td>
                       <td className="px-2 py-1.5">
-                        <span
-                          className="text-xs font-bold px-1 py-0.5"
-                          style={{ background: "#E8E2D4", color: "#8A8378" }}
-                        >
+                        <span className="text-xs font-bold px-1 py-0.5" style={{ background: "#E8E2D4", color: "#8A8378" }}>
                           {row.sector}
                         </span>
                       </td>
                       <td className="px-2 py-1.5 font-bold" style={{ fontFamily: "var(--font-mono)" }}>
                         ${row.price.toFixed(2)}
                       </td>
-                      <td
-                        className="px-2 py-1.5 font-bold"
-                        style={{ color: positive ? "#5B8A2A" : "#DC2626", fontFamily: "var(--font-mono)" }}
-                      >
+                      <td className="px-2 py-1.5 font-bold" style={{ color: positive ? "#5B8A2A" : "#DC2626", fontFamily: "var(--font-mono)" }}>
                         {positive ? "+" : ""}{row.change1D.toFixed(2)}%
                       </td>
                       <td className="px-2 py-1.5 text-slate-500">{fmtCap(row.marketCap)}</td>
@@ -553,37 +624,44 @@ export function ScreenerClient() {
                       </td>
                       {hasMetrics && (
                         <>
-                          <td className="px-2 py-1.5 text-slate-500">
-                            {m?.pe  != null ? m.pe.toFixed(1)  : "—"}
-                          </td>
-                          <td className="px-2 py-1.5 text-slate-500">
-                            {m?.peg != null ? m.peg.toFixed(2) : "—"}
-                          </td>
-                          <td className="px-2 py-1.5 text-slate-500">
-                            {m?.beta != null ? m.beta.toFixed(2) : "—"}
-                          </td>
+                          <td className="px-2 py-1.5 text-slate-500">{m?.pe   != null ? m.pe.toFixed(1)   : "—"}</td>
+                          <td className="px-2 py-1.5 text-slate-500">{m?.beta != null ? m.beta.toFixed(2) : "—"}</td>
                         </>
                       )}
                     </tr>
                   );
                 })}
+                {/* Skeleton rows for the current loading page */}
+                {quotesLoading && Array.from({ length: Math.min(PAGE_SIZE, tickerList.length - loadedUpTo) }).map((_, i) => (
+                  <SkeletonRow key={`sk-${i}`} rank={filtered.length + i + 1} />
+                ))}
               </tbody>
             </table>
           </div>
 
-          {hasMore && (
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className="self-center text-xs font-bold px-4 py-1.5 border border-slate-700 hover:bg-slate-900 hover:text-white transition-colors"
-            >
-              โหลดเพิ่ม ({filtered.length - pageRows.length} รายการ)
-            </button>
-          )}
+          {/* Load more / progress */}
+          <div className="flex flex-col items-center gap-1">
+            {hasMore && !quotesLoading && (
+              <button
+                onClick={handleLoadMore}
+                className="text-xs font-bold px-4 py-1.5 border border-slate-700 hover:bg-slate-900 hover:text-white transition-colors"
+              >
+                โหลดเพิ่ม {Math.min(PAGE_SIZE, tickerList.length - loadedUpTo)} หุ้น
+                ({tickerList.length - loadedUpTo} เหลือ)
+              </button>
+            )}
+            {quotesLoading && (
+              <p className="text-xs text-slate-400">กำลังโหลดราคาจาก Finnhub…</p>
+            )}
+            {!hasMore && quotes.size > 0 && (
+              <p className="text-xs text-slate-400">โหลดครบ {quotes.size} หุ้นแล้ว</p>
+            )}
+          </div>
         </>
       )}
 
-      <p className="text-xs text-slate-500 text-center pb-4">
-        ข้อมูลราคาจาก Finnhub · จำลองเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
+      <p className="text-xs text-slate-400 text-center pb-4">
+        รายชื่อหุ้นจาก catalog · ราคาจาก Finnhub · Sort ใช้งานได้กับหุ้นที่โหลดแล้ว · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>
   );

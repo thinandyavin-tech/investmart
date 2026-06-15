@@ -213,7 +213,16 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             <div className="h-8 w-40 bg-slate-200 animate-pulse rounded-md" />
           </div>
         ) : quoteError ? (
-          <p className="text-xs text-slate-500">ไม่พบข้อมูล "{ticker}"</p>
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-bold text-slate-700">{ticker}</p>
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded">
+              ยังไม่มีข้อมูลราคาสำหรับหุ้นนี้ / Price data not yet available for this stock.
+              Finnhub ยังไม่รองรับ ticker นี้ในชั้นฟรี
+            </p>
+            <p className="text-xs text-slate-500">
+              ดูกราฟผ่าน TradingView ได้ด้านล่าง (view-only · ไม่สามารถซื้อขายในพอร์ตจำลองได้จนกว่าจะมีราคาจริง)
+            </p>
+          </div>
         ) : (
           <>
             <div className="flex items-start justify-between gap-4">
@@ -261,13 +270,19 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     >
                       ${quote.price.toFixed(2)}
                     </div>
-                    <div
-                      className="text-xs font-bold"
-                      style={{ fontFamily: "var(--font-mono)", color: positive ? "#16A34A" : "#DC2626" }}
-                    >
-                      {positive ? "+" : ""}{quote.changePct.toFixed(2)}%
-                      {" "}({positive ? "+" : ""}${quote.change.toFixed(2)})
-                    </div>
+                    {quote.noChangeData ? (
+                      <div className="text-xs font-semibold text-amber-600 mt-0.5">
+                        New listing · no prior close
+                      </div>
+                    ) : (
+                      <div
+                        className="text-xs font-bold"
+                        style={{ fontFamily: "var(--font-mono)", color: positive ? "#16A34A" : "#DC2626" }}
+                      >
+                        {positive ? "+" : ""}{quote.changePct.toFixed(2)}%
+                        {" "}({positive ? "+" : ""}${quote.change.toFixed(2)})
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="text-xs text-slate-400">—</div>
@@ -321,6 +336,17 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           </>
         )}
       </Card>
+
+      {/* TradingView view-only fallback when Finnhub has no price data */}
+      {!quoteLoading && quoteError && (
+        <Card className="overflow-hidden">
+          <div className="px-3 py-2 bg-amber-50 border-b border-amber-200 flex items-center gap-2">
+            <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">VIEW ONLY</span>
+            <span className="text-xs text-amber-600">· TradingView chart · ไม่สามารถซื้อขายในพอร์ตจำลองได้</span>
+          </div>
+          <TradingViewChart ticker={ticker} height={380} locale={lang} />
+        </Card>
+      )}
 
       {/* OHLC row */}
       {!quoteLoading && !quoteError && quote && (
@@ -517,18 +543,20 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       {/* Reverse DCF — Expectations Gauge */}
       <ReverseDCF ticker={ticker} />
 
-      {/* CTA: Trade */}
-      <div className="flex flex-col gap-2">
-        <Link
-          href={`/radar?ticker=${ticker}`}
-          className="text-center text-sm font-bold text-white bg-[#16A34A] rounded-xl px-4 py-3 hover:bg-[#15803D] transition-colors"
-        >
-          ซื้อ / ขาย {ticker} (Paper Trade) →
-        </Link>
-        <p className="text-xs text-slate-400 text-center">
-          จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
-        </p>
-      </div>
+      {/* CTA: Trade — hidden when no real Finnhub price (can't fabricate a tradeable price) */}
+      {!quoteError && (
+        <div className="flex flex-col gap-2">
+          <Link
+            href={`/radar?ticker=${ticker}`}
+            className="text-center text-sm font-bold text-white bg-[#16A34A] rounded-xl px-4 py-3 hover:bg-[#15803D] transition-colors"
+          >
+            ซื้อ / ขาย {ticker} (Paper Trade) →
+          </Link>
+          <p className="text-xs text-slate-400 text-center">
+            จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
+          </p>
+        </div>
+      )}
     </div>
   );
 }

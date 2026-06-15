@@ -12,7 +12,7 @@ import { STOCK_INFO } from "@/lib/stockNames";
 
 export const dynamic = "force-dynamic";
 
-const MAX_TICKERS  = 50;
+const MAX_TICKERS  = 25; // one page — stays well within Finnhub's 60 req/min free tier
 const CACHE_TTL_MS = 60_000;
 
 interface QuoteResult {

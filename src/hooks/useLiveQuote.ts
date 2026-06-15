@@ -19,8 +19,8 @@ export interface PreMarketData {
 export interface LiveQuote {
   price:      number;
   prevClose:  number;
-  change:     number;   // absolute $
-  changePct:  number;   // percent
+  change:     number;   // absolute $ (0 when no prior close)
+  changePct:  number;   // percent    (0 when no prior close)
   high:       number;
   low:        number;
   open:       number;
@@ -32,6 +32,8 @@ export interface LiveQuote {
   delayed?:   boolean;
   currency?:  string;
   exchange?:  string;
+  /** true when prevClose=0 (brand-new listing, no prior session yet) */
+  noChangeData?: boolean;
 }
 
 export interface LiveQuoteResult {
@@ -47,8 +49,8 @@ export interface LiveQuoteResult {
 interface RawQuote {
   c:           number;
   pc:          number;
-  d:           number;
-  dp:          number;
+  d:           number | null; // null for brand-new listings (no prior close)
+  dp:          number | null; // null for brand-new listings
   h:           number;
   l:           number;
   o:           number;
@@ -72,20 +74,22 @@ function isMarketActive(status: MarketStatus): boolean {
 }
 
 function parseRawQuote(raw: RawQuote): LiveQuote {
+  const noChangeData = raw.pc === 0 && raw.c > 0 && (raw.dp === null || raw.d === null);
   return {
-    price:     raw.c,
-    prevClose: raw.pc,
-    change:    raw.d,
-    changePct: raw.dp,
-    high:      raw.h,
-    low:       raw.l,
-    open:      raw.o,
-    timestamp: raw.t,
-    preMarket: raw.preMarket ?? null,
-    source:    raw.source,
-    delayed:   raw.delayed,
-    currency:  raw.currency,
-    exchange:  raw.exchange,
+    price:         raw.c,
+    prevClose:     raw.pc,
+    change:        raw.d  ?? 0, // 0 for new listings (no prior close, not fabricated)
+    changePct:     raw.dp ?? 0,
+    high:          raw.h,
+    low:           raw.l,
+    open:          raw.o,
+    timestamp:     raw.t,
+    preMarket:     raw.preMarket ?? null,
+    source:        raw.source,
+    delayed:       raw.delayed,
+    currency:      raw.currency,
+    exchange:      raw.exchange,
+    noChangeData,
   };
 }
 
