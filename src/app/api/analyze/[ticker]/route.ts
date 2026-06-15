@@ -390,17 +390,19 @@ async function buildAnalysis(
   const userMsg = `วิเคราะห์กราฟ ${ticker} timeframe ${tf} จากข้อมูลด้านล่างนี้\n\n${dataPrompt}\n\nSchema ที่ต้องตอบ:\n${JSON_SCHEMA}`;
 
   const raw = await generateText(userMsg, SYSTEM_PROMPT, {
-    maxTokens:   2000,
+    maxTokens:   4000, // schema response easily exceeds 2000 tokens when complete
     temperature: 0.2,
-    jsonMode:    true,
+    // No jsonMode: rely on prompt. jsonMode can cause empty responses on some providers.
   });
 
   let analysis: AnalysisOutput;
   try {
     const cleaned = extractJson(raw);
     analysis = JSON.parse(cleaned) as AnalysisOutput;
-  } catch {
-    throw new Error("AI ส่งข้อมูลในรูปแบบที่ไม่ถูกต้อง ลองใหม่อีกครั้ง");
+  } catch (e) {
+    const preview = raw?.slice(0, 150) ?? "(empty)";
+    console.error(`[analyze/${ticker}] JSON extract failed. Raw preview: ${preview}`);
+    throw new Error(`AI ส่งข้อมูลในรูปแบบที่ไม่ถูกต้อง — ${e instanceof Error ? e.message.slice(0, 80) : "parse error"}`);
   }
 
   return {

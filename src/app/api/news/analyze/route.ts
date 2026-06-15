@@ -160,9 +160,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const text = await generateText(userMessage, buildAnalysisPrompt(locale), {
-      maxTokens:   600,
+      maxTokens:   800,
       temperature: 0.3,
-      jsonMode:    true,
+      // No jsonMode: prompt already requests JSON; jsonMode causes empty responses on some providers
     });
     let parsed: unknown;
     try {
