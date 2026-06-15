@@ -18,6 +18,7 @@ interface MoversResponse extends Partial<MoversCache> {
   building?: boolean;
   stale?:    boolean;
   error?:    string;
+  // quotedAt and enriched are now part of MoversCache
 }
 
 type Tab = "gainers" | "losers" | "actives";
@@ -33,12 +34,21 @@ function fmtPrice(v: number): string {
   return `$${v.toFixed(2)}`;
 }
 
-function timeAgo(iso: string | null | undefined): string {
+function fmtAsOf(iso: string | null | undefined): string {
   if (!iso) return "—";
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60)   return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  return `${Math.floor(diff / 3600)}h ago`;
+  return new Date(iso).toLocaleTimeString("en-US", {
+    hour: "2-digit", minute: "2-digit",
+    timeZone: "America/New_York",
+    hour12: false,
+  }) + " ET";
+}
+
+function fmtDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short", day: "numeric",
+    timeZone: "America/New_York",
+  });
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -181,10 +191,12 @@ export function RadarMovers() {
                   : building
                   ? "Fetching from FMP…"
                   : data?.stale && data?.error
-                  ? `Stale data · ${timeAgo(data.updatedAt)} · refresh failed`
+                  ? `Stale · data as of ${data?.enriched ? fmtAsOf(data.quotedAt) : fmtDate(data.updatedAt)} · refresh failed`
                   : data?.stale
-                  ? `${timeAgo(data.updatedAt)} · stale`
-                  : `Daily snapshot · updated ${timeAgo(data?.updatedAt)} · FMP`}
+                  ? `Stale · data as of ${data?.enriched ? fmtAsOf(data.quotedAt) : fmtDate(data.updatedAt)}`
+                  : data?.enriched
+                  ? `Live quotes as of ${fmtAsOf(data.quotedAt)} · matches stock page`
+                  : `FMP snapshot ${fmtDate(data?.updatedAt)} · prices differ from stock page`}
               </p>
             </div>
             <button
@@ -233,9 +245,12 @@ export function RadarMovers() {
           {/* Disclaimer */}
           <div className="px-3 py-2 bg-[#F8F5EF] border-b border-[#E8E2D4]">
             <p className="text-[10px] text-[#8A8378]">
-              Daily snapshot from FMP · Dominated by volatile small-caps — shows market movement, not a recommendation ·{" "}
-              <Link href="/stock" className="text-violet-500 hover:underline">stock pages</Link>{" "}
-              link to ask Martin
+              {data?.enriched
+                ? "Movers identified by FMP · prices from Finnhub (same as stock page)"
+                : "FMP daily snapshot · prices may differ from stock page"
+              }
+              {" · "}Volatile small-caps — observation only, not a recommendation ·{" "}
+              click ticker to open stock page
             </p>
           </div>
 
@@ -301,7 +316,10 @@ export function RadarMovers() {
 
           {hasData && (
             <p className="text-[10px] text-[#8A8378] text-center py-3 px-4">
-              Data from Financial Modeling Prep (FMP) · Daily snapshot · Figures are lagged · Not investment advice
+              {data?.enriched
+                ? `Movers: FMP · Prices: Finnhub (as of ${fmtAsOf(data.quotedAt)}) · Not investment advice`
+                : `FMP daily snapshot (${fmtDate(data?.updatedAt)}) · Prices may differ from stock page · Not investment advice`
+              }
             </p>
           )}
         </div>
