@@ -13,6 +13,65 @@ const clrCls  = (v: number) => v >= 0 ? "text-emerald-600" : "text-red-500";
 
 const STARTING_THB = 1_250_000;
 
+// ─── Animated counter hook ────────────────────────────────────────────────────
+
+const ANIMATION_DURATION_MS = 800;
+
+function useAnimatedCounter(target: number): number {
+  const [display, setDisplay] = useState(0);
+  const hasAnimated = useRef(false);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Only animate once on first real data load
+    if (target === 0) return;
+    if (hasAnimated.current) {
+      setDisplay(target);
+      return;
+    }
+
+    // Respect prefers-reduced-motion
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReduced) {
+      setDisplay(target);
+      hasAnimated.current = true;
+      return;
+    }
+
+    hasAnimated.current = true;
+    const start = performance.now();
+
+    function tick(now: number): void {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / ANIMATION_DURATION_MS, 1);
+      // Cubic ease-out: 1 - (1 - t)^3
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(target * eased));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [target]);
+
+  return display;
+}
+
+// ─── Brutalist card style ─────────────────────────────────────────────────────
+
+const CARD_STYLE: React.CSSProperties = {
+  background: "#FDFAF4",
+  border: "1px solid #C8BFB0",
+  boxShadow: "4px 4px 0 #1F1A14",
+};
+
 // ─── Sector grouping ──────────────────────────────────────────────────────────
 
 interface SectorSlice {
@@ -72,6 +131,87 @@ function buildSectors(holdings: EnrichedHolding[], cashThb: number, totalValueTh
     .sort((a, b) => b.pct - a.pct);
 
   return slices;
+}
+
+// ─── SVG Donut chart ──────────────────────────────────────────────────────────
+
+const DONUT_SIZE   = 96;
+const DONUT_RADIUS = 36;
+const DONUT_STROKE = 14;
+const DONUT_CIRCUM = 2 * Math.PI * DONUT_RADIUS;
+
+interface DonutChartProps {
+  sectors: SectorSlice[];
+}
+
+function DonutChart({ sectors }: DonutChartProps) {
+  // Top 5 sectors + Cash, max 6 slices
+  const top = sectors.slice(0, 6);
+  const totalPct = top.reduce((sum, s) => sum + s.pct, 0);
+
+  let cumOffset = 0;
+  const slices = top.map((s) => {
+    const pct    = totalPct > 0 ? s.pct / totalPct : 0;
+    const dash   = pct * DONUT_CIRCUM;
+    const gap    = DONUT_CIRCUM - dash;
+    const rotate = cumOffset * 360 - 90; // start at 12 o'clock
+    cumOffset += pct;
+    return { ...s, dash, gap, rotate };
+  });
+
+  const cx = DONUT_SIZE / 2;
+  const cy = DONUT_SIZE / 2;
+
+  return (
+    <div className="flex-shrink-0">
+      <svg
+        width={DONUT_SIZE}
+        height={DONUT_SIZE}
+        viewBox={`0 0 ${DONUT_SIZE} ${DONUT_SIZE}`}
+        aria-hidden="true"
+        role="img"
+      >
+        {/* Background ring */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={DONUT_RADIUS}
+          fill="none"
+          stroke="#E8E2D4"
+          strokeWidth={DONUT_STROKE}
+        />
+        {slices.map((s) => (
+          <circle
+            key={s.sector}
+            cx={cx}
+            cy={cy}
+            r={DONUT_RADIUS}
+            fill="none"
+            stroke={sectorColor(s.sector)}
+            strokeWidth={DONUT_STROKE}
+            strokeDasharray={`${s.dash} ${s.gap}`}
+            strokeDashoffset={0}
+            transform={`rotate(${s.rotate} ${cx} ${cy})`}
+            strokeLinecap="butt"
+          />
+        ))}
+      </svg>
+      {/* Legend */}
+      <div className="flex flex-col gap-0.5 mt-1.5">
+        {top.map((s) => (
+          <div key={s.sector} className="flex items-center gap-1">
+            <div
+              className="w-2 h-2 rounded-sm flex-shrink-0"
+              style={{ backgroundColor: sectorColor(s.sector) }}
+            />
+            <span className="text-[9px] text-[#5A4E42] leading-tight">
+              {s.sector} {s.pct.toFixed(0)}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ─── Concentration flags ──────────────────────────────────────────────────────
@@ -306,13 +446,13 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
   }, []);
 
   if (loading) return (
-    <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm p-5">
+    <div style={CARD_STYLE} className="p-5">
       <SkeletonHero />
     </div>
   );
 
   if (unauthorized) return (
-    <div className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card p-5 text-center space-y-3">
+    <div style={CARD_STYLE} className="p-5 text-center space-y-3">
       <p className="text-sm font-bold text-[#1F1A14]">พอร์ตจำลองหุ้น US</p>
       <p className="text-xs text-[#8A8378] leading-relaxed">
         เริ่มด้วย ฿1,250,000 · จำลองซื้อขายหุ้น US ฟรี · ไม่ใช้เงินจริง
@@ -325,7 +465,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
   );
 
   if (error) return (
-    <div className="rounded-2xl bg-white/60 border border-white/40 p-4 text-center">
+    <div style={CARD_STYLE} className="p-4 text-center">
       <p className="text-xs text-red-500">{error}</p>
     </div>
   );
@@ -349,7 +489,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
   // Empty state: no holdings
   if (holdings.length === 0) {
     return (
-      <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm p-5 space-y-3">
+      <div style={CARD_STYLE} className="p-5 space-y-3">
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl font-black font-mono text-[#1F1A14]">{thb(totalValueThb)}</span>
           <span className="text-xs text-slate-400">เงินสด (จำลอง)</span>
@@ -371,73 +511,124 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
   }
 
   return (
-    <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
+    <PortfolioHeroLoaded
+      totalValueThb={totalValueThb}
+      change1DThb={change1DThb}
+      change1DPct={change1DPct}
+      unrealizedPnlThb={unrealizedPnlThb}
+      unrealizedPnlPct={unrealizedPnlPct}
+      fxRate={fxRate}
+      asOf={asOf}
+      pnlVsStart={pnlVsStart}
+      pnlVsStartPct={pnlVsStartPct}
+      sectors={sectors}
+      concentration={concentration}
+      topHoldings={topHoldings}
+      best={best}
+      worst={worst}
+      snapshots={snapshots}
+      compact={compact}
+    />
+  );
+}
+
+// ─── Loaded state (extracted to keep line count manageable) ──────────────────
+
+interface LoadedProps {
+  totalValueThb: number;
+  change1DThb: number;
+  change1DPct: number;
+  unrealizedPnlThb: number;
+  unrealizedPnlPct: number;
+  fxRate: number;
+  asOf: string;
+  pnlVsStart: number;
+  pnlVsStartPct: number;
+  sectors: SectorSlice[];
+  concentration: ConcentrationFact[];
+  topHoldings: EnrichedHolding[];
+  best: EnrichedHolding | null;
+  worst: EnrichedHolding | null;
+  snapshots: Snapshot[];
+  compact: boolean;
+}
+
+function PortfolioHeroLoaded({
+  totalValueThb,
+  change1DThb,
+  change1DPct,
+  unrealizedPnlThb,
+  unrealizedPnlPct,
+  fxRate,
+  asOf,
+  pnlVsStart,
+  pnlVsStartPct,
+  sectors,
+  concentration,
+  topHoldings,
+  best,
+  worst,
+  snapshots,
+  compact,
+}: LoadedProps) {
+  const animatedValue = useAnimatedCounter(totalValueThb);
+
+  return (
+    <div style={CARD_STYLE} className="overflow-hidden">
       {/* Hero row */}
-      <div className="px-5 pt-5 pb-4 border-b border-slate-100">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-1">
+      <div className="px-5 pt-5 pb-4 border-b border-[#C8BFB0]">
+        <div className="flex items-start gap-4">
+          {/* Left: value + daily change */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8A8378] mb-1">
               มูลค่าพอร์ต (จำลอง)
             </p>
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-3xl font-black font-mono text-[#1F1A14]">{thb(totalValueThb)}</span>
+              <span
+                className="text-5xl font-black font-mono text-[#1F1A14]"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {thb(animatedValue)}
+              </span>
               <span className="text-base font-bold font-mono" style={{ color: clr(change1DThb) }}>
                 {change1DThb >= 0 ? "+" : ""}{thb(change1DThb)}{" "}
                 <span className="text-sm">({pctFmt(change1DPct)} วันนี้)</span>
               </span>
             </div>
+            {/* vs starting capital */}
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-slate-500">vs ทุนเริ่มต้น ฿1.25M:</span>
+              <span className={`text-xs font-bold ${clrCls(pnlVsStart)}`}>
+                {pnlVsStart >= 0 ? "+" : ""}{thb(pnlVsStart)} ({pctFmt(pnlVsStartPct)})
+              </span>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-slate-400 mb-0.5">กำไร/ขาดทุน รวม</p>
-            <p className="text-base font-bold font-mono" style={{ color: clr(unrealizedPnlThb) }}>
-              {unrealizedPnlThb >= 0 ? "+" : ""}{thb(unrealizedPnlThb)}
-            </p>
-            <p className="text-xs font-semibold" style={{ color: clr(unrealizedPnlPct) }}>
-              {pctFmt(unrealizedPnlPct)} vs ต้นทุน
-            </p>
-          </div>
-        </div>
 
-        {/* vs starting capital */}
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-xs text-slate-500">vs ทุนเริ่มต้น ฿1.25M:</span>
-          <span className={`text-xs font-bold ${clrCls(pnlVsStart)}`}>
-            {pnlVsStart >= 0 ? "+" : ""}{thb(pnlVsStart)} ({pctFmt(pnlVsStartPct)})
-          </span>
+          {/* Right: unrealized P&L + donut side by side */}
+          <div className="flex items-start gap-4 flex-shrink-0">
+            <div className="text-right">
+              <p className="text-[10px] text-[#8A8378] mb-0.5">กำไร/ขาดทุน รวม</p>
+              <p className="text-base font-bold font-mono" style={{ color: clr(unrealizedPnlThb) }}>
+                {unrealizedPnlThb >= 0 ? "+" : ""}{thb(unrealizedPnlThb)}
+              </p>
+              <p className="text-xs font-semibold" style={{ color: clr(unrealizedPnlPct) }}>
+                {pctFmt(unrealizedPnlPct)} vs ต้นทุน
+              </p>
+            </div>
+
+            {/* Donut hidden in compact mode */}
+            {!compact && sectors.length > 0 && (
+              <DonutChart sectors={sectors} />
+            )}
+          </div>
         </div>
       </div>
 
       <div className="px-5 py-4 space-y-4">
-        {/* Sector allocation bar */}
-        {sectors.length > 0 && (
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-1.5">
-              Sector Allocation
-            </p>
-            <div className="flex h-4 rounded-full overflow-hidden gap-px">
-              {sectors.map(s => (
-                <div
-                  key={s.sector}
-                  className="h-full transition-all"
-                  style={{ width: `${s.pct}%`, backgroundColor: sectorColor(s.sector), minWidth: s.pct > 0.5 ? "4px" : "0" }}
-                  title={`${s.sector}: ${s.pct.toFixed(1)}%`}
-                />
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
-              {sectors.slice(0, 6).map(s => (
-                <div key={s.sector} className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: sectorColor(s.sector) }} />
-                  <span className="text-[10px] text-slate-600">{s.sector} {s.pct.toFixed(0)}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Concentration flag */}
         {concentration.length > 0 && (
-          <div className={`rounded-xl px-3 py-2 text-xs leading-snug ${
+          <div className={`px-3 py-2 text-xs leading-snug ${
             concentration.some(c => c.level === "high")
               ? "bg-amber-50 border border-amber-200 text-amber-700"
               : "bg-[#F8F5EF] border border-[#E0D9CC] text-[#5A4E42]"
@@ -457,7 +648,7 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
             <div className="grid grid-cols-3 gap-2">
               {topHoldings.map(h => (
                 <Link key={h.ticker} href={`/stock/${h.ticker}`}
-                  className="rounded-xl bg-white/60 border border-white/40 px-3 py-2.5 hover:border-violet-300 hover:bg-white/80 transition-colors">
+                  className="bg-[#FDFAF4] border border-[#C8BFB0] px-3 py-2.5 hover:border-violet-400 hover:bg-white transition-colors">
                   <p className="text-xs font-bold font-mono text-violet-700">{h.ticker}</p>
                   <p className="text-[10px] text-slate-500 mt-0.5">{h.weight.toFixed(1)}% ของพอร์ต</p>
                   <p className={`text-xs font-bold mt-0.5 ${clrCls(h.change1D)}`}>{pctFmt(h.change1D)} วันนี้</p>
@@ -470,14 +661,14 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
         {/* Best / worst today */}
         {best && worst && best.ticker !== worst.ticker && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-xl bg-emerald-50/60 border border-emerald-200 px-3 py-2.5">
+            <div className="bg-emerald-50 border border-emerald-200 px-3 py-2.5">
               <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wide mb-0.5">▲ ดีสุดวันนี้</p>
               <Link href={`/stock/${best.ticker}`} className="block">
                 <p className="text-xs font-bold font-mono text-slate-900 hover:text-violet-700 transition-colors">{best.ticker}</p>
                 <p className="text-xs font-bold text-emerald-600">{pctFmt(best.change1D)}</p>
               </Link>
             </div>
-            <div className="rounded-xl bg-red-50/60 border border-red-200 px-3 py-2.5">
+            <div className="bg-red-50 border border-red-200 px-3 py-2.5">
               <p className="text-[10px] font-semibold text-red-500 uppercase tracking-wide mb-0.5">▼ แย่สุดวันนี้</p>
               <Link href={`/stock/${worst.ticker}`} className="block">
                 <p className="text-xs font-bold font-mono text-slate-900 hover:text-violet-700 transition-colors">{worst.ticker}</p>
@@ -490,19 +681,19 @@ export function PortfolioHero({ compact = false }: PortfolioHeroProps) {
         {/* Performance chart vs S&P */}
         {!compact && (
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8A8378] mb-1.5">
               Performance (% return from first trade)
             </p>
             <PerformanceChart snapshots={snapshots} />
           </div>
         )}
 
-        {/* Links */}
+        {/* Footer links */}
         <div className="flex items-center justify-between pt-1">
           <Link href="/assets" className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors">
             ดูพอร์ตเต็ม →
           </Link>
-          <p className="text-[10px] text-slate-400">
+          <p className="text-[10px] text-[#8A8378]">
             ข้อมูล ณ {new Date(asOf).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })} · 1 USD = {fxRate.toFixed(2)} THB · พอร์ตจำลอง
           </p>
         </div>

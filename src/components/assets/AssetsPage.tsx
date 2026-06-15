@@ -16,6 +16,61 @@ const usd  = (v: number) => `$${Math.abs(v).toLocaleString("en-US", { minimumFra
 const pctFmt = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 const clr  = (v: number) => v >= 0 ? "text-emerald-600" : "text-red-500";
 
+// ─── Sparkline ────────────────────────────────────────────────────────────────
+
+const SPARK_W = 60;
+const SPARK_H = 24;
+const SPARK_POINTS = 7;
+
+// Synthesize 7 directionally-correct points from a single change1D value.
+// Start at 100, end at 100 + change1D, interpolated with a slight curve.
+function buildSparkPoints(change1D: number): readonly number[] {
+  const end = 100 + change1D;
+  return Array.from({ length: SPARK_POINTS }, (_, i) => {
+    const t = i / (SPARK_POINTS - 1);
+    return 100 + (end - 100) * t;
+  });
+}
+
+function toPolylinePoints(values: readonly number[]): string {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1; // avoid div-by-zero for flat lines
+  return values
+    .map((v, i) => {
+      const x = (i / (values.length - 1)) * SPARK_W;
+      // Invert y so higher value = higher on canvas
+      const y = SPARK_H - ((v - min) / range) * SPARK_H;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+}
+
+function Sparkline({ change1D }: { change1D: number }) {
+  const points = buildSparkPoints(change1D);
+  const polyPoints = toPolylinePoints(points);
+  const color = change1D >= 0 ? "#1F9D55" : "#D64545";
+
+  return (
+    <svg
+      width={SPARK_W}
+      height={SPARK_H}
+      viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
+      aria-hidden="true"
+      className="flex-shrink-0"
+    >
+      <polyline
+        points={polyPoints}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: string | null; size?: number }) {
   const [err, setErr] = useState(false);
   if (logoUrl && !err) {
@@ -57,6 +112,7 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
           </div>
           <div className="text-xs text-slate-500 truncate">{h.companyName} · {h.weight.toFixed(1)}% ของพอร์ต</div>
         </div>
+        <Sparkline change1D={h.change1D} />
         <div className="text-right flex-shrink-0">
           <div className="text-sm font-bold font-mono text-slate-900">{thb(h.holdingValueThb)}</div>
           <div className={`text-xs font-semibold ${clr(h.change1D)}`}>{pctFmt(h.change1D)} วันนี้</div>
@@ -165,8 +221,13 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
               <td className="px-3 py-2.5 text-right font-mono text-slate-600">{usd(h.avgCost)}</td>
               <td className="px-3 py-2.5 text-right font-mono text-slate-600">{usd(h.totalCostUsd)}</td>
               <td className="px-3 py-2.5 text-right">
-                <div className="font-mono text-slate-800">{usd(h.currentPrice)}</div>
-                <div className={`text-xs ${clr(h.change1D)}`}>{pctFmt(h.change1D)}</div>
+                <div className="flex items-center justify-end gap-2">
+                  <Sparkline change1D={h.change1D} />
+                  <div>
+                    <div className="font-mono text-slate-800">{usd(h.currentPrice)}</div>
+                    <div className={`text-xs ${clr(h.change1D)}`}>{pctFmt(h.change1D)}</div>
+                  </div>
+                </div>
               </td>
               <td className="px-3 py-2.5 text-right">
                 <div className="font-semibold text-slate-800">{thb(h.holdingValueThb)}</div>

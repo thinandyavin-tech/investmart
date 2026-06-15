@@ -61,10 +61,11 @@ function ActionButtons() {
         <Link
           key={href}
           href={href}
-          className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 hover:bg-white/70 transition-colors group"
+          className="flex flex-col items-center gap-1.5 py-3 px-2 border border-[#1F1A14] transition-all duration-100 group hover:bg-[#1F1A14] hover:text-white active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
+          style={{ background: "#FDFAF4", boxShadow: "2px 2px 0 #1F1A14" }}
         >
           <span className="text-xl" aria-hidden="true">{icon}</span>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-900 text-center leading-tight">{label}</span>
+          <span className="text-xs font-semibold text-[#1F1A14] group-hover:text-white text-center leading-tight">{label}</span>
         </Link>
       ))}
     </div>
