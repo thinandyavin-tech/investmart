@@ -49,6 +49,9 @@ export class GroqAdapter implements ProviderAdapter {
       if (!text) throw new Error("Groq returned empty response");
       return text;
     } catch (err) {
+      if (err instanceof Groq.APIError && RETRYABLE_HTTP.has(err.status)) {
+        throw new RetryableError(`groq: ${errMsg(err)}`, "groq", err.status);
+      }
       if (isRetryable(err)) throw new RetryableError(`groq: ${errMsg(err)}`, "groq");
       throw err;
     } finally {

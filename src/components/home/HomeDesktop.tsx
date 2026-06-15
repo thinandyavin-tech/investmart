@@ -12,6 +12,7 @@ import { PortfolioHero } from "@/components/home/PortfolioHero";
 import { NewsForwardSection } from "@/components/home/NewsForwardSection";
 import { MarketsRail } from "@/components/home/MarketsRail";
 import { TradingViewTickerTape } from "@/components/tradingview/TradingViewTickerTape";
+import { InfographicsSection } from "@/components/home/InfographicsSection";
 
 export function HomeDesktop() {
   const { loading } = useUser();
@@ -29,6 +30,7 @@ export function HomeDesktop() {
           {!loading && <PortfolioHero />}
           <ActionButtons />
           <DailyDigestCard />
+          <InfographicsSection />
           <NewsForwardSection />
           <PostsCard />
         </section>

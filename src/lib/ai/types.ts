@@ -15,9 +15,16 @@ export interface AIRequest {
  * Thrown by adapters for transient failures (rate limit, overload, timeout).
  * The chain catches this to try the next adapter in the fallback sequence.
  * Non-retryable errors (bad request, auth, etc.) are thrown as plain Error.
+ *
+ * statusCode carries the HTTP status when known — used by the health tracker
+ * to distinguish 429 (long cooldown) from 5xx/timeout (short cooldown).
  */
 export class RetryableError extends Error {
-  constructor(message: string, readonly provider: string) {
+  constructor(
+    message: string,
+    readonly provider: string,
+    readonly statusCode?: number,
+  ) {
     super(message);
     this.name = "RetryableError";
   }
