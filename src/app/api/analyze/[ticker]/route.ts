@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { computeIndicators, type OHLCV } from "@/lib/indicators";
 import { generateText } from "@/lib/aiService";
+import { extractJson } from "@/lib/ai/utils";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 45;
@@ -396,8 +397,7 @@ async function buildAnalysis(
 
   let analysis: AnalysisOutput;
   try {
-    // Strip any markdown code fences the model might wrap around JSON
-    const cleaned = raw.replace(/^```(?:json)?\n?/i, "").replace(/\n?```$/i, "").trim();
+    const cleaned = extractJson(raw);
     analysis = JSON.parse(cleaned) as AnalysisOutput;
   } catch {
     throw new Error("AI ส่งข้อมูลในรูปแบบที่ไม่ถูกต้อง ลองใหม่อีกครั้ง");
@@ -462,7 +462,9 @@ export async function GET(
   const refresh = request.nextUrl.searchParams.get("refresh") === "true";
 
   const hasAi = !!(
+    process.env.CEREBRAS_API_KEY ||
     process.env.GROQ_API_KEY ||
+    process.env.NVIDIA_NIM_API_KEY ||
     process.env.GEMINI_API_KEY ||
     process.env.LOCAL_AI_BASE_URL
   );

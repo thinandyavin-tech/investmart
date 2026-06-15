@@ -2,6 +2,7 @@ import { GroqAdapter }          from "./adapters/groq";
 import { GeminiAdapter }        from "./adapters/gemini";
 import { OpenAICompatAdapter }  from "./adapters/openaiCompat";
 import { RetryableError }       from "./types";
+import { isCoolingDown, markCoolingDown, clearCooldown } from "./health";
 import type { AIRequest, ProviderAdapter } from "./types";
 
 // Re-export so callers can import from one place
@@ -117,7 +118,7 @@ function logCall(provider: string, latencyMs: number, fallback: boolean): void {
 
 /**
  * Non-streaming completion through the provider chain.
- * Tries each adapter in order; advances on RetryableError.
+ * Skips providers currently cooling down (429); marks them on rate-limit errors.
  */
 export async function executeComplete(req: AIRequest): Promise<{ result: string; provider: string }> {
   const chain = getChain();
@@ -127,14 +128,22 @@ export async function executeComplete(req: AIRequest): Promise<{ result: string;
 
   for (let i = 0; i < chain.length; i++) {
     const adapter = chain[i]!;
-    const t0      = Date.now();
 
+    // Skip providers known to be rate-limited (KV-backed, 15-min cooldown)
+    if (await isCoolingDown(adapter.name)) {
+      errors.push(`${adapter.name}: cooling down (rate limited)`);
+      continue;
+    }
+
+    const t0 = Date.now();
     try {
       const result = await adapter.complete(req);
+      clearCooldown(adapter.name); // optimistic recovery
       logCall(adapter.name, Date.now() - t0, i > 0);
       return { result, provider: adapter.name };
     } catch (err) {
       if (err instanceof RetryableError) {
+        if (err.statusCode === 429) markCoolingDown(adapter.name);
         errors.push(`${adapter.name}: ${err.message}`);
         continue;
       }
@@ -148,6 +157,7 @@ export async function executeComplete(req: AIRequest): Promise<{ result: string;
 /**
  * Streaming text through the provider chain.
  * Falls back only before the first chunk is yielded; mid-stream errors propagate.
+ * Skips providers in cooldown; marks 429s.
  */
 export async function *executeStream(
   req: AIRequest,
@@ -159,12 +169,19 @@ export async function *executeStream(
 
   for (let i = 0; i < chain.length; i++) {
     const adapter    = chain[i]!;
+
+    if (await isCoolingDown(adapter.name)) {
+      errors.push(`${adapter.name}: cooling down`);
+      continue;
+    }
+
     const t0         = Date.now();
     let   hasYielded = false;
 
     try {
       for await (const chunk of adapter.streamChunks(req)) {
         if (!hasYielded) {
+          clearCooldown(adapter.name);
           logCall(adapter.name, Date.now() - t0, i > 0);
           hasYielded = true;
         }
@@ -173,6 +190,7 @@ export async function *executeStream(
       return;
     } catch (err) {
       if (!hasYielded && err instanceof RetryableError) {
+        if (err.statusCode === 429) markCoolingDown(adapter.name);
         errors.push(`${adapter.name}: ${err.message}`);
         continue;
       }

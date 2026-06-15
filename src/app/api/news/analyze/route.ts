@@ -6,6 +6,7 @@ import { z } from "zod";
 import { generateText } from "@/lib/aiService";
 import { applyRateLimit } from "@/lib/rateLimit";
 import { stripHtml }     from "@/lib/newsUtils";
+import { extractJson }   from "@/lib/ai/utils";
 
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const limited = await applyRateLimit(request, "news");
   if (limited) return limited;
 
-  const hasAi = !!(process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || process.env.LOCAL_AI_BASE_URL);
+  const hasAi = !!(process.env.CEREBRAS_API_KEY || process.env.GROQ_API_KEY || process.env.NVIDIA_NIM_API_KEY || process.env.GEMINI_API_KEY || process.env.LOCAL_AI_BASE_URL);
   if (!hasAi) {
     return NextResponse.json({ error: "AI not configured" }, { status: 503 });
   }
@@ -165,7 +166,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
     let parsed: unknown;
     try {
-      parsed = JSON.parse(text);
+      parsed = JSON.parse(extractJson(text));
     } catch {
       return NextResponse.json({ error: "invalid AI response" }, { status: 502 });
     }

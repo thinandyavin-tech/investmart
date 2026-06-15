@@ -10,6 +10,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "@/lib/aiService";
+import { extractJson } from "@/lib/ai/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -144,12 +145,9 @@ async function buildNarrative(
 
   if (!raw.trim()) return { ...SAFE_NARRATIVE, language: locale, eyebrow };
 
-  // Extract JSON from the response (strip markdown fences if present)
-  const match = raw.match(/\{[\s\S]*\}/);
-  if (!match) return { ...SAFE_NARRATIVE, language: locale, eyebrow };
-
   try {
-    const parsed = JSON.parse(match[0]) as Partial<InfographicNarrative>;
+    const cleaned = extractJson(raw);
+    const parsed = JSON.parse(cleaned) as Partial<InfographicNarrative>;
     return {
       language:   locale,
       eyebrow:    typeof parsed.eyebrow    === "string" ? parsed.eyebrow.slice(0, 60)  : eyebrow,
