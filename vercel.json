@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/screens-precompute",
+      "schedule": "0 12 * * 1-5"
+    },
+    {
       "path": "/api/cron/daily-digest",
       "schedule": "30 21 * * 1-5"
     },
