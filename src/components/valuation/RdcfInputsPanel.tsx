@@ -54,9 +54,9 @@ function Field({
           onChange={e => onChange(e.target.value)}
           className="flex-1 px-2 py-1.5 border text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1A1A1A]"
           style={{
-            background: "#FFFDE7",
+            background: "#fefae0",
             fontFamily: "var(--font-mono)",
-            borderColor: required && !value ? "#ef4444" : "#C8BFB0",
+            borderColor: required && !value ? "#ef4444" : "#ccd5ae",
           }}
         />
         {unit && <span className="text-[9px] text-[#8A8378] flex-shrink-0">{unit}</span>}
@@ -78,7 +78,7 @@ export function RdcfInputsPanel({ values, onChange, labData: d }: RdcfInputsPane
 
   return (
     <div
-      style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }}
+      style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }}
       className="px-4 py-3"
     >
       <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-3">

@@ -42,7 +42,7 @@ export function FairValueBand({
 
   return (
     <div
-      style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }}
+      style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }}
       className="px-4 py-3"
     >
       <div className="flex items-start justify-between gap-2 mb-0.5 flex-wrap">
@@ -124,7 +124,7 @@ function VisualBand({ zones, currentPrice, isEn }: { zones: PriceZones; currentP
   ];
 
   return (
-    <div className="relative h-8 rounded overflow-hidden" style={{ background: "#E4DDD2" }}>
+    <div className="relative h-8 rounded overflow-hidden" style={{ background: "#e9edc9" }}>
       {ZONES.map((z, i) => {
         const left  = parseFloat(pos(z.from));
         const right = 100 - parseFloat(pos(z.to));

@@ -40,8 +40,8 @@ export default function SettingsIdPage() {
     return (
       <AppShell>
         <div className="max-w-sm mx-auto px-4 py-8 space-y-3">
-          <div className="h-10 bg-[#E8E2D4] animate-pulse rounded" />
-          <div className="h-10 bg-[#E8E2D4] animate-pulse rounded" />
+          <div className="h-10 bg-[#e9edc9] animate-pulse rounded" />
+          <div className="h-10 bg-[#e9edc9] animate-pulse rounded" />
         </div>
       </AppShell>
     );
@@ -73,7 +73,7 @@ export default function SettingsIdPage() {
             </p>
           </div>
 
-          <div className="border-t border-[#E8E2D4] pt-3">
+          <div className="border-t border-[#e9edc9] pt-3">
             <p className="text-xs text-[#8A8378] uppercase tracking-wide mb-0.5">Username ปัจจุบัน</p>
             <p className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)" }}>
               {user.username ? `@${user.username}` : "ยังไม่ได้ตั้ง"}
@@ -93,7 +93,7 @@ export default function SettingsIdPage() {
             <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="username-input">
               Username ใหม่
             </label>
-            <div className="flex items-center border border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
+            <div className="flex items-center border border-[#1F1A14] bg-[#fefae0] overflow-hidden">
               <span className="px-2 text-xs text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
               <input
                 id="username-input"

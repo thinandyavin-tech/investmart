@@ -74,7 +74,7 @@ export default function LearnPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#e9edc9]">
           <Link href="/faq"     className="text-[#5B8A2A] hover:underline">คำถามที่พบบ่อย (FAQ)</Link>
           <Link href="/about"   className="text-[#8A8378] hover:underline">เกี่ยวกับ InvestMart</Link>
           <Link href="/"        className="text-[#8A8378] hover:underline">กลับหน้าหลัก</Link>

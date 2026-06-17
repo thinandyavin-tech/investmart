@@ -119,7 +119,7 @@ export function ExchangeClient() {
               inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-2 py-1.5 text-sm font-bold"
+              className="w-full border border-[#1F1A14] bg-[#fefae0] px-2 py-1.5 text-sm font-bold"
               style={{ fontFamily: "var(--font-mono)" }}
             />
           </div>
@@ -131,7 +131,7 @@ export function ExchangeClient() {
               id="from-currency"
               value={fromCurrency}
               onChange={(e) => setFromCurrency(e.target.value as Currency)}
-              className="border border-[#1F1A14] bg-[#FBF7ED] px-2 py-1.5 text-sm font-bold h-full"
+              className="border border-[#1F1A14] bg-[#fefae0] px-2 py-1.5 text-sm font-bold h-full"
             >
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -168,7 +168,7 @@ export function ExchangeClient() {
               id="to-currency"
               value={toCurrency}
               onChange={(e) => setToCurrency(e.target.value as Currency)}
-              className="border border-[#1F1A14] bg-[#FBF7ED] px-2 py-1.5 text-sm font-bold"
+              className="border border-[#1F1A14] bg-[#fefae0] px-2 py-1.5 text-sm font-bold"
             >
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -205,14 +205,14 @@ export function ExchangeClient() {
 
       {/* Rate table */}
       <Card className="mt-4 overflow-hidden">
-        <div className="px-3 py-2 border-b border-[#1F1A14] text-xs font-bold uppercase tracking-wide bg-[#1F1A14] text-[#F3EDE0]">
+        <div className="px-3 py-2 border-b border-[#1F1A14] text-xs font-bold uppercase tracking-wide bg-[#1F1A14] text-[#faedcd]">
           {t.exchange.rateBase}
         </div>
         {Object.entries(rates)
           .filter(([k]) => k.startsWith("USD") && k !== "USDUSD")
           .slice(0, 8)
           .map(([pair, rate]) => (
-            <div key={pair} className="flex justify-between px-3 py-1.5 border-b border-[#E8E2D4] last:border-0 text-xs">
+            <div key={pair} className="flex justify-between px-3 py-1.5 border-b border-[#e9edc9] last:border-0 text-xs">
               <span className="text-[#8A8378]">{pair}</span>
               <span className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>
                 {(rate as number).toFixed(4)}

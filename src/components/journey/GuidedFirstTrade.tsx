@@ -73,8 +73,8 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
     >
       <div
         ref={dialogRef}
-        className="w-full max-w-sm mx-4 mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#F3EDE0]"
-        style={{ boxShadow: "6px 6px 0 #1F1A14" }}
+        className="w-full max-w-sm mx-4 mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#faedcd]"
+        style={{ boxShadow: "6px 6px 0 #d4a373" }}
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -89,7 +89,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
         </div>
 
         {/* Step indicators */}
-        <div className="flex border-b border-[#C8BFB0]">
+        <div className="flex border-b border-[#ccd5ae]">
           {STEPS.map((s, i) => (
             <div
               key={s.id}
@@ -97,7 +97,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
               style={{
                 color: i <= currentIdx ? "#8B5CF6" : "#8A8378",
                 borderBottom: i === currentIdx ? "2px solid #8B5CF6" : "2px solid transparent",
-                background: i < currentIdx ? "#F3EDE0" : undefined,
+                background: i < currentIdx ? "#faedcd" : undefined,
               }}
             >
               {i < currentIdx ? "✓ " : `${i + 1}. `}
@@ -121,7 +121,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                   <button
                     key={t}
                     onClick={() => handleSuggested(t)}
-                    className="px-3 py-1.5 text-xs font-bold border border-[#C8BFB0] bg-[#FDFAF4] hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors"
+                    className="px-3 py-1.5 text-xs font-bold border border-[#ccd5ae] bg-[#fefae0] hover:border-[#8B5CF6] hover:text-[#8B5CF6] transition-colors"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
                     {t} <span className="text-[#8A8378] font-normal text-[9px]">{name}</span>
@@ -136,7 +136,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                   onChange={e => setTicker(e.target.value.toUpperCase())}
                   placeholder={isEn ? "Or type a ticker…" : "หรือพิมพ์ ticker เอง…"}
                   maxLength={10}
-                  className="flex-1 border border-[#C8BFB0] bg-[#FDFAF4] px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#8B5CF6]"
+                  className="flex-1 border border-[#ccd5ae] bg-[#fefae0] px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#8B5CF6]"
                   style={{ fontFamily: "var(--font-mono)" }}
                 />
                 <button
@@ -171,7 +171,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
               <div className="flex flex-col gap-2">
                 <button
                   onClick={goToStockPage}
-                  className="flex items-center justify-between px-3 py-2.5 border border-[#C8BFB0] bg-[#FDFAF4] hover:border-[#8B5CF6] transition-colors text-left"
+                  className="flex items-center justify-between px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#8B5CF6] transition-colors text-left"
                 >
                   <div>
                     <div className="text-xs font-bold text-[#1A1A1A]">
@@ -186,7 +186,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                 <Link
                   href={`/chat?q=${encodeURIComponent(`Tell me about ${ticker} — what's the business, is it in a good theme, and what's currently moving the stock?`)}`}
                   onClick={onClose}
-                  className="flex items-center justify-between px-3 py-2.5 border border-[#C8BFB0] bg-[#FDFAF4] hover:border-[#8B5CF6] transition-colors"
+                  className="flex items-center justify-between px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#8B5CF6] transition-colors"
                 >
                   <div>
                     <div className="text-xs font-bold text-[#1A1A1A]">
@@ -202,7 +202,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => setStep("pick")}
-                  className="flex-1 py-2 text-xs font-bold border border-[#C8BFB0] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
+                  className="flex-1 py-2 text-xs font-bold border border-[#ccd5ae] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
                 >
                   ← {isEn ? "Back" : "กลับ"}
                 </button>
@@ -242,7 +242,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep("read")}
-                  className="flex-1 py-2 text-xs font-bold border border-[#C8BFB0] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
+                  className="flex-1 py-2 text-xs font-bold border border-[#ccd5ae] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
                 >
                   ← {isEn ? "Back" : "กลับ"}
                 </button>

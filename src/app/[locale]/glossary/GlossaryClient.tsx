@@ -165,7 +165,7 @@ export function GlossaryClient() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="ค้นหาคำศัพท์ เช่น RSI, โมเมนตัม, EPS..."
-            className="w-full pl-8 pr-3 py-2 text-xs border-2 border-[#1F1A14] bg-[#FBF7ED] focus:outline-none focus:ring-2 focus:ring-[#5B8A2A] rounded"
+            className="w-full pl-8 pr-3 py-2 text-xs border-2 border-[#1F1A14] bg-[#fefae0] focus:outline-none focus:ring-2 focus:ring-[#5B8A2A] rounded"
           />
         </div>
         {q.trim() && (
@@ -181,7 +181,7 @@ export function GlossaryClient() {
       ) : (
         categories.map((cat) => (
           <section key={cat}>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2 border-b border-[#E8E2D4] pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2 border-b border-[#e9edc9] pb-1">
               {cat}
             </h2>
             <div className="flex flex-col gap-2">
@@ -208,7 +208,7 @@ export function GlossaryClient() {
         ))
       )}
 
-      <p className="text-xs text-[#8A8378] text-center pt-2 border-t border-[#E8E2D4]">
+      <p className="text-xs text-[#8A8378] text-center pt-2 border-t border-[#e9edc9]">
         คำศัพท์เพื่อการศึกษา · ไม่ใช่คำแนะนำการลงทุน
       </p>
     </div>

@@ -64,8 +64,8 @@ export function MarketPageClient() {
 
         {/* ── Hero: Live multi-asset quote board ── */}
         <section aria-label={t.market.globalTitle}>
-          <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
-            <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
+          <div className="border border-[#ccd5ae] bg-[#fefae0] overflow-hidden">
+            <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae]">
               <SectionHeader
                 title={t.market.globalTitle}
                 subtitle={t.market.globalSubtitle}
@@ -79,8 +79,8 @@ export function MarketPageClient() {
 
         {/* ── Market Movers ── */}
         <section aria-label={t.market.moversTitle}>
-          <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
-            <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
+          <div className="border border-[#ccd5ae] bg-[#fefae0] overflow-hidden">
+            <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae]">
               <SectionHeader
                 title={t.market.moversTitle}
                 subtitle={t.market.moversWarning}
@@ -104,8 +104,8 @@ export function MarketPageClient() {
 
         {/* ── S&P 500 Heatmap ── */}
         <section aria-label="S&P 500 Heatmap">
-          <div className="border border-[#E0D9CC] bg-[#FDFAF4] overflow-hidden">
-            <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
+          <div className="border border-[#ccd5ae] bg-[#fefae0] overflow-hidden">
+            <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae]">
               <SectionHeader
                 title={t.market.heatmapTitle}
                 subtitle={t.market.heatmapSubtitle}

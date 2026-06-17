@@ -129,7 +129,7 @@ export default function LessonsPage() {
           </section>
         ))}
 
-        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#e9edc9]">
           <Link href="/radar"  className="text-[#5B8A2A] hover:underline">เปิดเรดาร์</Link>
           <Link href="/glossary" className="text-[#5B8A2A] hover:underline">คำศัพท์</Link>
           <Link href="/learn"  className="text-[#8A8378] hover:underline">← กลับหน้าเรียนรู้</Link>

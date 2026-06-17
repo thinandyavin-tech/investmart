@@ -190,7 +190,7 @@ function BuildingState({ universe, scannedCount, total }: {
       {hasPartial ? (
         <>
           <p className="text-sm font-semibold text-[#1F1A14]">{t.radar.scanning(scannedCount, total)}</p>
-          <div className="w-48 h-1.5 bg-[#E8E2D4] rounded-full overflow-hidden">
+          <div className="w-48 h-1.5 bg-[#e9edc9] rounded-full overflow-hidden">
             <div
               className="h-full bg-violet-500 rounded-full transition-all"
               style={{ width: `${Math.round((scannedCount / total) * 100)}%` }}

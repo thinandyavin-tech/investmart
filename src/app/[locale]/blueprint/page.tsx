@@ -450,7 +450,7 @@ function LevelCard({ level, isEn }: { level: Level; isEn: boolean }) {
           {level.keybox && (
             <div
               className="px-3 py-2.5 text-xs font-bold leading-relaxed whitespace-pre-line"
-              style={{ background: "#1A1A1A", color: "#F3EDE0", fontFamily: "var(--font-mono)" }}
+              style={{ background: "#1A1A1A", color: "#faedcd", fontFamily: "var(--font-mono)" }}
             >
               {level.keybox}
             </div>
@@ -548,7 +548,7 @@ export default function BlueprintPage() {
           </div>
 
           {/* Visual pyramid */}
-          <div className="px-4 pt-4 pb-2 bg-[#FDFAF4] flex flex-col items-center gap-0.5">
+          <div className="px-4 pt-4 pb-2 bg-[#fefae0] flex flex-col items-center gap-0.5">
             {[...PYRAMID_LAYERS].reverse().map((layer, idx) => {
               const widths = ["w-2/12","w-5/12","w-8/12","w-full"];
               return (
@@ -564,7 +564,7 @@ export default function BlueprintPage() {
           </div>
 
           {/* Layer detail cards */}
-          <div className="divide-y divide-[#E4DDD2]">
+          <div className="divide-y divide-[#e9edc9]">
             {PYRAMID_LAYERS.map((layer) => (
               <div key={layer.num} style={{ background: layer.bgLight }} className="px-4 py-3">
                 <div className="flex items-center gap-2 mb-1.5">
@@ -610,13 +610,13 @@ export default function BlueprintPage() {
           </div>
 
           {/* Rebalance rules */}
-          <div className="px-4 py-3 border-t border-[#E4DDD2] bg-[#FDFAF4]">
+          <div className="px-4 py-3 border-t border-[#e9edc9] bg-[#fefae0]">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-2">
               {isEn ? "Rebalance Rules" : "กฎการ Rebalance"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {REBALANCE_RULES.map((r, i) => (
-                <div key={i} className="flex gap-2 px-3 py-2 bg-white border border-[#E4DDD2]">
+                <div key={i} className="flex gap-2 px-3 py-2 bg-white border border-[#e9edc9]">
                   <span className="text-base flex-shrink-0">{r.icon}</span>
                   <div>
                     <p className="text-[10px] font-bold text-[#1A1A1A]">{isEn ? r.triggerEn : r.triggerTh}</p>
@@ -643,9 +643,9 @@ export default function BlueprintPage() {
               {isEn ? "Concrete steps to start this week" : "ขั้นตอนที่ลงมือทำได้เลย"}
             </p>
           </div>
-          <div className="divide-y divide-[#E4DDD2]">
+          <div className="divide-y divide-[#e9edc9]">
             {ACTION_PLAN.map((item) => (
-              <div key={item.period} className="flex gap-3 px-4 py-3 bg-[#FDFAF4]">
+              <div key={item.period} className="flex gap-3 px-4 py-3 bg-[#fefae0]">
                 <div className="flex-shrink-0 w-20 pt-0.5">
                   <span className="text-lg">{item.icon}</span>
                   <p className="text-[10px] font-black text-[#1A1A1A] mt-0.5">{isEn ? item.en : item.period}</p>
@@ -667,7 +667,7 @@ export default function BlueprintPage() {
         <Link
           href="/chat?q=ฉันอยากเริ่มลงทุน ช่วยประเมินว่าฉันอยู่ด่านไหนของ Blueprint และควรทำอะไรก่อน"
           style={{ border: "1.5px solid #8B5CF6", boxShadow: "2px 2px 0 #8B5CF6" }}
-          className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#8B5CF6] bg-[#FDFAF4] hover:bg-[#8B5CF6] hover:text-white transition-colors"
+          className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#8B5CF6] bg-[#fefae0] hover:bg-[#8B5CF6] hover:text-white transition-colors"
         >
           ✦ {isEn ? "Ask Martin which level you're at" : "ถาม Martin ว่าตอนนี้อยู่ด่านไหน"}
         </Link>

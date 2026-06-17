@@ -67,9 +67,9 @@ function useAnimatedCounter(target: number): number {
 // ─── Brutalist card style ─────────────────────────────────────────────────────
 
 const CARD_STYLE: React.CSSProperties = {
-  background: "#FDFAF4",
-  border: "1px solid #C8BFB0",
-  boxShadow: "4px 4px 0 #1F1A14",
+  background: "#fefae0",
+  border: "1px solid #ccd5ae",
+  boxShadow: "4px 4px 0 #d4a373",
 };
 
 // ─── Sector grouping ──────────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ function DonutChart({ sectors }: DonutChartProps) {
           cy={cy}
           r={DONUT_RADIUS}
           fill="none"
-          stroke="#E8E2D4"
+          stroke="#e9edc9"
           strokeWidth={DONUT_STROKE}
         />
         {slices.map((s) => (
@@ -365,7 +365,7 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
 
   if (snapshots.length < 2) {
     return (
-      <div className="h-20 flex items-center justify-center border border-dashed border-[#C8BFB0]">
+      <div className="h-20 flex items-center justify-center border border-dashed border-[#ccd5ae]">
         <p className="text-xs text-[#8A8378]">กำลังสร้างประวัติ… จะแสดงหลังซื้อขาย 2 ครั้งขึ้นไป</p>
       </div>
     );
@@ -576,7 +576,7 @@ function PortfolioHeroLoaded({
   return (
     <div style={CARD_STYLE} className="overflow-hidden">
       {/* Hero row */}
-      <div className="px-5 pt-5 pb-4 border-b border-[#C8BFB0]">
+      <div className="px-5 pt-5 pb-4 border-b border-[#ccd5ae]">
         <div className="flex items-start gap-4">
           {/* Left: value + daily change */}
           <div className="flex-1 min-w-0">
@@ -631,7 +631,7 @@ function PortfolioHeroLoaded({
           <div className={`px-3 py-2 text-xs leading-snug ${
             concentration.some(c => c.level === "high")
               ? "bg-amber-50 border border-amber-200 text-amber-700"
-              : "bg-[#F8F5EF] border border-[#E0D9CC] text-[#5A4E42]"
+              : "bg-[#e9edc9] border border-[#ccd5ae] text-[#5A4E42]"
           }`}>
             <span className="font-semibold">สังเกต: </span>
             {concentration.map(c => c.text).join(" · ")}
@@ -648,7 +648,7 @@ function PortfolioHeroLoaded({
             <div className="grid grid-cols-3 gap-2">
               {topHoldings.map(h => (
                 <Link key={h.ticker} href={`/stock/${h.ticker}`}
-                  className="bg-[#FDFAF4] border border-[#C8BFB0] px-3 py-2.5 hover:border-violet-400 hover:bg-white transition-colors">
+                  className="bg-[#fefae0] border border-[#ccd5ae] px-3 py-2.5 hover:border-violet-400 hover:bg-white transition-colors">
                   <p className="text-xs font-bold font-mono text-violet-700">{h.ticker}</p>
                   <p className="text-[10px] text-slate-500 mt-0.5">{h.weight.toFixed(1)}% ของพอร์ต</p>
                   <p className={`text-xs font-bold mt-0.5 ${clrCls(h.change1D)}`}>{pctFmt(h.change1D)} วันนี้</p>

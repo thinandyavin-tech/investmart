@@ -73,9 +73,9 @@ export function DiscoverClient() {
         <div className="flex flex-col gap-3">
           {[0, 1, 2].map((i) => (
             <Card key={i} className="p-4">
-              <div className="h-3 w-48 bg-[#E8E2D4] animate-pulse rounded mb-2" />
-              <div className="h-2 w-full bg-[#E8E2D4] animate-pulse rounded mb-1" />
-              <div className="h-2 w-3/4 bg-[#E8E2D4] animate-pulse rounded" />
+              <div className="h-3 w-48 bg-[#e9edc9] animate-pulse rounded mb-2" />
+              <div className="h-2 w-full bg-[#e9edc9] animate-pulse rounded mb-1" />
+              <div className="h-2 w-3/4 bg-[#e9edc9] animate-pulse rounded" />
             </Card>
           ))}
         </div>
@@ -120,7 +120,7 @@ export function DiscoverClient() {
                 {data.topTraders.map((trader, i) => (
                   <div
                     key={trader.id}
-                    className="flex items-center gap-3 px-3 py-2.5 border-b border-[#E8E2D4] last:border-0"
+                    className="flex items-center gap-3 px-3 py-2.5 border-b border-[#e9edc9] last:border-0"
                   >
                     <span className="text-xs font-bold text-[#8A8378] w-5 flex-shrink-0">
                       {i + 1}

@@ -86,7 +86,7 @@ export function JourneyProgressBar() {
     <>
       <div
         className="mx-3 mb-3 px-3 py-2.5"
-        style={{ background: "#F5F3FF", border: "1px solid #8B5CF6", boxShadow: "2px 2px 0 #1A1A1A" }}
+        style={{ background: "#F5F3FF", border: "1px solid #8B5CF6", boxShadow: "2px 2px 0 #d4a373" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
@@ -111,7 +111,7 @@ export function JourneyProgressBar() {
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-1.5 bg-[#E4DDD2] mb-2.5 overflow-hidden">
+        <div className="w-full h-1.5 bg-[#e9edc9] mb-2.5 overflow-hidden">
           <div
             className="h-full bg-[#8B5CF6] transition-all duration-500"
             style={{ width: `${progressPct}%` }}
@@ -134,7 +134,7 @@ export function JourneyProgressBar() {
                 <div
                   className="w-full h-1 transition-colors"
                   style={{
-                    background: done ? "#8B5CF6" : isCurrent ? "#C4B5FD" : "#E4DDD2",
+                    background: done ? "#8B5CF6" : isCurrent ? "#C4B5FD" : "#e9edc9",
                   }}
                 />
                 <span className="text-[7px] text-[#8A8378] hidden sm:block truncate max-w-full text-center leading-tight">

@@ -78,7 +78,7 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
               className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wide transition-colors ${
                 tab === tabKey
                   ? "bg-[#1F1A14] text-white"
-                  : "bg-[#F3EDE0] text-[#8A8378] hover:text-[#1F1A14]"
+                  : "bg-[#faedcd] text-[#8A8378] hover:text-[#1F1A14]"
               }`}
               aria-pressed={tab === tabKey}
             >
@@ -89,7 +89,7 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
       )}
 
       {showComposer && !userId && (
-        <div className="border-b border-[#E8E2D4]">
+        <div className="border-b border-[#e9edc9]">
           <PostComposer onPublished={prepend} compact={compact} />
         </div>
       )}
@@ -115,7 +115,7 @@ export function FeedSection({ userId, showComposer = true, compact = false }: Fe
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="w-full py-3 text-xs font-bold text-[#8A8378] hover:text-[#1F1A14] border-t border-[#E8E2D4] transition-colors disabled:opacity-40"
+              className="w-full py-3 text-xs font-bold text-[#8A8378] hover:text-[#1F1A14] border-t border-[#e9edc9] transition-colors disabled:opacity-40"
             >
               {loadingMore ? t.social.loadingMore : t.social.loadMore}
             </button>
@@ -130,7 +130,7 @@ function FeedSkeleton({ label }: { label: string }) {
   return (
     <div className="flex flex-col" aria-busy="true" aria-label={label}>
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="flex gap-3 px-4 py-3 border-b border-[#E8E2D4]">
+        <div key={i} className="flex gap-3 px-4 py-3 border-b border-[#e9edc9]">
           <div className="w-9 h-9 rounded-full skeleton flex-shrink-0" />
           <div className="flex-1 space-y-2">
             <div className="h-3 w-32 skeleton rounded" />

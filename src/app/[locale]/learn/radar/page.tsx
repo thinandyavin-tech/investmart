@@ -99,7 +99,7 @@ export default function RadarTransparencyPage() {
               ["REVIVED",    "หุ้นที่ตกหนักสัปดาห์ก่อน (> -10%) แต่วันนี้ฟื้นตัวมา > 3%"],
             ] as const).map(([cat, desc]) => (
               <div key={cat} className="flex gap-2">
-                <span className="font-mono font-bold text-xs bg-[#E8E2D4] px-1.5 py-0.5 rounded flex-shrink-0 h-fit">{cat}</span>
+                <span className="font-mono font-bold text-xs bg-[#e9edc9] px-1.5 py-0.5 rounded flex-shrink-0 h-fit">{cat}</span>
                 <span className="text-[#8A8378]">{desc}</span>
               </div>
             ))}
@@ -143,7 +143,7 @@ export default function RadarTransparencyPage() {
           </p>
         </Card>
 
-        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#e9edc9]">
           <Link href="/glossary#momentum-score" className="text-[#5B8A2A] hover:underline">
             อ่านนิยาม Momentum Score →
           </Link>

@@ -40,7 +40,7 @@ export default function RadarRoute() {
     <AppShell>
       <div className="flex flex-col h-full">
         {/* Mode toggle */}
-        <div className="flex-shrink-0 flex items-center gap-2 px-4 py-1.5 bg-[#F8F5EF] border-b border-[#E0D9CC] text-[10px]">
+        <div className="flex-shrink-0 flex items-center gap-2 px-4 py-1.5 bg-[#e9edc9] border-b border-[#ccd5ae] text-[10px]">
           <span className="text-[#8A8378] uppercase tracking-wide font-semibold">View:</span>
           <button
             onClick={() => setMode("movers")}
@@ -52,7 +52,7 @@ export default function RadarRoute() {
           >
             Market Movers
           </button>
-          <span className="text-[#C8BFB0]">|</span>
+          <span className="text-[#ccd5ae]">|</span>
           <button
             onClick={() => setMode("scored")}
             className={`px-2 py-0.5 font-bold transition-colors ${

@@ -59,7 +59,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
   }
 
   return (
-    <div className={`bg-[#F3EDE0] border border-[#1F1A14] ${compact ? "p-3" : "p-4"}`}>
+    <div className={`bg-[#faedcd] border border-[#1F1A14] ${compact ? "p-3" : "p-4"}`}>
       {!compact && (
         <p className="text-xs font-bold uppercase tracking-widest text-[#8A8378] mb-2">
           เขียนโพสต์ · ไม่มีรูป ไม่มีอีโมจิ — มีแต่ความคิด
@@ -67,7 +67,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
       )}
 
       {quotePost && (
-        <div className="mb-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
+        <div className="mb-2 p-2.5 border border-[#e9edc9] bg-[#F9F6EE]">
           <p className="text-xs font-bold text-[#8A8378] mb-0.5">
             {sc.quoteRefPrefix} {quotePost.author.username ?? quotePost.author.name ?? sc.user}
           </p>
@@ -81,7 +81,7 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
         placeholder={quotePost ? sc.commentPlaceholder : (placeholder ?? sc.composePlaceholder)}
         rows={compact ? 3 : 5}
         maxLength={MAX_CONTENT}
-        className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
+        className="w-full resize-none bg-[#fefae0] border border-[#e9edc9] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
         aria-label={sc.commentLabel}
       />
 
@@ -91,14 +91,14 @@ export function PostComposer({ onPublished, placeholder, compact = false, quoteP
           value={ticker}
           onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z.\-]/g, "").slice(0, 10))}
           placeholder="$NVDA"
-          className="w-20 bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-xs font-bold focus:outline-none focus:border-[#5B8A2A] transition-colors"
+          className="w-20 bg-[#fefae0] border border-[#e9edc9] px-2 py-1 text-xs font-bold focus:outline-none focus:border-[#5B8A2A] transition-colors"
           aria-label="cashtag (เช่น NVDA)"
         />
 
         <select
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          className="bg-[#FBF7ED] border border-[#E8E2D4] px-2 py-1 text-xs focus:outline-none focus:border-[#1F1A14] transition-colors"
+          className="bg-[#fefae0] border border-[#e9edc9] px-2 py-1 text-xs focus:outline-none focus:border-[#1F1A14] transition-colors"
           aria-label={sc.topicLabel}
         >
           <option value="">{sc.topicLabel} ({t.common.optional})</option>

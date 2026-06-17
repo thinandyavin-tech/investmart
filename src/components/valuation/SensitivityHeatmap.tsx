@@ -39,7 +39,7 @@ export function SensitivityHeatmap({ baseInputs }: SensitivityHeatmapProps) {
 
   return (
     <div
-      style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }}
+      style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }}
       className="px-4 py-3"
     >
       <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
@@ -75,10 +75,10 @@ export function SensitivityHeatmap({ baseInputs }: SensitivityHeatmapProps) {
           </thead>
           <tbody>
             {waccs.map((w, wi) => (
-              <tr key={w} style={{ background: wi % 2 ? "#F8F5EF" : "#FDFAF4" }}>
+              <tr key={w} style={{ background: wi % 2 ? "#e9edc9" : "#fefae0" }}>
                 <td
                   className="px-2 py-1.5 font-bold text-left"
-                  style={{ color: "#1A1A1A", borderRight: "1px solid #E4DDD2" }}
+                  style={{ color: "#1A1A1A", borderRight: "1px solid #e9edc9" }}
                 >
                   {fPct(w)}
                 </td>
@@ -92,8 +92,8 @@ export function SensitivityHeatmap({ baseInputs }: SensitivityHeatmapProps) {
                       className="px-2 py-1.5 font-bold"
                       style={{
                         fontFamily: "var(--font-mono)",
-                        color: v !== null ? "#fff" : "#C8BFB0",
-                        background: v !== null ? cagrBg(v) : "#F8F5EF",
+                        color: v !== null ? "#fff" : "#ccd5ae",
+                        background: v !== null ? cagrBg(v) : "#e9edc9",
                         outline: isBase ? "2px solid #1A1A1A" : undefined,
                         outlineOffset: "-2px",
                         opacity: isBase ? 1 : 0.85,

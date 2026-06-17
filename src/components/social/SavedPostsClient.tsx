@@ -73,7 +73,7 @@ export function SavedPostsClient() {
             <button
               onClick={loadMore}
               disabled={more}
-              className="w-full py-3 text-xs font-bold text-[#8A8378] hover:text-[#1F1A14] border-t border-[#E8E2D4] transition-colors disabled:opacity-40"
+              className="w-full py-3 text-xs font-bold text-[#8A8378] hover:text-[#1F1A14] border-t border-[#e9edc9] transition-colors disabled:opacity-40"
             >
               {more ? "กำลังโหลด..." : "โหลดเพิ่มเติม"}
             </button>

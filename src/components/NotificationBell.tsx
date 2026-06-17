@@ -84,7 +84,7 @@ export function NotificationBell({ size = "md" }: BellProps) {
 
   const dim    = size === "sm" ? 16 : 20;
   const btnCls = size === "sm"
-    ? "relative w-9 h-9 flex items-center justify-center border border-[#1F1A14] rounded-full bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+    ? "relative w-9 h-9 flex items-center justify-center border border-[#1F1A14] rounded-full bg-[#faedcd] hover:bg-[#1F1A14] hover:text-white transition-colors"
     : "relative w-9 h-9 flex items-center justify-center hover:bg-[#1F1A14] hover:text-white transition-colors";
 
   return (
@@ -114,10 +114,10 @@ export function NotificationBell({ size = "md" }: BellProps) {
           ref={panelRef}
           role="dialog"
           aria-label="การแจ้งเตือน"
-          className="absolute right-0 top-full mt-1 w-72 bg-[#FBF7ED] border border-[#1F1A14] z-50 shadow-[2px_2px_0_#1F1A14]"
+          className="absolute right-0 top-full mt-1 w-72 bg-[#fefae0] border border-[#1F1A14] z-50 shadow-[2px_2px_0_#1F1A14]"
           style={{ maxHeight: "360px", display: "flex", flexDirection: "column" }}
         >
-          <div className="flex items-center justify-between px-3 py-2 border-b border-[#E8E2D4] flex-shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-[#e9edc9] flex-shrink-0">
             <span className="text-xs font-bold uppercase tracking-widest">การแจ้งเตือน</span>
             {unread > 0 && (
               <button
@@ -136,7 +136,7 @@ export function NotificationBell({ size = "md" }: BellProps) {
               {notifications.map((n) => {
                 const row = (
                   <div
-                    className="flex items-start gap-2 px-3 py-2 border-b border-[#E8E2D4] hover:bg-[#F3EDE0] transition-colors"
+                    className="flex items-start gap-2 px-3 py-2 border-b border-[#e9edc9] hover:bg-[#faedcd] transition-colors"
                     style={{ background: n.read ? "transparent" : "#F0FAE5" }}
                   >
                     <span className="text-base flex-shrink-0 leading-none mt-0.5">{typeIcon(n.type)}</span>

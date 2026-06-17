@@ -87,7 +87,7 @@ export function HistoryClient() {
     <div className="p-4 max-w-2xl mx-auto">
       <div className="flex items-center justify-between gap-3 mb-1 flex-wrap">
         <h1 className="text-xs font-bold uppercase tracking-widest">{t.history.title}</h1>
-        <Link href="/journal" className="text-[10px] font-bold px-2.5 py-1 border border-[#C8BFB0] text-[#8B5CF6] hover:border-[#8B5CF6] transition-colors">
+        <Link href="/journal" className="text-[10px] font-bold px-2.5 py-1 border border-[#ccd5ae] text-[#8B5CF6] hover:border-[#8B5CF6] transition-colors">
           📝 {t.nav.journal} →
         </Link>
       </div>
@@ -167,7 +167,7 @@ export function HistoryClient() {
             <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse min-w-[420px]">
               <thead>
-                <tr className="bg-[#1F1A14] text-[#F3EDE0]">
+                <tr className="bg-[#1F1A14] text-[#faedcd]">
                   {["วันที่", "หุ้น", "ซื้อ/ขาย", "จำนวน", "ราคา", "รวม"].map((h) => (
                     <th key={h} className="text-left px-3 py-2 text-xs uppercase tracking-wide font-bold">
                       {h}
@@ -177,7 +177,7 @@ export function HistoryClient() {
               </thead>
               <tbody>
                 {trades.map((t) => (
-                  <tr key={t.id} className="border-b border-[#E8E2D4] last:border-0">
+                  <tr key={t.id} className="border-b border-[#e9edc9] last:border-0">
                     <td className="px-3 py-2 text-xs text-[#8A8378]">
                       {new Date(t.createdAt).toLocaleDateString("th-TH", {
                         day:   "numeric",

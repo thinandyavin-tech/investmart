@@ -33,7 +33,7 @@ export function RangeBar({ price, low, high }: { price: number | null; low: numb
   const pct = Math.max(0, Math.min(1, (price - low) / (high - low)));
   return (
     <div>
-      <div className="relative h-1 bg-[#E8E2D4] w-28">
+      <div className="relative h-1 bg-[#e9edc9] w-28">
         <div
           className="absolute top-1/2 -translate-y-1/2 w-0.5 h-3 bg-[#1F1A14] rounded-sm"
           style={{ left: `${pct * 100}%` }}
@@ -51,7 +51,7 @@ export function RangeBar({ price, low, high }: { price: number | null; low: numb
 
 export function MobileCard({ row, metrics }: { row: CompareRow; metrics: MetricDef[] }) {
   return (
-    <div className="border border-[#1F1A14] bg-[#F3EDE0] p-4" style={{ boxShadow: "2px 2px 0 #1F1A14" }}>
+    <div className="border border-[#1F1A14] bg-[#faedcd] p-4" style={{ boxShadow: "2px 2px 0 #1F1A14" }}>
       <div className="flex items-center justify-between mb-3">
         <Link href={`/stock/${row.ticker}`} className="font-bold text-sm text-[#1F1A14] hover:underline font-mono">
           {row.ticker}

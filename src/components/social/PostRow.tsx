@@ -105,7 +105,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
   }
 
   return (
-    <article className="px-4 py-3 border-b border-[#E8E2D4]">
+    <article className="px-4 py-3 border-b border-[#e9edc9]">
       <div className="flex gap-3">
         <Link href={`/u/${post.author.username ?? post.author.id}`} aria-label={t.social.profileAria(username)}>
           <div
@@ -153,7 +153,7 @@ export function PostRow({ post, showReply = true }: PostRowProps) {
                 </Link>
               )}
               {post.topic && (
-                <span className="text-xs px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] rounded-sm">
+                <span className="text-xs px-1.5 py-0.5 border border-[#e9edc9] text-[#8A8378] rounded-sm">
                   {post.topic}
                 </span>
               )}
@@ -219,7 +219,7 @@ function QuotedPostCard({ post }: { post: QuotedPost }) {
   const { t } = useI18n();
   const author = post.author.username ?? post.author.name ?? t.social.user;
   return (
-    <div className="mt-2 p-2.5 border border-[#E8E2D4] bg-[#F9F6EE]">
+    <div className="mt-2 p-2.5 border border-[#e9edc9] bg-[#F9F6EE]">
       <div className="flex items-center gap-1.5 mb-1">
         <span className="text-xs font-bold text-[#1F1A14] truncate">{author}</span>
         <span className="text-xs text-[#8A8378] flex-shrink-0">{relativeTime(new Date(post.createdAt))}</span>
@@ -260,7 +260,7 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
   }
 
   return (
-    <div className="mt-2 p-3 bg-[#F3EDE0] border border-[#E8E2D4]">
+    <div className="mt-2 p-3 bg-[#faedcd] border border-[#e9edc9]">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -268,7 +268,7 @@ function QuoteComposer({ quotedPostId, onClose }: { quotedPostId: string; onClos
         rows={3}
         maxLength={MAX_CONTENT}
         autoFocus
-        className="w-full resize-none bg-[#FBF7ED] border border-[#E8E2D4] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
+        className="w-full resize-none bg-[#fefae0] border border-[#e9edc9] px-3 py-2 text-xs leading-relaxed focus:outline-none focus:border-[#1F1A14] transition-colors"
         aria-label={t.social.commentLabel}
       />
       <div className="flex items-center gap-2 mt-1.5">

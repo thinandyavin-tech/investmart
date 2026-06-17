@@ -61,7 +61,7 @@ export default function ProfilePage() {
         <Card className="p-4">
           <div className="flex items-start gap-4">
             {loading ? (
-              <div className="w-16 h-16 rounded-full bg-[#E8E2D4] animate-pulse" />
+              <div className="w-16 h-16 rounded-full bg-[#e9edc9] animate-pulse" />
             ) : (
               <Avatar initial={initial} />
             )}
@@ -107,7 +107,7 @@ export default function ProfilePage() {
                   <div
                     key={key}
                     title={b.desc}
-                    className="flex items-center gap-1.5 px-2 py-1 bg-[#F8F5EF] border border-[#E8E2D4] text-xs font-bold"
+                    className="flex items-center gap-1.5 px-2 py-1 bg-[#e9edc9] border border-[#e9edc9] text-xs font-bold"
                   >
                     <span aria-hidden="true">{b.icon}</span>
                     <span>{label}</span>
@@ -140,19 +140,19 @@ export default function ProfilePage() {
               <div className="text-xs text-[#8A8378] mb-0.5">{t.profile.vsBaseline}</div>
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+              <div className="bg-[#e9edc9] border border-[#e9edc9] p-2 text-center">
                 <div className="text-xs text-[#8A8378] uppercase tracking-wide">Cash THB</div>
                 <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ฿{Math.round(user.cashThb).toLocaleString("th-TH")}
                 </div>
               </div>
-              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+              <div className="bg-[#e9edc9] border border-[#e9edc9] p-2 text-center">
                 <div className="text-xs text-[#8A8378] uppercase tracking-wide">Cash USD</div>
                 <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ${user.cashUsd.toFixed(2)}
                 </div>
               </div>
-              <div className="bg-[#F8F5EF] border border-[#E8E2D4] p-2 text-center">
+              <div className="bg-[#e9edc9] border border-[#e9edc9] p-2 text-center">
                 <div className="text-xs text-[#8A8378] uppercase tracking-wide">{t.profile.stockCount(user.holdings.length)}</div>
                 <div className="text-xs font-bold mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>
                   ${costBasis.toFixed(0)}
@@ -171,13 +171,13 @@ export default function ProfilePage() {
         {/* Holdings */}
         {!loading && user && user.holdings.length > 0 && (
           <Card className="overflow-hidden">
-            <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
+            <div className="px-3 pt-3 pb-2 border-b border-[#e9edc9]">
               <h2 className="text-xs font-bold uppercase tracking-widest">{t.profile.holdings}</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs min-w-[280px]">
                 <thead>
-                  <tr className="border-b border-[#E8E2D4]">
+                  <tr className="border-b border-[#e9edc9]">
                     {[t.stock.price, t.trade.shares, t.trade.avgCost, "USD"].map((h) => (
                       <th key={h} className="text-left px-3 py-1.5 text-xs text-[#8A8378] uppercase tracking-wide font-bold">
                         {h}
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                 </thead>
                 <tbody>
                   {user.holdings.map((h) => (
-                    <tr key={h.ticker} className="border-b border-[#E8E2D4] last:border-0">
+                    <tr key={h.ticker} className="border-b border-[#e9edc9] last:border-0">
                       <td className="px-3 py-2">
                         <Link href={`/stock/${h.ticker}`} className="font-bold hover:underline text-[#5B8A2A]">
                           {h.ticker}
@@ -223,7 +223,7 @@ export default function ProfilePage() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2 px-3 py-2 border border-[#E8E2D4] mb-1.5 last:mb-0 text-xs hover:bg-[#1F1A14] hover:text-white transition-colors"
+              className="flex items-center gap-2 px-3 py-2 border border-[#e9edc9] mb-1.5 last:mb-0 text-xs hover:bg-[#1F1A14] hover:text-white transition-colors"
             >
               <span>{icon}</span>
               <span className="font-bold">{label}</span>

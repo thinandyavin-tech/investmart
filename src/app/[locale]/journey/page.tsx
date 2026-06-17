@@ -44,7 +44,7 @@ function ReadinessCheck({ isEn, onDone }: ReadinessCheckProps) {
   }
 
   return (
-    <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-4 flex flex-col gap-4">
+    <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-4 flex flex-col gap-4">
       <div>
         <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
           {isEn ? "Financial Readiness Check" : "ตรวจสอบความพร้อมทางการเงิน"}
@@ -150,7 +150,7 @@ function ReadinessCheck({ isEn, onDone }: ReadinessCheckProps) {
       <div className="flex gap-2">
         <button
           onClick={() => onDone(true)}
-          className="flex-1 py-2 text-xs font-bold border border-[#C8BFB0] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
+          className="flex-1 py-2 text-xs font-bold border border-[#ccd5ae] text-[#8A8378] hover:text-[#1A1A1A] transition-colors"
         >
           {isEn ? "Skip — go to journey" : "ข้าม — ไปที่ journey"}
         </button>
@@ -190,9 +190,9 @@ function QuestionBlock({ label, options, selected, onSelect, isEn }: {
             onClick={() => onSelect(opt.value)}
             className="px-3 py-2 text-[10px] font-bold border transition-colors text-left"
             style={{
-              background: selected === opt.value ? "#8B5CF6" : "#FDFAF4",
+              background: selected === opt.value ? "#8B5CF6" : "#fefae0",
               color: selected === opt.value ? "#fff" : "#1A1A1A",
-              borderColor: selected === opt.value ? "#8B5CF6" : "#C8BFB0",
+              borderColor: selected === opt.value ? "#8B5CF6" : "#ccd5ae",
             }}
           >
             {isEn ? opt.labelEn : opt.labelTh}
@@ -222,7 +222,7 @@ function JourneyMap({ state, tradeCount, isEn, onMark, onTrade }: JourneyMapProp
   return (
     <div className="flex flex-col gap-3">
       {/* Progress header */}
-      <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-3">
+      <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-3">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378]">
             {isEn ? "Your Learning Journey" : "เส้นทางการเรียนรู้"}
@@ -231,7 +231,7 @@ function JourneyMap({ state, tradeCount, isEn, onMark, onTrade }: JourneyMapProp
             {completed}/{total} {isEn ? "complete" : "สำเร็จ"}
           </span>
         </div>
-        <div className="w-full h-2 bg-[#E4DDD2] overflow-hidden mb-1">
+        <div className="w-full h-2 bg-[#e9edc9] overflow-hidden mb-1">
           <div
             className="h-full transition-all duration-500"
             style={{ width: `${pct}%`, background: allDone ? "#16A34A" : "#8B5CF6" }}
@@ -257,8 +257,8 @@ function JourneyMap({ state, tradeCount, isEn, onMark, onTrade }: JourneyMapProp
             key={step.id}
             className="px-4 py-3 flex gap-3 items-start"
             style={{
-              background: isDone ? "#F0FDF4" : isNext ? "#F5F3FF" : "#F8F5EF",
-              border: `1px solid ${isDone ? "#86EFAC" : isNext ? "#8B5CF6" : "#E4DDD2"}`,
+              background: isDone ? "#F0FDF4" : isNext ? "#F5F3FF" : "#e9edc9",
+              border: `1px solid ${isDone ? "#86EFAC" : isNext ? "#8B5CF6" : "#e9edc9"}`,
               opacity: isLocked ? 0.6 : 1,
             }}
           >
@@ -266,12 +266,12 @@ function JourneyMap({ state, tradeCount, isEn, onMark, onTrade }: JourneyMapProp
             <div className="flex-shrink-0 flex flex-col items-center gap-1 pt-0.5">
               <div
                 className="w-8 h-8 flex items-center justify-center text-lg border-2"
-                style={{ borderColor: isDone ? "#16A34A" : isNext ? "#8B5CF6" : "#C8BFB0", background: isDone ? "#dcfce7" : isNext ? "#ede9fe" : "#FDFAF4" }}
+                style={{ borderColor: isDone ? "#16A34A" : isNext ? "#8B5CF6" : "#ccd5ae", background: isDone ? "#dcfce7" : isNext ? "#ede9fe" : "#fefae0" }}
               >
                 {isDone ? "✓" : step.icon}
               </div>
               {idx < JOURNEY_STEPS.length - 1 && (
-                <div className="w-px h-4 bg-[#E4DDD2]" />
+                <div className="w-px h-4 bg-[#e9edc9]" />
               )}
             </div>
 
@@ -299,7 +299,7 @@ function JourneyMap({ state, tradeCount, isEn, onMark, onTrade }: JourneyMapProp
                       </Link>
                       <button
                         onClick={() => onMark(step.id)}
-                        className="text-[10px] font-bold px-3 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:text-[#1A1A1A] hover:border-[#1A1A1A] transition-colors"
+                        className="text-[10px] font-bold px-3 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:text-[#1A1A1A] hover:border-[#1A1A1A] transition-colors"
                       >
                         {isEn ? "Mark as done ✓" : "ทำแล้ว ✓"}
                       </button>
@@ -450,7 +450,7 @@ export default function JourneyPage() {
         )}
 
         {/* Learning path context */}
-        <div style={{ background: "#F8F5EF", border: "1px solid #C8BFB0" }} className="px-4 py-3">
+        <div style={{ background: "#e9edc9", border: "1px solid #ccd5ae" }} className="px-4 py-3">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-2">
             {isEn ? "Full learning path" : "เส้นทางการเรียนรู้ทั้งหมด"}
           </p>
@@ -464,7 +464,7 @@ export default function JourneyPage() {
               { label: "Valuation Lab", href: "/valuation" },
             ].map(({ label, href }) => (
               <Link key={href} href={href}
-                className="text-[10px] font-bold px-2.5 py-1 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors bg-[#FDFAF4]">
+                className="text-[10px] font-bold px-2.5 py-1 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors bg-[#fefae0]">
                 {label} ↗
               </Link>
             ))}

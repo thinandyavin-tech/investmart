@@ -147,13 +147,13 @@ function SkeletonRow({ rank }: { rank: number }) {
   return (
     <tr className="border-b border-white/20">
       <td className="px-2 py-1.5 text-slate-400">{rank}</td>
-      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-16 bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-12 bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-10 bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#E8E2D4] animate-pulse rounded" /></td>
-      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#E8E2D4] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-16 bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-12 bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-10 bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#e9edc9] animate-pulse rounded" /></td>
+      <td className="px-2 py-1.5"><div className="h-3 w-8  bg-[#e9edc9] animate-pulse rounded" /></td>
     </tr>
   );
 }
@@ -375,7 +375,7 @@ export function ScreenerClient() {
                 onClick={() => setFilters(f => ({ ...f, universe: u }))}
                 className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
-                  background:  filters.universe === u ? "#1F1A14" : "#FBF7ED",
+                  background:  filters.universe === u ? "#1F1A14" : "#fefae0",
                   color:       filters.universe === u ? "#fff" : "#1F1A14",
                   borderColor: "#1F1A14",
                 }}
@@ -395,7 +395,7 @@ export function ScreenerClient() {
                   onClick={() => toggleSector(s)}
                   className="text-xs font-bold px-1.5 py-0.5 border transition-colors"
                   style={{
-                    background:  filters.sectors.has(s) ? "#1F1A14" : "#FBF7ED",
+                    background:  filters.sectors.has(s) ? "#1F1A14" : "#fefae0",
                     color:       filters.sectors.has(s) ? "#fff" : "#8A8378",
                     borderColor: "#D0C8B8",
                   }}
@@ -428,7 +428,7 @@ export function ScreenerClient() {
                 onClick={() => setFilter("capSize", v)}
                 className="text-xs font-bold px-2 py-0.5 border transition-colors"
                 style={{
-                  background:  filters.capSize === v ? "#1F1A14" : "#FBF7ED",
+                  background:  filters.capSize === v ? "#1F1A14" : "#fefae0",
                   color:       filters.capSize === v ? "#fff" : "#1F1A14",
                   borderColor: "#1F1A14",
                 }}
@@ -541,7 +541,7 @@ export function ScreenerClient() {
       {listLoading && !listError && (
         <div className="flex flex-col gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-8 bg-[#E8E2D4] animate-pulse rounded" style={{ opacity: 1 - i * 0.1 }} />
+            <div key={i} className="h-8 bg-[#e9edc9] animate-pulse rounded" style={{ opacity: 1 - i * 0.1 }} />
           ))}
           <p className="text-xs text-slate-500 text-center">กำลังโหลดรายชื่อหุ้น...</p>
         </div>
@@ -601,7 +601,7 @@ export function ScreenerClient() {
                         <p className="text-[10px] text-slate-400 truncate max-w-[120px]">{row.name}</p>
                       </td>
                       <td className="px-2 py-1.5">
-                        <span className="text-xs font-bold px-1 py-0.5" style={{ background: "#E8E2D4", color: "#8A8378" }}>
+                        <span className="text-xs font-bold px-1 py-0.5" style={{ background: "#e9edc9", color: "#8A8378" }}>
                           {row.sector}
                         </span>
                       </td>

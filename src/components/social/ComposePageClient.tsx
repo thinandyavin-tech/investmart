@@ -20,8 +20,8 @@ export function ComposePageClient() {
   if (loading) {
     return (
       <div className="max-w-lg mx-auto p-4">
-        <div className="h-4 w-32 bg-[#E8E2D4] animate-pulse rounded mb-4" />
-        <div className="h-32 bg-[#E8E2D4] animate-pulse rounded" />
+        <div className="h-4 w-32 bg-[#e9edc9] animate-pulse rounded mb-4" />
+        <div className="h-32 bg-[#e9edc9] animate-pulse rounded" />
       </div>
     );
   }
@@ -31,7 +31,7 @@ export function ComposePageClient() {
       <h1 className="text-xs font-bold uppercase tracking-widest mb-4">เขียนโพสต์</h1>
 
       {!user ? (
-        <div className="border-2 border-[#1F1A14] bg-[#F3EDE0] p-6 text-center flex flex-col gap-3">
+        <div className="border-2 border-[#1F1A14] bg-[#faedcd] p-6 text-center flex flex-col gap-3">
           <p className="text-xs text-[#8A8378]">เข้าสู่ระบบเพื่อเขียนโพสต์</p>
           <div className="flex gap-2 justify-center">
             <Link href="/signin">
@@ -47,7 +47,7 @@ export function ComposePageClient() {
           </div>
         </div>
       ) : published ? (
-        <div className="border border-[#5B8A2A] bg-[#F3EDE0] p-6 text-center">
+        <div className="border border-[#5B8A2A] bg-[#faedcd] p-6 text-center">
           <p className="text-xs font-bold text-[#5B8A2A]">โพสต์สำเร็จ ✓</p>
           <p className="text-xs text-[#8A8378] mt-1">กำลังไปที่โปรไฟล์...</p>
         </div>

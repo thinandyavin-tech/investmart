@@ -13,14 +13,14 @@ export const maxDuration = 15;
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
-const CREAM  = "#FBF7ED";
+const CREAM  = "#fefae0";
 const INK    = "#1A1A1A";
 const ACCENT = "#8B5CF6";
 const MUTED  = "#6B6B6B";
 const GAIN   = "#1F9D55";
 const LOSS   = "#D64545";
-const BORDER = "#E4DDD2";
-const CREAM2 = "#F3EDE0";
+const BORDER = "#e9edc9";
+const CREAM2 = "#faedcd";
 
 // Font cache (per edge worker instance)
 let _reg:  ArrayBuffer | null = null;

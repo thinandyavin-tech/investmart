@@ -37,7 +37,7 @@ const SCENARIOS: Record<ScenarioKey, ScenarioDef> = {
     adjNote: "Your assumptions unchanged",
     adjNoteTh: "Assumptions ของคุณ (ไม่เปลี่ยน)",
     marginDelta: 0, gDelta: 0, roicMult: 1.00, tamMult: 1.00,
-    bg: "#FDFAF4", border: "#C8BFB0", color: "#1A1A1A",
+    bg: "#fefae0", border: "#ccd5ae", color: "#1A1A1A",
   },
   bull: {
     label: "Bull", labelTh: "Bull — ดีกว่าคาด",
@@ -134,7 +134,7 @@ export function ScenarioPanel({ baseInputs }: ScenarioPanelProps) {
 
   return (
     <div
-      style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }}
+      style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }}
       className="px-4 py-3"
     >
       <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-0.5">

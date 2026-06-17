@@ -8,8 +8,8 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 // Brutalist offset shadow shared across cards
 const DEFAULT_STYLE: CSSProperties = {
-  background: "#FDFAF4",
-  border: "1px solid #C8BFB0",
+  background: "#fefae0",
+  border: "1px solid #ccd5ae",
   boxShadow: "2px 2px 0 #1F1A14",
 };
 
@@ -24,7 +24,7 @@ export function Card({
 }: CardProps) {
   const base =
     variant === "outline"
-      ? "bg-transparent border border-[#E0D9CC]"
+      ? "bg-transparent border border-[#ccd5ae]"
       : variant === "ghost"
         ? "bg-transparent"
         : "";

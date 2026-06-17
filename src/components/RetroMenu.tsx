@@ -71,8 +71,8 @@ export function RetroMenu({ onClose, fromMobile = false }: RetroMenuProps) {
       onClick={onClose}
     >
       <div
-        className={`${fromMobile ? "ml-2 mt-2" : "ml-14 mt-4"} w-72 border-2 border-[#1F1A14] bg-[#F3EDE0] max-h-[90vh] overflow-y-auto`}
-        style={{ boxShadow: "4px 4px 0 #1F1A14" }}
+        className={`${fromMobile ? "ml-2 mt-2" : "ml-14 mt-4"} w-72 border-2 border-[#1F1A14] bg-[#faedcd] max-h-[90vh] overflow-y-auto`}
+        style={{ boxShadow: "4px 4px 0 #d4a373" }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

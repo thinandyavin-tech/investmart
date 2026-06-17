@@ -18,8 +18,8 @@ export default function Error({ error, reset }: ErrorProps) {
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div
-        className="w-full max-w-sm bg-[#F3EDE0] border border-[#1F1A14] p-8 flex flex-col items-center gap-5"
-        style={{ boxShadow: "4px 4px 0 #1F1A14" }}
+        className="w-full max-w-sm bg-[#faedcd] border border-[#1F1A14] p-8 flex flex-col items-center gap-5"
+        style={{ boxShadow: "4px 4px 0 #d4a373" }}
       >
         <Logo size={32} className="text-[#1F1A14]" />
 

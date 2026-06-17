@@ -122,14 +122,14 @@ export function MarketsRail() {
   return (
     <aside className="flex flex-col gap-4">
       {/* Markets at a glance */}
-      <section className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC] flex items-center justify-between">
+      <section className="bg-[#fefae0]/90 border border-[#ccd5ae] shadow-card overflow-hidden">
+        <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae] flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">ตลาดวันนี้</h2>
           <Link href="/market" className="text-xs font-bold text-[#5B8A2A] hover:underline">
             ดูเพิ่ม →
           </Link>
         </div>
-        <div className="px-4 py-2 divide-y divide-[#E8E2D4]">
+        <div className="px-4 py-2 divide-y divide-[#e9edc9]">
           {idxLoad ? (
             <SkeletonRows n={3} />
           ) : idxErr || indices.length === 0 ? (
@@ -146,8 +146,8 @@ export function MarketsRail() {
       </section>
 
       {/* Top movers */}
-      <section className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
+      <section className="bg-[#fefae0]/90 border border-[#ccd5ae] shadow-card overflow-hidden">
+        <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae]">
           <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.homeStrings.topMovers}</h2>
         </div>
         <div className="px-3 py-2">
@@ -175,8 +175,8 @@ export function MarketsRail() {
       </section>
 
       {/* Curated screens */}
-      <section className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card overflow-hidden">
-        <div className="px-4 pt-3 pb-2 border-b border-[#E0D9CC]">
+      <section className="bg-[#fefae0]/90 border border-[#ccd5ae] shadow-card overflow-hidden">
+        <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae]">
           <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.homeStrings.algorithmScan}</h2>
           <p className="text-[10px] text-[#8A8378] mt-0.5">สัญญาณจากข้อมูลจริง · ไม่ใช่คำแนะนำลงทุน</p>
         </div>
@@ -203,7 +203,7 @@ export function MarketsRail() {
           </Link>
           <Link
             href="/market"
-            className="flex items-center justify-between w-full rounded-xl bg-[#F8F5EF] border border-[#E0D9CC] px-3 py-2.5 hover:bg-[#F0EBE1] transition-colors"
+            className="flex items-center justify-between w-full rounded-xl bg-[#e9edc9] border border-[#ccd5ae] px-3 py-2.5 hover:bg-[#F0EBE1] transition-colors"
           >
             <div>
               <p className="text-xs font-bold text-[#1F1A14]">Top Movers Today</p>
@@ -217,7 +217,7 @@ export function MarketsRail() {
       {/* Economic calendar quick link */}
       <Link
         href="/calendar"
-        className="bg-[#FDFAF4]/90 border border-[#E0D9CC] shadow-card p-3.5 flex items-center gap-3 hover:bg-[#F8F5EF] transition-colors"
+        className="bg-[#fefae0]/90 border border-[#ccd5ae] shadow-card p-3.5 flex items-center gap-3 hover:bg-[#e9edc9] transition-colors"
       >
         <span className="text-xl flex-shrink-0" aria-hidden="true">📅</span>
         <div>

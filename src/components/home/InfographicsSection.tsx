@@ -28,7 +28,7 @@ function CategoryIcon({ hint }: { hint: InfographicCard["icon_hint"] }) {
 const SENTIMENT_STYLE: Record<InfographicCard["sentiment"], { accent: string; bg: string; badge: string }> = {
   positive: { accent: "#5B8A2A", bg: "#F6FAF0", badge: "#DCFCE7" },
   negative: { accent: "#DC2626", bg: "#FEF9F9", badge: "#FEE2E2" },
-  neutral:  { accent: "#1F1A14", bg: "#FDFAF4", badge: "#F0EBE0" },
+  neutral:  { accent: "#1F1A14", bg: "#fefae0", badge: "#F0EBE0" },
 };
 
 const CATEGORY_LABEL: Record<InfographicCard["category"], string> = {
@@ -51,7 +51,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
   return (
     <article
       className="flex-shrink-0 w-72 border-2 border-[#1F1A14] flex flex-col select-text"
-      style={{ background: s.bg, boxShadow: "4px 4px 0 #1F1A14" }}
+      style={{ background: s.bg, boxShadow: "4px 4px 0 #d4a373" }}
       aria-label={card.headline_th}
     >
       {/* Top bar: category + icon */}
@@ -111,7 +111,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-2 border-t border-[#E8E2D4] flex items-center justify-between gap-2">
+      <div className="px-3 py-2 border-t border-[#e9edc9] flex items-center justify-between gap-2">
         <span className="text-xs text-[#8A8378] truncate">
           {card.source_name}
         </span>
@@ -137,7 +137,7 @@ function InfographicCard({ card }: { card: InfographicCard }) {
 
       {/* Expanded: AI analysis */}
       {expanded && (
-        <div className="px-3 pb-2 border-t border-[#E8E2D4] bg-[#F3EDE0]">
+        <div className="px-3 pb-2 border-t border-[#e9edc9] bg-[#faedcd]">
           <p className="text-xs text-[#8A8378] pt-2">
             ต้องการวิเคราะห์ AI เพิ่มเติม?
           </p>
@@ -162,14 +162,14 @@ function InfographicCard({ card }: { card: InfographicCard }) {
 
 function CardSkeleton() {
   return (
-    <div className="flex-shrink-0 w-72 h-48 border-2 border-[#E8E2D4] bg-white" style={{ boxShadow: "4px 4px 0 #E8E2D4" }}>
-      <div className="h-8 bg-[#F0EBE0] border-b-2 border-[#E8E2D4]" />
+    <div className="flex-shrink-0 w-72 h-48 border-2 border-[#e9edc9] bg-white" style={{ boxShadow: "4px 4px 0 #e9edc9" }}>
+      <div className="h-8 bg-[#F0EBE0] border-b-2 border-[#e9edc9]" />
       <div className="p-3 space-y-2">
-        <div className="h-4 w-full bg-[#E8E2D4] animate-pulse rounded" />
-        <div className="h-4 w-4/5 bg-[#E8E2D4] animate-pulse rounded" />
-        <div className="h-3 w-24 bg-[#E8E2D4] animate-pulse rounded" />
-        <div className="h-2.5 w-full bg-[#E8E2D4] animate-pulse rounded" />
-        <div className="h-2.5 w-3/4 bg-[#E8E2D4] animate-pulse rounded" />
+        <div className="h-4 w-full bg-[#e9edc9] animate-pulse rounded" />
+        <div className="h-4 w-4/5 bg-[#e9edc9] animate-pulse rounded" />
+        <div className="h-3 w-24 bg-[#e9edc9] animate-pulse rounded" />
+        <div className="h-2.5 w-full bg-[#e9edc9] animate-pulse rounded" />
+        <div className="h-2.5 w-3/4 bg-[#e9edc9] animate-pulse rounded" />
       </div>
     </div>
   );

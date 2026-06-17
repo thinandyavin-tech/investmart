@@ -8,9 +8,9 @@ import type { InfographicData } from "@/app/api/stock/infographic/route";
 const ACCENT = "#8B5CF6";
 const INK    = "#1A1A1A";
 const MUTED  = "#6B6B6B";
-const CREAM  = "#FBF7ED";
-const CREAM2 = "#F3EDE0";
-const BORDER = "#E4DDD2";
+const CREAM  = "#fefae0";
+const CREAM2 = "#faedcd";
+const BORDER = "#e9edc9";
 const GAIN   = "#1F9D55";
 const LOSS   = "#D64545";
 

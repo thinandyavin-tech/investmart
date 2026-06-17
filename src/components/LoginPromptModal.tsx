@@ -34,8 +34,8 @@ export function LoginPromptModal({ message, onClose, withDemo = true }: LoginPro
     >
       <div
         ref={dialogRef}
-        className="mx-4 w-full max-w-sm border-2 border-[#1F1A14] bg-[#FBF7ED]"
-        style={{ boxShadow: "4px 4px 0 #1F1A14" }}
+        className="mx-4 w-full max-w-sm border-2 border-[#1F1A14] bg-[#fefae0]"
+        style={{ boxShadow: "4px 4px 0 #d4a373" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div

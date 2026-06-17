@@ -19,7 +19,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
         style={{
           margin: 0,
           minHeight: "100vh",
-          background: "#FBF7ED",
+          background: "#fefae0",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -31,9 +31,9 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           style={{
             maxWidth: 360,
             width: "100%",
-            background: "#F3EDE0",
+            background: "#faedcd",
             border: "1px solid #1F1A14",
-            boxShadow: "4px 4px 0 #1F1A14",
+            boxShadow: "4px 4px 0 #d4a373",
             padding: "2rem",
             display: "flex",
             flexDirection: "column",

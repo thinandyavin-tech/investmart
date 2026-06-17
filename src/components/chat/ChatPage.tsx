@@ -117,7 +117,7 @@ export function ChatPage() {
   return (
     <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
-      <div className="border-b border-[#1F1A14] bg-[#F3EDE0] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
+      <div className="border-b border-[#1F1A14] bg-[#faedcd] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
         <div className="flex-1">
           <h1 className="text-xs font-bold uppercase tracking-widest">{tc.communityTitle}</h1>
           <p className="text-xs text-[#8A8378]">{tc.communityDesc}</p>
@@ -167,7 +167,7 @@ export function ChatPage() {
             >
               <div
                 className="w-7 h-7 rounded-full border border-[#1F1A14] flex items-center justify-center text-xs font-bold flex-shrink-0"
-                style={{ background: isMe ? "#1F1A14" : "#F3EDE0", color: isMe ? "#F3EDE0" : "#1F1A14" }}
+                style={{ background: isMe ? "#1F1A14" : "#faedcd", color: isMe ? "#faedcd" : "#1F1A14" }}
               >
                 {authorInitial(msg)}
               </div>
@@ -179,9 +179,9 @@ export function ChatPage() {
                 <div
                   className="px-3 py-1.5 text-xs leading-relaxed border border-[#1F1A14]"
                   style={{
-                    background: isMe ? "#1F1A14" : "#FBF7ED",
-                    color:      isMe ? "#F3EDE0" : "#1F1A14",
-                    boxShadow:  isMe ? "none" : "2px 2px 0 #E8E2D4",
+                    background: isMe ? "#1F1A14" : "#fefae0",
+                    color:      isMe ? "#faedcd" : "#1F1A14",
+                    boxShadow:  isMe ? "none" : "2px 2px 0 #e9edc9",
                   }}
                 >
                   {msg.content}
@@ -195,7 +195,7 @@ export function ChatPage() {
       </div>
 
       {/* Input bar */}
-      <div className="border-t border-[#1F1A14] bg-[#F3EDE0] px-3 py-2 flex-shrink-0">
+      <div className="border-t border-[#1F1A14] bg-[#faedcd] px-3 py-2 flex-shrink-0">
         {error && (
           <p className="text-xs text-[#E5484D] mb-1">{error}</p>
         )}
@@ -225,7 +225,7 @@ export function ChatPage() {
               onClick={() => void send()}
               disabled={sending || !input.trim()}
               className="border-2 border-[#1F1A14] px-4 py-1.5 text-xs font-bold uppercase tracking-wide disabled:opacity-40"
-              style={{ background: "#1F1A14", color: "#F3EDE0", boxShadow: "2px 2px 0 #5B8A2A" }}
+              style={{ background: "#1F1A14", color: "#faedcd", boxShadow: "2px 2px 0 #5B8A2A" }}
             >
               {sending ? "..." : tc.send}
             </button>

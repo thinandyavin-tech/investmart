@@ -67,7 +67,7 @@ interface FeaturedArticleProps {
 function FeaturedArticle({ article, allHeadlines }: FeaturedArticleProps) {
   const tickers = extractTickers(article.headline);
   return (
-    <div className="pb-4 border-b border-[#E8E2D4]">
+    <div className="pb-4 border-b border-[#e9edc9]">
       <a
         href={article.url}
         target="_blank"
@@ -162,7 +162,7 @@ export function NewsForwardSection() {
   return (
     <section className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-[#E8E2D4] flex items-center justify-between">
+      <div className="px-4 pt-4 pb-3 border-b border-[#e9edc9] flex items-center justify-between">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">{t.homeStrings.hotNews}</h2>
           <p className="text-xs text-slate-400 mt-0.5">Finnhub · ตรวจสอบก่อนตัดสินใจ</p>

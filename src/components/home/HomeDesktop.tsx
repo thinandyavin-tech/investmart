@@ -62,7 +62,7 @@ function ActionButtons() {
           key={href}
           href={href}
           className="flex flex-col items-center gap-1.5 py-3 px-2 border border-[#1F1A14] transition-all duration-100 group hover:bg-[#1F1A14] hover:text-white active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
-          style={{ background: "#FDFAF4", boxShadow: "2px 2px 0 #1F1A14" }}
+          style={{ background: "#fefae0", boxShadow: "2px 2px 0 #1F1A14" }}
         >
           <span className="text-xl" aria-hidden="true">{icon}</span>
           <span className="text-xs font-semibold text-[#1F1A14] group-hover:text-white text-center leading-tight">{label}</span>
@@ -76,7 +76,7 @@ function PostsCard() {
   const { t } = useI18n();
   return (
     <Card className="overflow-hidden">
-      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
+      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b border-[#e9edc9]">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-[#8A8378]">{t.desktop.postsTitle}</h2>
       </div>
       <FeedSection showComposer={true} />

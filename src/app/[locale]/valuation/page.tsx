@@ -176,7 +176,7 @@ export default function ValuationLabPage() {
               { href: "/screens",  label: isEn ? "Screens ↗" : "คัดกรอง ↗" },
             ].map(({ href, label }) => (
               <Link key={href} href={href}
-                className="text-[10px] font-bold px-2.5 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
+                className="text-[10px] font-bold px-2.5 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
                 {label}
               </Link>
             ))}
@@ -190,12 +190,12 @@ export default function ValuationLabPage() {
             onChange={e => setTicker(e.target.value.toUpperCase())}
             placeholder={isEn ? "Ticker (e.g. NVDA)" : "รหัสหุ้น (เช่น NVDA)"}
             maxLength={10} autoCapitalize="characters" autoComplete="off"
-            className="flex-1 border border-[#C8BFB0] bg-[#FDFAF4] px-3 py-2.5 text-sm font-bold focus:outline-none focus:border-[#1A1A1A]"
+            className="flex-1 border border-[#ccd5ae] bg-[#fefae0] px-3 py-2.5 text-sm font-bold focus:outline-none focus:border-[#1A1A1A]"
             style={{ fontFamily: "var(--font-mono)" }}
           />
           <button type="submit" disabled={lab.loading}
             className="px-5 py-2.5 text-xs font-bold text-white bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 transition-colors"
-            style={{ boxShadow: "2px 2px 0 #1A1A1A" }}>
+            style={{ boxShadow: "2px 2px 0 #d4a373" }}>
             {lab.loading ? "…" : isEn ? "Analyze with Martin" : "วิเคราะห์กับ Martin"}
           </button>
         </form>
@@ -205,7 +205,7 @@ export default function ValuationLabPage() {
           <div className="flex flex-wrap gap-2">
             {QUICK.map(t => (
               <button key={t} onClick={() => { setTicker(t); void fetchLab(t); }}
-                className="text-xs font-bold px-3 py-1 border border-[#C8BFB0] bg-[#FDFAF4] hover:border-[#1A1A1A] transition-colors"
+                className="text-xs font-bold px-3 py-1 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#1A1A1A] transition-colors"
                 style={{ fontFamily: "var(--font-mono)" }}>{t}</button>
             ))}
           </div>
@@ -219,14 +219,14 @@ export default function ValuationLabPage() {
 
         {/* ── Stock header ── */}
         {ld && (
-          <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-3">
+          <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-3">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-lg font-bold" style={{ fontFamily: "var(--font-mono)" }}>{ld.ticker}</span>
                   {ld.name && <span className="text-xs text-[#8A8378] truncate max-w-[200px]">{ld.name}</span>}
                   {ld.industry && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#F3EDE0] border border-[#C8BFB0] text-[#8A8378]">
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#faedcd] border border-[#ccd5ae] text-[#8A8378]">
                       {ld.industry}
                     </span>
                   )}
@@ -251,7 +251,7 @@ export default function ValuationLabPage() {
               </Link>
             </div>
             {ld.sanityNotes.length > 0 && (
-              <div className="mt-2 pt-2 border-t border-[#E4DDD2]">
+              <div className="mt-2 pt-2 border-t border-[#e9edc9]">
                 {ld.sanityNotes.map((n, i) => (
                   <p key={i} className="text-[9px] text-amber-700">⚠ {n}</p>
                 ))}
@@ -266,13 +266,13 @@ export default function ValuationLabPage() {
         {/* ── Results ── */}
         {result && (
           result.kind === "success" ? (
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-3">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-3">
                 {isEn ? "Expectations Gauge" : "Expectations Gauge — ราคาต้องการอะไร?"}
               </p>
               {/* Three-column gauge */}
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-3" style={{ background: "#F3EDE0", border: "1px solid #C8BFB0" }}>
+                <div className="p-3" style={{ background: "#faedcd", border: "1px solid #ccd5ae" }}>
                   <div className="text-[8px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
                     {isEn ? "Market-Implied CAGR" : "ตลาดต้องการ"}
                   </div>
@@ -289,7 +289,7 @@ export default function ValuationLabPage() {
                   <div className="text-[9px] mt-1">{result.gap > 0 ? "▲" : "▼"}</div>
                   <div className="text-[8px] text-[#8A8378]">Implied − Plausible</div>
                 </div>
-                <div className="p-3" style={{ background: "#F3EDE0", border: "1px solid #C8BFB0" }}>
+                <div className="p-3" style={{ background: "#faedcd", border: "1px solid #ccd5ae" }}>
                   <div className="text-[8px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
                     {isEn ? "Plausible CAGR" : "ที่ทำได้จริง"}
                   </div>
@@ -311,7 +311,7 @@ export default function ValuationLabPage() {
                 </div>
               </div>
               {/* Math breakdown */}
-              <div className="mt-3 pt-3 border-t border-[#E4DDD2] grid grid-cols-2 gap-x-4 gap-y-1" style={{ fontSize: "10px" }}>
+              <div className="mt-3 pt-3 border-t border-[#e9edc9] grid grid-cols-2 gap-x-4 gap-y-1" style={{ fontSize: "10px" }}>
                 {[
                   { l: "TV(N)",       v: `$${(result.tv / 1e9).toFixed(1)}B`,                           hint: `EV × (1+WACC)^${rdcfInputs!.n}` },
                   { l: "FCFF(N+1)",   v: `$${(result.fcff / 1e9).toFixed(1)}B`,                          hint: "TV × (WACC − g)" },
@@ -367,7 +367,7 @@ export default function ValuationLabPage() {
         )}
 
         {!result && (
-          <div className="flex items-center justify-center py-8 border border-dashed border-[#C8BFB0] bg-[#FDFAF4]">
+          <div className="flex items-center justify-center py-8 border border-dashed border-[#ccd5ae] bg-[#fefae0]">
             <p className="text-xs text-[#8A8378] text-center">
               {isEn
                 ? "Load a stock with Martin or fill EV, Revenue, and Terminal Margin to compute."

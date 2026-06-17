@@ -126,7 +126,7 @@ function RiskFactorRow({ factor, lang }: { factor: RiskFactor; lang: "en"|"th" }
   const clr = RISK_COLOR[factor.level];
   const lbl = RISK_LABEL[factor.level][lang];
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-[#E4DDD2] last:border-0">
+    <div className="flex items-start gap-3 py-2 border-b border-[#e9edc9] last:border-0">
       <div className="flex-1 min-w-0">
         <span className="text-xs font-bold text-[#1A1A1A]">{factor.name}</span>
         <p className="text-xs text-[#6B6B6B] mt-0.5 leading-relaxed">{factor.note}</p>
@@ -258,7 +258,7 @@ export default function HunterPage() {
           </div>
           <Link
             href="/screens"
-            className="flex-shrink-0 text-[10px] font-bold px-2.5 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors"
+            className="flex-shrink-0 text-[10px] font-bold px-2.5 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors"
           >
             {isEn ? "← Screens" : "← คัดกรอง"}
           </Link>
@@ -274,7 +274,7 @@ export default function HunterPage() {
             maxLength={10}
             autoCapitalize="characters"
             autoComplete="off"
-            className="flex-1 border border-[#C8BFB0] bg-[#FDFAF4] px-3 py-2.5 text-sm font-bold focus:outline-none focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A]"
+            className="flex-1 border border-[#ccd5ae] bg-[#fefae0] px-3 py-2.5 text-sm font-bold focus:outline-none focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A]"
             aria-label="Stock ticker"
           />
           <button
@@ -298,7 +298,7 @@ export default function HunterPage() {
                 <button
                   key={t}
                   onClick={() => { setQuery(t); void analyze(t); }}
-                  className="text-xs font-bold px-3 py-1.5 border border-[#C8BFB0] bg-[#FDFAF4] text-[#1A1A1A] hover:border-[#1A1A1A] hover:bg-[#F3EDE0] transition-colors"
+                  className="text-xs font-bold px-3 py-1.5 border border-[#ccd5ae] bg-[#fefae0] text-[#1A1A1A] hover:border-[#1A1A1A] hover:bg-[#faedcd] transition-colors"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
                   {t}
@@ -328,9 +328,9 @@ export default function HunterPage() {
               </span>
             </div>
             <div className="flex flex-col gap-3 animate-pulse">
-              <div className="h-20 bg-[#E8E2D4] rounded" />
+              <div className="h-20 bg-[#e9edc9] rounded" />
               <div className="grid grid-cols-2 gap-3">
-                {[0,1,2,3].map(i => <div key={i} className="h-32 bg-[#E8E2D4] rounded" />)}
+                {[0,1,2,3].map(i => <div key={i} className="h-32 bg-[#e9edc9] rounded" />)}
               </div>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function HunterPage() {
         {swot && !loading && (
           <>
             {/* Stock header */}
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-3">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-3">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -370,9 +370,9 @@ export default function HunterPage() {
                     disabled={inWatchlist || watchloading}
                     className="text-[10px] font-bold px-2 py-1 border transition-colors disabled:opacity-60"
                     style={{
-                      borderColor: inWatchlist ? "#1F9D55" : "#C8BFB0",
+                      borderColor: inWatchlist ? "#1F9D55" : "#ccd5ae",
                       color:       inWatchlist ? "#1F9D55" : "#8A8378",
-                      background:  inWatchlist ? "#F0FDF4" : "#FDFAF4",
+                      background:  inWatchlist ? "#F0FDF4" : "#fefae0",
                     }}
                     aria-label={isEn ? "Add to watchlist" : "เพิ่มในรายการติดตาม"}
                   >
@@ -387,16 +387,16 @@ export default function HunterPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-0 border border-[#C8BFB0]">
+            <div className="flex gap-0 border border-[#ccd5ae]">
               {(["swot","risk"] as const).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
                   className="flex-1 text-xs font-bold py-2 transition-colors"
                   style={{
-                    background: tab === t ? "#1A1A1A" : "#FDFAF4",
+                    background: tab === t ? "#1A1A1A" : "#fefae0",
                     color:      tab === t ? "#fff" : "#8A8378",
-                    borderRight: t === "swot" ? "1px solid #C8BFB0" : undefined,
+                    borderRight: t === "swot" ? "1px solid #ccd5ae" : undefined,
                   }}
                 >
                   {t === "swot"
@@ -437,7 +437,7 @@ export default function HunterPage() {
                 ) : (
                   <>
                     {/* Overall risk badge */}
-                    <div className="flex items-center gap-3 px-4 py-3" style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }}>
+                    <div className="flex items-center gap-3 px-4 py-3" style={{ background: "#fefae0", border: "1px solid #ccd5ae" }}>
                       <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">
                         {isEn ? "Overall risk" : "ความเสี่ยงรวม"}
                       </span>
@@ -454,7 +454,7 @@ export default function HunterPage() {
                     </div>
 
                     {/* Risk factors */}
-                    <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="px-4 py-1">
+                    <div style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="px-4 py-1">
                       {risk.risk.factors.map((f, i) => (
                         <RiskFactorRow key={i} factor={f} lang={lang} />
                       ))}

@@ -20,7 +20,7 @@ export function OffsetButton({
       : variant === "pink"
         ? "bg-[#EC4899] text-white hover:bg-[#DB2777] active:bg-[#BE185D] focus-visible:ring-[#EC4899]"
         : variant === "white"
-          ? "bg-white text-[#1F1A14] border border-[#D0C8B8] hover:bg-[#F8F5EF] active:bg-[#EDE7D9] focus-visible:ring-[#1F1A14]"
+          ? "bg-white text-[#1F1A14] border border-[#D0C8B8] hover:bg-[#e9edc9] active:bg-[#EDE7D9] focus-visible:ring-[#1F1A14]"
           : "bg-[#1F1A14] text-white hover:bg-[#302820] active:bg-[#000000] focus-visible:ring-[#1F1A14]";
 
   const sizeClass =

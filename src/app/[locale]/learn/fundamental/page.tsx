@@ -9,7 +9,7 @@ import { useI18n }  from "@/lib/i18n";
 
 function Box({ children, color = "#1A1A1A" }: { children: React.ReactNode; color?: string }) {
   return (
-    <div className="my-2 px-3 py-2.5 text-xs font-black leading-relaxed whitespace-pre-line text-[#F3EDE0]"
+    <div className="my-2 px-3 py-2.5 text-xs font-black leading-relaxed whitespace-pre-line text-[#faedcd]"
       style={{ background: color, fontFamily: "var(--font-mono)" }}>
       {children}
     </div>
@@ -37,19 +37,19 @@ interface Chapter { id: string; emoji: string; title: string; tag: string; body:
 function ChapterCard({ ch }: { ch: Chapter }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: "1.5px solid #C8BFB0", background: "#FDFAF4", boxShadow: "2px 2px 0 #C8BFB0" }}>
+    <div style={{ border: "1.5px solid #ccd5ae", background: "#fefae0", boxShadow: "2px 2px 0 #ccd5ae" }}>
       <button className="flex items-start gap-3 px-4 py-3 text-left w-full" onClick={() => setOpen(o => !o)} aria-expanded={open}>
         <span className="text-xl flex-shrink-0 mt-0.5">{ch.emoji}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-bold text-[#1A1A1A]">{ch.title}</span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#E4DDD2] text-[#6B6B6B]">{ch.tag}</span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#e9edc9] text-[#6B6B6B]">{ch.tag}</span>
           </div>
         </div>
         <span className="flex-shrink-0 text-[#8A8378] text-xs mt-1">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="px-4 pb-4 border-t border-[#E4DDD2]">
+        <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3 text-xs text-[#1A1A1A] leading-relaxed flex flex-col gap-2">{ch.body}</div>
           <Link href={`/chat?q=${encodeURIComponent(ch.chatQ)}`}
             className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline">
@@ -100,7 +100,7 @@ export default function FundamentalPage() {
               isEn ? "Licensing / Royalties" : "ค่าลิขสิทธิ์",
               isEn ? "Platform / Marketplace" : "Platform / Marketplace",
             ].map((m, i) => (
-              <div key={i} className="px-2 py-1 border border-[#E4DDD2] bg-[#F8F5EF] font-bold">{m}</div>
+              <div key={i} className="px-2 py-1 border border-[#e9edc9] bg-[#e9edc9] font-bold">{m}</div>
             ))}
           </div>
           <div className="p-3 bg-[#F5F3FF] border border-[#8B5CF6] mt-2">
@@ -123,7 +123,7 @@ export default function FundamentalPage() {
         <>
           <div className="grid grid-cols-4 gap-1 text-[10px] text-center font-bold">
             {["B2C","B2B","B2G","Platform"].map(t => (
-              <div key={t} className="py-1.5 border border-[#C8BFB0] bg-[#F3EDE0]">{t}</div>
+              <div key={t} className="py-1.5 border border-[#ccd5ae] bg-[#faedcd]">{t}</div>
             ))}
           </div>
           <Warn>{isEn ? "Customer Concentration: if one customer > 10–20% of revenue = high risk. Check Risk Factors in 10-K." : "Customer Concentration: ลูกค้ารายใดรายหนึ่ง > 10–20% ของรายได้ = เสี่ยงสูง ดูใน Risk Factors ของ 10-K"}</Warn>
@@ -162,7 +162,7 @@ export default function FundamentalPage() {
                   { t: isEn ? "One-Time + High Margin" : "One-Time + Margin สูง", q: "⭐" },
                   { t: isEn ? "One-Time + Low Margin" : "One-Time + Margin ต่ำ", q: "—" },
                 ].map(({ t, q }, i) => (
-                  <tr key={i} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                  <tr key={i} style={{ background: i % 2 ? "#fefae0" : "#e9edc9", borderBottom: "1px solid #e9edc9" }}>
                     <td className="px-2 py-1.5">{t}</td>
                     <td className="px-2 py-1.5 text-center">{q}</td>
                   </tr>
@@ -222,7 +222,7 @@ export default function FundamentalPage() {
                   { t: "AAPL", gm: "~45%", nm: "~26%" },
                   { t: "AMZN", gm: "~47%", nm: "~5%" },
                 ].map((r, i) => (
-                  <tr key={r.t} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                  <tr key={r.t} style={{ background: i % 2 ? "#fefae0" : "#e9edc9", borderBottom: "1px solid #e9edc9" }}>
                     <td className="px-2 py-1 font-black" style={{ fontFamily: "var(--font-mono)" }}>{r.t}</td>
                     <td className="px-2 py-1 text-[#1F9D55] font-bold">Gross {r.gm}</td>
                     <td className="px-2 py-1 text-[#2563EB] font-bold">Net {r.nm}</td>
@@ -259,7 +259,7 @@ export default function FundamentalPage() {
               { l: "ROE", good: isEn ? "> 15% Good · > 20% Great" : "> 15% ดี · > 20% ดีมาก", warn: isEn ? "Check debt — high ROE from leverage ≠ quality" : "ดูหนี้ด้วย ROE สูงจากหนี้ไม่นับว่าดี" },
               { l: isEn ? "Share Count" : "Share Count", good: isEn ? "Buybacks = shareholder-friendly" : "Buyback = ดีต่อผู้ถือหุ้น", warn: isEn ? "Dilution = extra shares issued, reduces your %" : "Dilution = ออกหุ้นใหม่ สัดส่วนเราลดลง" },
             ].map(({ l, good, warn }) => (
-              <div key={l} className="p-2 border border-[#C8BFB0] bg-[#FDFAF4]">
+              <div key={l} className="p-2 border border-[#ccd5ae] bg-[#fefae0]">
                 <p className="font-bold text-[#1A1A1A] mb-1">{l}</p>
                 <p className="text-[9px] text-[#1F9D55]">✅ {good}</p>
                 <p className="text-[9px] text-[#D64545] mt-0.5">⚠️ {warn}</p>
@@ -283,7 +283,7 @@ export default function FundamentalPage() {
               { type: "Intangible Assets", icon: "™️",  desc: isEn ? "Brand, patents, licenses. Example: Apple, ASML" : "แบรนด์, สิทธิบัตร, ใบอนุญาต เช่น Apple, ASML", test: isEn ? "Would customers pay premium for the brand alone?" : "ลูกค้ายอมจ่ายแพงกว่าเพราะแบรนด์อย่างเดียวไหม?" },
               { type: "Efficient Scale",    icon: "📐", desc: isEn ? "Market too small for 2nd entrant to profit. Example: Waste Management" : "ตลาดเล็กเกินจนเข้ามาแข่งแล้วไม่คุ้ม เช่น Waste Management", test: isEn ? "Would a new entrant destroy their own margin trying to compete?" : "คู่แข่งใหม่เข้ามาแล้วจะเจ็บตัวเองไหม?" },
             ].map(({ type, icon, desc, test }) => (
-              <div key={type} className="p-3 border border-[#C8BFB0] bg-[#FDFAF4]">
+              <div key={type} className="p-3 border border-[#ccd5ae] bg-[#fefae0]">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">{icon}</span>
                   <span className="text-xs font-bold">{type}</span>
@@ -314,7 +314,7 @@ export default function FundamentalPage() {
               { l: isEn ? "Geographic Expansion" : "ขยายภูมิภาค",               d: isEn ? "Same model, new markets" : "Model เดิม ตลาดใหม่" },
               { l: isEn ? "Hidden Optionality" : "Hidden Optionality",           d: isEn ? "Upside the market hasn't priced in yet" : "Upside ที่ตลาดยังไม่ price in" },
             ].map(({ l, d }) => (
-              <div key={l} className="flex gap-2 px-3 py-2 bg-[#FDFAF4] border border-[#C8BFB0]">
+              <div key={l} className="flex gap-2 px-3 py-2 bg-[#fefae0] border border-[#ccd5ae]">
                 <div>
                   <p className="text-[11px] font-bold">{l}</p>
                   <p className="text-[10px] text-[#6B6B6B]">{d}</p>
@@ -422,7 +422,7 @@ export default function FundamentalPage() {
             { href: "/screener",            icon: "🔬", label: isEn ? "Screener"            : "Screener" },
           ].map(({ href, icon, label }) => (
             <Link key={href} href={href}
-              className="flex items-center gap-2 px-3 py-2.5 border border-[#C8BFB0] bg-[#FDFAF4] hover:bg-[#F3EDE0] hover:border-[#1A1A1A] transition-colors">
+              className="flex items-center gap-2 px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:bg-[#faedcd] hover:border-[#1A1A1A] transition-colors">
               <span>{icon}</span><span className="text-xs font-bold text-[#1A1A1A]">{label}</span>
             </Link>
           ))}

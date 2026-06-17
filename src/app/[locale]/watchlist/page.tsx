@@ -93,7 +93,7 @@ export default function WatchlistPage() {
               onKeyDown={(e) => { if (e.key === "Enter") void handleAdd(); }}
               placeholder="AAPL, NVDA, TSLA..."
               maxLength={10}
-              className="flex-1 border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold uppercase focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+              className="flex-1 border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold uppercase focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
               style={{ fontFamily: "var(--font-mono)" }}
               aria-label="Ticker เพื่อเพิ่ม watchlist"
             />
@@ -110,7 +110,7 @@ export default function WatchlistPage() {
 
         {/* List */}
         <Card className="overflow-hidden">
-          <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4] flex items-center justify-between">
+          <div className="px-3 pt-3 pb-2 border-b border-[#e9edc9] flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-widest">
               {items.length} หุ้น
             </h2>
@@ -118,11 +118,11 @@ export default function WatchlistPage() {
           </div>
 
           {loading ? (
-            <div className="divide-y divide-[#E8E2D4]">
+            <div className="divide-y divide-[#e9edc9]">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="flex items-center justify-between px-3 py-3">
-                  <div className="h-3 w-16 bg-[#E8E2D4] animate-pulse rounded" />
-                  <div className="h-3 w-20 bg-[#E8E2D4] animate-pulse rounded" />
+                  <div className="h-3 w-16 bg-[#e9edc9] animate-pulse rounded" />
+                  <div className="h-3 w-20 bg-[#e9edc9] animate-pulse rounded" />
                 </div>
               ))}
             </div>
@@ -131,7 +131,7 @@ export default function WatchlistPage() {
               Watchlist ว่างอยู่ — เพิ่มหุ้นด้านบน
             </p>
           ) : (
-            <div className="divide-y divide-[#E8E2D4]">
+            <div className="divide-y divide-[#e9edc9]">
               {items.map((item) => {
                 const liveData = prices[item.ticker];
                 const positive = (liveData?.changePct ?? 0) >= 0;
@@ -146,7 +146,7 @@ export default function WatchlistPage() {
                     </Link>
 
                     {isPriceLoading ? (
-                      <div className="flex-1 h-3 bg-[#E8E2D4] animate-pulse rounded" />
+                      <div className="flex-1 h-3 bg-[#e9edc9] animate-pulse rounded" />
                     ) : liveData ? (
                       <>
                         <span
@@ -179,7 +179,7 @@ export default function WatchlistPage() {
                       </Link>
                       <button
                         onClick={() => void handleRemove(item.ticker)}
-                        className="text-xs px-1.5 py-0.5 border border-[#E8E2D4] text-[#8A8378] hover:border-[#DC2626] hover:text-[#DC2626] transition-colors"
+                        className="text-xs px-1.5 py-0.5 border border-[#e9edc9] text-[#8A8378] hover:border-[#DC2626] hover:text-[#DC2626] transition-colors"
                         aria-label={`ลบ ${item.ticker}`}
                       >
                         ×

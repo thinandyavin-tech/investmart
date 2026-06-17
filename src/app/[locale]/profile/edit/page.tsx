@@ -63,7 +63,7 @@ export default function ProfileEditPage() {
       <AppShell>
         <div className="max-w-lg mx-auto px-4 py-8 space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 bg-[#E8E2D4] animate-pulse rounded" />
+            <div key={i} className="h-10 bg-[#e9edc9] animate-pulse rounded" />
           ))}
         </div>
       </AppShell>
@@ -104,7 +104,7 @@ export default function ProfileEditPage() {
               maxLength={50}
               disabled={nameChangeLocked}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14] disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="ชื่อของคุณ"
               aria-describedby="name-count name-cooldown"
             />
@@ -132,7 +132,7 @@ export default function ProfileEditPage() {
               maxLength={300}
               rows={4}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs resize-none focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+              className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs resize-none focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
               placeholder="แนะนำตัวเองสั้นๆ — ตัวอักษรเท่านั้น ไม่มีอีโมจิ"
               aria-describedby="bio-count"
             />

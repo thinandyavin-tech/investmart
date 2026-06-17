@@ -112,7 +112,7 @@ export default function TermsPage() {
           }
         </Card>
 
-        <div className="flex gap-4 text-xs text-[#8A8378] pt-1 border-t border-[#E8E2D4]">
+        <div className="flex gap-4 text-xs text-[#8A8378] pt-1 border-t border-[#e9edc9]">
           <Link href="/privacy" className="hover:underline">
             {isEn ? "Privacy Policy" : "นโยบายความเป็นส่วนตัว"}
           </Link>

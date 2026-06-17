@@ -65,7 +65,7 @@ function WelcomeStep() {
         ))}
       </ul>
 
-      <p className="text-xs text-[#8A8378] border-t border-[#E8E2D4] pt-2">
+      <p className="text-xs text-[#8A8378] border-t border-[#e9edc9] pt-2">
         {ob.disclaimer}
       </p>
     </div>
@@ -94,7 +94,7 @@ function UsernameStep({ value, onChange, error, inputRef }: UsernameStepProps) {
         <label htmlFor="ob-username" className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1">
           {ob.usernameLabel}
         </label>
-        <div className="flex items-center border-2 border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
+        <div className="flex items-center border-2 border-[#1F1A14] bg-[#fefae0] overflow-hidden">
           <span className="px-2 py-2 text-xs text-[#8A8378] border-r-2 border-[#1F1A14] select-none">@</span>
           <input
             ref={inputRef}
@@ -323,8 +323,8 @@ export function OnboardingFlow() {
       onClick={dismiss}
     >
       <div
-        className="w-full max-w-sm mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#F3EDE0] overflow-hidden"
-        style={{ boxShadow: "6px 6px 0 #1F1A14" }}
+        className="w-full max-w-sm mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#faedcd] overflow-hidden"
+        style={{ boxShadow: "6px 6px 0 #d4a373" }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

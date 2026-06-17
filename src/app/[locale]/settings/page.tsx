@@ -121,12 +121,12 @@ export default function SettingsPage() {
               </p>
               <div
                 className="flex flex-col"
-                style={{ border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1F1A14" }}
+                style={{ border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #1F1A14" }}
               >
                 {section.items.map((item, idx) => {
                   const isLast = idx === section.items.length - 1;
                   const inner = (
-                    <div className="flex items-center gap-3 px-4 py-3 bg-[#FDFAF4] hover:bg-[#F3EDE0] transition-colors">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-[#fefae0] hover:bg-[#faedcd] transition-colors">
                       <span className="text-base w-6 text-center flex-shrink-0" aria-hidden="true">
                         {item.icon}
                       </span>
@@ -140,7 +140,7 @@ export default function SettingsPage() {
                     </div>
                   );
 
-                  const wrapperCls = !isLast ? "border-b border-[#E0D9CC]" : "";
+                  const wrapperCls = !isLast ? "border-b border-[#ccd5ae]" : "";
 
                   if ("action" in item && item.action) {
                     return (

@@ -18,7 +18,7 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   growth:    { bg: "#FEE2E2", text: "#DC2626" },
   technical: { bg: "#F1F5F9", text: "#475569" },
   macro:     { bg: "#FFF7ED", text: "#EA580C" },
-  other:     { bg: "#F3EDE0", text: "#8A8378" },
+  other:     { bg: "#faedcd", text: "#8A8378" },
 };
 
 function fmtDate(iso: string): string {
@@ -90,7 +90,7 @@ function TradeRow({ trade, currentPrice, isEn, locale, onEditThesis }: TradeRowP
     : null;
 
   return (
-    <div className="py-3 border-b border-[#E4DDD2] last:border-0">
+    <div className="py-3 border-b border-[#e9edc9] last:border-0">
       <div className="flex items-start justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <span
@@ -172,10 +172,10 @@ function PositionCard({ pos, currentPrice, isEn, locale, onEditThesis }: Positio
   const thesesCount     = pos.trades.filter(t => t.thesis).length;
 
   return (
-    <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="overflow-hidden">
+    <div style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F3EDE0] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#faedcd] transition-colors text-left"
         aria-expanded={open}
       >
         <div className="flex-1 min-w-0">
@@ -203,7 +203,7 @@ function PositionCard({ pos, currentPrice, isEn, locale, onEditThesis }: Positio
       </button>
 
       {open && (
-        <div className="px-4 pb-3 border-t border-[#E4DDD2]">
+        <div className="px-4 pb-3 border-t border-[#e9edc9]">
           {pos.trades.map(trade => (
             <TradeRow
               key={trade.id}
@@ -288,7 +288,7 @@ export default function JournalPage() {
           <a
             href="/api/journal/export"
             download
-            className="text-[10px] font-bold px-3 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors"
+            className="text-[10px] font-bold px-3 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors"
           >
             {isEn ? "Export CSV ↓" : "ส่งออก CSV ↓"}
           </a>
@@ -303,7 +303,7 @@ export default function JournalPage() {
               { labelEn: "Positions",    labelTh: "Positions",    v: journal.positions.length },
               { labelEn: "Open",         labelTh: "ถือไว้",       v: journal.positions.filter(p => p.shares > 0.001).length },
             ].map(({ labelEn, labelTh, v }) => (
-              <div key={labelEn} style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="px-3 py-2 flex flex-col items-center gap-0.5">
+              <div key={labelEn} style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="px-3 py-2 flex flex-col items-center gap-0.5">
                 <span className="text-lg font-bold" style={{ fontFamily: "var(--font-mono)" }}>{v}</span>
                 <span className="text-[9px] text-[#8A8378] uppercase tracking-wide">{isEn ? labelEn : labelTh}</span>
               </div>
@@ -314,14 +314,14 @@ export default function JournalPage() {
         {loading && (
           <div className="flex flex-col gap-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-16 bg-[#F3EDE0] animate-pulse" />
+              <div key={i} className="h-16 bg-[#faedcd] animate-pulse" />
             ))}
           </div>
         )}
 
         {/* No trades state */}
         {!loading && journal && journal.trades.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-10 border border-dashed border-[#C8BFB0] bg-[#FDFAF4]">
+          <div className="flex flex-col items-center gap-3 py-10 border border-dashed border-[#ccd5ae] bg-[#fefae0]">
             <p className="text-xs text-[#8A8378] text-center">
               {isEn
                 ? "No trades yet. Place a paper trade and record your thesis to start your journal."
@@ -353,7 +353,7 @@ export default function JournalPage() {
         )}
 
         {/* Disclaimer */}
-        <div style={{ borderLeft: "4px solid #C8BFB0", background: "#F8F5EF" }} className="px-4 py-2">
+        <div style={{ borderLeft: "4px solid #ccd5ae", background: "#e9edc9" }} className="px-4 py-2">
           <p className="text-[9px] text-[#8A8378]">
             {isEn
               ? "Martin's reviews are observational and educational — never buy/sell advice. P&L shown is on paper trades only. Verify all data independently."

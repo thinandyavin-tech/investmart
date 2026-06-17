@@ -27,7 +27,7 @@ export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
     return (
       <button
         onClick={toggle}
-        className="inline-flex items-center gap-1 h-7 px-2 rounded-full border border-[#D0C8B8] bg-[#F8F5EF] hover:border-[#1F1A14] hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F1A14] focus-visible:ring-offset-1 select-none"
+        className="inline-flex items-center gap-1 h-7 px-2 rounded-full border border-[#D0C8B8] bg-[#e9edc9] hover:border-[#1F1A14] hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F1A14] focus-visible:ring-offset-1 select-none"
         aria-label={isEn ? "Switch to Thai" : "Switch to English"}
         title={isEn ? "เปลี่ยนเป็นภาษาไทย" : "Switch to English"}
       >
@@ -43,7 +43,7 @@ export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
   // md — segmented pill
   return (
     <div
-      className="inline-flex items-center rounded-full border border-[#D0C8B8] bg-[#F8F5EF] p-0.5 gap-0.5"
+      className="inline-flex items-center rounded-full border border-[#D0C8B8] bg-[#e9edc9] p-0.5 gap-0.5"
       role="group"
       aria-label="Language"
     >

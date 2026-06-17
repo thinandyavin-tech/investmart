@@ -15,10 +15,10 @@ const MAX       = 3;
 function LoadingRow({ cols }: { cols: number }) {
   return (
     <tr>
-      <td className="sticky left-0 px-3 py-2.5 border-b border-[#E8E2D4] bg-[#FBF7ED]" />
+      <td className="sticky left-0 px-3 py-2.5 border-b border-[#e9edc9] bg-[#fefae0]" />
       {Array.from({ length: cols }).map((_, i) => (
-        <td key={i} className="px-4 py-2.5 border-b border-[#E8E2D4]">
-          <div className="h-3 w-16 bg-[#E8E2D4] animate-pulse rounded" />
+        <td key={i} className="px-4 py-2.5 border-b border-[#e9edc9]">
+          <div className="h-3 w-16 bg-[#e9edc9] animate-pulse rounded" />
         </td>
       ))}
     </tr>
@@ -93,7 +93,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
           placeholder={tickers.length >= MAX ? `สูงสุด ${MAX} ตัว` : "เพิ่ม ticker เช่น AAPL"}
           disabled={tickers.length >= MAX}
           maxLength={10}
-          className="border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs w-full max-w-xs focus:outline-none focus:ring-1 focus:ring-[#8B5CF6] disabled:opacity-40"
+          className="border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs w-full max-w-xs focus:outline-none focus:ring-1 focus:ring-[#8B5CF6] disabled:opacity-40"
           aria-label="ใส่ ticker เพื่อเปรียบเทียบ"
         />
         <button
@@ -124,7 +124,7 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
           {tickers.length > 1 && (
             <button
               onClick={() => setTickers([])}
-              className="text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors px-2 py-1 border border-[#E8E2D4]"
+              className="text-xs text-[#8A8378] hover:text-[#1F1A14] transition-colors px-2 py-1 border border-[#e9edc9]"
             >
               ล้างทั้งหมด
             </button>
@@ -181,18 +181,18 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
                       <LoadingRow key={i} cols={tickers.length} />
                     ))
                   : METRICS.map((m, mi) => {
-                      const bg = mi % 2 === 0 ? "#FBF7ED" : "#F3EDE0";
+                      const bg = mi % 2 === 0 ? "#fefae0" : "#faedcd";
                       return (
                         <tr key={m.id} style={{ background: bg }}>
                           <td
-                            className="sticky left-0 px-3 py-2.5 border-b border-[#E8E2D4]"
+                            className="sticky left-0 px-3 py-2.5 border-b border-[#e9edc9]"
                             style={{ background: bg }}
                           >
                             <div className="text-xs font-semibold text-[#1F1A14]">{m.label}</div>
                             {m.sublabel && <div className="text-xs text-[#8A8378]">{m.sublabel}</div>}
                           </td>
                           {rows.map((row) => (
-                            <td key={row.ticker} className="px-4 py-2.5 border-b border-[#E8E2D4]">
+                            <td key={row.ticker} className="px-4 py-2.5 border-b border-[#e9edc9]">
                               {m.cell(row)}
                             </td>
                           ))}
@@ -207,12 +207,12 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
           <div className="sm:hidden space-y-4">
             {loading
               ? tickers.map((t) => (
-                  <div key={t} className="border border-[#E8E2D4] p-4 bg-[#F3EDE0] animate-pulse">
-                    <div className="h-4 w-16 bg-[#E8E2D4] rounded mb-3" />
+                  <div key={t} className="border border-[#e9edc9] p-4 bg-[#faedcd] animate-pulse">
+                    <div className="h-4 w-16 bg-[#e9edc9] rounded mb-3" />
                     {Array.from({ length: 6 }).map((_, i) => (
                       <div key={i} className="flex justify-between mb-2">
-                        <div className="h-3 w-24 bg-[#E8E2D4] rounded" />
-                        <div className="h-3 w-16 bg-[#E8E2D4] rounded" />
+                        <div className="h-3 w-24 bg-[#e9edc9] rounded" />
+                        <div className="h-3 w-16 bg-[#e9edc9] rounded" />
                       </div>
                     ))}
                   </div>

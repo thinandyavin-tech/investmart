@@ -86,7 +86,7 @@ export default function FaqPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#E8E2D4]">
+        <div className="flex flex-wrap gap-4 text-xs pt-2 border-t border-[#e9edc9]">
           <Link href="/learn"    className="text-[#5B8A2A] hover:underline">เรียนรู้เพิ่มเติม</Link>
           <Link href="/privacy"  className="text-[#5B8A2A] hover:underline">นโยบายความเป็นส่วนตัว</Link>
           <Link href="/terms"    className="text-[#5B8A2A] hover:underline">ข้อกำหนดการใช้งาน</Link>

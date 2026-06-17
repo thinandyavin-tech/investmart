@@ -45,7 +45,7 @@ export function PortfolioChart() {
           fontFamily:  "var(--font-mono)",
           fontSize:    9,
         },
-        grid:        { vertLines: { visible: false }, horzLines: { color: "#E8E2D4" } },
+        grid:        { vertLines: { visible: false }, horzLines: { color: "#e9edc9" } },
         crosshair:   { vertLine: { visible: false }, horzLine: { visible: false } },
         rightPriceScale: { visible: false },
         leftPriceScale:  { visible: false },
@@ -92,7 +92,7 @@ export function PortfolioChart() {
   if (loading) {
     return (
       <Card className="p-3">
-        <div className="h-24 animate-pulse bg-[#E8E2D4] rounded" />
+        <div className="h-24 animate-pulse bg-[#e9edc9] rounded" />
       </Card>
     );
   }

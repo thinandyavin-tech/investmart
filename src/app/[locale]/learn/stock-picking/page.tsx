@@ -9,7 +9,7 @@ import { useI18n }  from "@/lib/i18n";
 
 function Box({ children, color = "#1A1A1A" }: { children: React.ReactNode; color?: string }) {
   return (
-    <div className="my-2 px-3 py-2.5 text-xs font-black leading-relaxed whitespace-pre-line text-[#F3EDE0]"
+    <div className="my-2 px-3 py-2.5 text-xs font-black leading-relaxed whitespace-pre-line text-[#faedcd]"
       style={{ background: color, fontFamily: "var(--font-mono)" }}>
       {children}
     </div>
@@ -44,7 +44,7 @@ interface Module {
 function ModuleCard({ mod }: { mod: Module }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: "1.5px solid #C8BFB0", background: "#FDFAF4", boxShadow: "2px 2px 0 #C8BFB0" }}>
+    <div style={{ border: "1.5px solid #ccd5ae", background: "#fefae0", boxShadow: "2px 2px 0 #ccd5ae" }}>
       <button
         className="flex items-start gap-3 px-4 py-3 text-left w-full"
         onClick={() => setOpen(o => !o)}
@@ -54,13 +54,13 @@ function ModuleCard({ mod }: { mod: Module }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-bold text-[#1A1A1A]">{mod.title}</span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#E4DDD2] text-[#6B6B6B]">{mod.tag}</span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#e9edc9] text-[#6B6B6B]">{mod.tag}</span>
           </div>
         </div>
         <span className="flex-shrink-0 text-[#8A8378] text-xs mt-1">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="px-4 pb-4 border-t border-[#E4DDD2]">
+        <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3 text-xs text-[#1A1A1A] leading-relaxed flex flex-col gap-2">{mod.body}</div>
           <Link
             href={`/chat?q=${encodeURIComponent(mod.chatQ)}`}
@@ -183,7 +183,7 @@ export default function StockPickingPage() {
             { n: 4, q: isEn ? "Does it require heavy reinvestment? (Capital Intensity)" : "ต้องลงทุนซ้ำเยอะไหม? (Capital Intensity)" },
             { n: 5, q: isEn ? "Is revenue recurring or one-time?" : "รายได้ซ้ำหรือครั้งเดียว? (Recurring Revenue)" },
           ].map(({ n, q }) => (
-            <div key={n} className="flex gap-2.5 px-3 py-2 bg-[#FDFAF4] border border-[#C8BFB0]">
+            <div key={n} className="flex gap-2.5 px-3 py-2 bg-[#fefae0] border border-[#ccd5ae]">
               <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white" style={{ background: "#1A1A1A" }}>{n}</span>
               <p className="text-[11px]">{q}</p>
             </div>
@@ -197,7 +197,7 @@ export default function StockPickingPage() {
               ["™️", isEn ? "Intangible Assets" : "Intangible Assets"],
               ["📐", isEn ? "Efficient Scale" : "Efficient Scale"],
             ].map(([icon, label]) => (
-              <div key={String(label)} className="flex gap-1.5 px-2 py-1.5 border border-[#E4DDD2] bg-[#F8F5EF]">
+              <div key={String(label)} className="flex gap-1.5 px-2 py-1.5 border border-[#e9edc9] bg-[#e9edc9]">
                 <span>{icon}</span><span className="font-bold">{label}</span>
               </div>
             ))}
@@ -219,7 +219,7 @@ export default function StockPickingPage() {
             { n: 5, l: isEn ? "Valuation Gut Check + Expected Return (how much growth is already priced in?)" : "Valuation Gut Check + Expected Return (ราคาสะท้อน growth ไปแล้วแค่ไหน?)" },
             { n: 6, l: isEn ? "Decide" : "ตัดสินใจ" },
           ].map(({ n, l }) => (
-            <div key={n} className="flex gap-2.5 px-3 py-2 border-b border-[#E4DDD2] last:border-0 bg-[#FDFAF4]">
+            <div key={n} className="flex gap-2.5 px-3 py-2 border-b border-[#e9edc9] last:border-0 bg-[#fefae0]">
               <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white" style={{ background: "#8B5CF6" }}>{n}</span>
               <span className="text-[11px]">{l}</span>
             </div>
@@ -244,7 +244,7 @@ export default function StockPickingPage() {
               isEn ? "Valuation margin of safety" : "Valuation (MoS เยอะแค่ไหน)",
               isEn ? "Portfolio risk / correlation" : "ความเสี่ยงพอร์ตรวม",
             ].map((f, i) => (
-              <div key={i} className="px-2 py-1.5 bg-[#F3EDE0] border border-[#C8BFB0] text-[11px] font-bold">{f}</div>
+              <div key={i} className="px-2 py-1.5 bg-[#faedcd] border border-[#ccd5ae] text-[11px] font-bold">{f}</div>
             ))}
           </div>
           <Note>{isEn ? "Refer to Portfolio Pyramid for allocation bands by layer (Core 5–10% / Growth 3–7% / Moon-Shots <3–5%)" : "อ้างอิง Portfolio Pyramid — Core 5–10% / Growth 3–7% / Moon-Shots <3–5% ต่อตัว"}</Note>
@@ -265,7 +265,7 @@ export default function StockPickingPage() {
               { name: isEn ? "Valuation-band DCA" : "Valuation-band DCA", desc: isEn ? "Buy more when cheap (low P/E band), less when expensive" : "ซื้อมากขึ้นตอนถูก (P/E ต่ำ) ซื้อน้อยลงตอนแพง" },
               { name: isEn ? "Event-triggered DCA" : "Event-triggered DCA", desc: isEn ? "Deploy extra at market drops (-10%, -20%, -30%)" : "ทุ่มเพิ่มตอนตลาดลงแรง (-10%/-20%/-30%)" },
             ].map(({ name, desc }) => (
-              <div key={name} className="px-3 py-2 bg-[#FDFAF4] border border-[#C8BFB0]">
+              <div key={name} className="px-3 py-2 bg-[#fefae0] border border-[#ccd5ae]">
                 <p className="text-[11px] font-bold">{name}</p>
                 <p className="text-[10px] text-[#6B6B6B]">{desc}</p>
               </div>
@@ -352,7 +352,7 @@ export default function StockPickingPage() {
             { href: "/blueprint",         icon: "🗺️", label: isEn ? "Blueprint"             : "Blueprint" },
           ].map(({ href, icon, label }) => (
             <Link key={href} href={href}
-              className="flex items-center gap-2 px-3 py-2.5 border border-[#C8BFB0] bg-[#FDFAF4] hover:bg-[#F3EDE0] hover:border-[#1A1A1A] transition-colors">
+              className="flex items-center gap-2 px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:bg-[#faedcd] hover:border-[#1A1A1A] transition-colors">
               <span>{icon}</span>
               <span className="text-xs font-bold text-[#1A1A1A]">{label}</span>
             </Link>

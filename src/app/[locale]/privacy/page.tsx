@@ -93,7 +93,7 @@ export default function PrivacyPage() {
           </p>
         </Card>
 
-        <div className="flex gap-4 text-xs text-[#8A8378] pt-1 border-t border-[#E8E2D4]">
+        <div className="flex gap-4 text-xs text-[#8A8378] pt-1 border-t border-[#e9edc9]">
           <Link href="/terms" className="hover:underline">
             {isEn ? "Terms of Service" : "ข้อกำหนดการใช้งาน"}
           </Link>

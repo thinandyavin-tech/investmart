@@ -88,9 +88,9 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
     return (
       <div className="max-w-lg mx-auto p-4" aria-busy="true">
         <div className="animate-pulse space-y-3">
-          <div className="h-16 w-16 rounded-full bg-[#E8E2D4]" />
-          <div className="h-4 w-32 bg-[#E8E2D4] rounded" />
-          <div className="h-3 w-48 bg-[#E8E2D4] rounded" />
+          <div className="h-16 w-16 rounded-full bg-[#e9edc9]" />
+          <div className="h-4 w-32 bg-[#e9edc9] rounded" />
+          <div className="h-3 w-48 bg-[#e9edc9] rounded" />
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
   return (
     <div className="max-w-lg mx-auto">
       {/* Profile header */}
-      <div className="p-4 border-b border-[#E8E2D4]">
+      <div className="p-4 border-b border-[#e9edc9]">
         <div className="flex items-start justify-between mb-3">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold"
@@ -131,7 +131,7 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
                 disabled={busy}
                 className={`px-4 py-1.5 text-xs font-bold border transition-colors disabled:opacity-40 ${
                   following
-                    ? "border-[#1F1A14] bg-[#F3EDE0] text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
+                    ? "border-[#1F1A14] bg-[#faedcd] text-[#1F1A14] hover:bg-[#1F1A14] hover:text-white"
                     : "border-[#1F1A14] bg-[#1F1A14] text-white shadow-offset-lime"
                 }`}
                 aria-pressed={following}
@@ -142,7 +142,7 @@ export function TraderProfileClient({ username }: TraderProfileClientProps) {
             {profile.isSelf && (
               <Link
                 href="/profile/edit"
-                className="px-4 py-1.5 text-xs font-bold border border-[#1F1A14] bg-[#F3EDE0] hover:bg-[#1F1A14] hover:text-white transition-colors"
+                className="px-4 py-1.5 text-xs font-bold border border-[#1F1A14] bg-[#faedcd] hover:bg-[#1F1A14] hover:text-white transition-colors"
               >
                 แก้ไขโปรไฟล์
               </Link>

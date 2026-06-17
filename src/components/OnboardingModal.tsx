@@ -39,8 +39,8 @@ export function OnboardingModal() {
     >
       <div
         ref={dialogRef}
-        className="w-full max-w-sm mx-4 mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#F3EDE0]"
-        style={{ boxShadow: "6px 6px 0 #1F1A14" }}
+        className="w-full max-w-sm mx-4 mb-4 lg:mb-0 border-2 border-[#1F1A14] bg-[#faedcd]"
+        style={{ boxShadow: "6px 6px 0 #d4a373" }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

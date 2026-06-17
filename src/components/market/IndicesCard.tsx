@@ -70,13 +70,13 @@ export function IndicesCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
+      <div className="px-3 pt-3 pb-2 border-b border-[#ccd5ae]">
         <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">{t.market.indicesTitle}</h2>
         <p className="text-[10px] text-[#8A8378] mt-0.5">{t.market.indicesSubtitle}</p>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center justify-between px-3 py-2.5">
               <div className="h-3 w-20 skeleton rounded" />
@@ -97,7 +97,7 @@ export function IndicesCard() {
       ) : indices.length === 0 ? (
         <p className="px-3 py-5 text-xs text-[#8A8378] text-center">{t.common.noData}</p>
       ) : (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {indices.map(({ symbol, name, price, change, sparkline }) => {
             const positive = change >= 0;
             const changeColor = positive ? "#16A34A" : "#DC2626";

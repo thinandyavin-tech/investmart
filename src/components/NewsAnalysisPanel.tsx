@@ -151,7 +151,7 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
 
       {/* Reliability reason */}
       <div
-        className="px-3 py-1.5 border-b border-[#E8E2D4]"
+        className="px-3 py-1.5 border-b border-[#e9edc9]"
         style={{ background: relColors.bg }}
       >
         <p className="text-xs leading-snug" style={{ color: relColors.text }}>
@@ -160,7 +160,7 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
       </div>
 
       {/* Market impact reason */}
-      <div className="px-3 py-1.5 bg-[#F9F7F2] border-b border-[#E8E2D4]">
+      <div className="px-3 py-1.5 bg-[#F9F7F2] border-b border-[#e9edc9]">
         <p className="text-xs leading-snug text-[#8A8378]">
           <span className="font-bold" style={{ color: impColors.text }}>{stockImpactLabel} </span>
           {result.market_impact.reason_th}
@@ -174,7 +174,7 @@ function ResultPanel({ result, cached, sourceLabel, sourceUrl }: ResultPanelProp
       </div>
 
       {/* Footer: disclaimer + source */}
-      <div className="px-3 py-2 bg-[#F3EDE0] border-t border-[#E8E2D4]">
+      <div className="px-3 py-2 bg-[#faedcd] border-t border-[#e9edc9]">
         <p className="text-xs text-[#8A8378] leading-relaxed">{result.disclaimer_th}</p>
         <p className="text-xs text-[#8A8378] mt-0.5">
           {sourceText} {sourceLabel}{" · "}

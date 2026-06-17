@@ -47,17 +47,17 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-[#E8E2D4]">
+      <div className="px-3 pt-3 pb-2 border-b border-[#e9edc9]">
         <h2 className="text-xs font-bold uppercase tracking-widest">ข่าว {ticker}</h2>
         <p className="text-xs text-[#8A8378] mt-0.5">จาก Finnhub · อ่านต้นฉบับก่อนตัดสินใจ</p>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {[0, 1, 2].map((i) => (
             <div key={i} className="px-3 py-3">
-              <div className="h-3 w-full bg-[#E8E2D4] animate-pulse rounded mb-2" />
-              <div className="h-2.5 w-24 bg-[#E8E2D4] animate-pulse rounded" />
+              <div className="h-3 w-full bg-[#e9edc9] animate-pulse rounded mb-2" />
+              <div className="h-2.5 w-24 bg-[#e9edc9] animate-pulse rounded" />
             </div>
           ))}
         </div>
@@ -70,7 +70,7 @@ export function StockNewsSection({ ticker }: StockNewsSectionProps) {
           ยังไม่มีข่าวล่าสุดสำหรับ {ticker}
         </p>
       ) : (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {articles.map((a) => (
             <div key={a.id} className="px-3 py-2.5">
               <a

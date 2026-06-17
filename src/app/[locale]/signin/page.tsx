@@ -95,7 +95,7 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
-              className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+              className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
               placeholder="you@example.com"
             />
           </div>
@@ -111,7 +111,7 @@ function SignInForm() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+              className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
               placeholder="••••••••"
             />
           </div>
@@ -136,7 +136,7 @@ function SignInForm() {
         <p className="text-xs text-[#8A8378] text-center uppercase tracking-wide">or continue with</p>
         <button
           onClick={() => void signIn("google", { callbackUrl: "/profile" })}
-          className="w-full flex items-center justify-center gap-2 border-2 border-[#1F1A14] bg-white px-3 py-2.5 text-xs font-bold hover:bg-[#F3EDE0] transition-colors"
+          className="w-full flex items-center justify-center gap-2 border-2 border-[#1F1A14] bg-white px-3 py-2.5 text-xs font-bold hover:bg-[#faedcd] transition-colors"
           style={{ boxShadow: "2px 2px 0 #1F1A14" }}
           type="button"
         >
@@ -146,15 +146,15 @@ function SignInForm() {
       </Card>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-[#E8E2D4]" />
+        <div className="flex-1 h-px bg-[#e9edc9]" />
         <span className="text-xs text-[#8A8378]">or</span>
-        <div className="flex-1 h-px bg-[#E8E2D4]" />
+        <div className="flex-1 h-px bg-[#e9edc9]" />
       </div>
 
       <button
         onClick={() => void handleGuest()}
         disabled={guestLoading || loading}
-        className="w-full py-2.5 text-xs font-semibold text-[#8A8378] border border-[#E8E2D4] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors disabled:opacity-40"
+        className="w-full py-2.5 text-xs font-semibold text-[#8A8378] border border-[#e9edc9] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors disabled:opacity-40"
       >
         {guestLoading ? "Loading…" : "Continue as Guest"}
       </button>
@@ -176,7 +176,7 @@ function SignInForm() {
 export default function SignInPage() {
   return (
     <AppShell>
-      <Suspense fallback={<div className="max-w-sm mx-auto px-4 py-8"><div className="h-4 w-32 bg-[#E8E2D4] animate-pulse rounded" /></div>}>
+      <Suspense fallback={<div className="max-w-sm mx-auto px-4 py-8"><div className="h-4 w-32 bg-[#e9edc9] animate-pulse rounded" /></div>}>
         <SignInForm />
       </Suspense>
     </AppShell>

@@ -73,7 +73,7 @@ export default function ProfileSharePage() {
     return (
       <AppShell>
         <div className="max-w-sm mx-auto px-4 py-6">
-          <div className="h-48 animate-pulse bg-[#E8E2D4] rounded" />
+          <div className="h-48 animate-pulse bg-[#e9edc9] rounded" />
         </div>
       </AppShell>
     );
@@ -88,7 +88,7 @@ export default function ProfileSharePage() {
         </div>
 
         <Card className="p-4" style={{ fontFamily: "var(--font-mono)" }}>
-          <div className="border-b border-[#E8E2D4] pb-3 mb-3">
+          <div className="border-b border-[#e9edc9] pb-3 mb-3">
             <p className="text-xs font-bold">{displayName}</p>
             {handle && <p className="text-xs text-[#8A8378]">{handle}</p>}
           </div>
@@ -125,7 +125,7 @@ export default function ProfileSharePage() {
             )}
           </div>
 
-          <div className="mt-3 pt-3 border-t border-[#E8E2D4]">
+          <div className="mt-3 pt-3 border-t border-[#e9edc9]">
             <p className="text-xs text-[#8A8378] text-center">investmart.vercel.app</p>
           </div>
         </Card>

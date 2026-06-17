@@ -23,7 +23,7 @@ function Formula({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="my-2 px-3 py-2 text-xs font-black leading-relaxed whitespace-pre-line"
-      style={{ background: "#1A1A1A", color: "#F3EDE0", fontFamily: "var(--font-mono)" }}
+      style={{ background: "#1A1A1A", color: "#faedcd", fontFamily: "var(--font-mono)" }}
     >
       {children}
     </div>
@@ -146,7 +146,7 @@ function buildSections(isEn: boolean): Section[] {
               ["ATM",     "At the Money — strike ≈ ราคาหุ้น"],
               ["OTM",     "Out of the Money — ไม่มีมูลค่าแท้จริงเลย"],
             ].map(([term, def]) => (
-              <div key={term} className="flex gap-1.5 px-2 py-1.5 bg-[#F3EDE0] border border-[#E4DDD2]">
+              <div key={term} className="flex gap-1.5 px-2 py-1.5 bg-[#faedcd] border border-[#e9edc9]">
                 <span className="font-black text-[#1A1A1A] flex-shrink-0" style={{ fontFamily: "var(--font-mono)" }}>{term}</span>
                 <span className="text-[#6B6B6B]">{def}</span>
               </div>
@@ -170,7 +170,7 @@ function buildSections(isEn: boolean): Section[] {
             { n: 3, th: "IV Crush",          en: "IV Crush",           desc: "ซื้อก่อน Earnings IV สูง หลังงบออกแม้ขึ้น IV ยุบทำให้ Vega กินกำไร" },
             { n: 4, th: "Strike ไกลเกิน",   en: "Strike too far OTM", desc: "Delta ต่ำมาก หุ้นขึ้น $5 แต่ option ขยับแค่ $0.50" },
           ].map(({ n, th, en, desc }) => (
-            <div key={n} className="flex gap-2 px-3 py-2 bg-[#FDFAF4] border border-[#E4DDD2]">
+            <div key={n} className="flex gap-2 px-3 py-2 bg-[#fefae0] border border-[#e9edc9]">
               <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white rounded-sm" style={{ background: "#D64545" }}>{n}</span>
               <div>
                 <span className="font-bold">{th}</span>
@@ -197,7 +197,7 @@ function buildSections(isEn: boolean): Section[] {
       body: (
         <div className="flex flex-col gap-2 text-xs">
           {GREEKS.map(g => (
-            <div key={g.name} className="flex gap-3 px-3 py-2.5 bg-[#FDFAF4] border border-[#E4DDD2]">
+            <div key={g.name} className="flex gap-3 px-3 py-2.5 bg-[#fefae0] border border-[#e9edc9]">
               <div
                 className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-lg font-black text-white rounded-sm"
                 style={{ background: g.color, fontFamily: "var(--font-mono)" }}
@@ -261,7 +261,7 @@ function buildSections(isEn: boolean): Section[] {
               { label: "Open Interest",   desc: "สัญญาที่เปิดค้างอยู่ — OI ต่ำ = สภาพคล่องต่ำ" },
               { label: "IV (Imp. Vol.)",  desc: "ความผันผวน implied — สูงแปลว่า option แพงอยู่" },
             ].map(({ label, desc }) => (
-              <div key={label} className="px-2 py-1.5 bg-[#F3EDE0] border border-[#E4DDD2] flex flex-col gap-0.5">
+              <div key={label} className="px-2 py-1.5 bg-[#faedcd] border border-[#e9edc9] flex flex-col gap-0.5">
                 <span className="font-black text-[#1A1A1A]" style={{ fontFamily: "var(--font-mono)" }}>{label}</span>
                 <span className="text-[#6B6B6B]">{desc}</span>
               </div>
@@ -286,10 +286,10 @@ Spread &gt; 10% ของ Premium = หลีกเลี่ยง
       body: (
         <div className="flex flex-col gap-2 text-xs text-[#1A1A1A] leading-relaxed">
           {PUT_STRATEGIES.map(s => (
-            <div key={s.name} className="p-3 border border-[#C8BFB0] bg-[#FDFAF4]">
+            <div key={s.name} className="p-3 border border-[#ccd5ae] bg-[#fefae0]">
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <span className="font-black text-[#1A1A1A]">{s.name}</span>
-                <span className="text-[9px] px-1.5 py-0.5 bg-[#E4DDD2] text-[#6B6B6B]">{s.use}</span>
+                <span className="text-[9px] px-1.5 py-0.5 bg-[#e9edc9] text-[#6B6B6B]">{s.use}</span>
               </div>
               <p className="text-[11px] text-[#6B6B6B] leading-relaxed">{s.th}</p>
             </div>
@@ -362,7 +362,7 @@ Portfolio $100,000 → ต่อ trade ≤ $2,000–5,000`}
             { q: "Position Size ≤ 5% ของพอร์ต?",         d: "ไม่ all-in อ้างอิงกฎเสมอ" },
             { q: "มี Exit Plan ชัดแล้ว?",                d: "Target กำไร + Stop loss + วัน exit ก่อนหมดอายุ" },
           ].map(({ q, d }, i) => (
-            <div key={i} className="flex gap-2.5 px-3 py-2 bg-[#FDFAF4] border border-[#E4DDD2]">
+            <div key={i} className="flex gap-2.5 px-3 py-2 bg-[#fefae0] border border-[#e9edc9]">
               <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white rounded-sm" style={{ background: "#1F9D55" }}>{i+1}</span>
               <div>
                 <p className="font-bold">{q}</p>
@@ -371,7 +371,7 @@ Portfolio $100,000 → ต่อ trade ≤ $2,000–5,000`}
             </div>
           ))}
 
-          <div className="p-3 border border-[#C8BFB0] bg-[#F3EDE0]">
+          <div className="p-3 border border-[#ccd5ae] bg-[#faedcd]">
             <p className="font-bold text-[#1A1A1A] mb-2">เมื่อไหร่ควรซื้อหุ้นตรงแทน Option?</p>
             <ul className="flex flex-col gap-1 text-[11px] text-[#6B6B6B]">
               <li>→ ไม่แน่ใจ timing แต่มั่นใจระยะยาว → ซื้อหุ้น / ETF DCA</li>
@@ -494,7 +494,7 @@ function buildBeginnerSections(isEn: boolean): Section[] {
       chatQ: "คำนวณ Break-even และ P&L ของ Long Call ให้ดูพร้อมตัวอย่างตัวเลข",
       body: (
         <div className="flex flex-col gap-3 text-xs text-[#1A1A1A] leading-relaxed">
-          <div className="px-3 py-2.5 bg-[#F3EDE0] border border-[#C8BFB0] text-[11px]">
+          <div className="px-3 py-2.5 bg-[#faedcd] border border-[#ccd5ae] text-[11px]">
             <p>หุ้นราคา <strong>100 บาท</strong> → ซื้อ Call ที่ Strike = <strong>105</strong> จ่าย Premium = <strong>3 บาท</strong></p>
           </div>
           <Formula>จุดคุ้มทุน = Strike + Premium = 105 + 3 = 108 บาท{"\n"}(หุ้นต้องเกิน 108 เราถึงเริ่มกำไร)</Formula>
@@ -570,7 +570,7 @@ function buildBeginnerSections(isEn: boolean): Section[] {
       body: (
         <div className="flex flex-col gap-2 text-xs text-[#1A1A1A] leading-relaxed">
           <p>นี่คือคำถามที่มือใหม่งงที่สุด และคิดว่า <strong>&quot;แอปโกงรึเปล่า&quot;</strong></p>
-          <div className="px-3 py-2.5 bg-[#1A1A1A] text-[#F3EDE0] text-[11px] font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+          <div className="px-3 py-2.5 bg-[#1A1A1A] text-[#faedcd] text-[11px] font-bold" style={{ fontFamily: "var(--font-mono)" }}>
             ราคา Option ไม่ได้ขึ้นกับทิศทางอย่างเดียว<br/>
             แต่ขึ้นกับ 3 อย่างพร้อมกัน:<br/>
             ทิศทาง + เวลา + ความเร็ว
@@ -599,7 +599,7 @@ function buildBeginnerSections(isEn: boolean): Section[] {
             { n: 4, rule: "ไม่เกิน 2–5% ของพอร์ตต่อ trade", why: "อย่าทุ่มก้อนใหญ่ใน trade เดียว — มือใหม่โดน Theta กินทุกวัน" },
             { n: 5, rule: "วางแผนขายล่วงหน้าก่อนกดซื้อ", why: "กำไรเท่าไหร่ออก ขาดทุนเท่าไหร่ออก ตัดสินใจตอนหัวเย็น ไม่ใช่ตอนตื่นตระหนก" },
           ].map(({ n, rule, why }) => (
-            <div key={n} className="flex gap-2.5 px-3 py-2 bg-[#FDFAF4] border border-[#C8BFB0]">
+            <div key={n} className="flex gap-2.5 px-3 py-2 bg-[#fefae0] border border-[#ccd5ae]">
               <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white rounded-sm" style={{ background: "#1A1A1A" }}>{n}</span>
               <div>
                 <p className="font-bold" dangerouslySetInnerHTML={{ __html: rule }} />
@@ -632,7 +632,7 @@ function buildBeginnerSections(isEn: boolean): Section[] {
                   { sit: "มีหุ้นอยู่แล้ว + กลัวมันร่วง", ans: "🔴 Long Put (ประกัน)", color: "#D64545" },
                   { sit: "คิดว่าหุ้นจะ ลง", ans: "🔴 Long Put", color: "#D64545" },
                 ].map(({ sit, ans, color }, i) => (
-                  <tr key={i} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                  <tr key={i} style={{ background: i % 2 ? "#fefae0" : "#e9edc9", borderBottom: "1px solid #e9edc9" }}>
                     <td className="px-3 py-2">{sit}</td>
                     <td className="px-3 py-2 text-center font-bold" style={{ color }}>{ans}</td>
                   </tr>
@@ -658,7 +658,7 @@ function buildBeginnerSections(isEn: boolean): Section[] {
 function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: "1.5px solid #C8BFB0", background: "#FDFAF4", boxShadow: "2px 2px 0 #C8BFB0" }}>
+    <div style={{ border: "1.5px solid #ccd5ae", background: "#fefae0", boxShadow: "2px 2px 0 #ccd5ae" }}>
       <button
         className="flex items-start gap-3 px-4 py-3 text-left w-full"
         onClick={() => setOpen(o => !o)}
@@ -670,14 +670,14 @@ function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
             <span className="text-sm font-bold text-[#1A1A1A]">
               {isEn ? section.titleEn : section.titleTh}
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#E4DDD2] text-[#6B6B6B]">{section.tag}</span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#e9edc9] text-[#6B6B6B]">{section.tag}</span>
           </div>
         </div>
         <span className="flex-shrink-0 text-[#8A8378] text-xs mt-1">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div className="px-4 pb-4 border-t border-[#E4DDD2]">
+        <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3">{section.body}</div>
           <Link
             href={`/chat?q=${encodeURIComponent(section.chatQ)}`}
@@ -726,16 +726,16 @@ export default function OptionsPage() {
         </div>
 
         {/* Level toggle */}
-        <div className="flex border border-[#C8BFB0]" style={{ boxShadow: "2px 2px 0 #1A1A1A" }}>
+        <div className="flex border border-[#ccd5ae]" style={{ boxShadow: "2px 2px 0 #d4a373" }}>
           {(["beginner", "advanced"] as const).map(m => (
             <button
               key={m}
               onClick={() => setMode(m)}
               className="flex-1 py-2.5 text-xs font-bold transition-colors"
               style={{
-                background: mode === m ? "#1A1A1A" : "#FDFAF4",
+                background: mode === m ? "#1A1A1A" : "#fefae0",
                 color:      mode === m ? "#fff"    : "#8A8378",
-                borderRight: m === "beginner" ? "1px solid #C8BFB0" : undefined,
+                borderRight: m === "beginner" ? "1px solid #ccd5ae" : undefined,
               }}
             >
               {m === "beginner"
@@ -754,7 +754,7 @@ export default function OptionsPage() {
                 const el = document.getElementById(`section-${s.id}`);
                 el?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className="text-[10px] font-bold px-2.5 py-1 border border-[#C8BFB0] bg-[#F3EDE0] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A] transition-colors"
+              className="text-[10px] font-bold px-2.5 py-1 border border-[#ccd5ae] bg-[#faedcd] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A] transition-colors"
             >
               {s.emoji} {s.tag}
             </button>
@@ -774,7 +774,7 @@ export default function OptionsPage() {
         <Link
           href="/chat?q=ฉันอยากเรียนรู้ Options trading ช่วยแนะนำว่าควรเริ่มจากตรงไหน และ Long Call vs Long Put ต่างกันอย่างไร"
           style={{ border: "1.5px solid #D64545", boxShadow: "2px 2px 0 #D64545" }}
-          className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#D64545] bg-[#FDFAF4] hover:bg-[#D64545] hover:text-white transition-colors"
+          className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#D64545] bg-[#fefae0] hover:bg-[#D64545] hover:text-white transition-colors"
         >
           ✦ {isEn ? "Ask Martin to teach you Options step by step" : "ให้ Martin สอน Options ทีละขั้นตอน"}
         </Link>
@@ -790,7 +790,7 @@ export default function OptionsPage() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2 px-3 py-2.5 border border-[#C8BFB0] bg-[#FDFAF4] hover:bg-[#F3EDE0] hover:border-[#1A1A1A] transition-colors"
+              className="flex items-center gap-2 px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:bg-[#faedcd] hover:border-[#1A1A1A] transition-colors"
             >
               <span>{icon}</span>
               <span className="text-xs font-bold text-[#1A1A1A]">{label}</span>

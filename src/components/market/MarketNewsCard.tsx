@@ -37,13 +37,13 @@ export function MarketNewsCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-[#E0D9CC]">
+      <div className="px-3 pt-3 pb-2 border-b border-[#ccd5ae]">
         <h2 className="text-xs font-bold uppercase tracking-widest text-[#1F1A14]">ข่าวตลาด</h2>
         <p className="text-[10px] text-[#8A8378] mt-0.5">แหล่งข่าวภายนอก — ตรวจสอบก่อนตัดสินใจ · Finnhub</p>
       </div>
 
       {loading ? (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="px-3 py-2.5">
               <div className="h-3 w-full skeleton rounded mb-1.5" />
@@ -64,14 +64,14 @@ export function MarketNewsCard() {
       ) : articles.length === 0 ? (
         <p className="px-3 py-5 text-xs text-[#8A8378] text-center">ไม่พบข่าว</p>
       ) : (
-        <div className="divide-y divide-[#E8E2D4]">
+        <div className="divide-y divide-[#e9edc9]">
           {articles.map((a) => (
             <a
               key={a.id}
               href={a.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-3 py-2.5 hover:bg-[#F8F5EF] transition-colors group"
+              className="block px-3 py-2.5 hover:bg-[#e9edc9] transition-colors group"
               aria-label={`${a.headline} — เปิดในแท็บใหม่`}
             >
               <p className="text-xs leading-snug text-[#1F1A14] group-hover:underline line-clamp-2">

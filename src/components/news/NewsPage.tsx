@@ -81,7 +81,7 @@ export function NewsPage() {
               <button
                 key={tab.key}
                 onClick={() => handleTab(tab.key)}
-                className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#E8E2D4] transition-colors ${
+                className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#e9edc9] transition-colors ${
                   activeTab === tab.key
                     ? "bg-violet-600 text-white"
                     : "text-slate-500 hover:bg-white/30 hover:text-slate-900"

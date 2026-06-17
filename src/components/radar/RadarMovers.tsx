@@ -55,7 +55,7 @@ function fmtDate(iso: string | null | undefined): string {
 
 function SkeletonRows() {
   return (
-    <div className="divide-y divide-[#E8E2D4]" aria-hidden="true">
+    <div className="divide-y divide-[#e9edc9]" aria-hidden="true">
       {Array.from({ length: 8 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 px-3 py-2.5">
           <div className="w-16 h-3 skeleton rounded" />
@@ -75,7 +75,7 @@ function MoverRow({ m, rank }: { m: Mover; rank: number }) {
   const color = up ? "#16A34A" : "#DC2626";
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2 hover:bg-[#F8F5EF] transition-colors">
+    <div className="flex items-center gap-2 px-3 py-2 hover:bg-[#e9edc9] transition-colors">
       {/* Rank */}
       <span
         className="w-5 text-[10px] text-[#8A8378] text-right flex-shrink-0"
@@ -178,7 +178,7 @@ export function RadarMovers() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-[#E0D9CC] bg-[#FDFAF4]/90 backdrop-blur-sm px-4 py-3">
+      <div className="flex-shrink-0 border-b border-[#ccd5ae] bg-[#fefae0]/90 backdrop-blur-sm px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between gap-3 mb-2.5">
             <div>
@@ -243,7 +243,7 @@ export function RadarMovers() {
         <div className="max-w-3xl mx-auto">
 
           {/* Disclaimer */}
-          <div className="px-3 py-2 bg-[#F8F5EF] border-b border-[#E8E2D4]">
+          <div className="px-3 py-2 bg-[#e9edc9] border-b border-[#e9edc9]">
             <p className="text-[10px] text-[#8A8378]">
               {data?.enriched
                 ? "Movers identified by FMP · prices from Finnhub (same as stock page)"
@@ -256,7 +256,7 @@ export function RadarMovers() {
 
           {/* Column headers */}
           {hasData && (
-            <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#E8E2D4] bg-[#FDFAF4]">
+            <div className="flex items-center gap-2 px-3 py-1.5 border-b border-[#e9edc9] bg-[#fefae0]">
               <span className="w-5" />
               <span className="flex-1 text-[10px] font-bold uppercase tracking-wide text-[#8A8378]">Ticker / Name</span>
               <span className="w-16 text-right text-[10px] font-bold uppercase tracking-wide text-[#8A8378]">Price</span>
@@ -307,7 +307,7 @@ export function RadarMovers() {
 
           {/* Results */}
           {!loading && !error && hasData && (
-            <div className="divide-y divide-[#E8E2D4]">
+            <div className="divide-y divide-[#e9edc9]">
               {rows.map((m, i) => (
                 <MoverRow key={m.symbol} m={m} rank={i + 1} />
               ))}

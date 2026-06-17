@@ -40,9 +40,9 @@ export default async function AdminPage() {
       </div>
 
       {/* Users table */}
-      <div className="border-2 border-[#1F1A14]" style={{ boxShadow: "4px 4px 0 #1F1A14" }}>
+      <div className="border-2 border-[#1F1A14]" style={{ boxShadow: "4px 4px 0 #d4a373" }}>
         <div className="bg-[#1F1A14] px-4 py-2">
-          <span className="text-xs font-mono font-bold text-[#FBF7ED]">ALL USERS ({users.length})</span>
+          <span className="text-xs font-mono font-bold text-[#fefae0]">ALL USERS ({users.length})</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs font-mono">
@@ -55,7 +55,7 @@ export default async function AdminPage() {
             </thead>
             <tbody>
               {users.map((u, i) => (
-                <tr key={u.id} className={`border-b border-[#E5DFD4] ${u.bannedAt ? "bg-red-50" : i % 2 === 0 ? "bg-white" : "bg-[#FDFAF4]"}`}>
+                <tr key={u.id} className={`border-b border-[#E5DFD4] ${u.bannedAt ? "bg-red-50" : i % 2 === 0 ? "bg-white" : "bg-[#fefae0]"}`}>
                   <td className="px-3 py-2 font-bold">{u.username ?? "—"}</td>
                   <td className="px-3 py-2 text-[#8A8378] max-w-[180px] truncate">{u.email ?? "—"}</td>
                   <td className="px-3 py-2">{u.name ?? "—"}</td>

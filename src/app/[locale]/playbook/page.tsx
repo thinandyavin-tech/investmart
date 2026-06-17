@@ -100,7 +100,7 @@ const RATING_STYLE: Record<PillarRating, { bg: string; border: string; text: str
   Strong: { bg: "#F0FDF4", border: "#86EFAC", text: "#16A34A" },
   Mixed:  { bg: "#FFFBEB", border: "#FCD34D", text: "#D97706" },
   Weak:   { bg: "#FEF2F2", border: "#FCA5A5", text: "#DC2626" },
-  "N/A":  { bg: "#F8F5EF", border: "#E4DDD2", text: "#8A8378" },
+  "N/A":  { bg: "#e9edc9", border: "#e9edc9", text: "#8A8378" },
 };
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
@@ -111,10 +111,10 @@ const QUICK = ["NVDA", "TSLA", "AMZN", "PLTR", "RKLB"];
 function PillarLesson({ p, isEn }: { p: Pillar; isEn: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: "1px solid #C8BFB0", background: "#FDFAF4" }} className="overflow-hidden">
+    <div style={{ border: "1px solid #ccd5ae", background: "#fefae0" }} className="overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#F3EDE0] transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#faedcd] transition-colors"
         aria-expanded={open}
       >
         <span className="text-xl flex-shrink-0">{p.icon}</span>
@@ -129,9 +129,9 @@ function PillarLesson({ p, isEn }: { p: Pillar; isEn: boolean }) {
         </svg>
       </button>
       {open && (
-        <div className="px-4 pb-4 flex flex-col gap-2 border-t border-[#E4DDD2]">
+        <div className="px-4 pb-4 flex flex-col gap-2 border-t border-[#e9edc9]">
           <p className="text-xs text-[#3D3730] leading-relaxed mt-3">{isEn ? p.descEn : p.descTh}</p>
-          <div className="px-3 py-2" style={{ background: "#F3EDE0", borderLeft: "3px solid #1A1A1A" }}>
+          <div className="px-3 py-2" style={{ background: "#faedcd", borderLeft: "3px solid #1A1A1A" }}>
             <p className="text-[10px] text-[#3D3730] italic">{isEn ? p.tipEn : p.tipTh}</p>
           </div>
           {p.linkHref && (
@@ -163,7 +163,7 @@ function ScorecardCard({ pillar, isEn }: { pillar: NonNullable<ScorecardResult["
       {pillar.dataUsed.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {pillar.dataUsed.map((d, i) => (
-            <span key={i} className="text-[8px] px-1.5 py-0.5 bg-white border border-[#E4DDD2] text-[#8A8378]">{d}</span>
+            <span key={i} className="text-[8px] px-1.5 py-0.5 bg-white border border-[#e9edc9] text-[#8A8378]">{d}</span>
           ))}
         </div>
       )}
@@ -222,17 +222,17 @@ export default function PlaybookPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Link href="/valuation" className="text-[10px] font-bold px-2.5 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
+            <Link href="/valuation" className="text-[10px] font-bold px-2.5 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
               {isEn ? "Valuation Lab ↗" : "ห้องวิเคราะห์ ↗"}
             </Link>
-            <Link href="/hunter" className="text-[10px] font-bold px-2.5 py-1.5 border border-[#C8BFB0] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
+            <Link href="/hunter" className="text-[10px] font-bold px-2.5 py-1.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
               SWOT ↗
             </Link>
           </div>
         </div>
 
         {/* ── Tabs ── */}
-        <div className="flex border-b border-[#C8BFB0]">
+        <div className="flex border-b border-[#ccd5ae]">
           {([
             { k: "lesson",    en: "7-Pillar Lesson",   th: "บทเรียน 7 เสา" },
             { k: "scorecard", en: "Playbook Scorecard", th: "Scorecard" },
@@ -265,7 +265,7 @@ export default function PlaybookPage() {
             {PILLARS.map(p => <PillarLesson key={p.n} p={p} isEn={isEn} />)}
 
             {/* Learning path */}
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="px-4 py-3">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-2">
                 {isEn ? "Learning Path" : "เส้นทางการเรียนรู้"}
               </p>
@@ -283,8 +283,8 @@ export default function PlaybookPage() {
                     <Link key={i} href={item.href}
                       className="font-bold px-2 py-0.5 border transition-colors"
                       style={{
-                        borderColor: item.active ? "#1A1A1A" : "#C8BFB0",
-                        background: item.active ? "#1A1A1A" : "#FDFAF4",
+                        borderColor: item.active ? "#1A1A1A" : "#ccd5ae",
+                        background: item.active ? "#1A1A1A" : "#fefae0",
                         color: item.active ? "#fff" : "#8A8378",
                       }}>
                       {item.label}
@@ -301,7 +301,7 @@ export default function PlaybookPage() {
         {/* ── Scorecard tab ── */}
         {activeTab === "scorecard" && (
           <div className="flex flex-col gap-4">
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-3">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
                 {isEn ? "Playbook Scorecard — Martin's read" : "Playbook Scorecard — มุมมองของ Martin"}
               </p>
@@ -316,12 +316,12 @@ export default function PlaybookPage() {
                   onChange={e => setTicker(e.target.value.toUpperCase())}
                   placeholder={isEn ? "Ticker (e.g. NVDA)" : "รหัสหุ้น (เช่น NVDA)"}
                   maxLength={10} autoCapitalize="characters"
-                  className="flex-1 border border-[#C8BFB0] bg-[#FDFAF4] px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#1A1A1A]"
+                  className="flex-1 border border-[#ccd5ae] bg-[#fefae0] px-3 py-2 text-sm font-bold focus:outline-none focus:border-[#1A1A1A]"
                   style={{ fontFamily: "var(--font-mono)" }}
                 />
                 <button type="submit" disabled={loading}
                   className="px-4 py-2 text-xs font-bold text-white bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 transition-colors"
-                  style={{ boxShadow: "2px 2px 0 #1A1A1A" }}>
+                  style={{ boxShadow: "2px 2px 0 #d4a373" }}>
                   {loading ? "…" : isEn ? "Score with Martin" : "วิเคราะห์"}
                 </button>
               </form>
@@ -329,7 +329,7 @@ export default function PlaybookPage() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   {QUICK.map(t => (
                     <button key={t} onClick={() => { setTicker(t); void runScorecard(t); }}
-                      className="text-xs font-bold px-3 py-1 border border-[#C8BFB0] bg-[#FDFAF4] hover:border-[#1A1A1A] transition-colors"
+                      className="text-xs font-bold px-3 py-1 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#1A1A1A] transition-colors"
                       style={{ fontFamily: "var(--font-mono)" }}>{t}</button>
                   ))}
                 </div>
@@ -345,7 +345,7 @@ export default function PlaybookPage() {
             {loading && (
               <div className="flex flex-col gap-3">
                 {[...Array(7)].map((_, i) => (
-                  <div key={i} className="h-20 bg-[#F3EDE0] animate-pulse" />
+                  <div key={i} className="h-20 bg-[#faedcd] animate-pulse" />
                 ))}
               </div>
             )}
@@ -353,12 +353,12 @@ export default function PlaybookPage() {
             {scorecard && (
               <div className="flex flex-col gap-3">
                 {/* Stock header */}
-                <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="px-4 py-3">
+                <div style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="px-4 py-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-lg font-bold" style={{ fontFamily: "var(--font-mono)" }}>{scorecard.ticker}</span>
                     {scorecard.name && <span className="text-xs text-[#8A8378] truncate max-w-[200px]">{scorecard.name}</span>}
                     {scorecard.industry && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#F3EDE0] border border-[#C8BFB0] text-[#8A8378]">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#faedcd] border border-[#ccd5ae] text-[#8A8378]">
                         {scorecard.industry}
                       </span>
                     )}
@@ -412,7 +412,7 @@ export default function PlaybookPage() {
             </div>
 
             {/* Shay Boloor */}
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }} className="px-4 py-4">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }} className="px-4 py-4">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 flex-shrink-0 bg-[#1A1A1A] flex items-center justify-center text-white font-bold text-sm">SB</div>
                 <div className="flex-1 min-w-0">
@@ -445,7 +445,7 @@ export default function PlaybookPage() {
             </div>
 
             {/* Context */}
-            <div style={{ background: "#FDFAF4", border: "1px solid #C8BFB0" }} className="px-4 py-3">
+            <div style={{ background: "#fefae0", border: "1px solid #ccd5ae" }} className="px-4 py-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-1">
                 {isEn ? "About this approach" : "เกี่ยวกับแนวทางนี้"}
               </p>
@@ -459,7 +459,7 @@ export default function PlaybookPage() {
         )}
 
         {/* ── Always-on disclaimer ── */}
-        <div style={{ borderLeft: "4px solid #1A1A1A", background: "#F8F5EF" }} className="px-4 py-3">
+        <div style={{ borderLeft: "4px solid #1A1A1A", background: "#e9edc9" }} className="px-4 py-3">
           <p className="text-[9px] text-[#6B6B6B] leading-relaxed">
             {isEn
               ? "This page is for educational purposes only. Nothing here constitutes investment advice, a solicitation, or a recommendation to buy or sell any security. Past performance is not indicative of future results. Always do your own research and consider consulting a licensed financial advisor."

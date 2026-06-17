@@ -24,8 +24,8 @@ function NumField({
         <input
           type="number" inputMode="decimal" step={step} min={min} value={value}
           onChange={e => onChange(e.target.value)}
-          className="flex-1 px-2 py-1.5 border border-[#C8BFB0] text-xs font-bold focus:outline-none focus:border-[#1A1A1A]"
-          style={{ background: "#FFFDE7", fontFamily: "var(--font-mono)" }}
+          className="flex-1 px-2 py-1.5 border border-[#ccd5ae] text-xs font-bold focus:outline-none focus:border-[#1A1A1A]"
+          style={{ background: "#fefae0", fontFamily: "var(--font-mono)" }}
         />
         {unit && <span className="text-[9px] text-[#8A8378] flex-shrink-0">{unit}</span>}
       </div>
@@ -35,7 +35,7 @@ function NumField({
 
 function ResLine({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="flex items-center justify-between gap-2 py-1 border-b border-[#E4DDD2] last:border-0">
+    <div className="flex items-center justify-between gap-2 py-1 border-b border-[#e9edc9] last:border-0">
       <span className="text-[10px] text-[#6B6B6B]">{label}</span>
       <span className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)", color: color ?? "#1A1A1A" }}>
         {value}
@@ -182,9 +182,9 @@ function PositionSizeCalc({ isEn }: { isEn: boolean }) {
               onClick={() => setTier(t)}
               className="flex-1 py-1.5 text-[9px] font-bold border transition-colors"
               style={{
-                background: tier === t ? "#1A1A1A" : "#FDFAF4",
+                background: tier === t ? "#1A1A1A" : "#fefae0",
                 color: tier === t ? "#fff" : "#1A1A1A",
-                borderColor: "#C8BFB0",
+                borderColor: "#ccd5ae",
               }}
             >
               {isEn ? en : th}
@@ -232,7 +232,7 @@ export function SupportingCalcs() {
 
   return (
     <div
-      style={{ background: "#FDFAF4", border: "1px solid #C8BFB0", boxShadow: "2px 2px 0 #1A1A1A" }}
+      style={{ background: "#fefae0", border: "1px solid #ccd5ae", boxShadow: "2px 2px 0 #d4a373" }}
       className="px-4 py-3"
     >
       <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A8378] mb-0.5">
@@ -243,7 +243,7 @@ export function SupportingCalcs() {
           ? "Quick sanity-check tools. All outputs are illustrative — not investment advice."
           : "เครื่องมือตรวจสอบเบื้องต้น — ผลลัพธ์เพื่อการศึกษา ไม่ใช่คำแนะนำ"}
       </p>
-      <div className="flex border-b border-[#C8BFB0] mb-4">
+      <div className="flex border-b border-[#ccd5ae] mb-4">
         {CALC_TABS.map(t => (
           <button
             key={t}

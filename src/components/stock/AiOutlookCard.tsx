@@ -103,9 +103,9 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
               onClick={() => selectPersona(p.id)}
               className="flex-shrink-0 px-2 py-0.5 text-xs font-bold border transition-colors"
               style={{
-                background:  persona === p.id ? "#1F1A14" : "#F3EDE0",
+                background:  persona === p.id ? "#1F1A14" : "#faedcd",
                 color:       persona === p.id ? "#fff"    : "#8A8378",
-                borderColor: persona === p.id ? "#1F1A14" : "#E8E2D4",
+                borderColor: persona === p.id ? "#1F1A14" : "#e9edc9",
               }}
               aria-pressed={persona === p.id}
             >
@@ -130,14 +130,14 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
       {loadingOutlook && (
         <div className="flex flex-col gap-2">
           {[80, 60, 70, 50].map((w) => (
-            <div key={w} className="h-2 bg-[#E8E2D4] animate-pulse rounded" style={{ width: `${w}%` }} />
+            <div key={w} className="h-2 bg-[#e9edc9] animate-pulse rounded" style={{ width: `${w}%` }} />
           ))}
         </div>
       )}
 
       {aiOutlook && !loadingOutlook && (
         <div className="flex flex-col gap-3 text-xs">
-          <div className="text-xs text-[#8A8378] italic border-b border-[#E8E2D4] pb-1.5">
+          <div className="text-xs text-[#8A8378] italic border-b border-[#e9edc9] pb-1.5">
             AI สไตล์{activePersona.nameTh} · ไม่ใช่คำแนะนำลงทุน
           </div>
 
@@ -170,7 +170,7 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
                 { label: "Bear", data: aiOutlook.bear, color: "#DC2626" },
               ] as const
             ).map(({ label, data, color }) => (
-              <div key={label} className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
+              <div key={label} className="border border-[#e9edc9] p-2 bg-[#e9edc9]">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-xs" style={{ color }}>{label}</span>
                   <span className="text-xs text-[#8A8378]">{data.probability}</span>
@@ -197,17 +197,17 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
           )}
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
+            <div className="border border-[#e9edc9] p-2 bg-[#e9edc9]">
               <div className="text-xs font-bold text-[#DC2626] uppercase tracking-wide mb-0.5">ความเสี่ยง</div>
               <p className="text-xs">{aiOutlook.risk}</p>
             </div>
-            <div className="border border-[#E8E2D4] p-2 bg-[#F8F5EF]">
+            <div className="border border-[#e9edc9] p-2 bg-[#e9edc9]">
               <div className="text-xs font-bold text-[#8A8378] uppercase tracking-wide mb-0.5">จะรู้ว่าผิดเมื่อ</div>
               <p className="text-xs">{aiOutlook.invalidation}</p>
             </div>
           </div>
 
-          <p className="text-xs text-[#8A8378] italic border-t border-[#E8E2D4] pt-2">
+          <p className="text-xs text-[#8A8378] italic border-t border-[#e9edc9] pt-2">
             {aiOutlook.disclaimer}
           </p>
         </div>

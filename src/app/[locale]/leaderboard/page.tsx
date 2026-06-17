@@ -60,7 +60,7 @@ export default function LeaderboardPage() {
         <Card className="overflow-hidden">
           <table className="w-full text-xs border-collapse">
             <thead>
-              <tr className="border-b border-[#1F1A14] bg-[#1F1A14] text-[#F3EDE0]">
+              <tr className="border-b border-[#1F1A14] bg-[#1F1A14] text-[#faedcd]">
                 <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">#</th>
                 <th className="text-left px-3 py-2 text-xs uppercase tracking-wide">{t.leaderboard.user}</th>
                 <th className="text-right px-3 py-2 text-xs uppercase tracking-wide">{t.leaderboard.portfolio}</th>
@@ -71,11 +71,11 @@ export default function LeaderboardPage() {
               {loading && (
                 <>
                   {[0, 1, 2, 3, 4].map((i) => (
-                    <tr key={i} className="border-b border-[#E8E2D4]">
-                      <td className="px-3 py-3"><div className="h-3 w-4 bg-[#E8E2D4] animate-pulse rounded" /></td>
-                      <td className="px-3 py-3"><div className="h-3 w-32 bg-[#E8E2D4] animate-pulse rounded" /></td>
-                      <td className="px-3 py-3"><div className="h-3 w-24 bg-[#E8E2D4] animate-pulse rounded ml-auto" /></td>
-                      <td className="px-3 py-3 hidden sm:table-cell"><div className="h-3 w-8 bg-[#E8E2D4] animate-pulse rounded ml-auto" /></td>
+                    <tr key={i} className="border-b border-[#e9edc9]">
+                      <td className="px-3 py-3"><div className="h-3 w-4 bg-[#e9edc9] animate-pulse rounded" /></td>
+                      <td className="px-3 py-3"><div className="h-3 w-32 bg-[#e9edc9] animate-pulse rounded" /></td>
+                      <td className="px-3 py-3"><div className="h-3 w-24 bg-[#e9edc9] animate-pulse rounded ml-auto" /></td>
+                      <td className="px-3 py-3 hidden sm:table-cell"><div className="h-3 w-8 bg-[#e9edc9] animate-pulse rounded ml-auto" /></td>
                     </tr>
                   ))}
                 </>
@@ -106,7 +106,7 @@ export default function LeaderboardPage() {
                 return (
                   <tr
                     key={e.id}
-                    className="border-b border-[#E8E2D4] last:border-0"
+                    className="border-b border-[#e9edc9] last:border-0"
                     style={{ background: isMe ? "#F5FAEE" : undefined }}
                   >
                     <td className="px-3 py-2.5 font-bold text-xs" style={{ fontFamily: "var(--font-mono)" }}>

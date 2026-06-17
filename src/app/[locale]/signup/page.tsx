@@ -91,7 +91,7 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
-                className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+                className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
                 placeholder="you@example.com"
               />
             </div>
@@ -100,7 +100,7 @@ export default function SignUpPage() {
               <label className="block text-xs text-[#8A8378] uppercase tracking-wide mb-1" htmlFor="su-username">
                 Username <span className="text-[#8A8378]">(ไม่บังคับ)</span>
               </label>
-              <div className="flex items-center border border-[#1F1A14] bg-[#FBF7ED] overflow-hidden">
+              <div className="flex items-center border border-[#1F1A14] bg-[#fefae0] overflow-hidden">
                 <span className="px-2 text-xs text-[#8A8378] border-r border-[#1F1A14] py-2">@</span>
                 <input
                   id="su-username"
@@ -128,7 +128,7 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 required
-                className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+                className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
                 placeholder="อย่างน้อย 8 ตัวอักษร"
               />
             </div>
@@ -144,7 +144,7 @@ export default function SignUpPage() {
                 onChange={(e) => setConfirm(e.target.value)}
                 autoComplete="new-password"
                 required
-                className="w-full border border-[#1F1A14] bg-[#FBF7ED] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
+                className="w-full border border-[#1F1A14] bg-[#fefae0] px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#1F1A14]"
                 placeholder="••••••••"
               />
             </div>

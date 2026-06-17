@@ -65,7 +65,7 @@ function Skeleton() {
   return (
     <div className="flex flex-col gap-2 animate-pulse">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-9 bg-[#E8E2D4] rounded" style={{ opacity: 1 - i * 0.1 }} />
+        <div key={i} className="h-9 bg-[#e9edc9] rounded" style={{ opacity: 1 - i * 0.1 }} />
       ))}
     </div>
   );
@@ -117,7 +117,7 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
         ].map(({ v, l }) => (
           <button key={v} onClick={() => setSort(v)}
             className="text-xs font-bold px-2 py-0.5 border transition-colors"
-            style={{ background: sort === v ? "#1A1A1A" : "#FDFAF4", color: sort === v ? "#fff" : "#1A1A1A", borderColor: "#C8BFB0" }}>
+            style={{ background: sort === v ? "#1A1A1A" : "#fefae0", color: sort === v ? "#fff" : "#1A1A1A", borderColor: "#ccd5ae" }}>
             {l}
           </button>
         ))}
@@ -150,7 +150,7 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse" style={{ minWidth: 640 }}>
               <thead>
-                <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#F3EDE0]">
+                <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#faedcd]">
                   <th className="px-2 py-2 text-left">{isEn ? "Ticker" : "รหัส"}</th>
                   <th className="px-2 py-2 text-left">{isEn ? "Company" : "บริษัท"}</th>
                   <th className="px-2 py-2 text-right">{isEn ? "Price" : "ราคา"}</th>
@@ -164,7 +164,7 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
               </thead>
               <tbody>
                 {rows.map((r, i) => (
-                  <tr key={r.ticker} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                  <tr key={r.ticker} style={{ background: i % 2 ? "#fefae0" : "#e9edc9", borderBottom: "1px solid #e9edc9" }}>
                     <td className="px-2 py-2">
                       <Link href={`/stock/${r.ticker}`} className="font-bold text-[#8B5CF6] hover:underline" style={{ fontFamily: "var(--font-mono)" }}>
                         {r.ticker}
@@ -199,11 +199,11 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
             <span className="text-[10px] text-[#8A8378]">{isEn ? `Page ${page} of ${totalPages} · ${total} stocks` : `หน้า ${page} จาก ${totalPages} · ${total} หุ้น`}</span>
             <div className="flex gap-1">
               <button onClick={() => void load(page - 1, sort)} disabled={page <= 1 || loading}
-                className="text-xs font-bold px-2 py-1 border border-[#C8BFB0] disabled:opacity-40 hover:border-[#1A1A1A]">
+                className="text-xs font-bold px-2 py-1 border border-[#ccd5ae] disabled:opacity-40 hover:border-[#1A1A1A]">
                 ←
               </button>
               <button onClick={() => void load(page + 1, sort)} disabled={page >= totalPages || loading}
-                className="text-xs font-bold px-2 py-1 border border-[#C8BFB0] disabled:opacity-40 hover:border-[#1A1A1A]">
+                className="text-xs font-bold px-2 py-1 border border-[#ccd5ae] disabled:opacity-40 hover:border-[#1A1A1A]">
                 →
               </button>
             </div>
@@ -259,7 +259,7 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
         ].map(({ v, l }) => (
           <button key={v} onClick={() => setSort(v)}
             className="text-xs font-bold px-2 py-0.5 border transition-colors"
-            style={{ background: sort === v ? "#1A1A1A" : "#FDFAF4", color: sort === v ? "#fff" : "#1A1A1A", borderColor: "#C8BFB0" }}>
+            style={{ background: sort === v ? "#1A1A1A" : "#fefae0", color: sort === v ? "#fff" : "#1A1A1A", borderColor: "#ccd5ae" }}>
             {l}
           </button>
         ))}
@@ -292,7 +292,7 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse" style={{ minWidth: 700 }}>
               <thead>
-                <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#F3EDE0]">
+                <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#faedcd]">
                   <th className="px-2 py-2 text-left">{isEn ? "Ticker" : "รหัส"}</th>
                   <th className="px-2 py-2 text-left">{isEn ? "Company" : "บริษัท"}</th>
                   <th className="px-2 py-2 text-right">{isEn ? "Price" : "ราคา"}</th>
@@ -307,7 +307,7 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
               </thead>
               <tbody>
                 {rows.map((r, i) => (
-                  <tr key={r.ticker} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                  <tr key={r.ticker} style={{ background: i % 2 ? "#fefae0" : "#e9edc9", borderBottom: "1px solid #e9edc9" }}>
                     <td className="px-2 py-2">
                       <Link href={`/stock/${r.ticker}`} className="font-bold text-[#8B5CF6] hover:underline" style={{ fontFamily: "var(--font-mono)" }}>
                         {r.ticker}
@@ -344,9 +344,9 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
             <span className="text-[10px] text-[#8A8378]">{isEn ? `Page ${page} of ${totalPages} · ${total} stocks` : `หน้า ${page} จาก ${totalPages} · ${total} หุ้น`}</span>
             <div className="flex gap-1">
               <button onClick={() => void load(page - 1, sort)} disabled={page <= 1 || loading}
-                className="text-xs font-bold px-2 py-1 border border-[#C8BFB0] disabled:opacity-40 hover:border-[#1A1A1A]">←</button>
+                className="text-xs font-bold px-2 py-1 border border-[#ccd5ae] disabled:opacity-40 hover:border-[#1A1A1A]">←</button>
               <button onClick={() => void load(page + 1, sort)} disabled={page >= totalPages || loading}
-                className="text-xs font-bold px-2 py-1 border border-[#C8BFB0] disabled:opacity-40 hover:border-[#1A1A1A]">→</button>
+                className="text-xs font-bold px-2 py-1 border border-[#ccd5ae] disabled:opacity-40 hover:border-[#1A1A1A]">→</button>
             </div>
           </div>
         </>
@@ -410,16 +410,16 @@ export default function ScreensPage() {
         </div>
 
         {/* Screen selector tabs */}
-        <div className="flex border border-[#C8BFB0]" style={{ boxShadow: "2px 2px 0 #1A1A1A" }}>
+        <div className="flex border border-[#ccd5ae]" style={{ boxShadow: "2px 2px 0 #d4a373" }}>
           {SCREEN_TABS.map((t, i) => (
             <button
               key={t.id}
               onClick={() => setScreen(t.id)}
               className="flex-1 text-xs font-bold py-2.5 transition-colors"
               style={{
-                background:  screen === t.id ? "#1A1A1A" : "#FDFAF4",
+                background:  screen === t.id ? "#1A1A1A" : "#fefae0",
                 color:       screen === t.id ? "#fff"    : "#8A8378",
-                borderRight: i < SCREEN_TABS.length - 1 ? "1px solid #C8BFB0" : undefined,
+                borderRight: i < SCREEN_TABS.length - 1 ? "1px solid #ccd5ae" : undefined,
               }}
             >
               {isEn ? t.en : t.th}
