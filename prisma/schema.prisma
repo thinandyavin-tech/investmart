@@ -274,6 +274,22 @@ model JourneyProgress {
   @@index([userId])
 }
 
+// Trade thesis — user's reasoning attached to a paper trade.
+// Private to the user; used for Martin's learning review.
+model TradeThesis {
+  id         String    @id @default(cuid())
+  tradeId    String    @unique
+  userId     String
+  thesis     String    @default("")
+  tags       String    @default("[]")   // JSON array of tag strings
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([tradeId])
+}
+
 // Pre-computed radar scan results — one row per universe (SP500 / NASDAQ100 / CEO).
 // Written by the /api/cron/radar-precompute job; read by /api/radar/scan on every request.
 // Keyed on universe string so upsert is always a single-row update.

@@ -85,7 +85,12 @@ export function HistoryClient() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-xs font-bold uppercase tracking-widest mb-1">{t.history.title}</h1>
+      <div className="flex items-center justify-between gap-3 mb-1 flex-wrap">
+        <h1 className="text-xs font-bold uppercase tracking-widest">{t.history.title}</h1>
+        <Link href="/journal" className="text-[10px] font-bold px-2.5 py-1 border border-[#C8BFB0] text-[#8B5CF6] hover:border-[#8B5CF6] transition-colors">
+          📝 {t.nav.journal} →
+        </Link>
+      </div>
       <p className="text-xs text-[#8A8378] mb-4">{t.history.subtitle}</p>
 
       {!user && !loading && (

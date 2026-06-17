@@ -6,6 +6,7 @@ import { useUser }          from "@/lib/userContext";
 import { useI18n }          from "@/lib/i18n";
 import { BuySellModal }     from "@/components/assets/BuySellModal";
 import { PortfolioAnalytics } from "@/components/assets/PortfolioAnalytics";
+import { ThesisCapture }    from "@/components/journal/ThesisCapture";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
 
 type SortKey = "value" | "pnl" | "change1d" | "weight" | "name";
@@ -280,6 +281,7 @@ export function AssetsPage() {
   const [sortDir,  setSortDir]  = useState<1 | -1>(-1);
   const [tab,      setTab]      = useState<Tab>("holdings");
   const [buySell,  setBuySell]  = useState<{ ticker: string; side: "BUY" | "SELL" } | null>(null);
+  const [thesis,   setThesis]   = useState<{ tradeId: string; ticker: string; side: "BUY" | "SELL"; shares: number; price: number } | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -301,7 +303,12 @@ export function AssetsPage() {
 
   function openTrade(ticker: string, side: "BUY" | "SELL") { setBuySell({ ticker, side }); }
   function closeTrade() { setBuySell(null); }
-  function afterTrade() { setBuySell(null); void fetchData(); }
+  function afterTrade(tradeId: string, shares: number, price: number) {
+    const info = buySell;
+    setBuySell(null);
+    void fetchData();
+    if (tradeId && info) setThesis({ tradeId, ticker: info.ticker, side: info.side, shares, price });
+  }
 
   if (authLoading) {
     return (
@@ -524,6 +531,16 @@ export function AssetsPage() {
           fxRate={fxRate}
           onClose={closeTrade}
           onSuccess={afterTrade}
+        />
+      )}
+      {thesis && (
+        <ThesisCapture
+          tradeId={thesis.tradeId}
+          ticker={thesis.ticker}
+          side={thesis.side}
+          shares={thesis.shares}
+          price={thesis.price}
+          onClose={() => setThesis(null)}
         />
       )}
     </main>

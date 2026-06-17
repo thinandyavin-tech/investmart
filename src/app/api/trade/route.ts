@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "เงิน USD ไม่พอ" }, { status: 400 });
     }
 
-    const [updatedUser, holding] = await prisma.$transaction(async (tx) => {
+    const [updatedUser, holding, buyTrade] = await prisma.$transaction(async (tx) => {
       const existing = await tx.holding.findUnique({
         where: { userId_ticker: { userId, ticker } },
       });
@@ -100,11 +100,11 @@ export async function POST(request: NextRequest) {
         data:  { cashUsd: { decrement: total } },
       });
 
-      await tx.trade.create({
+      const trade = await tx.trade.create({
         data: { userId, ticker, side, shares, price, total, currency: "USD" },
       });
 
-      return [u, updated] as const;
+      return [u, updated, trade] as const;
     });
 
     void recordSnapshot(userId);
@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
       cashThb: updatedUser.cashThb,
       holding,
       executedPrice: price,
+      tradeId: buyTrade.id,
     });
   }
 
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "หุ้นไม่พอขาย" }, { status: 400 });
   }
 
-  const [updatedUser] = await prisma.$transaction(async (tx) => {
+  const [updatedUser, sellTrade] = await prisma.$transaction(async (tx) => {
     const remaining = existing.shares - shares;
 
     if (remaining <= 0.0001) {
@@ -142,11 +143,11 @@ export async function POST(request: NextRequest) {
       data:  { cashUsd: { increment: total } },
     });
 
-    await tx.trade.create({
+    const sellTrade = await tx.trade.create({
       data: { userId, ticker, side, shares, price, total, currency: "USD" },
     });
 
-    return [u] as const;
+    return [u, sellTrade] as const;
   });
 
   void recordSnapshot(userId);
@@ -154,5 +155,6 @@ export async function POST(request: NextRequest) {
     cashUsd: updatedUser.cashUsd,
     cashThb: updatedUser.cashThb,
     executedPrice: price,
+    tradeId: sellTrade.id,
   });
 }

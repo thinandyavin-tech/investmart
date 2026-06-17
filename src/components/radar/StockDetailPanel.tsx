@@ -9,8 +9,9 @@ import { LoginPromptModal } from "@/components/LoginPromptModal";
 import { StockNewsSection } from "@/components/stock/StockNewsSection";
 import { AiOutlookCard } from "@/components/stock/AiOutlookCard";
 import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
-import { useUser }      from "@/lib/userContext";
-import { useI18n }      from "@/lib/i18n";
+import { useUser }        from "@/lib/userContext";
+import { useI18n }        from "@/lib/i18n";
+import { ThesisCapture }  from "@/components/journal/ThesisCapture";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
 import type { MaConfig } from "@/components/PriceChart";
@@ -91,6 +92,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   const [shares, setShares]                   = useState("1");
   const [trading, setTrading]                 = useState(false);
   const [tradeMsg, setTradeMsg]               = useState("");
+  const [thesisPending, setThesisPending]     = useState<{ tradeId: string; side: "BUY" | "SELL"; shares: number; price: number } | null>(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
@@ -157,7 +159,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ ticker: stock.ticker, side, shares: sharesNum, price: livePrice }),
       });
-      const data = (await res.json()) as { error?: string; cashUsd?: number };
+      const data = (await res.json()) as { error?: string; cashUsd?: number; tradeId?: string };
       if (!res.ok) {
         setTradeMsg(data.error ?? rd.tradeError);
       } else {
@@ -167,6 +169,9 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             : `ขาย ${sharesNum} หุ้น ${stock.ticker} @ $${livePrice.toFixed(2)} ✓`
         );
         await refreshUser();
+        if (data.tradeId) {
+          setThesisPending({ tradeId: data.tradeId, side, shares: sharesNum, price: livePrice });
+        }
       }
     } catch {
       setTradeMsg(rd.tradeError);
@@ -184,6 +189,16 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
         <LoginPromptModal
           message={rd.loginToTrade}
           onClose={() => setShowLoginPrompt(false)}
+        />
+      )}
+      {thesisPending && (
+        <ThesisCapture
+          tradeId={thesisPending.tradeId}
+          ticker={stock.ticker}
+          side={thesisPending.side}
+          shares={thesisPending.shares}
+          price={thesisPending.price}
+          onClose={() => setThesisPending(null)}
         />
       )}
 

@@ -10,7 +10,7 @@ interface BuySellModalProps {
   availableShares: number;
   fxRate:         number;
   onClose:        () => void;
-  onSuccess:      () => void;
+  onSuccess:      (tradeId: string, shares: number, price: number) => void;
 }
 
 export function BuySellModal({
@@ -39,9 +39,9 @@ export function BuySellModal({
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ ticker, side, shares: parsed }),
       });
-      const data = await res.json() as { error?: string };
+      const data = await res.json() as { error?: string; tradeId?: string };
       if (!res.ok) { setError(data.error ?? "เกิดข้อผิดพลาด"); return; }
-      onSuccess();
+      onSuccess(data.tradeId ?? "", parsed, currentPrice);
     } catch {
       setError("เชื่อมต่อไม่ได้ กรุณาลองใหม่");
     } finally {
