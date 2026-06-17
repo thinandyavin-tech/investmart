@@ -1,4 +1,5 @@
-// Terminal-Anchored Reverse DCF — method by Earthh Evans
+// Terminal-Anchored Reverse DCF — InvestMart's own implementation.
+// Technique: Mauboussin (2001) "Expectations Investing" — public academic method.
 // Pure functions: zero I/O, safe to import on server and client.
 
 export type EvSource = "direct" | "marketCapProxy";
@@ -121,4 +122,134 @@ export function computeRdcf(inputs: RdcfInputs): RdcfResult {
     plausibleCAGR, plausibleSource,
     gap, verdict,
   };
+}
+
+// ── Suitability Flag ──────────────────────────────────────────────────────────
+
+export type Suitability = "good_fit" | "stress_test";
+
+export interface SuitabilityResult {
+  suitability: Suitability;
+  reason:      string;
+}
+
+const MATURE_RE = /bank|util|insurance|consumer.?def|telecom|reit|food.?proc|tobacco|regulated/i;
+
+export function computeSuitabilityFlag(
+  industry:    string | null,
+  impliedCAGR: number,
+): SuitabilityResult {
+  if (industry && MATURE_RE.test(industry)) {
+    return {
+      suitability: "stress_test",
+      reason: `${industry} companies generate significant near-term cash flows — Terminal-Anchored DCF overstates required CAGR here. Interpret as a stress test only.`,
+    };
+  }
+  if (impliedCAGR > 0.5) {
+    return {
+      suitability: "stress_test",
+      reason: "Implied CAGR >50% is extreme — verify EV and revenue inputs. Pre-revenue companies make terminal anchoring highly uncertain.",
+    };
+  }
+  return {
+    suitability: "good_fit",
+    reason: "Growth/pre-profit company where most value is in the terminal period — good fit for Terminal-Anchored Reverse DCF.",
+  };
+}
+
+// ── Fair-Value Price Zones (inverse of Reverse DCF) ───────────────────────────
+
+export interface PriceZones {
+  accumulate: number;   // price implied by 0.8 × plausibleCAGR
+  fair:       number;   // price implied by plausibleCAGR
+  expensive:  number;   // price implied by 1.2 × plausibleCAGR
+  mosPct:     number;   // (fair − currentPrice) / fair
+}
+
+function cagrToEV(
+  cagr: number, r0: number, wacc: number, g: number,
+  terminalMargin: number, taxRate: number, roic: number, n: number,
+): number {
+  const impliedRevenue = r0 * Math.pow(1 + cagr, n + 1);
+  const reinvest       = Math.min(0.99, g / roic);
+  const fcff           = impliedRevenue * terminalMargin * (1 - taxRate) * (1 - reinvest);
+  const tv             = fcff / (wacc - g);
+  return tv / Math.pow(1 + wacc, n);
+}
+
+export function computePriceZones(
+  plausibleCAGR:  number,
+  r0:             number,    // raw USD
+  wacc:           number,
+  g:              number,
+  terminalMargin: number,
+  taxRate:        number,
+  roic:           number,
+  n:              number,
+  netDebt:        number,    // raw USD, positive = more debt than cash
+  shares:         number,    // total share count
+  currentPrice:   number,
+): PriceZones | null {
+  if (shares <= 0 || r0 <= 0 || wacc <= g || plausibleCAGR <= 0) return null;
+  const toPrice = (cagr: number): number => {
+    const ev     = cagrToEV(cagr, r0, wacc, g, terminalMargin, taxRate, roic, n);
+    return Math.max(0, (ev - netDebt) / shares);
+  };
+  const fair       = toPrice(plausibleCAGR);
+  const accumulate = toPrice(plausibleCAGR * 0.80);
+  const expensive  = toPrice(plausibleCAGR * 1.20);
+  const mosPct     = fair > 0 ? (fair - currentPrice) / fair : 0;
+  return { accumulate, fair, expensive, mosPct };
+}
+
+// ── Reverse P/E (beginner companion) ──────────────────────────────────────────
+
+/**
+ * Implied EPS CAGR from current P/E, assumed exit P/E, years, and cost of equity.
+ * g = (currentPE × (1+coe)^N / exitPE)^(1/N) − 1
+ */
+export function computeReversePE(
+  currentPE: number,
+  exitPE:    number,
+  years:     number,
+  coe:       number,
+): number | null {
+  if (currentPE <= 0 || exitPE <= 0 || years <= 0 || coe <= 0) return null;
+  return Math.pow(currentPE * Math.pow(1 + coe, years) / exitPE, 1 / years) - 1;
+}
+
+// ── Expected-Return Estimator ─────────────────────────────────────────────────
+
+export interface ExpectedReturn {
+  exitEPS:      number;
+  exitPrice:    number;
+  annualReturn: number;
+}
+
+export function computeExpectedReturn(
+  currentPrice: number,
+  currentEPS:   number,
+  epsGrowth:    number,
+  exitPE:       number,
+  years:        number,
+): ExpectedReturn | null {
+  if (currentPrice <= 0 || currentEPS <= 0 || years <= 0 || exitPE <= 0) return null;
+  const exitEPS      = currentEPS * Math.pow(1 + epsGrowth, years);
+  const exitPrice    = exitEPS * exitPE;
+  const annualReturn = Math.pow(exitPrice / currentPrice, 1 / years) - 1;
+  return { exitEPS, exitPrice, annualReturn };
+}
+
+// ── Position-Sizing Helper ────────────────────────────────────────────────────
+
+export type ConvictionTier = 1 | 2 | 3 | 4 | 5;
+const TIER_MULT: Record<ConvictionTier, number> = { 1: 0.20, 2: 0.40, 3: 0.60, 4: 0.80, 5: 1.00 };
+
+export function computePositionSize(
+  portfolioValue: number,
+  conviction:     ConvictionTier,
+  maxSinglePct:   number,   // decimal, e.g. 0.10 for 10%
+): { suggestedPct: number; dollarAmount: number } {
+  const pct = maxSinglePct * TIER_MULT[conviction];
+  return { suggestedPct: pct, dollarAmount: portfolioValue * pct };
 }

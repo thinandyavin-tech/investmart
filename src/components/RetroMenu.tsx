@@ -29,6 +29,7 @@ export function RetroMenu({ onClose, fromMobile = false }: RetroMenuProps) {
     { href: "/hunter",        label: t.nav.hunter,      icon: "🎯" },
     { href: "/screens",       label: t.nav.screens,     icon: "📋" },
     { href: "/blueprint",           label: t.nav.blueprint,     icon: "🗺️" },
+    { href: "/playbook",            label: t.nav.playbook,      icon: "📖" },
     { href: "/options",             label: t.nav.options,       icon: "📉" },
     { href: "/learn/stock-picking", label: t.nav.stockPicking,  icon: "🔭" },
     { href: "/learn/fundamental",   label: t.nav.fundamental,   icon: "📋" },
