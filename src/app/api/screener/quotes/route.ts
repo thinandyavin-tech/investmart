@@ -9,6 +9,7 @@ import { computeScores } from "@/lib/momentum";
 import { getSector } from "@/lib/stockUniverse";
 import { CATALOG } from "@/lib/stockCatalog";
 import { STOCK_INFO } from "@/lib/stockNames";
+import { getYahooQuote } from "@/lib/yahooFinance";
 
 export const dynamic = "force-dynamic";
 
@@ -51,30 +52,54 @@ async function fetchQuote(ticker: string, apiKey: string): Promise<QuoteResult |
 
   const promise = (async (): Promise<QuoteResult | null> => {
     try {
+      // Try Finnhub first (real-time)
+      let price    = 0;
+      let prevClose = 0;
+      let volume   = 0;
+      let stale    = false;
+
       const res = await fetch(
         `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${apiKey}`,
         { signal: AbortSignal.timeout(3000) }
       );
-      if (!res.ok) return null;
-      const q = (await res.json()) as { c: number; pc: number; v: number; t: number };
-      if (!q.c || q.c < 0.01) return null;
+      if (res.ok) {
+        const q = (await res.json()) as { c: number; pc: number; v: number; t: number };
+        if (q.c && q.c > 0.01) {
+          price     = q.c;
+          prevClose = q.pc;
+          volume    = q.v;
+        }
+      }
 
-      const change1D = q.pc > 0 ? ((q.c - q.pc) / q.pc) * 100 : 0;
-      const scores   = computeScores(change1D, q.v, 0, 50, q.c * 1_000_000);
+      // Finnhub rate-limited or returned no data — fall back to Yahoo Finance
+      if (price === 0) {
+        const yq = await getYahooQuote(ticker);
+        if (yq && yq.price > 0) {
+          price     = yq.price;
+          prevClose = yq.prevClose;
+          volume    = yq.volume;
+          stale     = true; // Yahoo is ~15 min delayed
+        }
+      }
+
+      if (price === 0) return null;
+
+      const change1D = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
+      const scores   = computeScores(change1D, volume, 0, 50, 0);
 
       const result: QuoteResult = {
         ticker,
         name:          resolveName(ticker),
         sector:        resolveSector(ticker),
-        price:         q.c,
+        price,
         change1D,
-        volume:        q.v,
-        marketCap:     q.c * 1_000_000,
+        volume,
+        marketCap:     price * 1_000_000, // approximation only — screener metrics route has accurate beta/PE
         momentumScore: scores.momentumScore,
         qualityScore:  scores.qualityScore,
         breakoutScore: scores.breakoutScore,
         volumeSurge:   scores.volumeSurge,
-        stale:         false,
+        stale,
       };
       cache.set(ticker, { result, cachedAt: Date.now() });
       return result;

@@ -38,6 +38,9 @@ export interface TickerMetrics {
   beta:             number | null;
   grossMarginTTM:   number | null;
   marketCap:        number | null;
+  /** Last known price from precompute time — used as fallback if live quote fails */
+  cachedPrice:      number | null;
+  cachedChange1D:   number | null;
 }
 
 export interface ScreensCache {
@@ -51,50 +54,71 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function fetchMetric(
+async function fetchTickerData(
   ticker: string,
   apiKey: string,
 ): Promise<TickerMetrics | null> {
+  const sym  = encodeURIComponent(ticker);
+  const base = `https://finnhub.io/api/v1`;
+  const tok  = `token=${apiKey}`;
+
+  // Fetch metric and quote in parallel for each ticker
+  const [metricRes, quoteRes] = await Promise.allSettled([
+    fetch(`${base}/stock/metric?symbol=${sym}&metric=all&${tok}`, { signal: AbortSignal.timeout(5000) }),
+    fetch(`${base}/quote?symbol=${sym}&${tok}`,                   { signal: AbortSignal.timeout(5000) }),
+  ]);
+
+  // Require at least metric data to include this ticker
+  if (metricRes.status !== "fulfilled" || !metricRes.value.ok) return null;
+
+  let metricBody: { metric?: Record<string, unknown> };
   try {
-    const sym = encodeURIComponent(ticker);
-    const url = `https://finnhub.io/api/v1/stock/metric?symbol=${sym}&metric=all&token=${apiKey}`;
-    const r   = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!r.ok) return null;
+    metricBody = (await metricRes.value.json()) as { metric?: Record<string, unknown> };
+  } catch { return null; }
 
-    const body = (await r.json()) as { metric?: Record<string, unknown> };
-    const m    = body.metric ?? {};
+  const m    = metricBody.metric ?? {};
+  const name = CATALOG.get(ticker)?.name ?? STOCK_INFO[ticker]?.name ?? ticker;
 
-    const name = CATALOG.get(ticker)?.name ?? STOCK_INFO[ticker]?.name ?? ticker;
-
-    function num(k: string): number | null {
-      const v = m[k];
-      return typeof v === "number" && isFinite(v) ? v : null;
-    }
-
-    // Finnhub sometimes returns growth as 25.0 instead of 0.25 — normalise to percent
-    function growthPct(k: string, ...alt: string[]): number | null {
-      const raw = num(k) ?? (alt.length ? num(alt[0]!) : null);
-      if (raw == null) return null;
-      // If value is between -2 and 2 it's likely a decimal ratio — convert to %
-      return Math.abs(raw) <= 2 ? raw * 100 : raw;
-    }
-
-    return {
-      ticker,
-      name,
-      dividendYield:    num("dividendYieldIndicatedAnnual"),
-      dividendPerShare: num("dividendPerShareAnnual"),
-      revenueGrowth3Y:  growthPct("revenueGrowth3Y", "revenue3YGrowth"),
-      epsGrowth3Y:      growthPct("epsGrowth3Y"),
-      epsGrowth5Y:      growthPct("epsGrowth5Y"),
-      pe:               num("peBasicExclExtraTTM"),
-      beta:             num("beta"),
-      grossMarginTTM:   growthPct("grossMarginTTM"),
-      marketCap:        num("marketCapitalization"),
-    };
-  } catch {
-    return null;
+  function num(k: string): number | null {
+    const v = m[k];
+    return typeof v === "number" && isFinite(v) ? v : null;
   }
+
+  // Finnhub sometimes returns growth as 25.0 instead of 0.25 — normalise to percent
+  function growthPct(k: string, ...alt: string[]): number | null {
+    const raw = num(k) ?? (alt.length ? num(alt[0]!) : null);
+    if (raw == null) return null;
+    return Math.abs(raw) <= 2 ? raw * 100 : raw;
+  }
+
+  // Extract cached price from quote response (best-effort; null if unavailable)
+  let cachedPrice: number | null    = null;
+  let cachedChange1D: number | null = null;
+  if (quoteRes.status === "fulfilled" && quoteRes.value.ok) {
+    try {
+      const q = (await quoteRes.value.json()) as { c?: number; pc?: number; dp?: number };
+      if (q.c && q.c > 0.01) {
+        cachedPrice    = q.c;
+        cachedChange1D = q.dp ?? (q.pc && q.pc > 0 ? ((q.c - q.pc) / q.pc) * 100 : 0);
+      }
+    } catch { /* leave null */ }
+  }
+
+  return {
+    ticker,
+    name,
+    dividendYield:    num("dividendYieldIndicatedAnnual"),
+    dividendPerShare: num("dividendPerShareAnnual"),
+    revenueGrowth3Y:  growthPct("revenueGrowth3Y", "revenue3YGrowth"),
+    epsGrowth3Y:      growthPct("epsGrowth3Y"),
+    epsGrowth5Y:      growthPct("epsGrowth5Y"),
+    pe:               num("peBasicExclExtraTTM"),
+    beta:             num("beta"),
+    grossMarginTTM:   growthPct("grossMarginTTM"),
+    marketCap:        num("marketCapitalization"),
+    cachedPrice,
+    cachedChange1D,
+  };
 }
 
 // ── Handler ───────────────────────────────────────────────────────────────────
@@ -115,7 +139,7 @@ export async function GET(): Promise<NextResponse> {
     const batch = tickers.slice(i, i + BATCH_SIZE);
 
     const settled = await Promise.allSettled(
-      batch.map(t => fetchMetric(t, apiKey))
+      batch.map(t => fetchTickerData(t, apiKey))
     );
 
     for (let j = 0; j < batch.length; j++) {

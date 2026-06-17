@@ -11,6 +11,7 @@ import { z }                         from "zod";
 import { applyRateLimit }            from "@/lib/rateLimit";
 import { loadScreensCache, isCacheFresh } from "@/lib/screensCache";
 import type { TickerMetrics }        from "@/lib/screensCache";
+import { getYahooQuote }             from "@/lib/yahooFinance";
 
 export const dynamic = "force-dynamic";
 
@@ -25,29 +26,50 @@ const QuerySchema = z.object({
 
 interface FinnhubQuote { c: number; pc: number; dp: number; }
 
-const quoteCache   = new Map<string, { price: number; change1D: number; at: number }>();
+const quoteCache   = new Map<string, { price: number; change1D: number; stale: boolean; at: number }>();
 const QUOTE_TTL_MS = 60_000;
 
 async function fetchLiveQuote(
-  ticker: string,
-  apiKey: string,
-): Promise<{ price: number; change1D: number }> {
+  ticker:      string,
+  apiKey:      string,
+  cachedPrice: number | null,
+  cachedChg:   number | null,
+): Promise<{ price: number; change1D: number; stale: boolean }> {
   const hit = quoteCache.get(ticker);
   if (hit && Date.now() - hit.at < QUOTE_TTL_MS) return hit;
 
+  // Try Finnhub first
   try {
     const r = await fetch(
       `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${apiKey}`,
       { signal: AbortSignal.timeout(3000) },
     );
-    if (!r.ok) return { price: 0, change1D: 0 };
-    const q = (await r.json()) as FinnhubQuote;
-    const entry = { price: q.c ?? 0, change1D: q.dp ?? 0, at: Date.now() };
-    quoteCache.set(ticker, entry);
-    return entry;
-  } catch {
-    return { price: 0, change1D: 0 };
+    if (r.ok) {
+      const q = (await r.json()) as FinnhubQuote;
+      if (q.c && q.c > 0.01) {
+        const entry = { price: q.c, change1D: q.dp ?? 0, stale: false, at: Date.now() };
+        quoteCache.set(ticker, entry);
+        return entry;
+      }
+    }
+  } catch { /* fall through */ }
+
+  // Finnhub unavailable — try Yahoo Finance (real data, ~15 min delayed)
+  try {
+    const yq = await getYahooQuote(ticker);
+    if (yq && yq.price > 0) {
+      const entry = { price: yq.price, change1D: yq.changePct, stale: true, at: Date.now() };
+      quoteCache.set(ticker, entry);
+      return entry;
+    }
+  } catch { /* fall through */ }
+
+  // Last resort: use the price cached during last precompute
+  if (cachedPrice && cachedPrice > 0) {
+    return { price: cachedPrice, change1D: cachedChg ?? 0, stale: true };
   }
+
+  return { price: 0, change1D: 0, stale: true };
 }
 
 // Sort helper — nulls always last
@@ -103,7 +125,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const slice  = all.slice(offset, offset + PAGE_SIZE);
 
   const quotes = await Promise.all(
-    slice.map(t => fetchLiveQuote(t.ticker, apiKey)),
+    slice.map(t => fetchLiveQuote(t.ticker, apiKey, t.cachedPrice ?? null, t.cachedChange1D ?? null)),
   );
 
   const rows = slice.map((t, i) => ({
@@ -114,6 +136,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     revenueGrowth3Y: t.revenueGrowth3Y,
     epsGrowth3Y:     t.epsGrowth3Y,
     epsGrowth5Y:     t.epsGrowth5Y,
+    priceStale:      quotes[i]!.stale,
   }));
 
   return NextResponse.json({
