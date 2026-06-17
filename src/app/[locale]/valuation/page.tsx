@@ -493,7 +493,7 @@ export default function ValuationPage() {
             {isEn ? "Model notes" : "หมายเหตุโมเดล"}
           </p>
           <ul className="text-[10px] text-[#4B4569] flex flex-col gap-1">
-            <li>• {isEn ? "Based on Multiple-Growth 5Y template by Earthh Evans / My Money Toolkit." : "อ้างอิงจากโมเดล Multiple-Growth 5Y โดย Earthh Evans / My Money Toolkit"}</li>
+            <li>• {isEn ? "Multiple-Growth 5Y model: EPS CAGR projected over N years, multiplied by a target P/E, discounted back at cost of equity." : "โมเดล Multiple-Growth 5Y: นำ EPS CAGR คูณกับ Target P/E แล้วคิดลดกลับด้วย Cost of Equity"}</li>
             <li>• {isEn ? "EPS₁ should be forward (consensus) EPS — auto-fill uses TTM EPS as proxy." : "EPS₁ ควรเป็น forward EPS จาก consensus — ออโต้ใช้ TTM EPS แทน"}</li>
             <li>• {isEn ? "5Y Avg P/E must be entered manually (not available on Finnhub free tier) — check stockanalysis.com/stocks/[ticker]." : "P/E เฉลี่ย 5 ปีต้องกรอกเอง — ดูที่ stockanalysis.com/stocks/[ticker]"}</li>
             <li>• {isEn ? "Cost of Equity auto-suggested from Damodaran 2025 industry table (NYU Stern)." : "CoE แนะนำจากตาราง Damodaran 2025 (NYU Stern)"}</li>

@@ -7,7 +7,8 @@ import { useUser } from "@/lib/userContext";
 import { useI18n } from "@/lib/i18n";
 
 interface RetroMenuProps {
-  onClose: () => void;
+  onClose:    () => void;
+  fromMobile?: boolean;
 }
 
 interface MenuItem {
@@ -17,7 +18,7 @@ interface MenuItem {
   soon?: boolean;
 }
 
-export function RetroMenu({ onClose }: RetroMenuProps) {
+export function RetroMenu({ onClose, fromMobile = false }: RetroMenuProps) {
   const { user, signOut } = useUser();
   const { t } = useI18n();
 
@@ -27,6 +28,7 @@ export function RetroMenu({ onClose }: RetroMenuProps) {
     { href: "/valuation",     label: t.nav.valuation,   icon: "📐" },
     { href: "/hunter",        label: t.nav.hunter,      icon: "🎯" },
     { href: "/screens",       label: t.nav.screens,     icon: "📋" },
+    { href: "/blueprint",     label: t.nav.blueprint,   icon: "🗺️" },
     { href: "/browse",        label: t.nav.browse,      icon: "🌐" },
     { href: "/market",        label: t.nav.market,      icon: "📈" },
     { href: "/calendar",      label: t.nav.calendar,    icon: "📅" },
@@ -59,10 +61,11 @@ export function RetroMenu({ onClose }: RetroMenuProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-start"
+      style={{ background: "rgba(0,0,0,0.35)" }}
       onClick={onClose}
     >
       <div
-        className="ml-14 mt-4 w-72 border-2 border-[#1F1A14] bg-[#F3EDE0]"
+        className={`${fromMobile ? "ml-2 mt-2" : "ml-14 mt-4"} w-72 border-2 border-[#1F1A14] bg-[#F3EDE0] max-h-[90vh] overflow-y-auto`}
         style={{ boxShadow: "4px 4px 0 #1F1A14" }}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
