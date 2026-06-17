@@ -19,6 +19,7 @@ import { SearchIcon } from "@/components/icons/SearchIcon";
 import { NotificationBell } from "@/components/NotificationBell";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useI18n } from "@/lib/i18n";
+import { JourneyProgressBar } from "@/components/journey/JourneyProgressBar";
 
 export function HomeMobile() {
   const { user, loading } = useUser();
@@ -139,6 +140,9 @@ export function HomeMobile() {
       <div className="mx-3 mb-3">
         <PortfolioHero compact />
       </div>
+
+      {/* Learning journey progress — shown until all steps done */}
+      <JourneyProgressBar />
 
       <DailyDigestCard />
       <TrendingTickerBar />

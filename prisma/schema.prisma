@@ -41,6 +41,7 @@ model User {
   notifications      Notification[]
   portfolioSnapshots PortfolioSnapshot[]
   pushSubscriptions  PushSubscription[]
+  journeyProgress    JourneyProgress?
 }
 
 model Account {
@@ -254,6 +255,21 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Guided learning journey progress per user.
+// completedSteps is a JSON array of step IDs (e.g. ["foundations","radar","first-trade"]).
+model JourneyProgress {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completedSteps   String    @default("[]")
+  readinessDone    Boolean   @default(false)
+  readinessSkipped Boolean   @default(false)
+  firstTradeAt     DateTime?
+  updatedAt        DateTime  @updatedAt
 
   @@index([userId])
 }
