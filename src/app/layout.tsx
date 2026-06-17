@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const FOUC_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+// InvestMart is light-only — no dark mode. This script ensures the `dark`
+// class is never applied regardless of OS preference or stale localStorage.
+const FOUC_SCRIPT = `(function(){try{document.documentElement.classList.remove('dark');localStorage.removeItem('theme');}catch(e){}})();`;
 
 const notoSansThai = Noto_Sans_Thai({
   subsets:  ["thai", "latin"],

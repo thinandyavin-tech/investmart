@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+/* InvestMart is light-only. Disable dark variant so OS dark mode never fires. */
 
 @theme inline {
   /* Brand palette */
@@ -45,14 +45,9 @@
   --titlebar:      #000080;
 }
 
-html.dark {
-  --background:   #0F172A;
-  --paper:        #1E293B;
-  --text-primary: #F1F5F9;
-}
-
 html {
   background-color: oklch(0.988 0.006 285);
+  color-scheme: only light; /* force light mode — ignore OS dark preference */
 }
 
 body {
@@ -80,11 +75,7 @@ body {
   overscroll-behavior: none;
 }
 
-html.dark body {
-  background-color: #0F172A;
-  background-image: none;
-  color: #F1F5F9;
-}
+/* Dark mode intentionally disabled — InvestMart is light-only */
 
 /* Card shadow primitives — replaces retro offset shadows */
 .shadow-card {
