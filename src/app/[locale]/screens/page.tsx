@@ -14,16 +14,20 @@ interface DividendRow {
   change1D:          number;
   dividendYield:     number | null;
   dividendPerShare:  number | null;
+  pe:                number | null;
+  beta:              number | null;
 }
 
 interface GrowthRow {
-  ticker:         string;
-  name:           string;
-  price:          number;
-  change1D:       number;
+  ticker:          string;
+  name:            string;
+  price:           number;
+  change1D:        number;
   revenueGrowth3Y: number | null;
-  epsGrowth3Y:    number | null;
-  epsGrowth5Y:    number | null;
+  epsGrowth3Y:     number | null;
+  epsGrowth5Y:     number | null;
+  pe:              number | null;
+  beta:            number | null;
 }
 
 interface ScreenResponse<R> {
@@ -144,7 +148,7 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
       {!loading && !error && !building && (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse" style={{ minWidth: 520 }}>
+            <table className="w-full text-xs border-collapse" style={{ minWidth: 640 }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#F3EDE0]">
                   <th className="px-2 py-2 text-left">{isEn ? "Ticker" : "รหัส"}</th>
@@ -153,6 +157,8 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
                   <th className="px-2 py-2 text-right">1D %</th>
                   <th className="px-2 py-2 text-right">{isEn ? "Yield" : "ปันผล"}</th>
                   <th className="px-2 py-2 text-right">Div/Share</th>
+                  <th className="px-2 py-2 text-right">P/E</th>
+                  <th className="px-2 py-2 text-right">Beta</th>
                   <th className="px-2 py-2 text-right">Martin</th>
                 </tr>
               </thead>
@@ -172,6 +178,12 @@ function DividendScreen({ lang }: { lang: "en"|"th" }) {
                     </td>
                     <td className="px-2 py-2 text-right text-[#6B6B6B]">
                       {r.dividendPerShare !== null ? `$${r.dividendPerShare.toFixed(2)}` : "N/A"}
+                    </td>
+                    <td className="px-2 py-2 text-right text-[#6B6B6B]" style={{ fontFamily: "var(--font-mono)" }}>
+                      {r.pe !== null ? `${r.pe.toFixed(1)}×` : "N/A"}
+                    </td>
+                    <td className="px-2 py-2 text-right text-[#6B6B6B]" style={{ fontFamily: "var(--font-mono)" }}>
+                      {r.beta !== null ? r.beta.toFixed(2) : "N/A"}
                     </td>
                     <td className="px-2 py-2 text-right">
                       <Link href={`/hunter?ticker=${r.ticker}`} className="text-[10px] text-[#8B5CF6] hover:underline">✦</Link>
@@ -278,7 +290,7 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
       {!loading && !error && !building && (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse" style={{ minWidth: 560 }}>
+            <table className="w-full text-xs border-collapse" style={{ minWidth: 700 }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid #1A1A1A" }} className="text-[10px] font-bold uppercase tracking-wide text-[#8A8378] bg-[#F3EDE0]">
                   <th className="px-2 py-2 text-left">{isEn ? "Ticker" : "รหัส"}</th>
@@ -288,6 +300,8 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
                   <th className="px-2 py-2 text-right">EPS 3Y</th>
                   <th className="px-2 py-2 text-right">EPS 5Y</th>
                   <th className="px-2 py-2 text-right">Rev 3Y</th>
+                  <th className="px-2 py-2 text-right">P/E</th>
+                  <th className="px-2 py-2 text-right">Beta</th>
                   <th className="px-2 py-2 text-right">Martin</th>
                 </tr>
               </thead>
@@ -310,6 +324,12 @@ function GrowthScreen({ lang }: { lang: "en"|"th" }) {
                     </td>
                     <td className="px-2 py-2 text-right" style={{ color: (r.revenueGrowth3Y ?? 0) >= 0 ? "#1F9D55" : "#D64545" }}>
                       {fmt(r.revenueGrowth3Y, "%")}
+                    </td>
+                    <td className="px-2 py-2 text-right text-[#6B6B6B]" style={{ fontFamily: "var(--font-mono)" }}>
+                      {r.pe !== null ? `${r.pe.toFixed(1)}×` : "N/A"}
+                    </td>
+                    <td className="px-2 py-2 text-right text-[#6B6B6B]" style={{ fontFamily: "var(--font-mono)" }}>
+                      {r.beta !== null ? r.beta.toFixed(2) : "N/A"}
                     </td>
                     <td className="px-2 py-2 text-right">
                       <Link href={`/hunter?ticker=${r.ticker}`} className="text-[10px] text-[#8B5CF6] hover:underline">✦</Link>

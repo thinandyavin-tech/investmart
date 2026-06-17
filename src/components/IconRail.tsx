@@ -31,6 +31,9 @@ export function IconRail() {
     { href: "/search",     label: t.nav.search,      icon: <SearchIcon /> },
     { href: "/watchlist",  label: t.nav.watchlist,   icon: <WatchlistIcon /> },
     { href: "/screener",   label: t.nav.screener,    icon: <ScreenerIcon /> },
+    { href: "/valuation",  label: t.nav.valuation,   icon: <ValuationIcon /> },
+    { href: "/hunter",     label: t.nav.hunter,      icon: <HunterIcon /> },
+    { href: "/screens",    label: t.nav.screens,     icon: <ScreensIcon /> },
     { href: "/personas",   label: t.nav.personas,    icon: <PersonasIcon /> },
   ];
 
@@ -224,6 +227,33 @@ function PersonasIcon() {
       <path d="M3 21v-1a6 6 0 0 1 6-6h0" />
       <circle cx="17" cy="9" r="2.5" />
       <path d="M21 21v-1a4.5 4.5 0 0 0-4.5-4.5h-1" />
+    </svg>
+  );
+}
+function ValuationIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+      <path d="M7 8l3 3 2-2 3 4" />
+    </svg>
+  );
+}
+function HunterIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.35-4.35" />
+      <path d="M11 8v6M8 11h6" />
+    </svg>
+  );
+}
+function ScreensIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M3 6h18M3 12h12M3 18h8" />
+      <circle cx="19" cy="17" r="3" />
+      <path d="m21.5 19.5-1.5-1.5" />
     </svg>
   );
 }

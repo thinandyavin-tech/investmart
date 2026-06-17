@@ -24,6 +24,9 @@ export function RetroMenu({ onClose }: RetroMenuProps) {
   const menuItems: MenuItem[] = [
     { href: "/",              label: t.nav.home,        icon: "🏠" },
     { href: "/radar",         label: t.nav.radar,       icon: "📡" },
+    { href: "/valuation",     label: t.nav.valuation,   icon: "📐" },
+    { href: "/hunter",        label: t.nav.hunter,      icon: "🎯" },
+    { href: "/screens",       label: t.nav.screens,     icon: "📋" },
     { href: "/browse",        label: t.nav.browse,      icon: "🌐" },
     { href: "/market",        label: t.nav.market,      icon: "📈" },
     { href: "/calendar",      label: t.nav.calendar,    icon: "📅" },

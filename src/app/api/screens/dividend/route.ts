@@ -130,6 +130,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     change1D:         quotes[i]!.change1D,
     dividendYield:    t.dividendYield,
     dividendPerShare: t.dividendPerShare,
+    pe:               t.pe,
+    beta:             t.beta,
     priceStale:       quotes[i]!.stale,
   }));
 

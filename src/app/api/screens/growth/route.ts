@@ -136,6 +136,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     revenueGrowth3Y: t.revenueGrowth3Y,
     epsGrowth3Y:     t.epsGrowth3Y,
     epsGrowth5Y:     t.epsGrowth5Y,
+    pe:              t.pe,
+    beta:            t.beta,
     priceStale:      quotes[i]!.stale,
   }));
 
