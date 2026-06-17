@@ -5,12 +5,14 @@ import { generateText }  from "@/lib/aiService";
 import { extractJson }   from "@/lib/ai/utils";
 import { hasAiProvider } from "@/lib/ai/utils";
 import { applyRateLimit } from "@/lib/rateLimit";
+import { prisma }        from "@/lib/prisma";
 
 export const dynamic     = "force-dynamic";
 export const maxDuration = 45;
 
-const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
-const CACHE_TTL = 30 * 60 * 1000; // 30 min
+const TICKER_RE  = /^[A-Z][A-Z.\-]{0,9}$/;
+const CACHE_TTL  = 30 * 60 * 1000;  // 30 min in-memory
+const DB_TTL_MS  = 60 * 60 * 1000;  // 1 hour DB cache — survives cold starts
 
 const QuerySchema = z.object({
   ticker: z.string().regex(TICKER_RE),
@@ -290,11 +292,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const { ticker, locale } = parsed.data;
   const key = cacheKey(ticker, locale);
 
-  // L1 memory cache
+  // L1: in-process memory (survives within the same warm instance)
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL) {
     return NextResponse.json(hit.data);
   }
+
+  // L2: DB cache (survives cold starts across all instances)
+  try {
+    const dbRow = await prisma.siteCache.findUnique({ where: { key: `swot:${key}` } });
+    if (dbRow) {
+      const stored = dbRow.value as unknown as { data: SwotData; cachedAt: number };
+      if (stored?.data && Date.now() - stored.cachedAt < DB_TTL_MS) {
+        cache.set(key, { data: stored.data, at: stored.cachedAt });
+        return NextResponse.json(stored.data);
+      }
+    }
+  } catch { /* DB miss — proceed to generate */ }
 
   // In-flight dedup
   const existing = inflight.get(key);
@@ -302,9 +316,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(await existing);
   }
 
-  const promise = buildSwot(ticker, locale).then(data => {
+  const promise = buildSwot(ticker, locale).then(async data => {
     cache.set(key, { data, at: Date.now() });
     inflight.delete(key);
+    // Persist to DB (fire-and-forget — don't block the response)
+    const payload = { data, cachedAt: Date.now() } as unknown as import("@prisma/client").Prisma.InputJsonValue;
+    prisma.siteCache.upsert({
+      where:  { key: `swot:${key}` },
+      update: { value: payload },
+      create: { key: `swot:${key}`, value: payload },
+    }).catch(() => { /* non-critical */ });
     return data;
   }).catch(err => {
     inflight.delete(key);

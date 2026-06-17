@@ -160,9 +160,10 @@ export default function HunterPage() {
   const [query,   setQuery]   = useState("");
   const [swot,    setSwot]    = useState<SwotData | null>(null);
   const [risk,    setRisk]    = useState<RiskData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState<string | null>(null);
-  const [tab,         setTab]         = useState<"swot"|"risk">("swot");
+  const [loading,      setLoading]      = useState(false);
+  const [loadingPhase, setLoadingPhase] = useState<"data" | "ai" | null>(null);
+  const [error,        setError]        = useState<string | null>(null);
+  const [tab,          setTab]          = useState<"swot"|"risk">("swot");
   const [inWatchlist, setInWatchlist] = useState(false);
   const [watchloading, setWatchloading] = useState(false);
 
@@ -170,13 +171,16 @@ export default function HunterPage() {
     if (!ticker.trim()) return;
     const t = ticker.trim().toUpperCase();
     setLoading(true);
+    setLoadingPhase("data");
     setError(null);
     setSwot(null);
     setRisk(null);
-
     setInWatchlist(false);
+
     try {
-      // Kick off watchlist check in parallel with analysis
+      // Kick off both in parallel — but render SWOT as soon as it arrives
+      setLoadingPhase("ai");
+
       const [swotRes, riskRes] = await Promise.all([
         fetch(`/api/stock/swot?ticker=${encodeURIComponent(t)}&locale=${lang}`),
         fetch(`/api/stock/risk?ticker=${encodeURIComponent(t)}&locale=${lang}`),
@@ -184,17 +188,21 @@ export default function HunterPage() {
 
       if (!swotRes.ok) throw new Error(lang === "th" ? "โหลดข้อมูลไม่สำเร็จ" : "Failed to load analysis");
 
+      // Parse and render SWOT immediately
       const swotData = await swotRes.json() as SwotData;
       setSwot(swotData);
+      setLoading(false);
+      setLoadingPhase(null);
 
+      // Risk loads in the background — don't block UX
       if (riskRes.ok) {
         const riskData = await riskRes.json() as RiskData;
         setRisk(riskData);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error");
-    } finally {
       setLoading(false);
+      setLoadingPhase(null);
     }
   }, [lang]);
 
@@ -309,10 +317,21 @@ export default function HunterPage() {
 
         {/* Loading skeleton */}
         {loading && (
-          <div className="flex flex-col gap-3 animate-pulse">
-            <div className="h-20 bg-[#E8E2D4] rounded" />
-            <div className="grid grid-cols-2 gap-3">
-              {[0,1,2,3].map(i => <div key={i} className="h-32 bg-[#E8E2D4] rounded" />)}
+          <div className="flex flex-col gap-3">
+            {/* Phase indicator — so users know something IS happening */}
+            <div className="flex items-center gap-3 px-4 py-3 bg-[#F5F3FF] border border-[#8B5CF6]">
+              <span className="w-4 h-4 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin flex-shrink-0" />
+              <span className="text-xs font-bold text-[#8B5CF6]">
+                {loadingPhase === "data"
+                  ? (isEn ? "Fetching market data…" : "กำลังดึงข้อมูล…")
+                  : (isEn ? "Martin is analyzing… (may take 10–30s on first run)" : "Martin กำลังวิเคราะห์… (ครั้งแรกอาจใช้เวลา 10–30 วินาที)")}
+              </span>
+            </div>
+            <div className="flex flex-col gap-3 animate-pulse">
+              <div className="h-20 bg-[#E8E2D4] rounded" />
+              <div className="grid grid-cols-2 gap-3">
+                {[0,1,2,3].map(i => <div key={i} className="h-32 bg-[#E8E2D4] rounded" />)}
+              </div>
             </div>
           </div>
         )}
