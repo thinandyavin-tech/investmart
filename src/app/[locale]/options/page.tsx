@@ -412,6 +412,247 @@ Portfolio $100,000 → ต่อ trade ≤ $2,000–5,000`}
   ];
 }
 
+// ── Beginner sections ─────────────────────────────────────────────────────────
+
+function buildBeginnerSections(isEn: boolean): Section[] {
+  return [
+    {
+      id: "b-what", emoji: "💡",
+      titleTh: "Option คืออะไร? (เริ่มจากศูนย์)",
+      titleEn: "What is an Option? (Start from zero)",
+      tag: isEn ? "Intro" : "บทนำ",
+      chatQ: "อธิบาย Option ให้เข้าใจง่ายที่สุด เหมือนอธิบายให้คนไม่รู้เรื่องหุ้นเลย",
+      body: (
+        <div className="flex flex-col gap-2 text-xs text-[#1A1A1A] leading-relaxed">
+          <p>ปกติถ้าเราอยากได้ของ เราก็ <strong>ซื้อของเลย</strong> ใช่ไหม?</p>
+          <p>แต่ Option ต่างออกไป — เราจ่าย <strong>เงินก้อนเล็กๆ (Premium)</strong> เพื่อซื้อ <strong>&quot;สิทธิ์&quot;</strong> ที่จะซื้อหรือขายหุ้นในอนาคต ที่ราคาที่ตกลงกันไว้ตั้งแต่ตอนนี้</p>
+          <div className="my-1 px-3 py-2.5 bg-[#F5F3FF] border border-[#8B5CF6]">
+            <p className="text-[11px] font-bold text-[#8B5CF6]">พูดง่ายๆ:</p>
+            <p className="text-[11px] text-[#4B4569] mt-1">เราไม่ได้เป็นเจ้าของหุ้นจริง เราถือแค่ <strong>&quot;สิทธิ์&quot;</strong></p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-1">
+            <div className="px-3 py-2 bg-[#F0FDF4] border border-[#1F9D55]">
+              <p className="text-[10px] font-bold text-[#1F9D55]">ถ้าสิทธิ์มีค่า</p>
+              <p className="text-[11px] text-[#1A1A1A] mt-0.5">→ เราได้กำไร</p>
+            </div>
+            <div className="px-3 py-2 bg-[#FEF2F2] border border-[#D64545]">
+              <p className="text-[10px] font-bold text-[#D64545]">ถ้าสิทธิ์ไม่มีค่า</p>
+              <p className="text-[11px] text-[#1A1A1A] mt-0.5">→ เสียแค่ Premium ก้อนเล็กๆ ไม่มากกว่านั้น</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "b-two", emoji: "📊",
+      titleTh: "สองท่าพื้นฐาน: Call & Put",
+      titleEn: "Two Basic Positions: Call & Put",
+      tag: isEn ? "Basics" : "พื้นฐาน",
+      chatQ: "อธิบาย Long Call และ Long Put ด้วยอุปมาที่เข้าใจง่าย",
+      body: (
+        <div className="flex flex-col gap-3 text-xs text-[#1A1A1A] leading-relaxed">
+          {/* Call */}
+          <div className="p-3 border-2 border-[#2563EB] bg-[#EFF6FF]">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-base font-black text-white px-2 py-0.5" style={{ background: "#2563EB" }}>CALL</span>
+              <span className="font-bold text-[#2563EB]">เดิมพันว่าหุ้นจะ &quot;ขึ้น&quot;</span>
+            </div>
+            <p className="text-[11px] font-bold text-[#8A8378] mb-1.5">นึกถึง... คูปองล็อกราคา</p>
+            <div className="px-3 py-2 bg-white border border-[#BFDBFE] text-[11px]">
+              <p>จ่าย 100 บาท ซื้อคูปองที่ให้สิทธิ์ซื้อมือถือราคา 1,000 บาท ได้ภายในเดือนนี้</p>
+              <p className="mt-1 text-[#1F9D55]">✅ มือถือขึ้น 1,500 → คูปองมีค่า! ซื้อได้แค่ 1,000</p>
+              <p className="mt-0.5 text-[#D64545]">❌ ราคาไม่ขึ้น → คูปองหมดอายุ เสียแค่ 100 บาท</p>
+            </div>
+            <p className="text-[10px] text-[#6B6B6B] mt-1.5">หุ้นก็เหมือนกัน — Call = เดิมพันว่าหุ้นขึ้นแรงพอ ภายในเวลาที่กำหนด</p>
+          </div>
+
+          {/* Put */}
+          <div className="p-3 border-2 border-[#D64545] bg-[#FEF2F2]">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-base font-black text-white px-2 py-0.5" style={{ background: "#D64545" }}>PUT</span>
+              <span className="font-bold text-[#D64545]">&quot;ประกัน&quot; หรือเดิมพันว่าหุ้นจะ &quot;ลง&quot;</span>
+            </div>
+            <p className="text-[11px] font-bold text-[#8A8378] mb-1.5">นึกถึง... การซื้อประกันบ้าน/รถ</p>
+            <div className="px-3 py-2 bg-white border border-[#FECACA] text-[11px]">
+              <p>จ่ายเบี้ยประกัน → ถ้าเกิดเรื่องร้าย (หุ้นร่วง) ประกันจ่ายคืน</p>
+              <p className="mt-1 text-[#8A8378]">ถ้าไม่เกิดอะไร เราเสียแค่เบี้ย</p>
+            </div>
+            <p className="text-[11px] font-bold text-[#1A1A1A] mt-2">ใช้ได้ 2 แบบ:</p>
+            <ul className="mt-1 flex flex-col gap-1 text-[11px]">
+              <li className="flex gap-1.5"><span className="text-[#D64545]">▸</span>เดิมพันว่าหุ้นจะลง (ไม่ต้อง short หุ้น)</li>
+              <li className="flex gap-1.5"><span className="text-[#D64545]">▸</span>มีหุ้นอยู่แล้ว กลัวลง → ซื้อ Put ไว้กันเหนียว เหมือน <strong>ซื้อร่มก่อนฝนตก</strong></li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "b-math", emoji: "🔢",
+      titleTh: "ลองคิดเลขง่ายๆ สัก 1 รอบ",
+      titleEn: "Simple Math — One Round",
+      tag: isEn ? "Example" : "ตัวอย่าง",
+      chatQ: "คำนวณ Break-even และ P&L ของ Long Call ให้ดูพร้อมตัวอย่างตัวเลข",
+      body: (
+        <div className="flex flex-col gap-3 text-xs text-[#1A1A1A] leading-relaxed">
+          <div className="px-3 py-2.5 bg-[#F3EDE0] border border-[#C8BFB0] text-[11px]">
+            <p>หุ้นราคา <strong>100 บาท</strong> → ซื้อ Call ที่ Strike = <strong>105</strong> จ่าย Premium = <strong>3 บาท</strong></p>
+          </div>
+          <Formula>จุดคุ้มทุน = Strike + Premium = 105 + 3 = 108 บาท{"\n"}(หุ้นต้องเกิน 108 เราถึงเริ่มกำไร)</Formula>
+          <div className="flex flex-col gap-1.5">
+            {[
+              { price: "112 บาท", result: "✅ กำไร", detail: "112 − 108 = +4 บาท/หุ้น",  bg: "#F0FDF4", color: "#1F9D55" },
+              { price: "103 บาท", result: "❌ ขาดทุน", detail: "ขึ้นแต่ไม่ถึง 108 → เสีย Premium ทั้งก้อน", bg: "#FEF2F2", color: "#D64545" },
+              { price: "99 บาท",  result: "❌ เสีย Premium", detail: "เสียแค่ 3 บาท — ไม่มากกว่านั้นเลย", bg: "#FEF2F2", color: "#D64545" },
+            ].map(({ price, result, detail, bg, color }) => (
+              <div key={price} className="flex items-start gap-3 px-3 py-2 border" style={{ background: bg, borderColor: color }}>
+                <span className="font-bold w-16 flex-shrink-0" style={{ fontFamily: "var(--font-mono)" }}>{price}</span>
+                <span className="font-bold flex-shrink-0" style={{ color }}>{result}</span>
+                <span className="text-[10px] text-[#6B6B6B]">{detail}</span>
+              </div>
+            ))}
+          </div>
+          <Tip>ไม่ว่าหุ้นจะร่วงหนักแค่ไหน เราเสียมากสุดแค่ 3 บาท (ค่า Premium) — นี่คือข้อดีของ Long Option: <strong>ขาดทุนจำกัด</strong></Tip>
+        </div>
+      ),
+    },
+    {
+      id: "b-traps", emoji: "🪤",
+      titleTh: "3 กับดักที่ต้องรู้ (ทำไม Option ยากกว่าซื้อหุ้น)",
+      titleEn: "3 Traps — Why Options Are Harder Than Stocks",
+      tag: isEn ? "Traps" : "กับดัก",
+      chatQ: "อธิบาย 3 กับดักหลักของ Option ที่มือใหม่มักโดน",
+      body: (
+        <div className="flex flex-col gap-3 text-xs text-[#1A1A1A] leading-relaxed">
+          <p className="text-[11px] text-[#8A8378]">หุ้นจริงถือได้ตลอดไป แต่ Option มี 3 อย่างที่ต่างออกไป:</p>
+          {[
+            {
+              n: 1, emoji: "⏳", color: "#D64545",
+              titleTh: "มันมีวันหมดอายุ",
+              titleEn: "It has an expiry date",
+              desc: "Option เหมือน ของสด หรือตั๋วที่ค่อยๆ หมดค่าเมื่อใกล้วันหมดอายุ ทุกวันที่ผ่านไปมันเสียค่าไปนิดนึง แม้หุ้นไม่ขยับเลย",
+              note: "ยิ่งใกล้วันหมดอายุ ยิ่งเสียค่าเร็ว (เรียกว่า Time Decay / Theta)",
+            },
+            {
+              n: 2, emoji: "🏃", color: "#D97706",
+              titleTh: "ต้องขึ้น &quot;เร็วพอ&quot; และ &quot;มากพอ&quot;",
+              titleEn: "Must move fast enough AND far enough",
+              desc: "ทายถูกว่าหุ้นขึ้น... ยังไม่พอ ถ้าหุ้นขึ้นช้าไป หรือขึ้นนิดเดียว เราก็ยังขาดทุนได้ เพราะเวลาหมดก่อนที่หุ้นจะไปถึงเป้า",
+              note: "ต้องถูก 3 เรื่องพร้อมกัน: ทิศ + ความเร็ว + ระยะทาง",
+            },
+            {
+              n: 3, emoji: "🎢", color: "#8B5CF6",
+              titleTh: "ค่าความตื่นเต้น (IV)",
+              titleEn: "Excitement value — IV",
+              desc: "ก่อนข่าวใหญ่/งบ ทุกคนคาดว่าหุ้นจะแกว่งแรง → Option แพงขึ้น เหมือนตั๋วคอนเสิร์ตที่คนแย่งซื้อ ราคาพุ่ง พอข่าวออกจริง ความตื่นเต้นหาย → ราคา Option ตกฮวบ (IV Crush)",
+              note: "เลยขาดทุนได้แม้ทายทิศถูก ถ้าจ่ายแพงไปตอนตื่นเต้นสุดๆ",
+            },
+          ].map(({ n, emoji, color, titleTh, titleEn, desc, note }) => (
+            <div key={n} className="p-3 border-l-4" style={{ borderColor: color, background: `${color}10` }}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-lg">{emoji}</span>
+                <span className="text-xs font-bold" style={{ color }}>
+                  กับดักที่ {n}: {isEn ? titleEn : titleTh}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#1A1A1A]" dangerouslySetInnerHTML={{ __html: desc }} />
+              <p className="text-[10px] text-[#8A8378] mt-1">→ {note}</p>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "b-why-red", emoji: "🤔",
+      titleTh: "&quot;หุ้นขึ้น แต่ทำไม Call ฉันยังแดง?!&quot;",
+      titleEn: "\"Stock up — so why is my Call still red?!\"",
+      tag: isEn ? "Most Asked" : "ถามบ่อยสุด",
+      chatQ: "ทำไมหุ้นขึ้นแต่ Call option ยังติดลบ อธิบายให้เข้าใจง่ายๆ",
+      body: (
+        <div className="flex flex-col gap-2 text-xs text-[#1A1A1A] leading-relaxed">
+          <p>นี่คือคำถามที่มือใหม่งงที่สุด และคิดว่า <strong>&quot;แอปโกงรึเปล่า&quot;</strong></p>
+          <div className="px-3 py-2.5 bg-[#1A1A1A] text-[#F3EDE0] text-[11px] font-bold" style={{ fontFamily: "var(--font-mono)" }}>
+            ราคา Option ไม่ได้ขึ้นกับทิศทางอย่างเดียว<br/>
+            แต่ขึ้นกับ 3 อย่างพร้อมกัน:<br/>
+            ทิศทาง + เวลา + ความเร็ว
+          </div>
+          <div className="px-3 py-2.5 bg-[#FFFBEB] border border-[#D97706]">
+            <p className="text-[11px] text-[#D97706] font-bold mb-1">สถานการณ์ที่เกิดขึ้นจริง:</p>
+            <p className="text-[11px]">หุ้นขึ้น (ทิศถูก) แต่ขึ้นช้า/นิดเดียว + เวลาเหลือน้อย + ค่าความตื่นเต้นหายไป</p>
+            <p className="text-[11px] font-bold text-[#D64545] mt-1">= Call ยังแดงได้</p>
+          </div>
+          <Tip>ระบบไม่ได้โกง — มันทำงานตามกติกาของมันเป๊ะๆ แค่เราต้องเข้าใจกติกาก่อน</Tip>
+        </div>
+      ),
+    },
+    {
+      id: "b-rules", emoji: "🛡️",
+      titleTh: "กฎความปลอดภัย 5 ข้อ สำหรับมือใหม่",
+      titleEn: "5 Safety Rules for Beginners",
+      tag: isEn ? "Safety" : "ความปลอดภัย",
+      chatQ: "กฎความปลอดภัย 5 ข้อสำหรับมือใหม่ที่เพิ่งเริ่มเล่น Option",
+      body: (
+        <div className="flex flex-col gap-2 text-xs text-[#1A1A1A] leading-relaxed">
+          {[
+            { n: 1, rule: "ใส่เงินเท่าที่ &quot;หายหมดแล้วยังไหว&quot;", why: "Option เสียได้ 100% ของ Premium — ไม่ใช่เรื่องเล่นๆ" },
+            { n: 2, rule: "อย่าซื้อสัญญาสั้นเพราะดูถูก", why: "ให้เวลาตัวเองมากกว่าที่คิดเสมอ ตลาดไม่วิ่งตามปฏิทินเรา" },
+            { n: 3, rule: "ระวังซื้อก่อนประกาศงบ", why: "ช่วงนั้น &quot;ค่าความตื่นเต้น&quot; แพงมาก IV Crush ทำให้ขาดทุนแม้ทายถูก" },
+            { n: 4, rule: "ไม่เกิน 2–5% ของพอร์ตต่อ trade", why: "อย่าทุ่มก้อนใหญ่ใน trade เดียว — มือใหม่โดน Theta กินทุกวัน" },
+            { n: 5, rule: "วางแผนขายล่วงหน้าก่อนกดซื้อ", why: "กำไรเท่าไหร่ออก ขาดทุนเท่าไหร่ออก ตัดสินใจตอนหัวเย็น ไม่ใช่ตอนตื่นตระหนก" },
+          ].map(({ n, rule, why }) => (
+            <div key={n} className="flex gap-2.5 px-3 py-2 bg-[#FDFAF4] border border-[#C8BFB0]">
+              <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-[9px] font-black text-white rounded-sm" style={{ background: "#1A1A1A" }}>{n}</span>
+              <div>
+                <p className="font-bold" dangerouslySetInnerHTML={{ __html: rule }} />
+                <p className="text-[10px] text-[#6B6B6B] mt-0.5">{why}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "b-summary", emoji: "🎯",
+      titleTh: "สรุปง่ายๆ: ใช้ตัวไหนเมื่อไหร่",
+      titleEn: "Summary: Which to Use When",
+      tag: isEn ? "Summary" : "สรุป",
+      chatQ: "สรุปว่าควรใช้ Long Call หรือ Long Put ในสถานการณ์ไหน",
+      body: (
+        <div className="flex flex-col gap-3 text-xs text-[#1A1A1A]">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[11px]" style={{ minWidth: 300 }}>
+              <thead>
+                <tr className="bg-[#1A1A1A] text-white text-[10px] font-bold">
+                  <th className="px-3 py-2 text-left">สถานการณ์ของคุณ</th>
+                  <th className="px-3 py-2 text-center">ใช้ตัวไหน</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { sit: "คิดว่าหุ้นจะ ขึ้น + อยากเสี่ยงแบบจำกัด", ans: "🟢 Long Call", color: "#2563EB" },
+                  { sit: "มีหุ้นอยู่แล้ว + กลัวมันร่วง", ans: "🔴 Long Put (ประกัน)", color: "#D64545" },
+                  { sit: "คิดว่าหุ้นจะ ลง", ans: "🔴 Long Put", color: "#D64545" },
+                ].map(({ sit, ans, color }, i) => (
+                  <tr key={i} style={{ background: i % 2 ? "#FDFAF4" : "#F8F5EF", borderBottom: "1px solid #E4DDD2" }}>
+                    <td className="px-3 py-2">{sit}</td>
+                    <td className="px-3 py-2 text-center font-bold" style={{ color }}>{ans}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="px-4 py-3 text-center" style={{ background: "#1A1A1A", boxShadow: "3px 3px 0 #D64545" }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#D64545] mb-1">จำประโยคเดียวนี้</p>
+            <p className="text-sm font-black text-white leading-relaxed">
+              &ldquo;ซื้อ Option = เดิมพันทั้ง ทิศทาง + เวลา + ความเร็ว พร้อมกัน&rdquo;
+            </p>
+          </div>
+        </div>
+      ),
+    },
+  ];
+}
+
 // ── Section card component ────────────────────────────────────────────────────
 
 function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
@@ -453,9 +694,10 @@ function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function OptionsPage() {
-  const { lang } = useI18n();
-  const isEn     = lang === "en";
-  const sections = buildSections(isEn);
+  const { lang }    = useI18n();
+  const isEn        = lang === "en";
+  const [mode, setMode] = useState<"beginner" | "advanced">("beginner");
+  const sections    = mode === "beginner" ? buildBeginnerSections(isEn) : buildSections(isEn);
 
   return (
     <AppShell>
@@ -481,6 +723,26 @@ export default function OptionsPage() {
               ? "Long Option = Direction × Time × IV · Max loss = Premium paid"
               : "ซื้อ Option = ทิศทาง × เวลา × IV · ขาดทุนสูงสุด = Premium"}
           </div>
+        </div>
+
+        {/* Level toggle */}
+        <div className="flex border border-[#C8BFB0]" style={{ boxShadow: "2px 2px 0 #1A1A1A" }}>
+          {(["beginner", "advanced"] as const).map(m => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className="flex-1 py-2.5 text-xs font-bold transition-colors"
+              style={{
+                background: mode === m ? "#1A1A1A" : "#FDFAF4",
+                color:      mode === m ? "#fff"    : "#8A8378",
+                borderRight: m === "beginner" ? "1px solid #C8BFB0" : undefined,
+              }}
+            >
+              {m === "beginner"
+                ? (isEn ? "🟢 Beginner — Easy mode" : "🟢 มือใหม่ — ฉบับง่าย")
+                : (isEn ? "🔴 Advanced — Full guide" : "🔴 ขั้นสูง — ฉบับครบ")}
+            </button>
+          ))}
         </div>
 
         {/* Navigation pills */}
