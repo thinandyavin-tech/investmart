@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Link }     from "@/i18n/navigation";
+import { Link }             from "@/i18n/navigation";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 import { AppShell } from "@/components/AppShell";
 import { useI18n }  from "@/lib/i18n";
 
@@ -462,12 +463,12 @@ function LevelCard({ level, isEn }: { level: Level; isEn: boolean }) {
             </div>
           )}
 
-          <Link
-            href={`/martin?q=${encodeURIComponent(level.chatQ)}`}
+          <AskMartinButton
+            q={level.chatQ}
             className="flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline self-start mt-1"
           >
             ✦ {isEn ? "Ask Martin" : "ถาม Martin"} →
-          </Link>
+          </AskMartinButton>
         </div>
       )}
     </div>
@@ -664,13 +665,13 @@ export default function BlueprintPage() {
         </div>
 
         {/* ── Martin CTA ───────────────────────────────────────────── */}
-        <Link
-          href="/martin?q=ฉันอยากเริ่มลงทุน ช่วยประเมินว่าฉันอยู่ด่านไหนของ Blueprint และควรทำอะไรก่อน"
+        <AskMartinButton
+          q="ฉันอยากเริ่มลงทุน ช่วยประเมินว่าฉันอยู่ด่านไหนของ Blueprint และควรทำอะไรก่อน"
           style={{ border: "1.5px solid #8B5CF6", boxShadow: "2px 2px 0 #8B5CF6" }}
           className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#8B5CF6] bg-[#fefae0] hover:bg-[#8B5CF6] hover:text-white transition-colors"
         >
           ✦ {isEn ? "Ask Martin which level you're at" : "ถาม Martin ว่าตอนนี้อยู่ด่านไหน"}
-        </Link>
+        </AskMartinButton>
 
         {/* ── Footer disclaimer ────────────────────────────────────── */}
         <p className="text-[10px] text-[#8A8378] text-center leading-relaxed">

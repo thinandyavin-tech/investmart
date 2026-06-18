@@ -133,11 +133,12 @@ export function FloatingAssistant() {
   const { lang }      = useI18n();
   const contextTicker = tickerFromPath(pathname);
 
-  const [isOpen,    setIsOpen]    = useState(false);
-  const [messages,  setMessages]  = useState<Message[]>([]);
-  const [input,     setInput]     = useState("");
-  const [streaming, setStreaming] = useState(false);
-  const [error,     setError]     = useState<string | null>(null);
+  const [isOpen,          setIsOpen]          = useState(false);
+  const [messages,        setMessages]        = useState<Message[]>([]);
+  const [input,           setInput]           = useState("");
+  const [streaming,       setStreaming]        = useState(false);
+  const [error,           setError]           = useState<string | null>(null);
+  const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
 
   const abortRef  = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -157,6 +158,31 @@ export function FloatingAssistant() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen]);
+
+  // Listen for "Ask Martin" events fired from anywhere in the app
+  useEffect(() => {
+    function onAskMartin(e: Event) {
+      const q = (e as CustomEvent<{ q: string }>).detail?.q;
+      if (!q) return;
+      setMessages([]);
+      setError(null);
+      setIsOpen(true);
+      setPendingQuestion(q);
+    }
+    window.addEventListener("martin:open", onAskMartin);
+    return () => window.removeEventListener("martin:open", onAskMartin);
+  }, []);
+
+  // Auto-send pending question once panel is open and not already streaming
+  useEffect(() => {
+    if (isOpen && pendingQuestion && !streaming) {
+      const q = pendingQuestion;
+      setPendingQuestion(null);
+      void send(q);
+    }
+  // send is stable via useCallback; include the values that gate the send
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, pendingQuestion]);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();

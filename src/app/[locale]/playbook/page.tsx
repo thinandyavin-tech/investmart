@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Link }     from "@/i18n/navigation";
+import { Link }              from "@/i18n/navigation";
+import { AskMartinButton }  from "@/components/ai/AskMartinButton";
 import { AppShell } from "@/components/AppShell";
 import { useI18n }  from "@/lib/i18n";
 import type { ScorecardResult, PillarRating } from "@/app/api/playbook/scorecard/route";
@@ -385,12 +386,12 @@ export default function PlaybookPage() {
                 </div>
 
                 {/* Ask Martin CTA */}
-                <Link
-                  href={`/martin?q=${encodeURIComponent(`Apply the thematic growth framework to ${scorecard.ticker}: how strong is the moat, is the implied growth plausible, what are the main risks?`)}`}
+                <AskMartinButton
+                  q={`Apply the thematic growth framework to ${scorecard.ticker}: how strong is the moat, is the implied growth plausible, what are the main risks?`}
                   className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-[#8B5CF6] border border-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white transition-colors"
                 >
                   ✦ {isEn ? `Discuss ${scorecard.ticker} with Martin` : `คุยกับ Martin เรื่อง ${scorecard.ticker}`}
-                </Link>
+                </AskMartinButton>
               </div>
             )}
           </div>

@@ -2,8 +2,9 @@
 
 import { useState, useRef } from "react";
 import { useRouter }  from "next/navigation";
-import { Link }       from "@/i18n/navigation";
-import { useI18n }   from "@/lib/i18n";
+import { Link }             from "@/i18n/navigation";
+import { useI18n }         from "@/lib/i18n";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 
 interface GuidedFirstTradeProps {
@@ -183,9 +184,8 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                   </div>
                   <span className="text-[#8B5CF6] text-xs">↗</span>
                 </button>
-                <Link
-                  href={`/martin?q=${encodeURIComponent(`Tell me about ${ticker} — what's the business, is it in a good theme, and what's currently moving the stock?`)}`}
-                  onClick={onClose}
+                <AskMartinButton
+                  q={`Tell me about ${ticker} — what's the business, is it in a good theme, and what's currently moving the stock?`}
                   className="flex items-center justify-between px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#8B5CF6] transition-colors"
                 >
                   <div>
@@ -197,7 +197,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                     </div>
                   </div>
                   <span className="text-[#8B5CF6] text-xs">↗</span>
-                </Link>
+                </AskMartinButton>
               </div>
               <div className="flex gap-2 pt-1">
                 <button

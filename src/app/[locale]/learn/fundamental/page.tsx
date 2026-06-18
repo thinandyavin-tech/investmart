@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Link }     from "@/i18n/navigation";
+import { Link }             from "@/i18n/navigation";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 import { AppShell } from "@/components/AppShell";
 import { useI18n }  from "@/lib/i18n";
 
@@ -51,10 +52,12 @@ function ChapterCard({ ch }: { ch: Chapter }) {
       {open && (
         <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3 text-xs text-[#1A1A1A] leading-relaxed flex flex-col gap-2">{ch.body}</div>
-          <Link href={`/martin?q=${encodeURIComponent(ch.chatQ)}`}
-            className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline">
+          <AskMartinButton
+            q={ch.chatQ}
+            className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline"
+          >
             ✦ Ask Martin →
-          </Link>
+          </AskMartinButton>
         </div>
       )}
     </div>

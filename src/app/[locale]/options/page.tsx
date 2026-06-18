@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Link }     from "@/i18n/navigation";
+import { Link }             from "@/i18n/navigation";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 import { AppShell } from "@/components/AppShell";
 import { useI18n }  from "@/lib/i18n";
 
@@ -679,12 +680,12 @@ function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
       {open && (
         <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3">{section.body}</div>
-          <Link
-            href={`/martin?q=${encodeURIComponent(section.chatQ)}`}
+          <AskMartinButton
+            q={section.chatQ}
             className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline self-start"
           >
             ✦ {isEn ? "Ask Martin" : "ถาม Martin"} →
-          </Link>
+          </AskMartinButton>
         </div>
       )}
     </div>
@@ -771,13 +772,13 @@ export default function OptionsPage() {
         </div>
 
         {/* Ask Martin CTA */}
-        <Link
-          href="/martin?q=ฉันอยากเรียนรู้ Options trading ช่วยแนะนำว่าควรเริ่มจากตรงไหน และ Long Call vs Long Put ต่างกันอย่างไร"
+        <AskMartinButton
+          q="ฉันอยากเรียนรู้ Options trading ช่วยแนะนำว่าควรเริ่มจากตรงไหน และ Long Call vs Long Put ต่างกันอย่างไร"
           style={{ border: "1.5px solid #D64545", boxShadow: "2px 2px 0 #D64545" }}
           className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#D64545] bg-[#fefae0] hover:bg-[#D64545] hover:text-white transition-colors"
         >
           ✦ {isEn ? "Ask Martin to teach you Options step by step" : "ให้ Martin สอน Options ทีละขั้นตอน"}
-        </Link>
+        </AskMartinButton>
 
         {/* Links to related tools */}
         <div className="grid grid-cols-2 gap-2">

@@ -212,14 +212,30 @@ ${metricsLines || "ไม่มีข้อมูลตัวเลข"}
 ## ข่าวสำคัญ 7 วันล่าสุด
 ${newsBlock}`.trim();
 
-  try {
-    const raw = await generateText(userPrompt, systemPrompt, {
-      maxTokens:   1200,
-      temperature: 0.2,
-      jsonMode:    true,
-    });
+  const MAX_ATTEMPTS = 3;
+  let llm: Partial<LlmOutlook> | undefined;
+  let lastErr = "";
 
-    const llm = JSON.parse(raw) as Partial<LlmOutlook>;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const raw = await generateText(userPrompt, systemPrompt, {
+        maxTokens:   1800,
+        temperature: 0.2,
+        jsonMode:    true,
+      });
+      llm = JSON.parse(raw) as Partial<LlmOutlook>;
+      break;
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : "parse error";
+      console.warn(`[ai/outlook] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastErr.slice(0, 120)}`);
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise(r => setTimeout(r, 600 * attempt));
+      }
+    }
+  }
+
+  try {
+    if (!llm) throw new Error(lastErr);
 
     const entry: OutlookEntry = {
       ticker,

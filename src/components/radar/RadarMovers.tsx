@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "@/i18n/navigation";
-import dynamic from "next/dynamic";
+import { Link }             from "@/i18n/navigation";
+import dynamic              from "next/dynamic";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 
 import { useI18n } from "@/lib/i18n";
 import type { Mover, MoversCache } from "@/app/api/radar/movers/route";
@@ -113,14 +114,13 @@ function MoverRow({ m, rank }: { m: Mover; rank: number }) {
       </span>
 
       {/* Ask Martin */}
-      <Link
-        href={`/martin?q=${encodeURIComponent(`Tell me about ${m.symbol} — why is it moving today?`)}`}
+      <AskMartinButton
+        q={`Tell me about ${m.symbol} — why is it moving today?`}
         className="text-[10px] text-violet-500 hover:text-violet-700 flex-shrink-0 hidden sm:block"
-        title={`Ask Martin about ${m.symbol}`}
         aria-label={`Ask Martin about ${m.symbol}`}
       >
         ✦
-      </Link>
+      </AskMartinButton>
     </div>
   );
 }
