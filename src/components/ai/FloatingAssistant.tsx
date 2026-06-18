@@ -173,16 +173,24 @@ export function FloatingAssistant() {
     return () => window.removeEventListener("martin:open", onAskMartin);
   }, []);
 
-  // Auto-send pending question once panel is open and not already streaming
+  // Auto-send pending question once panel is open and not already streaming.
+  // Use a ref to avoid setState-in-effect — the ref mutation is safe here.
+  const pendingRef = useRef<string | null>(null);
   useEffect(() => {
-    if (isOpen && pendingQuestion && !streaming) {
-      const q = pendingQuestion;
+    if (pendingQuestion) {
+      pendingRef.current = pendingQuestion;
       setPendingQuestion(null);
+    }
+  }, [pendingQuestion]);
+
+  useEffect(() => {
+    if (isOpen && pendingRef.current && !streaming) {
+      const q = pendingRef.current;
+      pendingRef.current = null;
       void send(q);
     }
-  // send is stable via useCallback; include the values that gate the send
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, pendingQuestion]);
+  }, [isOpen, streaming]);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
