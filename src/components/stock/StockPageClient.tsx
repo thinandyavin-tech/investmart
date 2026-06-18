@@ -16,6 +16,7 @@ import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { StockLogo }             from "@/components/StockLogo";
 import { TradingViewChart }      from "@/components/tradingview/TradingViewChart";
 import { AskMartinButton }       from "@/components/ai/AskMartinButton";
+import { StockTradePanel }      from "@/components/stock/StockTradePanel";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -579,20 +580,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       {/* Reverse DCF — Expectations Gauge */}
       <ReverseDCF ticker={ticker} />
 
-      {/* CTA: Trade — hidden when no real Finnhub price (can't fabricate a tradeable price) */}
-      {!quoteError && (
-        <div className="flex flex-col gap-2">
-          <Link
-            href={`/radar?ticker=${ticker}`}
-            className="text-center text-sm font-bold text-white bg-[#16A34A] rounded-xl px-4 py-3 hover:bg-[#15803D] transition-colors"
-          >
-            ซื้อ / ขาย {ticker} (Paper Trade) →
-          </Link>
-          <p className="text-xs text-slate-400 text-center">
-            จำลองการซื้อขายเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน
-          </p>
-        </div>
-      )}
+      {/* Trade panel — always visible; shows limit order option when no live price */}
+      <StockTradePanel ticker={ticker} currentPrice={quote?.price} />
     </div>
   );
 }
