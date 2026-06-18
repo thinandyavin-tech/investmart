@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit }            from "@/lib/rateLimit";
 
 // Fallback rates — updated via Finnhub forex quotes
 const FALLBACK_RATES: Record<string, number> = {
@@ -9,7 +10,9 @@ const FALLBACK_RATES: Record<string, number> = {
   USDJPY: 149.5,
 };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const limited = await applyRateLimit(req, "quote");
+  if (limited) return limited;
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ rates: FALLBACK_RATES, source: "fallback" });

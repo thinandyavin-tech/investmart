@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/getSession";
 
@@ -17,7 +18,10 @@ function setCached(key: string, data: unknown) {
   cache.set(key, { data, at: Date.now() });
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "quote");
+  if (limited) return limited;
+
   const userId = await getSessionUserId();
 
   const cached = getCached<unknown>("discover");

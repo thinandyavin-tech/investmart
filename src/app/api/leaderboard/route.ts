@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
+import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { computeTier } from "@/lib/traderTier";
@@ -30,7 +31,10 @@ async function fetchLivePrice(ticker: string, apiKey: string): Promise<number | 
   }
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "quote");
+  if (limited) return limited;
+
   const apiKey = process.env.FINNHUB_API_KEY;
 
   const users = await prisma.user.findMany({

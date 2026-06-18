@@ -1,3 +1,4 @@
+import { applyRateLimit } from "@/lib/rateLimit";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +20,9 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "write");
+  if (limited) return limited;
+
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "not authenticated" }, { status: 401 });
 

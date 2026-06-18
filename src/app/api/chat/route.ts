@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionInfo } from "@/lib/getSession";
-import { prisma } from "@/lib/prisma";
+import { getSessionInfo }   from "@/lib/getSession";
+import { prisma }           from "@/lib/prisma";
+import { applyRateLimit }   from "@/lib/rateLimit";
 
 const PAGE_SIZE = 40;
 
@@ -20,6 +21,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 // POST /api/chat  — send a message (auth required)
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "write");
+  if (limited) return limited;
+
   const { userId } = await getSessionInfo();
   if (!userId) {
     return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อนส่งข้อความ" }, { status: 401 });
