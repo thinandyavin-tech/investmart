@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
+import ReactMarkdown from "react-markdown";
 import { useI18n } from "@/lib/i18n";
 
 const StockInfographic = dynamic(
@@ -57,7 +58,29 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
       <div className="max-w-[88%]">
         <p className="text-xs font-bold text-violet-400 mb-0.5">Martin</p>
         {content ? (
-          <p className="text-sm leading-relaxed text-slate-800 whitespace-pre-wrap break-words">{content}</p>
+          <div className="text-sm leading-relaxed text-slate-800 break-words">
+            <ReactMarkdown
+              components={{
+                p:          ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                strong:     ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
+                em:         ({ children }) => <em className="italic">{children}</em>,
+                h1:         ({ children }) => <p className="font-bold text-base text-slate-900 mt-3 mb-1">{children}</p>,
+                h2:         ({ children }) => <p className="font-bold text-sm text-slate-900 mt-2.5 mb-1 uppercase tracking-wide">{children}</p>,
+                h3:         ({ children }) => <p className="font-semibold text-sm text-slate-800 mt-2 mb-0.5">{children}</p>,
+                ul:         ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>,
+                ol:         ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>,
+                li:         ({ children }) => <li className="text-sm">{children}</li>,
+                hr:         () => <hr className="border-[#ccd5ae] my-3" />,
+                blockquote: ({ children }) => <blockquote className="border-l-2 border-violet-300 pl-3 italic text-slate-600 my-1.5">{children}</blockquote>,
+                code:       ({ children }) => <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
+                table:      ({ children }) => <div className="overflow-x-auto my-2"><table className="text-xs border-collapse w-full">{children}</table></div>,
+                th:         ({ children }) => <th className="border border-[#ccd5ae] px-2 py-1.5 bg-[#e9edc9] font-semibold text-left">{children}</th>,
+                td:         ({ children }) => <td className="border border-[#ccd5ae] px-2 py-1.5">{children}</td>,
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
         ) : (
           <p className="text-xs text-slate-400 animate-pulse">กำลังคิด...</p>
         )}
