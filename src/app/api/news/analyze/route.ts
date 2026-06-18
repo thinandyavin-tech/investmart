@@ -158,37 +158,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     corroborationBlock,
   ].filter(Boolean).join("\n");
 
-  try {
-    const text = await generateText(userMessage, buildAnalysisPrompt(locale), {
-      maxTokens:   800,
-      temperature: 0.3,
-      // No jsonMode: prompt already requests JSON; jsonMode causes empty responses on some providers
-    });
-    let parsed: unknown;
+  const MAX_ATTEMPTS = 3;
+  let validated: ReturnType<typeof AnalysisSchema.safeParse> | undefined;
+  let lastErr = "";
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      parsed = JSON.parse(extractJson(text));
-    } catch {
-      return NextResponse.json({ error: "invalid AI response" }, { status: 502 });
-    }
+      const text = await generateText(userMessage, buildAnalysisPrompt(locale), {
+        maxTokens:   1100,
+        temperature: 0.3,
+      });
+      const parsed = JSON.parse(extractJson(text)) as unknown;
 
-    // Always inject the canonical disclaimer server-side — never trust the model's text
-    if (typeof parsed === "object" && parsed !== null) {
-      (parsed as Record<string, unknown>)["disclaimer_th"] =
-        locale === "en" ? DISCLAIMER_EN : DISCLAIMER_TH;
-    }
+      if (typeof parsed === "object" && parsed !== null) {
+        (parsed as Record<string, unknown>)["disclaimer_th"] =
+          locale === "en" ? DISCLAIMER_EN : DISCLAIMER_TH;
+      }
 
-    const validated = AnalysisSchema.safeParse(parsed);
-    if (!validated.success) {
-      return NextResponse.json({ error: "malformed AI response" }, { status: 502 });
+      const result = AnalysisSchema.safeParse(parsed);
+      if (!result.success) throw new Error("schema mismatch");
+      validated = result;
+      break;
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : String(e);
+      console.warn(`[news/analyze] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastErr.slice(0, 100)}`);
+      if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 600 * attempt));
     }
+  }
 
-    cache.set(key, { result: validated.data, cachedAt: Date.now() });
-    return NextResponse.json({ ...validated.data, cached: false });
-  } catch (err) {
-    console.error("[news/analyze] Groq error:", err instanceof Error ? err.message : err);
+  if (!validated?.success) {
+    console.error("[news/analyze] all attempts failed:", lastErr);
     const errMsg = locale === "en"
       ? "AI temporarily unavailable — please try again"
       : "AI ไม่พร้อมใช้งานชั่วคราว ลองใหม่อีกครั้ง";
     return NextResponse.json({ error: errMsg }, { status: 503 });
   }
+
+  cache.set(key, { result: validated.data, cachedAt: Date.now() });
+  return NextResponse.json({ ...validated.data, cached: false });
 }

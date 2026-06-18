@@ -240,14 +240,27 @@ Return ONLY valid JSON (no markdown, no preamble):
       : "No AI provider configured. Please set an API key.";
     swot = { strengths: [], weaknesses: [], opportunities: [], threats: [], disclaimer: "" };
   } else {
-    try {
-      const raw = await generateText(userPrompt, systemPrompt, {
-        maxTokens:   1200,
-        temperature: 0.3,
-        jsonMode:    false,
-      });
-      const jsonStr = extractJson(raw);
-      const parsed  = JSON.parse(jsonStr) as Partial<SwotQuadrant>;
+    const MAX_ATTEMPTS = 3;
+    let lastErr = "";
+    let parsed: Partial<SwotQuadrant> | undefined;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const raw = await generateText(userPrompt, systemPrompt, {
+          maxTokens:   1600,
+          temperature: 0.3,
+          jsonMode:    false,
+        });
+        parsed = JSON.parse(extractJson(raw)) as Partial<SwotQuadrant>;
+        break;
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : String(e);
+        console.warn(`[swot] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastErr.slice(0, 100)}`);
+        if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 600 * attempt));
+      }
+    }
+
+    if (parsed) {
       swot = {
         strengths:     Array.isArray(parsed.strengths)     ? parsed.strengths     : [],
         weaknesses:    Array.isArray(parsed.weaknesses)    ? parsed.weaknesses    : [],
@@ -255,9 +268,8 @@ Return ONLY valid JSON (no markdown, no preamble):
         threats:       Array.isArray(parsed.threats)       ? parsed.threats       : [],
         disclaimer:    typeof parsed.disclaimer === "string" ? parsed.disclaimer  : "",
       };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[swot] AI error for ${ticker}:`, msg);
+    } else {
+      console.error(`[swot] all ${MAX_ATTEMPTS} attempts failed for ${ticker}: ${lastErr}`);
       swotError = locale === "th"
         ? "การวิเคราะห์ AI ไม่พร้อมใช้งานชั่วคราว กรุณาลองใหม่อีกครั้ง"
         : "AI analysis temporarily unavailable. Please try again.";

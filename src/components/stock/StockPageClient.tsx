@@ -14,7 +14,8 @@ import { useUser } from "@/lib/userContext";
 import { useI18n } from "@/lib/i18n";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
 import { StockLogo }             from "@/components/StockLogo";
-import { TradingViewChart } from "@/components/tradingview/TradingViewChart";
+import { TradingViewChart }      from "@/components/tradingview/TradingViewChart";
+import { AskMartinButton }       from "@/components/ai/AskMartinButton";
 
 const PriceChart = dynamic(
   () => import("@/components/PriceChart").then((m) => m.PriceChart),
@@ -535,6 +536,21 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         </div>
         <span className="text-violet-400 text-sm flex-shrink-0">→</span>
       </Link>
+
+      {/* Ask Martin in context of this stock */}
+      <AskMartinButton
+        q={`Tell me about $${ticker} — give me a complete overview: business model, recent performance, key risks, and what's driving the stock right now.`}
+        className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] hover:border-violet-400 hover:bg-[#fefae0] transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-violet-500 font-bold text-base">✦</span>
+          <div className="text-left">
+            <p className="text-sm font-bold text-slate-800">ถาม Martin เกี่ยวกับ {ticker}</p>
+            <p className="text-xs text-slate-500">วิเคราะห์เชิงลึก · ธุรกิจ · ความเสี่ยง · แนวโน้ม</p>
+          </div>
+        </div>
+        <span className="text-violet-400 text-sm flex-shrink-0">↗</span>
+      </AskMartinButton>
 
       {/* Why is it moving */}
       <WhyMovingCard ticker={ticker} />
