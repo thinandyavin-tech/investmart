@@ -49,5 +49,12 @@ export function extractJson(raw: string): string {
     try { JSON.parse(arrMatch[0]); return arrMatch[0]; } catch { /* continue */ }
   }
 
-  throw new Error(`Could not extract valid JSON from AI response. Raw (first 200 chars): ${raw.slice(0, 200)}`);
+  // 5. Detect truncated response — starts with { but never closes.
+  //    Signal a clean error so the caller can retry rather than showing raw AI output.
+  const hasBraceOpen = fenceStripped.trimStart().startsWith("{");
+  if (hasBraceOpen) {
+    throw new Error("AI response was truncated before JSON completed — will retry");
+  }
+
+  throw new Error("Could not extract valid JSON from AI response — will retry");
 }

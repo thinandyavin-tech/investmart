@@ -463,7 +463,7 @@ function LevelCard({ level, isEn }: { level: Level; isEn: boolean }) {
           )}
 
           <Link
-            href={`/chat?q=${encodeURIComponent(level.chatQ)}`}
+            href={`/martin?q=${encodeURIComponent(level.chatQ)}`}
             className="flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline self-start mt-1"
           >
             ✦ {isEn ? "Ask Martin" : "ถาม Martin"} →
@@ -665,7 +665,7 @@ export default function BlueprintPage() {
 
         {/* ── Martin CTA ───────────────────────────────────────────── */}
         <Link
-          href="/chat?q=ฉันอยากเริ่มลงทุน ช่วยประเมินว่าฉันอยู่ด่านไหนของ Blueprint และควรทำอะไรก่อน"
+          href="/martin?q=ฉันอยากเริ่มลงทุน ช่วยประเมินว่าฉันอยู่ด่านไหนของ Blueprint และควรทำอะไรก่อน"
           style={{ border: "1.5px solid #8B5CF6", boxShadow: "2px 2px 0 #8B5CF6" }}
           className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#8B5CF6] bg-[#fefae0] hover:bg-[#8B5CF6] hover:text-white transition-colors"
         >

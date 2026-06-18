@@ -680,7 +680,7 @@ function SectionCard({ section, isEn }: { section: Section; isEn: boolean }) {
         <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3">{section.body}</div>
           <Link
-            href={`/chat?q=${encodeURIComponent(section.chatQ)}`}
+            href={`/martin?q=${encodeURIComponent(section.chatQ)}`}
             className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline self-start"
           >
             ✦ {isEn ? "Ask Martin" : "ถาม Martin"} →
@@ -772,7 +772,7 @@ export default function OptionsPage() {
 
         {/* Ask Martin CTA */}
         <Link
-          href="/chat?q=ฉันอยากเรียนรู้ Options trading ช่วยแนะนำว่าควรเริ่มจากตรงไหน และ Long Call vs Long Put ต่างกันอย่างไร"
+          href="/martin?q=ฉันอยากเรียนรู้ Options trading ช่วยแนะนำว่าควรเริ่มจากตรงไหน และ Long Call vs Long Put ต่างกันอย่างไร"
           style={{ border: "1.5px solid #D64545", boxShadow: "2px 2px 0 #D64545" }}
           className="flex items-center justify-center gap-2 py-3 text-xs font-bold text-[#D64545] bg-[#fefae0] hover:bg-[#D64545] hover:text-white transition-colors"
         >

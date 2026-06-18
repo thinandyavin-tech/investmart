@@ -114,7 +114,7 @@ function MoverRow({ m, rank }: { m: Mover; rank: number }) {
 
       {/* Ask Martin */}
       <Link
-        href={`/chat?q=${encodeURIComponent(`Tell me about ${m.symbol} — why is it moving today?`)}`}
+        href={`/martin?q=${encodeURIComponent(`Tell me about ${m.symbol} — why is it moving today?`)}`}
         className="text-[10px] text-violet-500 hover:text-violet-700 flex-shrink-0 hidden sm:block"
         title={`Ask Martin about ${m.symbol}`}
         aria-label={`Ask Martin about ${m.symbol}`}

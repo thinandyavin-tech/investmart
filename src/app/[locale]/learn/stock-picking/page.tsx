@@ -63,7 +63,7 @@ function ModuleCard({ mod }: { mod: Module }) {
         <div className="px-4 pb-4 border-t border-[#e9edc9]">
           <div className="mt-3 text-xs text-[#1A1A1A] leading-relaxed flex flex-col gap-2">{mod.body}</div>
           <Link
-            href={`/chat?q=${encodeURIComponent(mod.chatQ)}`}
+            href={`/martin?q=${encodeURIComponent(mod.chatQ)}`}
             className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#8B5CF6] hover:underline"
           >
             ✦ Ask Martin →
@@ -305,7 +305,7 @@ export default function StockPickingPage() {
             : "ถาม Martin ให้ทำ Full Walkthrough กับหุ้นใดก็ได้ ตั้งแต่ Macro จนถึง Position Size"}
           </p>
           <Link
-            href="/chat?q=ทำ Full Top-Down Walkthrough สำหรับ NVDA ตั้งแต่ Macro Theme ไปจนถึง Position Sizing"
+            href="/martin?q=ทำ Full Top-Down Walkthrough สำหรับ NVDA ตั้งแต่ Macro Theme ไปจนถึง Position Sizing"
             className="inline-flex items-center gap-1.5 mt-1 text-[10px] font-bold text-[#8B5CF6] hover:underline"
           >
             ✦ {isEn ? "Try with NVDA →" : "ลองกับ NVDA →"}

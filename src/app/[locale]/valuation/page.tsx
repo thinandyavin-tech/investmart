@@ -347,7 +347,7 @@ export default function ValuationLabPage() {
 
               {/* Martin CTA */}
               <Link
-                href={`/chat?q=${encodeURIComponent(`Analyze ${ticker || "this stock"} using Reverse DCF — implied CAGR ${fPct(result.impliedCAGR)}, plausible ${fPct(result.plausibleCAGR)}, verdict: ${result.verdict}`)}`}
+                href={`/martin?q=${encodeURIComponent(`Analyze ${ticker || "this stock"} using Reverse DCF — implied CAGR ${fPct(result.impliedCAGR)}, plausible ${fPct(result.plausibleCAGR)}, verdict: ${result.verdict}`)}`}
                 className="mt-3 flex items-center justify-center gap-2 py-2 text-xs font-bold text-[#8B5CF6] border border-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white transition-colors"
               >
                 ✦ {isEn ? "Ask Martin about this result" : "ถาม Martin เรื่องผลการวิเคราะห์นี้"}

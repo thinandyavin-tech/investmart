@@ -487,7 +487,7 @@ export default function HunterPage() {
 
             {/* Ask Martin CTA */}
             <Link
-              href={`/chat?q=${encodeURIComponent(`Analyze ${swot.ticker} in depth`)}`}
+              href={`/martin?q=${encodeURIComponent(`Analyze ${swot.ticker} in depth`)}`}
               className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-[#8B5CF6] border border-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white transition-colors"
             >
               ✦ {isEn ? `Ask Martin about ${swot.ticker}` : `ถาม Martin เกี่ยวกับ ${swot.ticker}`}

@@ -391,20 +391,33 @@ async function buildAnalysis(
 
   const userMsg = `วิเคราะห์กราฟ ${ticker} timeframe ${tf} จากข้อมูลด้านล่างนี้\n\n${dataPrompt}\n\nSchema ที่ต้องตอบ:\n${JSON_SCHEMA}`;
 
-  const raw = await generateText(userMsg, SYSTEM_PROMPT, {
-    maxTokens:   4000, // schema response easily exceeds 2000 tokens when complete
-    temperature: 0.2,
-    // No jsonMode: rely on prompt. jsonMode can cause empty responses on some providers.
-  });
+  // Retry up to 3 times — first-call cold starts can return truncated responses.
+  const MAX_ATTEMPTS = 3;
+  let analysis: AnalysisOutput | undefined;
+  let lastErr = "";
 
-  let analysis: AnalysisOutput;
-  try {
-    const cleaned = extractJson(raw);
-    analysis = JSON.parse(cleaned) as AnalysisOutput;
-  } catch (e) {
-    const preview = raw?.slice(0, 150) ?? "(empty)";
-    console.error(`[analyze/${ticker}] JSON extract failed. Raw preview: ${preview}`);
-    throw new Error(`AI ส่งข้อมูลในรูปแบบที่ไม่ถูกต้อง — ${e instanceof Error ? e.message.slice(0, 80) : "parse error"}`);
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const raw = await generateText(userMsg, SYSTEM_PROMPT, {
+        maxTokens:   4500,
+        temperature: 0.2,
+      });
+      const cleaned = extractJson(raw);
+      analysis = JSON.parse(cleaned) as AnalysisOutput;
+      break; // success — exit loop
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : "parse error";
+      console.warn(`[analyze/${ticker}] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastErr.slice(0, 120)}`);
+      if (attempt < MAX_ATTEMPTS) {
+        // Brief pause before retry so the provider isn't hit immediately
+        await new Promise(r => setTimeout(r, 600 * attempt));
+      }
+    }
+  }
+
+  if (!analysis) {
+    console.error(`[analyze/${ticker}] all ${MAX_ATTEMPTS} attempts failed. last: ${lastErr.slice(0, 200)}`);
+    throw new Error("Martin ไม่สามารถวิเคราะห์ได้ในขณะนี้ — กรุณาลองใหม่อีกครั้ง");
   }
 
   return {

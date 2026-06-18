@@ -184,7 +184,7 @@ export function GuidedFirstTrade({ onClose, onComplete }: GuidedFirstTradeProps)
                   <span className="text-[#8B5CF6] text-xs">↗</span>
                 </button>
                 <Link
-                  href={`/chat?q=${encodeURIComponent(`Tell me about ${ticker} — what's the business, is it in a good theme, and what's currently moving the stock?`)}`}
+                  href={`/martin?q=${encodeURIComponent(`Tell me about ${ticker} — what's the business, is it in a good theme, and what's currently moving the stock?`)}`}
                   onClick={onClose}
                   className="flex items-center justify-between px-3 py-2.5 border border-[#ccd5ae] bg-[#fefae0] hover:border-[#8B5CF6] transition-colors"
                 >

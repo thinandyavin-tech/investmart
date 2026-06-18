@@ -386,7 +386,7 @@ export default function PlaybookPage() {
 
                 {/* Ask Martin CTA */}
                 <Link
-                  href={`/chat?q=${encodeURIComponent(`Apply the thematic growth framework to ${scorecard.ticker}: how strong is the moat, is the implied growth plausible, what are the main risks?`)}`}
+                  href={`/martin?q=${encodeURIComponent(`Apply the thematic growth framework to ${scorecard.ticker}: how strong is the moat, is the implied growth plausible, what are the main risks?`)}`}
                   className="flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-[#8B5CF6] border border-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white transition-colors"
                 >
                   ✦ {isEn ? `Discuss ${scorecard.ticker} with Martin` : `คุยกับ Martin เรื่อง ${scorecard.ticker}`}
