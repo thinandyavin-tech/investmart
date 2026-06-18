@@ -20,17 +20,6 @@ function fmtPct(n: number): string {
   return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 }
 
-// Proxy Finnhub bond/forex data through the existing quote endpoint
-async function fetchQuote(symbol: string, key: string): Promise<{ c: number; d: number; dp: number } | null> {
-  try {
-    const res = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${key}`,
-      { signal: AbortSignal.timeout(3000) },
-    );
-    if (!res.ok) return null;
-    return await res.json() as { c: number; d: number; dp: number };
-  } catch { return null; }
-}
 
 export function MacroPulse() {
   const { lang } = useI18n();
