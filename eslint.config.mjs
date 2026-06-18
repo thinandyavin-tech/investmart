@@ -12,8 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Agent worktrees — not part of the build
+    // Agent worktrees and Vercel output — not source files
     ".claude/**",
+    ".vercel/**",
   ]),
 ]);
 
