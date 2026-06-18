@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n";
 const TradingViewEconomicCalendar = dynamic(
   () => import("@/components/tradingview/TradingViewEconomicCalendar")
        .then(m => m.TradingViewEconomicCalendar),
-  { ssr: false, loading: () => <div className="h-[600px] bg-white/40 animate-pulse rounded-2xl" /> },
+  { ssr: false, loading: () => <div className="h-[600px] bg-[#faedcd] animate-pulse rounded-2xl" /> },
 );
 
 export function CalendarClient() {
@@ -45,7 +45,7 @@ export function CalendarClient() {
           className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
             !highImpactOnly
               ? "bg-violet-600 text-white border-violet-600"
-              : "border-slate-200 text-slate-600 hover:border-violet-300"
+              : "border-[#ccd5ae] text-slate-600 hover:border-violet-300"
           }`}
         >
           {t.calendar.allEvents}
@@ -55,14 +55,14 @@ export function CalendarClient() {
           className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
             highImpactOnly
               ? "bg-red-600 text-white border-red-600"
-              : "border-slate-200 text-slate-600 hover:border-slate-400"
+              : "border-[#ccd5ae] text-slate-600 hover:border-slate-400"
           }`}
         >
           {t.calendar.highImpact}
         </button>
       </div>
 
-      <div className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
+      <div className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] shadow-sm overflow-hidden">
         <TradingViewEconomicCalendar
           height={650}
           locale={lang}

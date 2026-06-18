@@ -17,7 +17,7 @@ export function PersonaCard({ persona, isHighlighted }: PersonaCardProps) {
   return (
     <div
       className={`bg-white rounded-xl border p-3 flex flex-col gap-2 transition-all ${
-        isHighlighted ? "border-green-300 shadow-md ring-1 ring-green-200" : "border-slate-100"
+        isHighlighted ? "border-green-300 shadow-md ring-1 ring-green-200" : "border-[#ccd5ae]"
       }`}
     >
       <div className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export function PersonaCard({ persona, isHighlighted }: PersonaCardProps) {
         >
           🎨 {theme.label}
         </span>
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-xs font-bold w-fit">
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#e9edc9] text-slate-700 text-xs font-bold w-fit">
           {feature.icon} {feature.label}
         </span>
       </div>

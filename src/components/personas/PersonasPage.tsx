@@ -30,7 +30,7 @@ function VoteBar({
         </div>
         <div className="text-xs text-slate-400">{sublabel}</div>
       </div>
-      <div className="flex-1 bg-slate-100 rounded-full h-2 relative overflow-hidden">
+      <div className="flex-1 bg-[#e9edc9] rounded-full h-2 relative overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
           style={{ width: `${pct.toFixed(1)}%`, background: color }}
@@ -120,7 +120,7 @@ export function PersonasPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-4 py-4 max-w-5xl mx-auto w-full">
+      <div className="bg-white border-b border-[#ccd5ae] px-4 py-4 max-w-5xl mx-auto w-full">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-lg font-bold text-slate-900">ชุมชน InvestMart</h1>
@@ -140,7 +140,7 @@ export function PersonasPage() {
         {/* Vote results */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Design tally */}
-          <div className="bg-white rounded-xl border border-slate-100 p-4">
+          <div className="bg-white rounded-xl border border-[#ccd5ae] p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">Design Preference</h2>
               <WinnerBadge theme={winningDesign} />
@@ -161,7 +161,7 @@ export function PersonasPage() {
           </div>
 
           {/* Feature tally */}
-          <div className="bg-white rounded-xl border border-slate-100 p-4">
+          <div className="bg-white rounded-xl border border-[#ccd5ae] p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">Feature Priority</h2>
               <div className="text-right">
@@ -189,7 +189,7 @@ export function PersonasPage() {
         </div>
 
         {/* User vote form */}
-        <div className="bg-white rounded-xl border border-slate-100 p-4">
+        <div className="bg-white rounded-xl border border-[#ccd5ae] p-4">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-3">โหวตของคุณ</h2>
           {submitted && hydrated ? (
             <div className="flex items-center justify-between gap-4">
@@ -224,7 +224,7 @@ export function PersonasPage() {
                       className={`text-left p-2.5 rounded-lg border transition-all ${
                         draftDesign === key
                           ? "border-2"
-                          : "border-slate-200 hover:border-slate-300"
+                          : "border-[#ccd5ae] hover:border-slate-300"
                       }`}
                       style={draftDesign === key ? { borderColor: t.color, background: t.bg } : {}}
                     >
@@ -247,7 +247,7 @@ export function PersonasPage() {
                       className={`text-left p-2.5 rounded-lg border transition-all ${
                         draftFeature === key
                           ? "border-2 border-green-500 bg-green-50"
-                          : "border-slate-200 hover:border-slate-300"
+                          : "border-[#ccd5ae] hover:border-slate-300"
                       }`}
                     >
                       <div className="text-xs">{f.icon}</div>

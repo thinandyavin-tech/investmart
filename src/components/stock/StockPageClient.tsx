@@ -201,7 +201,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         </Link>
         <Link
           href={`/compare?tickers=${ticker}`}
-          className="text-xs text-slate-400 hover:text-slate-900 transition-colors border border-slate-200 px-2 py-1 rounded"
+          className="text-xs text-slate-400 hover:text-slate-900 transition-colors border border-[#ccd5ae] px-2 py-1 rounded"
         >
           เทียบหุ้น →
         </Link>
@@ -234,7 +234,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                   <h1 className="text-sm font-bold truncate text-slate-900">{companyName}</h1>
                   {profile?.finnhubIndustry && (
-                    <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 font-semibold uppercase tracking-wide rounded-md flex-shrink-0">
+                    <span className="text-xs px-1.5 py-0.5 bg-[#e9edc9] text-slate-500 font-semibold uppercase tracking-wide rounded-md flex-shrink-0">
                       {profile.finnhubIndustry}
                     </span>
                   )}
@@ -388,7 +388,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/20">
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#ccd5ae]">
             {metrics.beta !== undefined && (
               <span
                 className="text-xs px-2 py-1 font-semibold border rounded-lg"
@@ -409,9 +409,9 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
 
       {/* Chart */}
       <Card className="overflow-hidden">
-        <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between flex-wrap gap-2">
+        <div className="px-3 pt-3 pb-2 border-b border-[#ccd5ae] flex items-center justify-between flex-wrap gap-2">
           {/* Chart source toggle */}
-          <div className="flex gap-1 rounded-lg bg-white/30 p-0.5">
+          <div className="flex gap-1 rounded-lg bg-[#faedcd] p-0.5">
             <button
               onClick={() => setUseTVChart(false)}
               className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-colors ${!useTVChart ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
@@ -427,7 +427,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
           </div>
           {!useTVChart && (
             <>
-              <div className="flex gap-1 rounded-lg bg-white/30 p-0.5" role="tablist" aria-label="Chart mode">
+              <div className="flex gap-1 rounded-lg bg-[#faedcd] p-0.5" role="tablist" aria-label="Chart mode">
                 {(["Price", "Relative", "Volume"] as const).map((m) => (
                   <button
                     key={m}
@@ -450,7 +450,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                     aria-selected={timeframe === tf}
                     onClick={() => setTimeframe(tf)}
                     className={`px-1.5 py-0.5 text-xs font-semibold rounded-md transition-colors ${
-                      timeframe === tf ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                      timeframe === tf ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-[#e9edc9] hover:text-slate-700"
                     }`}
                   >
                     {tf}
@@ -465,7 +465,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         ) : (
           <>
             {chartMode === "Price" && (
-              <div className="px-3 py-1.5 border-b border-white/20 flex items-center gap-3">
+              <div className="px-3 py-1.5 border-b border-[#ccd5ae] flex items-center gap-3">
                 <span className="text-xs text-slate-400 uppercase tracking-wide">MA:</span>
                 {([
                   { key: "ma20",  label: "20",  color: "#2563EB" },
@@ -489,7 +489,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
             )}
             <div className="p-3">
               {chartLoading ? (
-                <div className="h-48 bg-white/30 animate-pulse rounded-lg" />
+                <div className="h-48 bg-[#faedcd] animate-pulse rounded-lg" />
               ) : (
                 <PriceChart candles={candles} mode={chartMode} simulated={simulated} height={200} ma={maConfig} />
               )}
@@ -505,7 +505,7 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
       <div>
         <button
           onClick={() => setShowInfographic(v => !v)}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 hover:bg-white/70 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] hover:bg-[#fefae0] transition-colors"
         >
           <div className="flex items-center gap-2">
             <span className="text-violet-600 font-bold text-sm">✦</span>
@@ -637,7 +637,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
 
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-2">
         <div className="flex gap-2 items-center flex-wrap">
-          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs font-semibold">
+          <div className="flex rounded-lg overflow-hidden border border-[#ccd5ae] text-xs font-semibold">
             {(["above", "below"] as const).map((c) => (
               <button
                 key={c}
@@ -646,7 +646,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
                 className={`px-2 py-1.5 transition-colors ${
                   condition === c
                     ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-50"
+                    : "bg-white text-slate-600 hover:bg-[#e9edc9]"
                 }`}
                 aria-pressed={condition === c}
               >
@@ -662,7 +662,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
             value={threshold}
             onChange={(e) => setThreshold(e.target.value)}
             placeholder={currentPrice ? `ปัจจุบัน $${currentPrice.toFixed(2)}` : "ราคา USD"}
-            className="flex-1 min-w-[120px] px-2 py-1.5 text-xs border border-slate-200 bg-white rounded-lg outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
+            className="flex-1 min-w-[120px] px-2 py-1.5 text-xs border border-[#ccd5ae] bg-white rounded-lg outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
             aria-label="ราคาเป้าหมาย"
             style={{ fontFamily: "var(--font-mono)" }}
           />
@@ -682,7 +682,7 @@ function PriceAlertSection({ ticker, currentPrice }: PriceAlertSectionProps) {
           {tickerAlerts.map((a) => (
             <li
               key={a.id}
-              className="flex items-center justify-between text-xs px-2.5 py-1.5 border border-slate-100 bg-slate-50 rounded-lg"
+              className="flex items-center justify-between text-xs px-2.5 py-1.5 border border-[#ccd5ae] bg-[#e9edc9] rounded-lg"
             >
               <span className="text-slate-700" style={{ fontFamily: "var(--font-mono)" }}>
                 {a.condition === "above" ? "▲" : "▼"}{" "}

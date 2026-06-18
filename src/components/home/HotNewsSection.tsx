@@ -53,8 +53,8 @@ export function HotNewsSection() {
   const allHeadlines = articles.map(a => a.headline);
 
   return (
-    <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
-      <div className="px-3 pt-3 pb-2 border-b border-white/20 flex items-center justify-between">
+    <div className="rounded-xl bg-[#faedcd] border border-[#ccd5ae] overflow-hidden">
+      <div className="px-3 pt-3 pb-2 border-b border-[#ccd5ae] flex items-center justify-between">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">{t.homeStrings.hotNews}</h2>
           <p className="text-xs text-slate-500 mt-0.5">{t.common.source}: Finnhub</p>
@@ -68,8 +68,8 @@ export function HotNewsSection() {
         <div className="divide-y divide-white/20">
           {[0, 1, 2].map((i) => (
             <div key={i} className="px-3 py-3">
-              <div className="h-3 w-full bg-white/30 animate-pulse rounded mb-2" />
-              <div className="h-2 w-32 bg-white/30 animate-pulse rounded" />
+              <div className="h-3 w-full bg-[#faedcd] animate-pulse rounded mb-2" />
+              <div className="h-2 w-32 bg-[#faedcd] animate-pulse rounded" />
             </div>
           ))}
         </div>
@@ -78,7 +78,7 @@ export function HotNewsSection() {
           <p className="text-xs text-slate-500 mb-2">{t.homeStrings.loadError}</p>
           <button
             onClick={load}
-            className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
+            className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-[#faedcd] transition-colors text-slate-700"
           >
             {t.common.retry}
           </button>
@@ -92,7 +92,7 @@ export function HotNewsSection() {
           {articles.map((a) => {
             const tickers = extractTickers(a.headline);
             return (
-              <div key={a.id} className="border-b border-white/20 last:border-0 px-3 py-3">
+              <div key={a.id} className="border-b border-[#ccd5ae] last:border-0 px-3 py-3">
                 <a
                   href={a.url}
                   target="_blank"

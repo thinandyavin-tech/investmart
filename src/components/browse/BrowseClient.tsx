@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { StockLogo } from "@/components/StockLogo";
 import {
   CATALOG,
   getByIndex,
@@ -15,81 +16,117 @@ import {
 import { SET50_TICKERS } from "@/lib/stockUniverse";
 import { STOCK_INFO } from "@/lib/stockNames";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ── Palette constants ─────────────────────────────────────────────────────────
+
+const P = {
+  bg:        "#fefae0",
+  card:      "#faedcd",
+  hover:     "#e9edc9",
+  border:    "#ccd5ae",
+  shadow:    "#d4a373",
+  text:      "#1A1A1A",
+  muted:     "#8A8378",
+  accent:    "#8B5CF6",
+} as const;
+
+// Sector → subtle colour
+const SECTOR_STYLE: Record<string, { bg: string; text: string }> = {
+  Tech:    { bg: "#EDE9FE", text: "#5B21B6" },
+  Finance: { bg: "#DBEAFE", text: "#1D4ED8" },
+  Health:  { bg: "#DCFCE7", text: "#166534" },
+  Consumer:{ bg: "#FEF3C7", text: "#B45309" },
+  Staples: { bg: "#FEF9C3", text: "#854D0E" },
+  Comm:    { bg: "#FCE7F3", text: "#9D174D" },
+  Energy:  { bg: "#FEF3C7", text: "#92400E" },
+  Indust:  { bg: "#e9edc9", text: "#3D3730" },
+  Matls:   { bg: "#FEF2F2", text: "#991B1B" },
+  RealEst: { bg: "#CCFBF1", text: "#0F766E" },
+  Utility: { bg: "#E0F2FE", text: "#0369A1" },
+  ETF:     { bg: "#EDE9FE", text: "#4338CA" },
+};
 
 type Tab = "index" | "sector";
-
 const INDEX_TABS = Object.entries(INDEX_LABELS).concat([["SET50", "Thailand SET50"]]);
 
-// ─── Stock card (no price — just browse metadata) ─────────────────────────────
+// ── Stock card ────────────────────────────────────────────────────────────────
 
 function StockCard({ entry }: { entry: CatalogEntry }) {
-  const badgeColor: Record<string, string> = {
-    Tech: "bg-violet-100 text-violet-700",
-    Finance: "bg-blue-100 text-blue-700",
-    Health: "bg-green-100 text-green-700",
-    Consumer: "bg-orange-100 text-orange-700",
-    Staples: "bg-yellow-100 text-yellow-800",
-    Comm: "bg-pink-100 text-pink-700",
-    Energy: "bg-amber-100 text-amber-800",
-    Indust: "bg-slate-100 text-slate-700",
-    Matls: "bg-stone-100 text-stone-700",
-    RealEst: "bg-teal-100 text-teal-700",
-    Utility: "bg-cyan-100 text-cyan-700",
-    ETF: "bg-indigo-100 text-indigo-700",
-  };
-  const badge = badgeColor[entry.sector] ?? "bg-slate-100 text-slate-600";
-
+  const s = SECTOR_STYLE[entry.sector] ?? { bg: "#e9edc9", text: "#3D3730" };
   return (
     <Link
       href={`/stock/${entry.ticker}`}
-      className="flex items-start gap-2 p-2.5 rounded-xl bg-white/60 border border-white/40 hover:bg-white/80 hover:border-violet-200 transition-all group"
+      className="flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+      style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 8 }}
+      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = P.hover)}
+      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = P.card)}
     >
+      <StockLogo ticker={entry.ticker} name={entry.name} size={32} radius={6} />
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-xs font-bold font-mono text-slate-900 group-hover:text-violet-700 transition-colors">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)", color: P.text }}>
             {entry.ticker}
           </span>
-          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${badge}`}>
+          <span
+            className="text-[9px] font-bold px-1.5 py-0.5 flex-shrink-0"
+            style={{ background: s.bg, color: s.text, borderRadius: 4 }}
+          >
             {SECTOR_LABELS[entry.sector] ?? entry.sector}
           </span>
         </div>
-        <p className="text-[11px] text-slate-500 truncate mt-0.5 leading-none">
+        <p className="text-[10px] truncate mt-0.5" style={{ color: P.muted }}>
           {entry.name}
         </p>
       </div>
-      <span className="text-[10px] text-slate-400 flex-shrink-0">{entry.exchange}</span>
+      <span className="text-[9px] font-bold flex-shrink-0" style={{ color: P.muted }}>{entry.exchange}</span>
     </Link>
   );
 }
 
-// For SET50 (not in catalog)
 function SetCard({ ticker }: { ticker: string }) {
   const info = STOCK_INFO[ticker];
   return (
     <Link
       href={`/stock/${ticker}`}
-      className="flex items-start gap-2 p-2.5 rounded-xl bg-white/60 border border-white/40 hover:bg-white/80 hover:border-violet-200 transition-all group"
+      className="flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+      style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 8 }}
+      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = P.hover)}
+      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = P.card)}
     >
+      <StockLogo ticker={ticker} name={info?.name ?? ticker} size={32} radius={6} />
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-xs font-bold font-mono text-slate-900 group-hover:text-violet-700 transition-colors">
-            {ticker}
-          </span>
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700">
-            Thailand SET
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)", color: P.text }}>{ticker}</span>
+          <span className="text-[9px] font-bold px-1.5 py-0.5 flex-shrink-0" style={{ background: "#FEF3C7", color: "#B45309", borderRadius: 4 }}>
+            SET50
           </span>
         </div>
-        <p className="text-[11px] text-slate-500 truncate mt-0.5 leading-none">
-          {info?.name ?? ticker}
-        </p>
+        <p className="text-[10px] truncate mt-0.5" style={{ color: P.muted }}>{info?.name ?? ticker}</p>
       </div>
-      <span className="text-[10px] text-slate-400 flex-shrink-0">SET</span>
+      <span className="text-[9px] font-bold flex-shrink-0" style={{ color: P.muted }}>SET</span>
     </Link>
   );
 }
 
-// ─── Main browse client ────────────────────────────────────────────────────────
+// ── Pill tab (used in horizontal scroll strip) ────────────────────────────────
+
+function Pill({ label, count, active, onClick }: { label: string; count?: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex-shrink-0 text-xs font-bold px-3 py-1.5 transition-colors whitespace-nowrap"
+      style={{
+        background:  active ? P.text   : P.card,
+        color:       active ? "#fff"   : P.muted,
+        border:      `1px solid ${active ? P.text : P.border}`,
+        borderRadius: 20,
+      }}
+    >
+      {label}{count !== undefined && <span className="ml-1 opacity-60">({count})</span>}
+    </button>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 export function BrowseClient() {
   const [tab,          setTab]          = useState<Tab>("index");
@@ -98,134 +135,120 @@ export function BrowseClient() {
   const [search,       setSearch]       = useState("");
 
   const currentEntries: CatalogEntry[] = useMemo(() => {
-    if (tab === "index") {
-      return activeIndex === "SET50" ? [] : getByIndex(activeIndex);
-    }
+    if (tab === "index") return activeIndex === "SET50" ? [] : getByIndex(activeIndex);
     return getBySector(activeSector);
   }, [tab, activeIndex, activeSector]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return currentEntries;
     const upper = search.toUpperCase();
-    return currentEntries.filter(e =>
-      e.ticker.includes(upper) || e.name.toUpperCase().includes(upper)
-    );
+    return currentEntries.filter(e => e.ticker.includes(upper) || e.name.toUpperCase().includes(upper));
   }, [currentEntries, search]);
 
   const isSet50 = tab === "index" && activeIndex === "SET50";
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
-      {/* Header */}
+    <div className="max-w-4xl mx-auto px-4 py-5 flex flex-col gap-4">
+
+      {/* ── Header ── */}
       <div>
-        <h1 className="text-sm font-bold uppercase tracking-widest text-slate-800 mb-1">
+        <h1 className="text-sm font-bold uppercase tracking-widest mb-0.5" style={{ color: P.text }}>
           Browse Stocks — เรียกดูหุ้นทั้งหมด
         </h1>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs" style={{ color: P.muted }}>
           {CATALOG_SIZE.toLocaleString()} รายการ · S&P 500, Nasdaq 100, Dow 30, ETFs, ADRs, SET50
-          · กดดูรายละเอียดหุ้นและราคาจริงได้เลย
         </p>
       </div>
 
-      {/* Tab switcher */}
+      {/* ── Main tab: Index vs Sector ── */}
       <div className="flex gap-2">
-        <button
-          onClick={() => setTab("index")}
-          className={`text-xs font-bold px-4 py-2 rounded-xl border transition-colors ${
-            tab === "index"
-              ? "bg-violet-600 text-white border-violet-600"
-              : "border-slate-200 text-slate-600 hover:border-violet-300"
-          }`}
-        >
-          ตาม Index
-        </button>
-        <button
-          onClick={() => setTab("sector")}
-          className={`text-xs font-bold px-4 py-2 rounded-xl border transition-colors ${
-            tab === "sector"
-              ? "bg-violet-600 text-white border-violet-600"
-              : "border-slate-200 text-slate-600 hover:border-violet-300"
-          }`}
-        >
-          ตาม Sector
-        </button>
+        {(["index", "sector"] as Tab[]).map(t => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className="text-xs font-bold px-5 py-2 transition-colors"
+            style={{
+              background:  tab === t ? P.accent : P.card,
+              color:       tab === t ? "#fff"   : P.muted,
+              border:      `1px solid ${tab === t ? P.accent : P.border}`,
+              borderRadius: 8,
+              boxShadow:    tab === t ? `2px 2px 0 ${P.shadow}` : "none",
+            }}
+          >
+            {t === "index" ? "ตาม Index" : "ตาม Sector"}
+          </button>
+        ))}
       </div>
 
-      <div className="flex gap-4">
-        {/* Left: sub-tab selector */}
-        <aside className="w-44 flex-shrink-0 space-y-1">
-          {tab === "index" ? (
-            INDEX_TABS.map(([key, label]) => (
-              <button
+      {/* ── Sub-tab: horizontal scroll strip (all screen sizes) ── */}
+      <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+        {tab === "index"
+          ? INDEX_TABS.map(([key, label]) => (
+              <Pill
                 key={key}
+                label={label}
+                count={key === "SET50" ? SET50_TICKERS.length : getByIndex(key).length}
+                active={activeIndex === key}
                 onClick={() => setActiveIndex(key)}
-                className={`w-full text-left text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${
-                  activeIndex === key
-                    ? "bg-violet-100 text-violet-800"
-                    : "text-slate-600 hover:bg-white/60"
-                }`}
-              >
-                {label}
-                {key !== "SET50" && (
-                  <span className="ml-1 text-slate-400 font-normal">
-                    ({key === "SET50" ? SET50_TICKERS.length : getByIndex(key).length})
-                  </span>
-                )}
-              </button>
+              />
             ))
-          ) : (
-            ALL_SECTOR_KEYS.map(key => (
-              <button
+          : ALL_SECTOR_KEYS.map(key => (
+              <Pill
                 key={key}
+                label={SECTOR_LABELS[key] ?? key}
+                count={getBySector(key).length}
+                active={activeSector === key}
                 onClick={() => setActiveSector(key)}
-                className={`w-full text-left text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${
-                  activeSector === key
-                    ? "bg-violet-100 text-violet-800"
-                    : "text-slate-600 hover:bg-white/60"
-                }`}
-              >
-                {SECTOR_LABELS[key]}
-                <span className="ml-1 text-slate-400 font-normal">({getBySector(key).length})</span>
-              </button>
+              />
             ))
-          )}
-        </aside>
-
-        {/* Right: stock grid */}
-        <section className="flex-1 min-w-0">
-          {/* Search within current view */}
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value.toUpperCase())}
-            placeholder="กรองในหมวดนี้..."
-            className="w-full mb-3 border border-slate-200 bg-white/70 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-violet-400"
-          />
-
-          {isSet50 ? (
-            <>
-              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-3">
-                ⚠️ หุ้น SET50 ต้องการ Finnhub Growth/Premium plan สำหรับราคาจริง · ฟรีเทียร์ไม่รองรับ SET
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {SET50_TICKERS.map(t => <SetCard key={t} ticker={t} />)}
-              </div>
-            </>
-          ) : filtered.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-8">ไม่พบรายการ</p>
-          ) : (
-            <>
-              <p className="text-xs text-slate-400 mb-2">{filtered.length} รายการ</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {filtered.map(e => <StockCard key={e.ticker} entry={e} />)}
-              </div>
-            </>
-          )}
-        </section>
+        }
       </div>
 
-      {/* Data note */}
-      <p className="text-xs text-slate-400 text-center pt-2">
+      {/* ── Search within current view ── */}
+      <input
+        type="text"
+        value={search}
+        onChange={e => setSearch(e.target.value.toUpperCase())}
+        placeholder="กรองในหมวดนี้ ..."
+        className="w-full px-3 py-2.5 text-xs focus:outline-none focus:ring-2 transition"
+        style={{
+          background: P.bg,
+          border: `1.5px solid ${P.border}`,
+          borderRadius: 8,
+          color: P.text,
+          fontFamily: "var(--font-mono)",
+        }}
+      />
+
+      {/* ── Count label ── */}
+      {!isSet50 && (
+        <p className="text-xs" style={{ color: P.muted }}>
+          {filtered.length} รายการ{search && ` · ค้นหา "${search}"`}
+        </p>
+      )}
+
+      {/* ── SET50 notice ── */}
+      {isSet50 && (
+        <div className="px-3 py-2.5 text-xs" style={{ background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 8, color: "#B45309" }}>
+          ⚠️ หุ้น SET50 ต้องการ Finnhub Growth/Premium plan สำหรับราคาจริง · ฟรีเทียร์ไม่รองรับ SET
+        </div>
+      )}
+
+      {/* ── Stock list ── */}
+      {isSet50 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {SET50_TICKERS.map(t => <SetCard key={t} ticker={t} />)}
+        </div>
+      ) : filtered.length === 0 ? (
+        <p className="text-xs text-center py-8" style={{ color: P.muted }}>ไม่พบรายการ</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {filtered.map(e => <StockCard key={e.ticker} entry={e} />)}
+        </div>
+      )}
+
+      {/* ── Footer note ── */}
+      <p className="text-[10px] text-center" style={{ color: P.muted }}>
         Catalog ฟรี · ราคาจริงโหลดเมื่อเปิดหน้าหุ้น · SET50 ต้องการ Finnhub paid plan
       </p>
     </div>

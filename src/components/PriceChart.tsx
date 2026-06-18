@@ -417,7 +417,7 @@ export function PriceChart({
   }, [candles, mode, height, mini, ma, showRsi, candlePaneH, volPaneH, rsiPaneH]);
 
   return (
-    <div className="relative border border-slate-200 bg-white overflow-hidden" style={{ height }}>
+    <div className="relative border border-[#ccd5ae] bg-white overflow-hidden" style={{ height }}>
       {simulated && (
         <div className="absolute top-1 right-1 text-xs px-1.5 py-0.5 z-10 bg-rose-50 text-rose-600 rounded font-medium">
           simulated

@@ -49,8 +49,8 @@ export function EarningsCalendarCard() {
   if (!loading && groups.length === 0) return null;
 
   return (
-    <div className="bg-white/50 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100">
+    <div className="bg-[#faedcd] border border-[#ccd5ae] rounded-xl overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#ccd5ae]">
         <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
           Earnings สัปดาห์นี้
         </span>
@@ -74,7 +74,7 @@ export function EarningsCalendarCard() {
                   <Link
                     key={e.symbol}
                     href={`/stock/${e.symbol}`}
-                    className="flex items-center justify-between py-0.5 hover:bg-slate-50 rounded transition-colors"
+                    className="flex items-center justify-between py-0.5 hover:bg-[#e9edc9] rounded transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-slate-900 w-16 truncate">

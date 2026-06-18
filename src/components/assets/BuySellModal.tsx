@@ -62,7 +62,7 @@ export function BuySellModal({
       role="dialog"
       aria-modal="true"
       aria-label={`${isBuy ? "ซื้อ" : "ขาย"} ${ticker}`}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="w-full sm:w-96 bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-6 pb-8 sm:pb-6">
@@ -74,7 +74,7 @@ export function BuySellModal({
           <button
             onClick={onClose}
             aria-label="ปิด"
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e9edc9] text-slate-500"
           >
             ✕
           </button>
@@ -101,7 +101,7 @@ export function BuySellModal({
             onChange={(e) => setShares(e.target.value)}
             onKeyDown={handleKey}
             placeholder="0"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-4 py-3 rounded-xl border border-[#ccd5ae] bg-[#e9edc9] text-slate-900 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 

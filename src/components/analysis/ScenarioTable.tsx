@@ -5,7 +5,7 @@ import type { Scenario } from "@/app/api/analyze/[ticker]/route";
 const CONF_COLOR: Record<string, string> = {
   high:   "text-emerald-700 bg-emerald-50 border-emerald-200",
   medium: "text-amber-700 bg-amber-50 border-amber-200",
-  low:    "text-slate-600 bg-slate-50 border-slate-200",
+  low:    "text-slate-600 bg-[#e9edc9] border-[#ccd5ae]",
 };
 
 const DIR_COLOR: Record<string, string> = {
@@ -23,14 +23,14 @@ function ScenarioCard({ s }: { s: Scenario }) {
   const bg     = isBull ? "bg-emerald-50/40" : "bg-red-50/30";
 
   return (
-    <div className={`border border-slate-200 border-l-4 ${border} ${bg} rounded-xl p-4 space-y-3`}>
+    <div className={`border border-[#ccd5ae] border-l-4 ${border} ${bg} rounded-xl p-4 space-y-3`}>
       {/* Header row */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <span className={`text-xs font-bold uppercase ${DIR_COLOR[s.direction]}`}>
             {isBull ? "▲ Bullish" : "▼ Bearish"}
           </span>
-          <span className="text-xs text-slate-500 border border-slate-200 rounded px-1.5 py-0.5">
+          <span className="text-xs text-slate-500 border border-[#ccd5ae] rounded px-1.5 py-0.5">
             {s.variation === "aggressive" ? "Aggressive" : "Conservative"}
           </span>
         </div>

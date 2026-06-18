@@ -263,15 +263,15 @@ export function NewsAnalysisPanel({ article, ticker, otherHeadlines }: NewsAnaly
       </button>
 
       {state.phase === "loading" && (
-        <div className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-violet-200 bg-white/30 rounded-r-lg" aria-busy="true">
+        <div className="mt-2 space-y-1.5 px-3 py-2 border-l-2 border-violet-200 bg-[#faedcd] rounded-r-lg" aria-busy="true">
           <div className="flex gap-1.5 mb-2">
             {[20, 16, 14].map(w => (
-              <div key={w} className={`h-4 w-${w} bg-white/50 animate-pulse rounded`} />
+              <div key={w} className={`h-4 w-${w} bg-[#faedcd] animate-pulse rounded`} />
             ))}
           </div>
-          <div className="h-2.5 w-full  bg-white/50 animate-pulse rounded" />
-          <div className="h-2.5 w-4/5   bg-white/50 animate-pulse rounded" />
-          <div className="h-2.5 w-3/5   bg-white/50 animate-pulse rounded" />
+          <div className="h-2.5 w-full  bg-[#faedcd] animate-pulse rounded" />
+          <div className="h-2.5 w-4/5   bg-[#faedcd] animate-pulse rounded" />
+          <div className="h-2.5 w-3/5   bg-[#faedcd] animate-pulse rounded" />
         </div>
       )}
 

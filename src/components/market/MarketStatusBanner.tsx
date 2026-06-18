@@ -22,7 +22,7 @@ export function MarketStatusBanner() {
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-2.5 border-b border-slate-200 bg-white"
+      className="flex items-center gap-3 px-4 py-2.5 border-b border-[#ccd5ae] bg-white"
       role="status"
       aria-live="polite"
       aria-atomic="true"

@@ -15,7 +15,7 @@ function HealthBar({ score }: { score: number }) {
                   "#DC2626";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-[#e9edc9] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{ width: `${score}%`, backgroundColor: color }}
@@ -53,7 +53,7 @@ export function AiPortfolioCard() {
 
   if (!analysis) {
     return (
-      <div className="border border-slate-200 rounded-2xl p-4 bg-white flex flex-col gap-3">
+      <div className="border border-[#ccd5ae] rounded-2xl p-4 bg-white flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">
@@ -77,9 +77,9 @@ export function AiPortfolioCard() {
   }
 
   return (
-    <div className="border border-slate-200 rounded-2xl bg-white overflow-hidden">
+    <div className="border border-[#ccd5ae] rounded-2xl bg-white overflow-hidden">
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-slate-100">
+      <div className="px-4 pt-4 pb-3 border-b border-[#ccd5ae]">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-0.5">
@@ -106,13 +106,13 @@ export function AiPortfolioCard() {
       </div>
 
       {/* Summary */}
-      <div className="px-4 py-3 border-b border-slate-100">
+      <div className="px-4 py-3 border-b border-[#ccd5ae]">
         <p className="text-xs text-slate-600 leading-relaxed">{analysis.summary}</p>
       </div>
 
       {/* Positions */}
       {analysis.positions.length > 0 && (
-        <div className="px-4 py-3 border-b border-slate-100">
+        <div className="px-4 py-3 border-b border-[#ccd5ae]">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
             ตำแหน่ง ({analysis.positions.length})
           </p>

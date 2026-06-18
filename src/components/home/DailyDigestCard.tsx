@@ -25,7 +25,7 @@ export function DailyDigestCard() {
   const timeLabel = hour !== null ? `อัพเดท ${hour}:00 น.` : "";
 
   return (
-    <div className="mx-3 mb-3 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/10 text-white p-3">
+    <div className="mx-3 mb-3 rounded-xl bg-slate-900/60 border border-[#ccd5ae] text-white p-3">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-bold uppercase tracking-widest text-violet-300">
           ▶ AI DIGEST วันนี้

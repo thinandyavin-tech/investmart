@@ -65,10 +65,10 @@ function fmtVol(v: number): string {
 
 function SkeletonRow() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 animate-pulse">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-[#ccd5ae] animate-pulse">
       <div className="w-6 h-3 bg-slate-200 rounded flex-shrink-0" />
       <div className="w-14 h-4 bg-slate-200 rounded" />
-      <div className="flex-1 h-3 bg-slate-100 rounded hidden sm:block" />
+      <div className="flex-1 h-3 bg-[#e9edc9] rounded hidden sm:block" />
       <div className="w-16 h-4 bg-slate-200 rounded ml-auto" />
       <div className="w-12 h-4 bg-slate-200 rounded" />
       <div className="w-10 h-6 bg-slate-200 rounded-full" />
@@ -92,10 +92,10 @@ function StockRow({ s, rank, selected, onSelect }: StockRowProps) {
   return (
     <button
       onClick={onSelect}
-      className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 border-b border-slate-100 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-inset ${
+      className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 border-b border-[#ccd5ae] text-left transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-inset ${
         selected
           ? "bg-violet-50 border-l-2 border-l-violet-500"
-          : "hover:bg-slate-50/80"
+          : "hover:bg-[#e9edc9]"
       }`}
       aria-selected={selected}
       aria-label={`${rank}. ${s.ticker} ${s.companyName} — ${fmtPct(s.change1D)} วันนี้`}
@@ -224,7 +224,7 @@ function HeatIndicator({ stocks }: { stocks: StockMetrics[] }) {
     avgChg >  1.5 && bullPct > 70 ? { label: "🔥 ร้อนแรงมาก",   cls: "bg-red-50 border-red-200 text-red-600" } :
     avgChg >  0.3 && bullPct > 55 ? { label: "📈 บวกโดยรวม",    cls: "bg-emerald-50 border-emerald-200 text-emerald-600" } :
     avgChg < -0.3 || bullPct < 35 ? { label: "📉 ลบโดยรวม",    cls: "bg-red-50 border-red-200 text-red-600" } :
-                                    { label: "↔️ ผสมปนเป",      cls: "bg-slate-50 border-slate-200 text-slate-500" };
+                                    { label: "↔️ ผสมปนเป",      cls: "bg-[#e9edc9] border-[#ccd5ae] text-slate-500" };
 
   return (
     <div className={`rounded-xl border px-3 py-2 flex items-center justify-between text-xs ${cls}`}>
@@ -374,7 +374,7 @@ export function RadarPage() {
   return (
     <div className="flex flex-col h-full">
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 border-b border-slate-200 bg-white/80 backdrop-blur-md px-4 py-3">
+      <div className="flex-shrink-0 border-b border-[#ccd5ae] bg-[#fefae0] px-4 py-3">
         <div className="max-w-5xl mx-auto">
           {/* Title row */}
           <div className="flex items-center justify-between gap-3 mb-3">
@@ -422,7 +422,7 @@ export function RadarPage() {
                 className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
                   universe === u
                     ? "bg-violet-600 text-white border-violet-600"
-                    : "border-slate-200 text-slate-600 hover:border-violet-300 bg-white"
+                    : "border-[#ccd5ae] text-slate-600 hover:border-violet-300 bg-white"
                 }`}
               >
                 {(t.radar.universe as Record<string, string>)[u] ?? u}
@@ -437,7 +437,7 @@ export function RadarPage() {
 
       {/* ── Filters ──────────────────────────────────────────────────────────── */}
       {!isBuilding && allResults.length > 0 && (
-        <div className="flex-shrink-0 border-b border-slate-100 bg-white/60 px-4 py-2">
+        <div className="flex-shrink-0 border-b border-[#ccd5ae] bg-[#faedcd] px-4 py-2">
           <div className="max-w-5xl mx-auto flex flex-wrap gap-2 items-center">
             {/* Search */}
             <input
@@ -445,7 +445,7 @@ export function RadarPage() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder={t.radar.filters.search}
-              className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
+              className="text-xs border border-[#ccd5ae] rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
               aria-label={t.search.searchAria}
             />
 
@@ -473,7 +473,7 @@ export function RadarPage() {
                   className={`text-[10px] font-semibold px-2 py-1 rounded border transition-colors ${
                     sortField === o.value
                       ? "bg-violet-100 border-violet-300 text-violet-700"
-                      : "border-slate-200 text-slate-500 hover:border-slate-400"
+                      : "border-[#ccd5ae] text-slate-500 hover:border-slate-400"
                   }`}
                 >
                   {o.label}{sortField === o.value ? (sortDir === "desc" ? " ↓" : " ↑") : ""}
@@ -485,7 +485,7 @@ export function RadarPage() {
             <select
               value={category}
               onChange={e => setCategory(e.target.value as StockMetrics["category"] | "ALL")}
-              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
+              className="text-xs border border-[#ccd5ae] rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
               aria-label={t.radar.filterCatAria}
             >
               <option value="ALL">ทุกหมวด</option>
@@ -499,7 +499,7 @@ export function RadarPage() {
             <select
               value={sector}
               onChange={e => setSector(e.target.value)}
-              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
+              className="text-xs border border-[#ccd5ae] rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
               aria-label={t.radar.filterSecAria}
             >
               <option value="ALL">ทุก Sector</option>
@@ -562,7 +562,7 @@ export function RadarPage() {
 
                 {/* Column headers */}
                 {paginated.length > 0 && (
-                  <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 bg-slate-50 border-b border-slate-200 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                  <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 bg-[#e9edc9] border-b border-[#ccd5ae] text-[10px] font-semibold uppercase tracking-wide text-slate-400">
                     <span className="w-6 text-right">#</span>
                     <span className="w-16 sm:w-20">Ticker</span>
                     <span className="flex-1 hidden sm:block">บริษัท</span>
@@ -615,7 +615,7 @@ export function RadarPage() {
 
                 {/* Disclaimer */}
                 {allResults.length > 0 && (
-                  <p className="text-[10px] text-slate-400 text-center px-4 py-3 border-t border-slate-100">
+                  <p className="text-[10px] text-slate-400 text-center px-4 py-3 border-t border-[#ccd5ae]">
                     Radar แสดงสัญญาณโมเมนตัมจากข้อมูลจริง ·{" "}
                     <Link href="/learn/radar" className="underline hover:text-slate-600">วิธีคำนวณ score</Link>{" "}
                     · ไม่ใช่คำแนะนำการลงทุน
@@ -631,12 +631,12 @@ export function RadarPage() {
           <aside
             id={detailId}
             className={`
-              hidden lg:flex flex-col border-l border-slate-200 bg-white
+              hidden lg:flex flex-col border-l border-[#ccd5ae] bg-white
               w-80 xl:w-96 flex-shrink-0 overflow-y-auto
             `}
             aria-label={`รายละเอียด ${selected.ticker}`}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#ccd5ae] flex-shrink-0">
               <div>
                 <span className="text-sm font-bold text-slate-900">{selected.ticker}</span>
                 <span className="text-xs text-slate-500 ml-2">{selected.companyName}</span>
@@ -646,7 +646,7 @@ export function RadarPage() {
             <div className="flex-1 overflow-y-auto">
               <StockDetailPanel stock={selected} timeframe="1D" />
             </div>
-            <div className="px-4 py-3 border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
+            <div className="px-4 py-3 border-t border-[#ccd5ae] flex flex-col gap-2 flex-shrink-0">
               <Link
                 href={`/analyze?ticker=${selected.ticker}&timeframe=3M`}
                 className="w-full text-center text-xs font-bold py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition-colors"
@@ -681,20 +681,20 @@ export function RadarPage() {
             aria-hidden="true"
           />
           <div
-            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl border-t border-slate-200 flex flex-col lg:hidden"
+            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl border-t border-[#ccd5ae] flex flex-col lg:hidden"
             style={{ maxHeight: "85vh" }}
             role="dialog"
             aria-modal="true"
             aria-label={`รายละเอียด ${selected.ticker}`}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#ccd5ae] flex-shrink-0">
               <div>
                 <span className="text-sm font-bold">{selected.ticker}</span>
                 <span className="text-xs text-slate-500 ml-2 truncate">{selected.companyName}</span>
               </div>
               <button
                 onClick={() => setDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-700 w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-700 w-7 h-7 flex items-center justify-center rounded-full hover:bg-[#e9edc9]"
                 aria-label={t.common.close}
               >
                 ✕
@@ -703,7 +703,7 @@ export function RadarPage() {
             <div className="flex-1 overflow-y-auto">
               <StockDetailPanel stock={selected} timeframe="1D" />
             </div>
-            <div className="px-4 py-3 border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
+            <div className="px-4 py-3 border-t border-[#ccd5ae] flex flex-col gap-2 flex-shrink-0">
               <Link
                 href={`/analyze?ticker=${selected.ticker}&timeframe=3M`}
                 className="w-full text-center text-xs font-bold py-2.5 rounded-xl bg-violet-600 text-white"

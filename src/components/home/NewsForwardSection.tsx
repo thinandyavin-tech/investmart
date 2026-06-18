@@ -160,7 +160,7 @@ export function NewsForwardSection() {
   const secondary = rest.slice(0, 6);
 
   return (
-    <section className="rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm overflow-hidden">
+    <section className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-[#e9edc9] flex items-center justify-between">
         <div>
@@ -183,7 +183,7 @@ export function NewsForwardSection() {
             <p className="text-xs text-[#8A8378] mb-2">{t.homeStrings.loadError}</p>
             <button
               onClick={load}
-              className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-white/60 transition-colors text-slate-700"
+              className="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-[#faedcd] transition-colors text-slate-700"
             >
               {t.common.retry}
             </button>

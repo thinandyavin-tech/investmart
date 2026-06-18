@@ -97,14 +97,14 @@ export function RadarPickCard() {
 
   if (loading) {
     return (
-      <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 p-4 animate-pulse">
-        <div className="h-3 w-32 bg-white/40 mb-3 rounded" />
-        <div className="h-8 w-28 bg-white/40 mb-2 rounded" />
-        <div className="h-3 w-48 bg-white/40 mb-4 rounded" />
-        <div className="h-24 bg-white/40 rounded" />
+      <div className="mx-3 mb-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] p-4 animate-pulse">
+        <div className="h-3 w-32 bg-[#faedcd] mb-3 rounded" />
+        <div className="h-8 w-28 bg-[#faedcd] mb-2 rounded" />
+        <div className="h-3 w-48 bg-[#faedcd] mb-4 rounded" />
+        <div className="h-24 bg-[#faedcd] rounded" />
         <div className="flex gap-2 mt-3">
-          <div className="flex-1 h-9 bg-white/40 rounded-lg" />
-          <div className="flex-1 h-9 bg-white/40 rounded-lg" />
+          <div className="flex-1 h-9 bg-[#faedcd] rounded-lg" />
+          <div className="flex-1 h-9 bg-[#faedcd] rounded-lg" />
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ export function RadarPickCard() {
 
   if (!pick) {
     return (
-      <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 p-4 text-center">
+      <div className="mx-3 mb-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] p-4 text-center">
         <p className="text-xs text-slate-500">ไม่สามารถโหลด Radar Pick ได้</p>
       </div>
     );
@@ -121,7 +121,7 @@ export function RadarPickCard() {
   const up = pick.change >= 0;
 
   return (
-    <div className="mx-3 mb-3 rounded-xl bg-white/50 backdrop-blur-md border border-white/30 overflow-hidden">
+    <div className="mx-3 mb-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] overflow-hidden">
       <div className="px-4 pt-3 pb-1">
         <span className="text-xs font-bold uppercase tracking-widest text-violet-600">
           ● RADAR PICK · 3M
@@ -156,7 +156,7 @@ export function RadarPickCard() {
           className={`flex-1 py-2.5 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             watched
               ? "border-green-500 bg-green-50 text-green-700 hover:bg-green-100"
-              : "border-slate-300 bg-white/60 text-slate-700 hover:bg-white/80"
+              : "border-slate-300 bg-[#faedcd] text-slate-700 hover:bg-[#fefae0]"
           }`}
           onClick={() => void toggleWatch()}
           disabled={watchLoading || !user}

@@ -67,13 +67,13 @@ export function NewsPage() {
   return (
     <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
-      <div className="border-b border-white/20 bg-white/60 backdrop-blur-md px-4 py-2.5 flex-shrink-0">
+      <div className="border-b border-[#ccd5ae] bg-[#faedcd] px-4 py-2.5 flex-shrink-0">
         <h1 className="text-xs font-bold uppercase tracking-widest">{nt.pageTitle}</h1>
         <p className="text-xs text-slate-500 mt-0.5">{nt.pageSubtitle}</p>
       </div>
 
       {/* Industry tabs */}
-      <div className="border-b border-white/20 bg-white/60 backdrop-blur-md flex-shrink-0 overflow-x-auto">
+      <div className="border-b border-[#ccd5ae] bg-[#faedcd] flex-shrink-0 overflow-x-auto">
         <div className="flex min-w-max">
           {TABS.map(tab => {
             const label = nt.tabs[tab.key as keyof typeof nt.tabs];
@@ -84,7 +84,7 @@ export function NewsPage() {
                 className={`px-3 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap border-r border-[#e9edc9] transition-colors ${
                   activeTab === tab.key
                     ? "bg-violet-600 text-white"
-                    : "text-slate-500 hover:bg-white/30 hover:text-slate-900"
+                    : "text-slate-500 hover:bg-[#faedcd] hover:text-slate-900"
                 }`}
               >
                 <span className="mr-1">{tab.icon}</span>
@@ -101,9 +101,9 @@ export function NewsPage() {
           <div className="divide-y divide-white/20">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="px-4 py-3">
-                <div className="h-3 w-3/4 bg-white/30 animate-pulse rounded mb-2" />
-                <div className="h-2.5 w-1/2 bg-white/30 animate-pulse rounded mb-2" />
-                <div className="h-2 w-1/4 bg-white/30 animate-pulse rounded" />
+                <div className="h-3 w-3/4 bg-[#faedcd] animate-pulse rounded mb-2" />
+                <div className="h-2.5 w-1/2 bg-[#faedcd] animate-pulse rounded mb-2" />
+                <div className="h-2 w-1/4 bg-[#faedcd] animate-pulse rounded" />
               </div>
             ))}
           </div>
@@ -162,7 +162,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
   };
 
   return (
-    <div className="px-4 py-3 hover:bg-white/50 transition-colors">
+    <div className="px-4 py-3 hover:bg-[#faedcd] transition-colors">
       <a
         href={a.url}
         target="_blank"
@@ -177,7 +177,7 @@ function ArticleRow({ article: a, otherHeadlines }: { article: SectorNewsArticle
 
       <div className="flex items-center gap-2 flex-wrap">
         {a.ticker && (
-          <span className="text-xs font-bold border border-slate-300 px-1.5 py-0.5 bg-white/50">
+          <span className="text-xs font-bold border border-slate-300 px-1.5 py-0.5 bg-[#faedcd]">
             {a.ticker}
           </span>
         )}

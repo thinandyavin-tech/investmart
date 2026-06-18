@@ -28,7 +28,7 @@ function n(v: number | null, d = 2): string {
 
 function SignalRow({ label, value, detail, color }: { label: string; value: string; detail: string; color: string }) {
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-slate-100 last:border-0">
+    <div className="flex items-start gap-3 py-2 border-b border-[#ccd5ae] last:border-0">
       <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${color}`} />
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 flex-wrap">
@@ -43,7 +43,7 @@ function SignalRow({ label, value, detail, color }: { label: string; value: stri
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl bg-white/70 backdrop-blur-md border border-white/40 shadow-sm p-5 space-y-3">
+    <section className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] shadow-sm p-5 space-y-3">
       <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
         <span>{icon}</span>
         <span>{title}</span>
@@ -55,7 +55,7 @@ function Section({ title, icon, children }: { title: string; icon: string; child
 
 function IndicatorPill({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex flex-col items-center bg-white/60 rounded-xl border border-white/40 px-3 py-2.5 min-w-[80px]">
+    <div className="flex flex-col items-center bg-[#faedcd] rounded-xl border border-[#ccd5ae] px-3 py-2.5 min-w-[80px]">
       <span className="text-xs font-bold text-slate-800 font-mono leading-none">{value}</span>
       <span className="text-xs text-slate-500 mt-1">{label}</span>
       {sub && <span className="text-xs text-slate-400 mt-0.5">{sub}</span>}
@@ -79,14 +79,14 @@ function HighRiskBanner({ reason }: { reason: string }) {
 }
 
 function SkeletonLine({ w = "w-full" }: { w?: string }) {
-  return <div className={`h-3 ${w} bg-white/50 animate-pulse rounded`} />;
+  return <div className={`h-3 ${w} bg-[#faedcd] animate-pulse rounded`} />;
 }
 
 function LoadingSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map(i => (
-        <div key={i} className="rounded-2xl bg-white/50 border border-white/30 p-5 space-y-3">
+        <div key={i} className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] p-5 space-y-3">
           <SkeletonLine w="w-32" />
           <SkeletonLine />
           <SkeletonLine w="w-4/5" />
@@ -232,7 +232,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
       </div>
 
       {/* Search + timeframe bar */}
-      <form onSubmit={handleSubmit} className="rounded-2xl bg-white/70 backdrop-blur-md border border-white/40 shadow-sm p-4 space-y-3">
+      <form onSubmit={handleSubmit} className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] shadow-sm p-4 space-y-3">
         <div className="flex gap-2">
           <input
             type="text"
@@ -240,7 +240,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
             onChange={e => setInput(e.target.value.replace(/[^a-zA-Z.\-]/g, "").toUpperCase())}
             placeholder="AAPL, NVDA, BRK.B..."
             maxLength={12}
-            className="flex-1 border border-slate-200 bg-white/80 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder:font-normal placeholder:text-slate-400"
+            className="flex-1 border border-[#ccd5ae] bg-[#fefae0] rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder:font-normal placeholder:text-slate-400"
             style={{ fontFamily: "var(--font-mono)" }}
             aria-label="Ticker symbol"
           />
@@ -263,7 +263,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
                 timeframe === tf.value
                   ? "border-violet-400 bg-violet-50 text-violet-700"
-                  : "border-slate-200 text-slate-500 hover:border-violet-300 hover:text-violet-600"
+                  : "border-[#ccd5ae] text-slate-500 hover:border-violet-300 hover:text-violet-600"
               }`}
             >
               {tf.label}
@@ -274,7 +274,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
               type="button"
               onClick={() => void run(ticker, timeframe, true)}
               disabled={loading}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:border-slate-400 transition-colors ml-auto disabled:opacity-40"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#ccd5ae] text-slate-500 hover:border-slate-400 transition-colors ml-auto disabled:opacity-40"
             >
               ↻ รีเฟรช
             </button>
@@ -301,8 +301,8 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
       {/* Loading */}
       {loading && (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-white/50 border border-white/30 overflow-hidden" style={{ height: 320 }}>
-            <div className="w-full h-full bg-slate-100/60 animate-pulse" />
+          <div className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] overflow-hidden" style={{ height: 320 }}>
+            <div className="w-full h-full bg-[#e9edc9]/60 animate-pulse" />
           </div>
           <div className="rounded-2xl bg-violet-50/60 border border-violet-100 p-4 flex items-center gap-3">
             <span className="text-violet-400 animate-pulse text-lg">✦</span>
@@ -321,7 +321,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
       {analysis && a && ind && q && (
         <div className="space-y-5">
           {/* Ticker header */}
-          <div className="rounded-2xl bg-white/70 backdrop-blur-md border border-white/40 shadow-sm p-5">
+          <div className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] shadow-sm p-5">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <div className="flex items-baseline gap-2 flex-wrap">
@@ -345,7 +345,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
             </div>
 
             {/* Meta */}
-            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 flex-wrap gap-1">
+            <div className="mt-3 pt-3 border-t border-[#ccd5ae] flex items-center justify-between text-xs text-slate-400 flex-wrap gap-1">
               <span>สร้างเมื่อ {new Date(analysis.meta.cachedAt).toLocaleString("th-TH")}</span>
               <span>{analysis.meta.fromCache ? "⚡ จาก cache" : "🔄 ใหม่"} · {analysis.meta.exchangeNote}</span>
             </div>
@@ -353,7 +353,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
 
           {/* Chart */}
           {candles.length > 1 && (
-            <div className="rounded-2xl overflow-hidden border border-white/40 shadow-sm">
+            <div className="rounded-2xl overflow-hidden border border-[#ccd5ae] shadow-sm">
               <PriceChart candles={candles} mode="Price" height={320} ma={{ ma20: true, ma50: true, ma200: true }} showRsi />
             </div>
           )}
@@ -443,7 +443,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
             </div>
 
             {a.volumeRead && (
-              <div className="mt-3 pt-3 border-t border-slate-100">
+              <div className="mt-3 pt-3 border-t border-[#ccd5ae]">
                 <p className="text-xs font-semibold text-slate-600 mb-1">📊 Volume</p>
                 <p className="text-xs text-slate-700 leading-relaxed">{a.volumeRead}</p>
               </div>
@@ -474,13 +474,13 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
             {/* Invalidation */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
               {a.bullishInvalidation && (
-                <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
+                <div className="rounded-xl bg-[#e9edc9] border border-[#ccd5ae] p-3">
                   <p className="text-xs font-bold text-emerald-700 mb-1">▲ Bull Invalidation</p>
                   <p className="text-xs text-slate-700 leading-snug">{a.bullishInvalidation}</p>
                 </div>
               )}
               {a.bearishInvalidation && (
-                <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
+                <div className="rounded-xl bg-[#e9edc9] border border-[#ccd5ae] p-3">
                   <p className="text-xs font-bold text-red-600 mb-1">▼ Bear Invalidation</p>
                   <p className="text-xs text-slate-700 leading-snug">{a.bearishInvalidation}</p>
                 </div>
@@ -518,11 +518,11 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
             </div>
 
             {ind.fibLevels && (
-              <div className="mt-3 pt-3 border-t border-slate-100">
+              <div className="mt-3 pt-3 border-t border-[#ccd5ae]">
                 <p className="text-xs font-semibold text-slate-600 mb-2">Fibonacci Retracement</p>
                 <div className="grid grid-cols-4 gap-1.5 text-xs">
                   {ind.fibLevels.map((f, i) => (
-                    <div key={i} className="text-center py-1.5 bg-slate-50 rounded border border-slate-100">
+                    <div key={i} className="text-center py-1.5 bg-[#e9edc9] rounded border border-[#ccd5ae]">
                       <p className="text-slate-500">{f.label}</p>
                       <p className="font-bold font-mono text-slate-800">${f.price.toFixed(2)}</p>
                     </div>
@@ -547,7 +547,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
           )}
 
           {/* Disclaimer */}
-          <div className="rounded-2xl bg-slate-50/80 border border-slate-200 p-4">
+          <div className="rounded-2xl bg-[#e9edc9] border border-[#ccd5ae] p-4">
             <p className="text-xs text-slate-500 leading-relaxed">
               ⚠️ {a.disclaimer ?? "การวิเคราะห์นี้เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำการลงทุน"}
             </p>
@@ -560,7 +560,7 @@ export function AnalyzeClient({ initialTicker, initialTimeframe }: Props) {
 
       {/* Empty state — before first run */}
       {!analysis && !loading && !error && (
-        <div className="rounded-2xl bg-white/50 border border-white/30 p-8 text-center space-y-3">
+        <div className="rounded-2xl bg-[#faedcd] border border-[#ccd5ae] p-8 text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-violet-100 border border-violet-200 flex items-center justify-center mx-auto">
             <span className="text-violet-500 text-xl">✦</span>
           </div>

@@ -178,7 +178,7 @@ export function RadarMovers() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-[#ccd5ae] bg-[#fefae0]/90 backdrop-blur-sm px-4 py-3">
+      <div className="flex-shrink-0 border-b border-[#ccd5ae] bg-[#fefae0]/90 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between gap-3 mb-2.5">
             <div>

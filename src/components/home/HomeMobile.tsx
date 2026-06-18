@@ -49,10 +49,10 @@ export function HomeMobile() {
     <div className="flex flex-col min-h-screen relative">
       {/* Sticky header */}
       <div className="sticky top-0 z-30 relative">
-        <header className="bg-white/75 backdrop-blur-md border-b border-white/40 flex items-center justify-between px-4 py-2.5">
+        <header className="bg-white/75 border-b border-[#ccd5ae] flex items-center justify-between px-4 py-2.5">
           <Link
             href="/radar"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-[#e9edc9] hover:bg-slate-200 text-slate-700 transition-colors"
             aria-label="เปิดเรดาร์แสกนหุ้น"
           >
             <RadarScanIcon />
@@ -71,7 +71,7 @@ export function HomeMobile() {
           <div className="flex items-center gap-1">
             <Link
               href="/search"
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-[#e9edc9] hover:bg-slate-200 text-slate-700 transition-colors"
               aria-label={t.nav.search}
             >
               <SearchIcon size={18} />
@@ -98,7 +98,7 @@ export function HomeMobile() {
       </div>
 
       {/* Market status */}
-      <TradingViewTickerTape className="border-b border-white/20" locale={lang} />
+      <TradingViewTickerTape className="border-b border-[#ccd5ae]" locale={lang} />
       <MarketStatusBanner />
 
       {/* Profile + balance */}
@@ -127,7 +127,7 @@ export function HomeMobile() {
           <Link
             key={href}
             href={href}
-            className="bg-white/50 backdrop-blur-md border border-white/30 rounded-full px-3 py-1.5 text-xs text-slate-700 hover:border-slate-400 whitespace-nowrap flex-shrink-0 flex flex-col items-center gap-0.5 transition-colors"
+            className="bg-[#faedcd] border border-[#ccd5ae] rounded-full px-3 py-1.5 text-xs text-slate-700 hover:border-slate-400 whitespace-nowrap flex-shrink-0 flex flex-col items-center gap-0.5 transition-colors"
             style={{ minWidth: "56px" }}
           >
             <span className="text-base leading-none" aria-hidden="true">{icon}</span>
@@ -160,7 +160,7 @@ export function HomeMobile() {
       </div>
 
       {/* Feed with composer enabled */}
-      <div className="border-t border-slate-200 mt-1">
+      <div className="border-t border-[#ccd5ae] mt-1">
         <FeedSection showComposer compact />
       </div>
     </div>
@@ -194,7 +194,7 @@ function TrendingTickerBar() {
           <Link
             key={ticker}
             href={`/stock/${ticker}`}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white/50 backdrop-blur-md border border-white/30 rounded-full text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors"
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-[#faedcd] border border-[#ccd5ae] rounded-full text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors"
           >
             <span className="text-green-600">${ticker}</span>
             <span className="text-slate-400 font-normal">{count}</span>
@@ -257,7 +257,7 @@ function ProfileSection({
         {loggedIn && (
           <Link
             href="/u/me"
-            className="flex-shrink-0 text-xs font-semibold border border-slate-200 rounded-lg px-2 py-1 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors"
+            className="flex-shrink-0 text-xs font-semibold border border-[#ccd5ae] rounded-lg px-2 py-1 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors"
           >
             {t.nav.profile}
           </Link>
@@ -269,7 +269,7 @@ function ProfileSection({
         <StatChip label={t.home.cashUsd} value={loading ? "..." : `$${cashUsd.toFixed(0)}`} mono />
         <button
           onClick={onToggleHoldings}
-          className="flex flex-col items-center justify-center p-2 bg-white/50 backdrop-blur-md border border-white/30 rounded-xl text-center hover:border-slate-400 transition-colors"
+          className="flex flex-col items-center justify-center p-2 bg-[#faedcd] border border-[#ccd5ae] rounded-xl text-center hover:border-slate-400 transition-colors"
           aria-expanded={holdingsOpen}
         >
           <span className="text-xs text-slate-500 uppercase tracking-wide leading-tight">{t.home.holdings}</span>
@@ -281,13 +281,13 @@ function ProfileSection({
       </div>
 
       {holdingsOpen && !loading && (
-        <div className="bg-white/50 backdrop-blur-md border border-white/30 rounded-xl overflow-hidden">
+        <div className="bg-[#faedcd] border border-[#ccd5ae] rounded-xl overflow-hidden">
           {holdings.length === 0 ? (
             <p className="text-xs text-slate-500 text-center py-3">{t.home.noHoldings}</p>
           ) : (
             <table className="w-full text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-[#ccd5ae]">
                   {[t.stock.price, t.profile.holdings, t.trade.avgCost].map((h, i) => (
                     <th key={i} className="text-left px-2 py-1.5 text-xs text-slate-500 font-semibold uppercase tracking-wide">
                       {h}
@@ -297,7 +297,7 @@ function ProfileSection({
               </thead>
               <tbody>
                 {holdings.map((h) => (
-                  <tr key={h.ticker} className="border-b border-slate-100 last:border-0">
+                  <tr key={h.ticker} className="border-b border-[#ccd5ae] last:border-0">
                     <td className="px-2 py-1.5 font-bold text-slate-900">
                       <Link href={`/stock/${h.ticker}`} className="hover:underline">{h.ticker}</Link>
                     </td>
@@ -321,7 +321,7 @@ function ProfileSection({
       )}
 
       {!loggedIn && !loading && noticeVisible && (
-        <div className="flex items-center justify-between px-3 py-2 text-xs border border-slate-200 bg-white rounded-xl">
+        <div className="flex items-center justify-between px-3 py-2 text-xs border border-[#ccd5ae] bg-white rounded-xl">
           <span className="text-slate-500">{t.home.newUserNotice}</span>
           <button
             className="ml-2 text-slate-400 font-bold hover:text-slate-700 flex-shrink-0"
@@ -338,7 +338,7 @@ function ProfileSection({
 
 function StatChip({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center p-2 bg-white/50 backdrop-blur-md border border-white/30 rounded-xl text-center">
+    <div className="flex flex-col items-center justify-center p-2 bg-[#faedcd] border border-[#ccd5ae] rounded-xl text-center">
       <span className="text-xs text-slate-500 uppercase tracking-wide leading-tight">{label}</span>
       <span className="text-xs font-bold mt-0.5 text-slate-900" style={{ fontFamily: mono ? "var(--font-mono)" : undefined }}>
         {value}

@@ -35,7 +35,7 @@ function MoverRow({ mover }: { mover: Mover }) {
   return (
     <Link
       href={`/radar?ticker=${mover.ticker}`}
-      className="flex items-center justify-between px-3 py-2 hover:bg-white/30 transition-colors"
+      className="flex items-center justify-between px-3 py-2 hover:bg-[#faedcd] transition-colors"
     >
       <span className="text-sm font-bold w-16 flex-shrink-0 font-mono">{mover.ticker}</span>
       <span
@@ -77,11 +77,11 @@ export function TopMoversCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-3 pt-3 pb-0 border-b border-slate-100">
+      <div className="px-3 pt-3 pb-0 border-b border-[#ccd5ae]">
         <h2 className="text-xs font-bold uppercase tracking-widest mb-2">
           หุ้นที่เคลื่อนไหวมาก
         </h2>
-        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg w-fit mb-2" role="tablist">
+        <div className="flex gap-1 bg-[#e9edc9] p-0.5 rounded-lg w-fit mb-2" role="tablist">
           {(["gainers", "losers", "active"] as Tab[]).map((t) => (
             <button
               key={t}

@@ -238,14 +238,14 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-xs text-slate-600 leading-relaxed border border-slate-100 rounded-lg p-3 bg-slate-50 line-clamp-3">
+        <p className="text-xs text-slate-600 leading-relaxed border border-[#ccd5ae] rounded-lg p-3 bg-[#e9edc9] line-clamp-3">
           {profile.description}
         </p>
       )}
 
       {/* Chart controls */}
       <div className="flex items-center gap-2 flex-wrap">
-        <div className="flex rounded-lg bg-slate-100 p-0.5 gap-0.5">
+        <div className="flex rounded-lg bg-[#e9edc9] p-0.5 gap-0.5">
           {(["Price", "Relative", "Volume"] as const).map((mode) => (
             <button
               key={mode}
@@ -268,7 +268,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
               className={`px-1.5 py-0.5 text-xs font-semibold rounded-md transition-colors ${
                 timeframe === tf
                   ? "bg-slate-900 text-white"
-                  : "text-slate-500 hover:bg-slate-100"
+                  : "text-slate-500 hover:bg-[#e9edc9]"
               }`}
             >
               {tf}
@@ -293,7 +293,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
               className={`px-2 py-0.5 text-xs font-bold rounded-md border transition-colors ${
                 maConfig[key]
                   ? "text-white border-transparent"
-                  : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                  : "bg-white text-slate-500 border-[#ccd5ae] hover:border-slate-300"
               }`}
               style={maConfig[key] ? { backgroundColor: color, borderColor: color } : undefined}
             >
@@ -305,7 +305,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             className={`px-2 py-0.5 text-xs font-bold rounded-md border transition-colors ${
               showRsi
                 ? "bg-violet-500 text-white border-violet-500"
-                : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                : "bg-white text-slate-500 border-[#ccd5ae] hover:border-slate-300"
             }`}
           >
             RSI
@@ -341,7 +341,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
             color: "#0F172A",
           },
         ].map(({ label, value, color }) => (
-          <div key={label} className="border border-slate-100 rounded-xl p-2 text-center bg-white shadow-card">
+          <div key={label} className="border border-[#ccd5ae] rounded-xl p-2 text-center bg-white shadow-card">
             <div className="text-xs text-slate-500 uppercase tracking-wide mb-0.5">{label}</div>
             <div className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color }}>
               {value}
@@ -363,7 +363,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
               { label: "SCORE",     value: `${stock.momentumScore}/100`,                                            tip: SCORE_TOOLTIPS.momentum },
             ].map(({ label, value, tip }) => (
               <Tooltip key={label} text={tip}>
-                <div className="border border-slate-100 rounded-xl p-2 bg-white w-full shadow-card">
+                <div className="border border-[#ccd5ae] rounded-xl p-2 bg-white w-full shadow-card">
                   <div className="text-xs text-slate-500 uppercase tracking-wide">{label}</div>
                   <div className="font-bold text-slate-900 text-xs" style={{ fontFamily: "var(--font-mono)" }}>{value}</div>
                 </div>
@@ -398,7 +398,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       )}
 
       {/* Trade panel */}
-      <div className="border border-slate-200 rounded-xl p-4 bg-white flex flex-col gap-3">
+      <div className="border border-[#ccd5ae] rounded-xl p-4 bg-white flex flex-col gap-3">
         {!user ? (
           <div className="text-center">
             <p className="text-xs text-slate-500 mb-2">{rd.loginToTrade}</p>
@@ -421,7 +421,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
                   min="0.001"
                   step="1"
                   onChange={(e) => setShares(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg bg-white px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
+                  className="w-full border border-[#ccd5ae] rounded-lg bg-white px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
                   style={{ fontFamily: "var(--font-mono)" }}
                 />
               </div>
@@ -466,7 +466,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       </div>
 
       {/* AI Reasons */}
-      <div className="border border-slate-100 rounded-xl p-4 bg-white">
+      <div className="border border-[#ccd5ae] rounded-xl p-4 bg-white">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-bold uppercase tracking-widest text-slate-700">
             เหตุผลที่ติดเรดาร์

@@ -145,7 +145,7 @@ function SortHeader({
 
 function SkeletonRow({ rank }: { rank: number }) {
   return (
-    <tr className="border-b border-white/20">
+    <tr className="border-b border-[#ccd5ae]">
       <td className="px-2 py-1.5 text-slate-400">{rank}</td>
       <td className="px-2 py-1.5"><div className="h-3 w-14 bg-[#e9edc9] animate-pulse rounded" /></td>
       <td className="px-2 py-1.5"><div className="h-3 w-16 bg-[#e9edc9] animate-pulse rounded" /></td>
@@ -355,7 +355,7 @@ export function ScreenerClient() {
           <button
             onClick={() => loadTickerList(filters.universe)}
             disabled={listLoading || quotesLoading}
-            className="text-xs font-bold px-2 py-1 border border-slate-700 bg-white/60 hover:bg-slate-900 hover:text-white transition-colors disabled:opacity-40"
+            className="text-xs font-bold px-2 py-1 border border-slate-700 bg-[#faedcd] hover:bg-slate-900 hover:text-white transition-colors disabled:opacity-40"
           >
             {listLoading ? "..." : "รีเฟรช"}
           </button>
@@ -364,7 +364,7 @@ export function ScreenerClient() {
 
       {/* Filters */}
       {showFilters && (
-        <div className="border border-white/30 bg-white/50 backdrop-blur-md p-3 flex flex-col gap-3">
+        <div className="border border-[#ccd5ae] bg-[#faedcd] p-3 flex flex-col gap-3">
 
           {/* Universe */}
           <div className="flex items-center gap-2 flex-wrap">
@@ -445,12 +445,12 @@ export function ScreenerClient() {
               <div className="flex gap-1 items-center">
                 <input type="number" step="0.5" placeholder="min" value={filters.minChange}
                   onChange={e => setFilter("minChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="Change minimum %" />
                 <span className="text-xs text-slate-500">–</span>
                 <input type="number" step="0.5" placeholder="max" value={filters.maxChange}
                   onChange={e => setFilter("maxChange", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="Change maximum %" />
               </div>
             </div>
@@ -458,7 +458,7 @@ export function ScreenerClient() {
               <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Score min</span>
               <input type="number" min="0" max="100" step="5" placeholder="0" value={filters.minScore}
                 onChange={e => setFilter("minScore", e.target.value)}
-                className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                 aria-label="Minimum momentum score" />
             </div>
             <div className="flex flex-col gap-1">
@@ -466,12 +466,12 @@ export function ScreenerClient() {
               <div className="flex gap-1 items-center">
                 <input type="number" step="1" placeholder="min" value={filters.minPE}
                   onChange={e => setFilter("minPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="P/E minimum" />
                 <span className="text-xs text-slate-500">–</span>
                 <input type="number" step="1" placeholder="max" value={filters.maxPE}
                   onChange={e => setFilter("maxPE", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="P/E maximum" />
               </div>
             </div>
@@ -480,18 +480,18 @@ export function ScreenerClient() {
               <div className="flex gap-1 items-center">
                 <input type="number" step="0.1" placeholder="min" value={filters.minBeta}
                   onChange={e => setFilter("minBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="Beta minimum" />
                 <span className="text-xs text-slate-500">–</span>
                 <input type="number" step="0.1" placeholder="max" value={filters.maxBeta}
                   onChange={e => setFilter("maxBeta", e.target.value)}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-white/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
+                  className="w-16 px-1.5 py-0.5 text-xs border border-slate-300 bg-[#faedcd] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#5B8A2A]"
                   aria-label="Beta maximum" />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 pt-1 border-t border-white/30">
+          <div className="flex items-center gap-3 pt-1 border-t border-[#ccd5ae]">
             <button
               onClick={() => void loadMetrics()}
               disabled={metricsLoading || listLoading || filtered.length === 0}
@@ -566,7 +566,7 @@ export function ScreenerClient() {
           <div className="overflow-x-auto -mx-4 px-4">
             <table className="w-full text-xs border-collapse" style={{ minWidth: "640px" }}>
               <thead>
-                <tr className="border-b-2 border-slate-700 bg-white/60 text-xs font-bold uppercase tracking-wide text-slate-500">
+                <tr className="border-b-2 border-slate-700 bg-[#faedcd] text-xs font-bold uppercase tracking-wide text-slate-500">
                   <th className="px-2 py-1.5 text-left w-8">#</th>
                   <SortHeader label="Ticker"  field="ticker"        current={sortField} dir={sortDir} onClick={toggleSort} />
                   <th className="px-2 py-1.5 text-left">Sector</th>
@@ -588,7 +588,7 @@ export function ScreenerClient() {
                   const m        = metrics.get(row.ticker);
                   const positive = row.change1D >= 0;
                   return (
-                    <tr key={row.ticker} className="border-b border-white/30 hover:bg-white/60 transition-colors">
+                    <tr key={row.ticker} className="border-b border-[#ccd5ae] hover:bg-[#faedcd] transition-colors">
                       <td className="px-2 py-1.5 text-slate-500">{idx + 1}</td>
                       <td className="px-2 py-1.5">
                         <Link

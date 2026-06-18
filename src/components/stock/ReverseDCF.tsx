@@ -74,7 +74,7 @@ function InputRow({
           onChange={(e) => onChange(e.target.value)}
           placeholder={required ? "ต้องใส่" : "optional"}
           className={`w-full px-2 py-1 text-xs border rounded-md focus:outline-none focus-visible:ring-1 transition-colors font-mono
-            ${required && !value ? "border-amber-400 bg-amber-50 focus:border-amber-500 focus-visible:ring-amber-400" : "border-slate-200 bg-white focus:border-green-500 focus-visible:ring-green-500"}`}
+            ${required && !value ? "border-amber-400 bg-amber-50 focus:border-amber-500 focus-visible:ring-amber-400" : "border-[#ccd5ae] bg-white focus:border-green-500 focus-visible:ring-green-500"}`}
           aria-required={required}
         />
         {unit && <span className="text-xs text-slate-400 flex-shrink-0">{unit}</span>}
@@ -122,7 +122,7 @@ function PersonaPresetPicker({ selectedId, onSelect }: PersonaPresetPickerProps)
               className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl border transition-all
                 ${isSelected
                   ? "border-green-500 bg-green-50 shadow-sm"
-                  : "border-slate-100 bg-white hover:border-slate-300 hover:bg-slate-50"}`}
+                  : "border-[#ccd5ae] bg-white hover:border-slate-300 hover:bg-[#e9edc9]"}`}
             >
               <div
                 className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
@@ -136,7 +136,7 @@ function PersonaPresetPicker({ selectedId, onSelect }: PersonaPresetPickerProps)
         })}
       </div>
       {selected && (
-        <p className="text-xs text-slate-500 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1.5 leading-relaxed">
+        <p className="text-xs text-slate-500 bg-[#e9edc9] border border-[#ccd5ae] rounded-lg px-2.5 py-1.5 leading-relaxed">
           <strong className="text-slate-700 not-italic">{selected.name}</strong>
           <span className="text-slate-400"> · {selected.role}</span>
           <br />
@@ -259,13 +259,13 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
   return (
     <Card className="overflow-hidden">
       {/* Header */}
-      <div className="px-4 pt-3 pb-2 border-b border-slate-100 flex items-center justify-between gap-2">
+      <div className="px-4 pt-3 pb-2 border-b border-[#ccd5ae] flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">
               Reverse DCF · Expectations Gauge
             </h2>
-            <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-md font-semibold">
+            <span className="text-xs px-1.5 py-0.5 bg-[#e9edc9] text-slate-500 rounded-md font-semibold">
               by Earthh Evans
             </span>
           </div>
@@ -286,8 +286,8 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
           {/* Loading / error */}
           {fetchLoading && (
             <div className="flex flex-col gap-2 animate-pulse">
-              <div className="h-12 bg-slate-100 rounded-xl" />
-              <div className="h-6 w-48 bg-slate-100 rounded" />
+              <div className="h-12 bg-[#e9edc9] rounded-xl" />
+              <div className="h-6 w-48 bg-[#e9edc9] rounded" />
             </div>
           )}
           {fetchError && (
@@ -403,7 +403,7 @@ function ResultsPanel({ result, missing }: { result: RdcfSuccess; missing: strin
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-3 gap-2 text-center">
-        <div className="bg-slate-50 rounded-xl p-2.5">
+        <div className="bg-[#e9edc9] rounded-xl p-2.5">
           <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Implied CAGR</div>
           <div className="text-[18px] font-bold font-mono" style={{ color: gapPositive ? "#DC2626" : "#16A34A" }}>
             {fPct(result.impliedCAGR)}
@@ -419,7 +419,7 @@ function ResultsPanel({ result, missing }: { result: RdcfSuccess; missing: strin
           <div className="text-xs">{gapPositive ? "▲" : "▼"}</div>
         </div>
 
-        <div className="bg-slate-50 rounded-xl p-2.5">
+        <div className="bg-[#e9edc9] rounded-xl p-2.5">
           <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Plausible CAGR</div>
           <div className="text-[18px] font-bold font-mono text-slate-900">
             {fPct(result.plausibleCAGR)}
@@ -485,7 +485,7 @@ function MathPanel({ r, assumptions, autoFill, sensitivity }: {
             </thead>
             <tbody>
               {sensitivity.waccs.map((w, wi) => (
-                <tr key={wi} className="border-t border-slate-100">
+                <tr key={wi} className="border-t border-[#ccd5ae]">
                   <td className="py-1 text-slate-500 font-semibold">{fPct(w)}</td>
                   {sensitivity.grid[wi].map((v, mi) => (
                     <td key={mi} className="py-1 font-mono font-bold"
@@ -508,7 +508,7 @@ function MathPanel({ r, assumptions, autoFill, sensitivity }: {
 function Caveats({ industry }: { industry: string | null }) {
   const isMature = industry && /bank|util|insurance|consumer defensive/i.test(industry);
   return (
-    <div className="border-t border-slate-100 pt-2.5 flex flex-col gap-1">
+    <div className="border-t border-[#ccd5ae] pt-2.5 flex flex-col gap-1">
       <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">คำเตือนสำคัญ</p>
       <ul className="flex flex-col gap-0.5 text-xs text-slate-400 leading-relaxed list-none p-0 m-0">
         <li>• <strong>เครื่องมือเพื่อการศึกษาเท่านั้น</strong> — ไม่ใช่คำแนะนำการลงทุน ตรวจสอบตัวเลขทุกอันก่อนใช้</li>

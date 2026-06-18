@@ -84,9 +84,9 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-white/20 last:border-0">
+    <div className="border-b border-[#ccd5ae] last:border-0">
       <button
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/30 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#faedcd] transition-colors text-left"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={`${h.companyName} ${open ? ac.row.hideDetail : ac.row.showDetail}`}
@@ -110,7 +110,7 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
       </button>
 
       {open && (
-        <div className="px-4 pb-4 pt-1 bg-white/20 space-y-3">
+        <div className="px-4 pb-4 pt-1 bg-[#e9edc9] space-y-3">
           <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
             {[
               [ac.row.currentPrice, usd(h.currentPrice)],
@@ -118,7 +118,7 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
               [ac.row.totalCost,    usd(h.totalCostUsd)],
               [ac.shares,           ac.row.heldShares(h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 }))],
             ].map(([label, val]) => (
-              <div key={label as string} className="bg-white/60 backdrop-blur-sm rounded-xl p-2.5 border border-white/40">
+              <div key={label as string} className="bg-[#faedcd] rounded-xl p-2.5 border border-[#ccd5ae]">
                 <div className="text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">{label}</div>
                 <div className="font-mono font-bold text-slate-800 text-xs">{val}</div>
               </div>
@@ -178,9 +178,9 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
   );
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-100">
+    <div className="overflow-x-auto rounded-2xl border border-[#ccd5ae]">
       <table className="w-full text-sm">
-        <thead className="bg-slate-50">
+        <thead className="bg-[#e9edc9]">
           <tr>
             {th("name",     ac.col.name,     "text-left")}
             {th("weight",   ac.col.weight)}
@@ -195,7 +195,7 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
         </thead>
         <tbody className="bg-white divide-y divide-slate-100">
           {sorted.map((h) => (
-            <tr key={h.ticker} className="hover:bg-slate-50 transition-colors">
+            <tr key={h.ticker} className="hover:bg-[#e9edc9] transition-colors">
               <td className="px-3 py-2.5">
                 <div className="flex items-center gap-2">
                   <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={28} />
@@ -242,7 +242,7 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
               </td>
             </tr>
           ))}
-          <tr className="bg-slate-50">
+          <tr className="bg-[#e9edc9]">
             <td className="px-3 py-2.5 text-sm text-slate-500 font-medium" colSpan={6}>เงินสด USD</td>
             <td className="px-3 py-2.5 text-right font-semibold text-slate-700" colSpan={3}>
               {usd(cashUsd)}
@@ -301,13 +301,13 @@ export function AssetsPage() {
   if (authLoading) {
     return (
       <main className="px-4 pt-6 space-y-4 animate-pulse max-w-5xl mx-auto">
-        <div className="h-8 w-48 bg-white/40 rounded-xl" />
-        <div className="h-16 w-64 bg-white/40 rounded-2xl" />
+        <div className="h-8 w-48 bg-[#faedcd] rounded-xl" />
+        <div className="h-16 w-64 bg-[#faedcd] rounded-2xl" />
         <div className="flex gap-4">
-          <div className="h-10 flex-1 bg-white/30 rounded-xl" />
-          <div className="h-10 flex-1 bg-white/30 rounded-xl" />
+          <div className="h-10 flex-1 bg-[#faedcd] rounded-xl" />
+          <div className="h-10 flex-1 bg-[#faedcd] rounded-xl" />
         </div>
-        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-white/30 rounded-xl" />)}
+        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-[#faedcd] rounded-xl" />)}
       </main>
     );
   }
@@ -315,7 +315,7 @@ export function AssetsPage() {
   if (!user) {
     return (
       <main className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-white/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-3xl">📊</div>
+        <div className="w-16 h-16 rounded-2xl bg-[#faedcd] border border-[#ccd5ae] flex items-center justify-center text-3xl">📊</div>
         <div>
           <p className="text-lg font-bold text-slate-800 mb-1">ดูพอร์ตหุ้นของคุณ</p>
           <p className="text-sm text-slate-500">เข้าสู่ระบบเพื่อซื้อขายหุ้น และติดตามพอร์ตแบบ real-time</p>
@@ -324,7 +324,7 @@ export function AssetsPage() {
           <Link href="/signup" className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold text-sm transition-colors">
             สมัครฟรี
           </Link>
-          <Link href="/signin" className="px-6 py-2.5 bg-white/60 backdrop-blur-md border border-white/30 text-slate-700 rounded-xl font-semibold text-sm hover:bg-white/80 transition-colors">
+          <Link href="/signin" className="px-6 py-2.5 bg-[#faedcd] border border-[#ccd5ae] text-slate-700 rounded-xl font-semibold text-sm hover:bg-[#fefae0] transition-colors">
             เข้าสู่ระบบ
           </Link>
         </div>
@@ -336,13 +336,13 @@ export function AssetsPage() {
   if (loading) {
     return (
       <main className="px-4 pt-4 space-y-3 animate-pulse max-w-5xl mx-auto">
-        <div className="h-6 w-40 bg-white/40 rounded-lg" />
-        <div className="h-14 w-56 bg-white/40 rounded-2xl" />
+        <div className="h-6 w-40 bg-[#faedcd] rounded-lg" />
+        <div className="h-14 w-56 bg-[#faedcd] rounded-2xl" />
         <div className="flex gap-3">
-          <div className="h-12 flex-1 bg-white/30 rounded-xl" />
-          <div className="h-12 flex-1 bg-white/30 rounded-xl" />
+          <div className="h-12 flex-1 bg-[#faedcd] rounded-xl" />
+          <div className="h-12 flex-1 bg-[#faedcd] rounded-xl" />
         </div>
-        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-white/30 rounded-xl" />)}
+        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-[#faedcd] rounded-xl" />)}
       </main>
     );
   }
@@ -378,7 +378,7 @@ export function AssetsPage() {
   return (
     <main className="min-h-screen pb-24 lg:pb-8">
       {/* ── Hero header ──────────────────────────────────────────────────── */}
-      <div className="px-4 pt-5 pb-4 bg-white/60 backdrop-blur-md border-b border-white/20">
+      <div className="px-4 pt-5 pb-4 bg-[#faedcd] border-b border-[#ccd5ae]">
         <div className="max-w-5xl mx-auto">
           {/* Label row */}
           <div className="flex items-center gap-2 mb-2">
@@ -394,21 +394,21 @@ export function AssetsPage() {
 
           {/* P&L stats */}
           <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-6">
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40">
+            <div className="bg-[#faedcd] rounded-xl px-3 py-2.5 border border-[#ccd5ae]">
               <p className="text-xs text-slate-500 mb-0.5">วันนี้</p>
               <p className={`text-base font-bold font-mono ${clr(change1DThb)}`}>
                 {change1DThb >= 0 ? "+" : ""}{thb(change1DThb)}
               </p>
               <p className={`text-xs ${clr(change1DPct)}`}>{pctFmt(change1DPct)}</p>
             </div>
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40">
+            <div className="bg-[#faedcd] rounded-xl px-3 py-2.5 border border-[#ccd5ae]">
               <p className="text-xs text-slate-500 mb-0.5">กำไร/ขาดทุนรวม</p>
               <p className={`text-base font-bold font-mono ${clr(unrealizedPnlThb)}`}>
                 {unrealizedPnlThb >= 0 ? "+" : ""}{thb(unrealizedPnlThb)}
               </p>
               <p className={`text-xs ${clr(unrealizedPnlPct)}`}>{pctFmt(unrealizedPnlPct)}</p>
             </div>
-            <div className="sm:flex-none bg-white/50 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/40 col-span-2 sm:col-span-1">
+            <div className="sm:flex-none bg-[#faedcd] rounded-xl px-3 py-2.5 border border-[#ccd5ae] col-span-2 sm:col-span-1">
               <p className="text-xs text-slate-500 mb-0.5">อัตราแลกเปลี่ยน</p>
               <p className="text-sm font-semibold font-mono text-slate-700">1 USD = {fxRate.toFixed(2)} THB</p>
             </div>
@@ -418,7 +418,7 @@ export function AssetsPage() {
 
       {/* Tabs */}
       <div className="max-w-5xl mx-auto px-4 mt-4">
-        <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit mb-4">
+        <div className="flex gap-1 bg-[#e9edc9] rounded-xl p-1 w-fit mb-4">
           {(["holdings", "analytics"] as Tab[]).map((tabKey) => (
             <button key={tabKey} onClick={() => setTab(tabKey)}
               className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${tab === tabKey ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
@@ -440,7 +440,7 @@ export function AssetsPage() {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortKey)}
                     aria-label={ac.row.sortAria}
-                    className="text-xs px-2 py-1 rounded-lg border border-slate-200 bg-white text-slate-700">
+                    className="text-xs px-2 py-1 rounded-lg border border-[#ccd5ae] bg-white text-slate-700">
                     {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
                     ))}
@@ -448,7 +448,7 @@ export function AssetsPage() {
                   <button
                     onClick={() => setSortDir((d) => (d === 1 ? -1 : 1))}
                     aria-label={sortDir === -1 ? ac.row.sortDirAsc : ac.row.sortDirDesc}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-[#ccd5ae] text-slate-500 hover:bg-[#e9edc9] transition-colors">
                     {sortDir === -1 ? "↓" : "↑"}
                   </button>
                 </div>
@@ -461,7 +461,7 @@ export function AssetsPage() {
                 <span className="w-4" />
               </div>
 
-              <div className="bg-white/50 backdrop-blur-md rounded-2xl border border-white/30 overflow-hidden">
+              <div className="bg-[#faedcd] rounded-2xl border border-[#ccd5ae] overflow-hidden">
                 {sorted.length === 0 && (
                   <div className="text-center py-14 px-6">
                     <div className="text-4xl mb-3">📈</div>
@@ -477,7 +477,7 @@ export function AssetsPage() {
                 ))}
                 {/* Cash rows */}
                 {cashUsd > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 bg-slate-50/50">
+                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-[#ccd5ae] bg-[#e9edc9]/50">
                     <div className="w-8 h-8 rounded-md bg-green-100 flex items-center justify-center text-sm flex-shrink-0">💵</div>
                     <div className="flex-1">
                       <div className="text-sm font-semibold text-slate-700">เงินสด USD</div>
@@ -488,7 +488,7 @@ export function AssetsPage() {
                   </div>
                 )}
                 {cashThb > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-slate-100 bg-slate-50/50">
+                  <div className="flex items-center gap-2 px-4 py-2.5 border-t border-[#ccd5ae] bg-[#e9edc9]/50">
                     <div className="w-8 h-8 rounded-md bg-yellow-100 flex items-center justify-center text-sm flex-shrink-0">🇹🇭</div>
                     <div className="flex-1">
                       <div className="text-sm font-semibold text-slate-700">เงินสด THB</div>

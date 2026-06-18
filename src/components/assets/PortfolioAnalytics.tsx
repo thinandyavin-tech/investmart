@@ -153,7 +153,7 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
 
 function StatRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-slate-50 rounded-xl p-3">
+    <div className="bg-[#e9edc9] rounded-xl p-3">
       <div className="text-xs text-slate-500 mb-0.5">{label}</div>
       <div className="font-semibold text-slate-900 text-sm">{value}</div>
       {sub && <div className="text-xs text-slate-400 mt-0.5">{sub}</div>}
@@ -207,10 +207,10 @@ export function PortfolioAnalytics({ data }: PortfolioAnalyticsProps) {
   return (
     <div className="space-y-5 pb-24 lg:pb-8">
       {/* Allocation donut */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+      <div className="bg-white rounded-2xl border border-[#ccd5ae] p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-slate-800 text-sm">สัดส่วนการลงทุน</h3>
-          <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5 text-xs">
+          <div className="flex gap-1 bg-[#e9edc9] rounded-lg p-0.5 text-xs">
             {(["stock", "sector"] as const).map((m) => (
               <button
                 key={m}
@@ -229,13 +229,13 @@ export function PortfolioAnalytics({ data }: PortfolioAnalyticsProps) {
       </div>
 
       {/* Performance chart */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+      <div className="bg-white rounded-2xl border border-[#ccd5ae] p-4">
         <h3 className="font-semibold text-slate-800 text-sm mb-3">ประสิทธิภาพพอร์ต</h3>
         <PerformanceChart snapshots={snapshots} />
       </div>
 
       {/* Stats */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+      <div className="bg-white rounded-2xl border border-[#ccd5ae] p-4">
         <h3 className="font-semibold text-slate-800 text-sm mb-3">สถิติ</h3>
         <div className="grid grid-cols-2 gap-2">
           <StatRow

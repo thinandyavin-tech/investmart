@@ -98,7 +98,7 @@ function HomeFooter() {
   ];
 
   return (
-    <footer className="border-t border-white/30 bg-white/50 backdrop-blur-md px-6 py-4 mt-4">
+    <footer className="border-t border-[#ccd5ae] bg-[#faedcd] px-6 py-4 mt-4">
       <div className="max-w-5xl mx-auto">
         <p className="text-xs text-slate-900 font-semibold mb-1">InvestMart</p>
         <div className="flex flex-wrap gap-3 text-xs mb-2">

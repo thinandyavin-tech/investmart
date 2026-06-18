@@ -67,7 +67,7 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
   if (infographic) {
     return (
       <div className="flex justify-start gap-2">
-        <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5 flex-shrink-0">
+        <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-[#ccd5ae] flex items-center justify-center flex-shrink-0 mt-0.5 flex-shrink-0">
           <span className="text-violet-400 text-xs">✦</span>
         </div>
         <div className="flex-1 min-w-0">
@@ -80,7 +80,7 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
 
   return (
     <div className="flex justify-start gap-2">
-      <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+      <div className="w-6 h-6 rounded-full bg-slate-900/80 border border-[#ccd5ae] flex items-center justify-center flex-shrink-0 mt-0.5">
         <span className="text-violet-400 text-xs">✦</span>
       </div>
       <div className="max-w-[88%]">
@@ -102,7 +102,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
   return (
     <div className="py-4 px-1">
       <div className="flex items-center gap-2 justify-center mb-4">
-        <div className="w-8 h-8 rounded-full bg-slate-900/80 border border-white/20 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-slate-900/80 border border-[#ccd5ae] flex items-center justify-center">
           <span className="text-violet-400 text-sm">✦</span>
         </div>
         <div>
@@ -115,7 +115,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
           <button
             key={p}
             onClick={() => onSelect(p)}
-            className="w-full text-left text-xs px-3 py-2.5 rounded-lg border border-white/30 bg-white/40 hover:bg-white/60 hover:border-violet-300 transition-colors text-slate-700 leading-snug"
+            className="w-full text-left text-xs px-3 py-2.5 rounded-lg border border-[#ccd5ae] bg-[#faedcd] hover:bg-[#faedcd] hover:border-violet-300 transition-colors text-slate-700 leading-snug"
           >
             {p}
           </button>
@@ -267,7 +267,7 @@ export function FloatingAssistant() {
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="fixed z-50 w-12 h-12 rounded-full flex flex-col items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 bg-slate-900/90 backdrop-blur-sm border border-violet-500/40 shadow-lg shadow-violet-900/30"
+        className="fixed z-50 w-12 h-12 rounded-full flex flex-col items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 bg-slate-900/90 border border-violet-500/40 shadow-lg shadow-violet-900/30"
         style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))", right: "1rem" }}
         aria-label={isOpen ? "ปิด Martin AI" : "เปิด Martin AI"}
         aria-expanded={isOpen}
@@ -289,14 +289,14 @@ export function FloatingAssistant() {
             className="fixed z-50 flex flex-col
               inset-x-0 bottom-0 h-[88vh] rounded-t-2xl
               lg:inset-x-auto lg:bottom-24 lg:right-6 lg:w-96 lg:h-[600px] lg:rounded-2xl
-              bg-white/80 backdrop-blur-xl border border-white/30
+              bg-[#fefae0] backdrop-blur-xl border border-[#ccd5ae]
               shadow-2xl shadow-slate-900/20"
             role="dialog"
             aria-modal="true"
             aria-label="Martin — InvestMart AI"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 flex-shrink-0 rounded-t-2xl bg-slate-900/60 backdrop-blur-md">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#ccd5ae] flex-shrink-0 rounded-t-2xl bg-slate-900/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-full bg-slate-800 border border-violet-500/40 flex items-center justify-center">
                   <span className="text-violet-400 text-xs">✦</span>
@@ -355,7 +355,7 @@ export function FloatingAssistant() {
             </div>
 
             {/* Input area */}
-            <div className="flex-shrink-0 border-t border-white/20 bg-white/40 backdrop-blur-md p-3 rounded-b-2xl">
+            <div className="flex-shrink-0 border-t border-[#ccd5ae] bg-[#faedcd] p-3 rounded-b-2xl">
               <div className="flex gap-2 items-end">
                 <textarea
                   ref={inputRef}
@@ -367,7 +367,7 @@ export function FloatingAssistant() {
                   placeholder={contextTicker ? `ถามเกี่ยวกับ $${contextTicker}...` : "ถามเกี่ยวกับหุ้น, กราฟ, ข่าว..."}
                   disabled={streaming}
                   rows={2}
-                  className="flex-1 text-xs border border-white/30 bg-white/60 rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 disabled:opacity-50 text-slate-800 placeholder:text-slate-400"
+                  className="flex-1 text-xs border border-[#ccd5ae] bg-[#faedcd] rounded-xl px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 disabled:opacity-50 text-slate-800 placeholder:text-slate-400"
                   aria-label="พิมพ์คำถาม"
                 />
                 <button

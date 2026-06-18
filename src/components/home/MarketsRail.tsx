@@ -73,7 +73,7 @@ function MoverRow({ m, up }: { m: Mover; up: boolean }) {
   return (
     <Link
       href={`/stock/${m.ticker}`}
-      className="flex items-center justify-between py-1 hover:bg-white/60 rounded px-1 transition-colors"
+      className="flex items-center justify-between py-1 hover:bg-[#faedcd] rounded px-1 transition-colors"
     >
       <span className="text-xs font-bold font-mono text-violet-600">{m.ticker}</span>
       <span className="text-xs font-bold font-mono" style={{ color: clr }}>

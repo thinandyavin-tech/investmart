@@ -35,7 +35,7 @@ export function BrandPillDropdown({ onClose }: BrandPillDropdownProps) {
 
   return (
     <div
-      className="w-56 bg-white/80 backdrop-blur-md rounded-xl overflow-hidden"
+      className="w-56 bg-[#fefae0] rounded-xl overflow-hidden"
       style={{ boxShadow: "0 8px 32px rgba(31,26,20,0.20), 0 2px 8px rgba(31,26,20,0.10)" }}
       role="menu"
       aria-label="InvestMart"

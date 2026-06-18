@@ -69,7 +69,7 @@ export function CategoryBadge({ category, active, onClick }: CategoryBadgeProps)
       className={`flex flex-col items-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3D9A] focus-visible:ring-offset-1 rounded-xl border transition-colors ${
         active
           ? "bg-slate-900 border-slate-900 text-white"
-          : "bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+          : "bg-white border-[#ccd5ae] text-slate-700 hover:border-slate-300 hover:bg-[#e9edc9]"
       }`}
       aria-pressed={active}
       aria-label={`กรองหมวด ${config.label}`}

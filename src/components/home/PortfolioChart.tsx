@@ -100,7 +100,7 @@ export function PortfolioChart() {
   if (snapshots.length < 2) {
     return (
       <div
-        className="bg-white/50 backdrop-blur-md p-3 rounded-xl"
+        className="bg-[#faedcd] p-3 rounded-xl"
         style={{ border: "2px dashed #8B5CF6" }}
       >
         <div className="flex items-center justify-between mb-2">
@@ -125,7 +125,7 @@ export function PortfolioChart() {
   const positive  = pnlVsBase >= 0;
 
   return (
-    <div className="bg-white/50 backdrop-blur-md p-3 rounded-xl" style={{ border: "2px dashed #8B5CF6" }}>
+    <div className="bg-[#faedcd] p-3 rounded-xl" style={{ border: "2px dashed #8B5CF6" }}>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xs font-bold uppercase tracking-widest text-[#5B8A2A]">
           กราฟพอร์ตโฟลิโอ
