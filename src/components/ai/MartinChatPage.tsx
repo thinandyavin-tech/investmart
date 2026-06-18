@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useI18n } from "@/lib/i18n";
 
 const StockInfographic = dynamic(
@@ -60,6 +61,7 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
         {content ? (
           <div className="text-sm leading-relaxed text-slate-800 break-words">
             <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
               components={{
                 p:          ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                 strong:     ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
