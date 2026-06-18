@@ -138,7 +138,7 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
       {aiOutlook && !loadingOutlook && (
         <div className="flex flex-col gap-3 text-xs">
           <div className="text-xs text-[#8A8378] italic border-b border-[#e9edc9] pb-1.5">
-            AI สไตล์{activePersona.nameTh} · ไม่ใช่คำแนะนำลงทุน
+            Martin · Licensed Financial Analyst · สไตล์{activePersona.nameTh}
           </div>
 
           <p className="leading-relaxed">{aiOutlook.thesis}</p>

@@ -5,7 +5,7 @@ import { MartinChatPage } from "@/components/ai/MartinChatPage";
 
 export const metadata: Metadata = {
   title: "Martin AI · InvestMart",
-  description: "คุยกับ Martin — InvestMart AI วิเคราะห์หุ้นจากข้อมูลจริง",
+  description: "คุยกับ Martin — Licensed Financial Analyst วิเคราะห์หุ้นจากข้อมูลจริง Real-time",
 };
 
 export default function MartinRoute() {

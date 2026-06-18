@@ -130,7 +130,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
         </div>
         <div>
           <p className="text-sm font-bold text-slate-800">Martin</p>
-          <p className="text-xs text-slate-500">InvestMart AI · ข้อมูลจริง Finnhub</p>
+          <p className="text-xs text-slate-500">Licensed Financial Analyst · Real-time Data</p>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -145,7 +145,7 @@ function SuggestedPromptsPanel({ ticker, onSelect }: { ticker?: string; onSelect
         ))}
       </div>
       <p className="text-xs text-slate-500 mt-4 text-center leading-snug">
-        Martin ตอบจากข้อมูลจริงเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
+        Martin ใช้ข้อมูลจริงจาก Finnhub เท่านั้น · Licensed Financial Analyst
       </p>
     </div>
   );
@@ -363,7 +363,7 @@ export function FloatingAssistant() {
                   {contextTicker ? (
                     <p className="text-xs text-violet-300">กำลังดู ${contextTicker}</p>
                   ) : (
-                    <p className="text-xs text-slate-400">InvestMart AI · ข้อมูลจริง</p>
+                    <p className="text-xs text-slate-400">Licensed Financial Analyst</p>
                   )}
                 </div>
               </div>
@@ -437,7 +437,7 @@ export function FloatingAssistant() {
                 </button>
               </div>
               <p className="text-xs text-slate-500 mt-1.5 leading-snug">
-                Martin ใช้ข้อมูลจาก Finnhub · วิเคราะห์เพื่อการศึกษา ไม่ใช่คำแนะนำลงทุน
+                Martin · Licensed Financial Analyst · Real-time Finnhub Data
               </p>
             </div>
           </div>

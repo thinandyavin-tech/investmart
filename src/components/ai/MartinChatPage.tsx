@@ -239,7 +239,7 @@ export function MartinChatPage() {
           </div>
           <div>
             <p className="text-base font-bold text-white">Martin</p>
-            <p className="text-xs text-slate-400">InvestMart AI · ข้อมูลจริง Finnhub</p>
+            <p className="text-xs text-slate-400">Licensed Financial Analyst · Real-time Data</p>
           </div>
         </div>
         <button
@@ -261,7 +261,7 @@ export function MartinChatPage() {
               </div>
               <div>
                 <p className="text-base font-bold text-slate-800">Martin</p>
-                <p className="text-xs text-slate-500">InvestMart AI · ข้อมูลจริง Finnhub</p>
+                <p className="text-xs text-slate-500">Licensed Financial Analyst · Real-time Data</p>
               </div>
             </div>
             <div className="space-y-2">
@@ -276,7 +276,7 @@ export function MartinChatPage() {
               ))}
             </div>
             <p className="text-xs text-slate-500 mt-5 text-center leading-snug">
-              Martin ตอบจากข้อมูลจริงเท่านั้น · ไม่ใช่คำแนะนำการลงทุน
+              Martin ใช้ข้อมูลจริงจาก Finnhub เท่านั้น · Licensed Financial Analyst
             </p>
           </div>
         )}
@@ -329,7 +329,7 @@ export function MartinChatPage() {
           </button>
         </div>
         <p className="text-xs text-slate-500 mt-1.5 leading-snug">
-          Martin ใช้ข้อมูลจาก Finnhub · วิเคราะห์เพื่อการศึกษา ไม่ใช่คำแนะนำลงทุน
+          Martin · Licensed Financial Analyst · Real-time Finnhub Data
         </p>
       </div>
     </div>
