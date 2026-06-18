@@ -91,6 +91,18 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
   const [loadingAi, setLoadingAi] = useState(false);
 
   const [shares, setShares]                   = useState("1");
+  const [dollarMode, setDollarMode]           = useState(false);
+  const [dollarAmt, setDollarAmt]             = useState("");
+  const [orderType, setOrderType]             = useState<"market" | "limit">("market");
+  const [limitPrice, setLimitPrice]           = useState("");
+  const [tradeTab, setTradeTab]               = useState<"stock" | "options">("stock");
+  const [optType, setOptType]                 = useState<"CALL" | "PUT">("CALL");
+  const [optStrike, setOptStrike]             = useState("");
+  const [optContracts, setOptContracts]       = useState("1");
+  const [optExpiry, setOptExpiry]             = useState(() => {
+    const d = new Date(); d.setDate(d.getDate() + 30);
+    return d.toISOString().split("T")[0] ?? "";
+  });
   const [trading, setTrading]                 = useState(false);
   const [tradeMsg, setTradeMsg]               = useState("");
   const [thesisPending, setThesisPending]     = useState<{ tradeId: string; side: "BUY" | "SELL"; shares: number; price: number } | null>(null);
@@ -148,12 +160,42 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
     }
   }
 
+  function calcShares(): number {
+    if (dollarMode) {
+      const usd = parseFloat(dollarAmt);
+      return usd > 0 && livePrice > 0 ? usd / livePrice : 0;
+    }
+    return parseFloat(shares) || 0;
+  }
+
   async function executeTrade(side: "BUY" | "SELL") {
     if (!user) { setShowLoginPrompt(true); return; }
-    const sharesNum = parseFloat(shares);
-    if (isNaN(sharesNum) || sharesNum <= 0) { setTradeMsg(rd.sharesRequired); return; }
+    const sharesNum = calcShares();
+    if (sharesNum <= 0) { setTradeMsg(rd.sharesRequired); return; }
     setTrading(true);
     setTradeMsg("");
+
+    // Limit order
+    if (orderType === "limit") {
+      const lp = parseFloat(limitPrice);
+      if (isNaN(lp) || lp <= 0) { setTradeMsg("กรอกราคา Limit ให้ถูกต้อง"); setTrading(false); return; }
+      try {
+        const res  = await fetch("/api/trade/limit", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ ticker: stock.ticker, side, shares: sharesNum, limitPrice: lp }),
+        });
+        const data = (await res.json()) as { error?: string };
+        setTradeMsg(res.ok ? `Limit ${side} ${sharesNum.toFixed(2)} หุ้น @ $${lp.toFixed(2)} ✓` : (data.error ?? "เกิดข้อผิดพลาด"));
+      } catch {
+        setTradeMsg(rd.tradeError);
+      } finally {
+        setTrading(false);
+      }
+      return;
+    }
+
+    // Market order
     try {
       const res  = await fetch("/api/trade", {
         method:  "POST",
@@ -166,13 +208,54 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       } else {
         setTradeMsg(
           side === "BUY"
-            ? `ซื้อ ${sharesNum} หุ้น ${stock.ticker} @ $${livePrice.toFixed(2)} ✓`
-            : `ขาย ${sharesNum} หุ้น ${stock.ticker} @ $${livePrice.toFixed(2)} ✓`
+            ? `ซื้อ ${sharesNum.toFixed(2)} หุ้น ${stock.ticker} @ $${livePrice.toFixed(2)} ✓`
+            : `ขาย ${sharesNum.toFixed(2)} หุ้น ${stock.ticker} @ $${livePrice.toFixed(2)} ✓`
         );
         await refreshUser();
         if (data.tradeId) {
           setThesisPending({ tradeId: data.tradeId, side, shares: sharesNum, price: livePrice });
         }
+      }
+    } catch {
+      setTradeMsg(rd.tradeError);
+    } finally {
+      setTrading(false);
+    }
+  }
+
+  async function buyOption() {
+    if (!user) { setShowLoginPrompt(true); return; }
+    const strike    = parseFloat(optStrike);
+    const contracts = parseInt(optContracts);
+    if (isNaN(strike) || strike <= 0 || isNaN(contracts) || contracts <= 0) {
+      setTradeMsg("กรอกข้อมูล Options ให้ครบ"); return;
+    }
+    // Simplified premium: intrinsic value + 5% time value
+    const intrinsic = optType === "CALL"
+      ? Math.max(0, livePrice - strike)
+      : Math.max(0, strike - livePrice);
+    const premium   = intrinsic + livePrice * 0.05;
+    const totalCost = premium * contracts * 100;
+    if (user.cashUsd < totalCost) {
+      setTradeMsg(`เงินไม่พอ (ต้องการ $${totalCost.toFixed(2)})`); return;
+    }
+    setTrading(true);
+    setTradeMsg("");
+    try {
+      const res  = await fetch("/api/trade/options", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          ticker: stock.ticker, optionType: optType, strikePrice: strike,
+          expiry: optExpiry, contracts, premium,
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (res.ok) {
+        setTradeMsg(`${optType} Option ${stock.ticker} Strike $${strike} × ${contracts} contracts ✓ ($${totalCost.toFixed(2)})`);
+        await refreshUser();
+      } else {
+        setTradeMsg(data.error ?? "เกิดข้อผิดพลาด");
       }
     } catch {
       setTradeMsg(rd.tradeError);
@@ -398,71 +481,182 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
       )}
 
       {/* Trade panel */}
-      <div className="border border-[#ccd5ae] rounded-xl p-4 bg-white flex flex-col gap-3">
-        {!user ? (
-          <div className="text-center">
-            <p className="text-xs text-slate-500 mb-2">{rd.loginToTrade}</p>
-            <OffsetButton variant="lime" onClick={() => setShowLoginPrompt(true)}>
-              เข้าสู่ระบบ
-            </OffsetButton>
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-slate-500 uppercase tracking-wide block mb-1" htmlFor="shares-input">
-                  จำนวนหุ้น
-                </label>
-                <input
-                  id="shares-input"
-                  type="number"
-                  inputMode="decimal"
-                  value={shares}
-                  min="0.001"
-                  step="1"
-                  onChange={(e) => setShares(e.target.value)}
-                  className="w-full border border-[#ccd5ae] rounded-lg bg-white px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/20 transition-colors"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                />
+      <div className="border border-[#ccd5ae] rounded-xl bg-white overflow-hidden">
+        {/* Tab bar */}
+        <div className="flex border-b border-[#ccd5ae]">
+          {(["stock", "options"] as const).map(tab => (
+            <button key={tab} onClick={() => setTradeTab(tab)}
+              className={`flex-1 py-2 text-xs font-bold uppercase tracking-wide transition-colors ${
+                tradeTab === tab ? "bg-[#1F1A14] text-white" : "text-slate-500 hover:bg-[#e9edc9]"
+              }`}>
+              {tab === "stock" ? "📈 Stocks" : "⚡ Options"}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4 flex flex-col gap-3">
+          {!user ? (
+            <div className="text-center">
+              <p className="text-xs text-slate-500 mb-2">{rd.loginToTrade}</p>
+              <OffsetButton variant="lime" onClick={() => setShowLoginPrompt(true)}>เข้าสู่ระบบ</OffsetButton>
+            </div>
+          ) : tradeTab === "stock" ? (
+            <>
+              {/* Order type toggle */}
+              <div className="flex gap-1.5">
+                {(["market", "limit"] as const).map(ot => (
+                  <button key={ot} onClick={() => setOrderType(ot)}
+                    className={`flex-1 py-1 text-[10px] font-bold uppercase rounded-lg border transition-colors ${
+                      orderType === ot ? "bg-[#1F1A14] text-white border-[#1F1A14]" : "border-[#ccd5ae] text-slate-500"
+                    }`}>
+                    {ot === "market" ? "Market" : "Limit"}
+                  </button>
+                ))}
               </div>
-              <div className="text-right text-xs">
-                <div className="text-slate-500">ราคา</div>
-                <div className="font-bold text-slate-900" style={{ fontFamily: "var(--font-mono)" }}>
-                  ${livePrice.toFixed(2)}
+
+              {/* Input mode toggle */}
+              <div className="flex gap-1.5">
+                {([false, true] as const).map(dm => (
+                  <button key={String(dm)} onClick={() => setDollarMode(dm)}
+                    className={`flex-1 py-1 text-[10px] font-bold uppercase rounded-lg border transition-colors ${
+                      dollarMode === dm ? "bg-violet-600 text-white border-violet-600" : "border-[#ccd5ae] text-slate-500"
+                    }`}>
+                    {dm ? "$ Amount" : "# Shares"}
+                  </button>
+                ))}
+              </div>
+
+              {/* Main input */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  {dollarMode ? (
+                    <input type="number" inputMode="decimal" placeholder="จำนวนเงิน USD"
+                      value={dollarAmt} onChange={e => setDollarAmt(e.target.value)}
+                      className="w-full border border-[#ccd5ae] rounded-lg px-2 py-1.5 text-xs font-bold bg-white focus:outline-none focus:border-emerald-500"
+                      style={{ fontFamily: "var(--font-mono)" }} />
+                  ) : (
+                    <input type="number" inputMode="decimal" placeholder="จำนวนหุ้น"
+                      value={shares} onChange={e => setShares(e.target.value)}
+                      className="w-full border border-[#ccd5ae] rounded-lg px-2 py-1.5 text-xs font-bold bg-white focus:outline-none focus:border-emerald-500"
+                      style={{ fontFamily: "var(--font-mono)" }} />
+                  )}
                 </div>
-                <div className="text-xs text-slate-400">
-                  รวม ${(parseFloat(shares || "0") * livePrice).toFixed(2)}
+                <div className="text-right text-xs flex-shrink-0">
+                  <div className="text-slate-400">ราคา</div>
+                  <div className="font-bold" style={{ fontFamily: "var(--font-mono)" }}>${livePrice.toFixed(2)}</div>
+                  <div className="text-slate-400">≈ ${(calcShares() * livePrice).toFixed(2)}</div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => void executeTrade("BUY")}
-                disabled={trading}
-                className="flex-1 py-2.5 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-xs uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
-              >
-                BUY
+
+              {/* Limit price input */}
+              {orderType === "limit" && (
+                <input type="number" inputMode="decimal" placeholder="ราคา Limit $"
+                  value={limitPrice} onChange={e => setLimitPrice(e.target.value)}
+                  className="w-full border border-amber-300 rounded-lg px-2 py-1.5 text-xs font-bold bg-amber-50 focus:outline-none focus:border-amber-500"
+                  style={{ fontFamily: "var(--font-mono)" }} />
+              )}
+
+              <div className="flex gap-2">
+                <button onClick={() => void executeTrade("BUY")} disabled={trading}
+                  className="flex-1 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-xs rounded-lg disabled:opacity-50 transition-colors">
+                  BUY
+                </button>
+                <button onClick={() => void executeTrade("SELL")} disabled={trading}
+                  className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg disabled:opacity-50 transition-colors">
+                  SELL
+                </button>
+              </div>
+
+              <div className="text-xs flex justify-between text-slate-500">
+                <span>USD: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>${user.cashUsd.toFixed(2)}</span></span>
+                <span>THB: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>฿{user.cashThb.toLocaleString()}</span></span>
+              </div>
+            </>
+          ) : (
+            /* Options tab */
+            <>
+              <div className="flex gap-1.5">
+                {(["CALL", "PUT"] as const).map(ot => (
+                  <button key={ot} onClick={() => setOptType(ot)}
+                    className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-colors ${
+                      optType === ot
+                        ? ot === "CALL" ? "bg-emerald-600 text-white border-emerald-600" : "bg-red-600 text-white border-red-600"
+                        : "border-[#ccd5ae] text-slate-500"
+                    }`}>
+                    {ot === "CALL" ? "📈 CALL" : "📉 PUT"}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <p className="text-slate-400 mb-0.5">Strike Price $</p>
+                  <input type="number" value={optStrike} onChange={e => setOptStrike(e.target.value)}
+                    placeholder={livePrice.toFixed(0)}
+                    className="w-full border border-[#ccd5ae] rounded-lg px-2 py-1.5 font-bold bg-white focus:outline-none focus:border-violet-500"
+                    style={{ fontFamily: "var(--font-mono)" }} />
+                </div>
+                <div>
+                  <p className="text-slate-400 mb-0.5">Contracts (×100)</p>
+                  <input type="number" value={optContracts} onChange={e => setOptContracts(e.target.value)}
+                    min="1" placeholder="1"
+                    className="w-full border border-[#ccd5ae] rounded-lg px-2 py-1.5 font-bold bg-white focus:outline-none focus:border-violet-500"
+                    style={{ fontFamily: "var(--font-mono)" }} />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-400 mb-0.5">Expiry Date</p>
+                <input type="date" value={optExpiry} onChange={e => setOptExpiry(e.target.value)}
+                  className="w-full border border-[#ccd5ae] rounded-lg px-2 py-1.5 text-xs bg-white focus:outline-none focus:border-violet-500" />
+              </div>
+
+              {/* Premium estimate */}
+              {optStrike && livePrice > 0 && (() => {
+                const s = parseFloat(optStrike);
+                if (isNaN(s)) return null;
+                const intrinsic = optType === "CALL" ? Math.max(0, livePrice - s) : Math.max(0, s - livePrice);
+                const premium   = intrinsic + livePrice * 0.05;
+                const total     = premium * (parseInt(optContracts) || 1) * 100;
+                const itm       = optType === "CALL" ? livePrice > s : livePrice < s;
+                return (
+                  <div className="bg-[#e9edc9] rounded-lg p-2 text-xs flex flex-col gap-0.5">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Premium (est.)</span>
+                      <span className="font-bold">${premium.toFixed(2)}/share</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Total Cost</span>
+                      <span className="font-bold">${total.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Status</span>
+                      <span className={`font-bold ${itm ? "text-emerald-600" : "text-slate-500"}`}>
+                        {itm ? "In The Money" : "Out of The Money"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <button onClick={() => void buyOption()} disabled={trading}
+                className={`w-full py-2.5 font-bold text-xs rounded-lg text-white disabled:opacity-50 transition-colors ${
+                  optType === "CALL" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+                }`}>
+                {trading ? "..." : `Buy ${optType} Option`}
               </button>
-              <button
-                onClick={() => void executeTrade("SELL")}
-                disabled={trading}
-                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
-              >
-                SELL
-              </button>
-            </div>
-            <div className="text-xs flex justify-between text-slate-500">
-              <span>USD: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>${user.cashUsd.toFixed(2)}</span></span>
-              <span>THB: <span className="font-bold text-slate-800" style={{ fontFamily: "var(--font-mono)" }}>฿{user.cashThb.toLocaleString()}</span></span>
-            </div>
-          </>
-        )}
-        {tradeMsg && (
-          <p className="text-xs font-bold text-center" style={{ color: tradeMsg.includes("✓") ? "#16A34A" : "#DC2626" }}>
-            {tradeMsg}
-          </p>
-        )}
-        <p className="text-xs text-slate-400 text-center">จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน</p>
+
+              <p className="text-[10px] text-slate-400">Premium คำนวณแบบ simplified (Intrinsic + 5% time value) · จำลองเท่านั้น</p>
+            </>
+          )}
+
+          {tradeMsg && (
+            <p className="text-xs font-bold text-center" style={{ color: tradeMsg.includes("✓") ? "#16A34A" : "#DC2626" }}>
+              {tradeMsg}
+            </p>
+          )}
+          <p className="text-xs text-slate-400 text-center">จำลองเท่านั้น · ไม่ใช้เงินจริง · ไม่ใช่คำแนะนำการลงทุน</p>
+        </div>
       </div>
 
       {/* AI Reasons */}

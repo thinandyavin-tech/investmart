@@ -42,6 +42,8 @@ model User {
   portfolioSnapshots PortfolioSnapshot[]
   pushSubscriptions  PushSubscription[]
   journeyProgress    JourneyProgress?
+  limitOrders        LimitOrder[]
+  optionPositions    OptionPosition[]
 }
 
 model Account {
@@ -288,6 +290,45 @@ model TradeThesis {
 
   @@index([userId])
   @@index([tradeId])
+}
+
+// Paper-trading limit orders — filled when price crosses threshold.
+model LimitOrder {
+  id          String    @id @default(cuid())
+  userId      String
+  ticker      String
+  side        String    // "BUY" | "SELL"
+  shares      Float
+  limitPrice  Float
+  status      String    @default("PENDING") // "PENDING" | "FILLED" | "CANCELLED"
+  createdAt   DateTime  @default(now())
+  filledAt    DateTime?
+  filledPrice Float?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([userId, status])
+}
+
+// Paper-trading options positions (simulated Call/Put).
+model OptionPosition {
+  id          String    @id @default(cuid())
+  userId      String
+  ticker      String
+  optionType  String    // "CALL" | "PUT"
+  strikePrice Float
+  expiry      DateTime
+  contracts   Int       // each contract covers 100 shares
+  premium     Float     // price paid per share at open
+  totalCost   Float     // premium * contracts * 100
+  status      String    @default("OPEN") // "OPEN" | "CLOSED" | "EXPIRED"
+  createdAt   DateTime  @default(now())
+  closedAt    DateTime?
+  closedPrice Float?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([userId, status])
 }
 
 // Pre-computed radar scan results — one row per universe (SP500 / NASDAQ100 / CEO).
