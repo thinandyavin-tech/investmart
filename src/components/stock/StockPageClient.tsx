@@ -538,6 +538,21 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         <span className="text-slate-400 text-sm flex-shrink-0">→</span>
       </Link>
 
+      {/* Chart Structure CTA */}
+      <Link
+        href={`/chart/${ticker}`}
+        className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] hover:border-slate-400 hover:bg-[#fefae0] transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-slate-600 font-bold text-base">📊</span>
+          <div>
+            <p className="text-sm font-bold text-slate-800">Chart Structure</p>
+            <p className="text-xs text-slate-500">Swing highs/lows · S/R · Supply & Demand zones · Martin reads</p>
+          </div>
+        </div>
+        <span className="text-slate-400 text-sm flex-shrink-0">→</span>
+      </Link>
+
       {/* Chart Analysis CTA */}
       <Link
         href={`/analyze?ticker=${ticker}&timeframe=3M`}
