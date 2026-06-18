@@ -8,7 +8,7 @@ import {
   ArrowLeftRight, ClipboardList, Trophy, Search, Eye,
   SlidersHorizontal, Calculator, Crosshair, LayoutGrid, Users,
   Shield, SquarePen, Globe, TrendingUp, CalendarDays, Compass,
-  BookOpen, Route, BookMarked, Layers, Menu,
+  BookOpen, Route, BookMarked, Layers,
 } from "lucide-react";
 import { RetroMenu }        from "@/components/RetroMenu";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -138,7 +138,7 @@ export function IconRail() {
           onMouseEnter={e => (e.currentTarget.style.background = "#7C3AED")}
           onMouseLeave={e => (e.currentTarget.style.background = "#8B5CF6")}
         >
-          <Menu size={18} color="#fff" strokeWidth={2.5} />
+          <Layers size={18} color="#fff" strokeWidth={2.5} />
           <span className="text-[8px] font-bold tracking-wider text-white/90 uppercase">Menu</span>
           {/* Hover tooltip */}
           <span
