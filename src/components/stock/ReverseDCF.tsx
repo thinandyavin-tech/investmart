@@ -265,9 +265,6 @@ export function ReverseDCF({ ticker }: ReverseDCFProps) {
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900">
               Reverse DCF · Expectations Gauge
             </h2>
-            <span className="text-xs px-1.5 py-0.5 bg-[#e9edc9] text-slate-500 rounded-md font-semibold">
-              by Earthh Evans
-            </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">ราคาหุ้นต้องการ CAGR เท่าใด vs ที่เป็นไปได้จริง</p>
         </div>
@@ -518,7 +515,7 @@ function Caveats({ industry }: { industry: string | null }) {
         <li>• หุ้น cyclical: ระวัง trough→peak CAGR ประวัติ — ใช้ 5yr/full-cycle แทน</li>
         <li>• TAM เป็นตัวเลขที่ถกเถียงได้มากที่สุด — plausible CAGR ขึ้นอยู่กับ assumption นี้มาก</li>
         <li>• &quot;แพง&quot; ≠ ขาย — หมายถึงราคาต้องการความสมบูรณ์แบบ; &quot;ถูก&quot; ≠ ซื้อ — ตรวจสอบว่าถูกเพราะธุรกิจมีปัญหา หรือตลาดยังไม่เห็น thesis</li>
-        <li>• ผลลัพธ์คือ expectations gauge ไม่ใช่ price target · method by Earthh Evans</li>
+        <li>• ผลลัพธ์คือ expectations gauge ไม่ใช่ price target</li>
       </ul>
     </div>
   );
