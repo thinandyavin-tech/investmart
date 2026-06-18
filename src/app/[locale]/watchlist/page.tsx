@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { useLiveQuotes } from "@/hooks/useLiveQuotes";
+import { AskMartinButton } from "@/components/ai/AskMartinButton";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
@@ -170,6 +171,20 @@ export default function WatchlistPage() {
                     )}
 
                     <div className="flex gap-1.5 flex-shrink-0">
+                      <AskMartinButton
+                        q={`Tell me about $${item.ticker} — current price action, key catalysts, and what to watch.`}
+                        className="text-xs px-1.5 py-0.5 border border-violet-300 text-violet-600 font-bold hover:bg-violet-600 hover:text-white transition-colors"
+                        aria-label={`Ask Martin about ${item.ticker}`}
+                      >
+                        ✦
+                      </AskMartinButton>
+                      <Link
+                        href={`/alerts?ticker=${item.ticker}`}
+                        className="text-xs px-1.5 py-0.5 border border-[#ccd5ae] text-[#8A8378] hover:border-[#1F1A14] hover:text-[#1F1A14] transition-colors"
+                        title="ตั้งแจ้งเตือนราคา"
+                      >
+                        🔔
+                      </Link>
                       <Link
                         href={`/radar?ticker=${item.ticker}`}
                         className="text-xs px-1.5 py-0.5 border border-[#1F1A14] font-bold hover:bg-[#1F1A14] hover:text-white transition-colors"

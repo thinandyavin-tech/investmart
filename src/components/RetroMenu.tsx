@@ -48,6 +48,8 @@ export function RetroMenu({ onClose, fromMobile = false }: RetroMenuProps) {
     { href: "/profile/share", label: t.nav.shareProfile,icon: "🔗" },
     { href: "/bookmarks",     label: "Bookmarks",        icon: "🔖", soon: true },
     { href: "/watchlist",     label: t.nav.watchlist,   icon: "👁" },
+    { href: "/alerts",        label: "แจ้งเตือนราคา",  icon: "🔔" },
+    { href: "/martin",        label: "ถาม Martin AI",  icon: "✦" },
     { href: "/exchange",      label: t.nav.exchange,    icon: "💱" },
     { href: "/history",       label: t.nav.history,     icon: "📋" },
     { href: "/learn",         label: t.nav.learn,       icon: "📚" },

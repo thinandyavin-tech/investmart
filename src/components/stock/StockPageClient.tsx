@@ -522,6 +522,21 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         )}
       </div>
 
+      {/* Compare CTA */}
+      <Link
+        href={`/compare?tickers=${ticker}`}
+        className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-[#faedcd] border border-[#ccd5ae] hover:border-slate-400 hover:bg-[#fefae0] transition-colors"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="text-slate-500 font-bold text-base">⇌</span>
+          <div>
+            <p className="text-sm font-bold text-slate-800">เทียบกับหุ้นอื่น</p>
+            <p className="text-xs text-slate-500">P/E, Growth, Margins, Beta side-by-side</p>
+          </div>
+        </div>
+        <span className="text-slate-400 text-sm flex-shrink-0">→</span>
+      </Link>
+
       {/* Chart Analysis CTA */}
       <Link
         href={`/analyze?ticker=${ticker}&timeframe=3M`}

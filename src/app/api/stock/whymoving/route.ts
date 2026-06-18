@@ -105,16 +105,26 @@ ${newsBlock}
 
 อธิบายเป็นภาษาไทยว่าทำไมราคาหุ้นนี้ถึงเคลื่อนไหวแบบนี้วันนี้`;
 
-  try {
-    const reason = await generateText(prompt, SYSTEM_PROMPT, {
-      maxTokens:   280,
-      temperature: 0.25,
-    });
+  const MAX_ATTEMPTS = 3;
+  let lastErr = "";
+  let reason  = "";
 
-    const clean = reason.trim();
-    cache.set(symbol, { reason: clean, ts: Date.now() });
-    return NextResponse.json({ reason: clean, symbol });
-  } catch {
-    return NextResponse.json({ error: "AI unavailable" }, { status: 503 });
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      reason = (await generateText(prompt, SYSTEM_PROMPT, {
+        maxTokens:   500,
+        temperature: 0.25,
+      })).trim();
+      if (reason.length > 10) break;
+      throw new Error("empty response");
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : String(e);
+      console.warn(`[whymoving] attempt ${attempt}/${MAX_ATTEMPTS}: ${lastErr.slice(0, 80)}`);
+      if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 600 * attempt));
+    }
   }
+
+  if (!reason) return NextResponse.json({ error: "AI unavailable" }, { status: 503 });
+  cache.set(symbol, { reason, ts: Date.now() });
+  return NextResponse.json({ reason, symbol });
 }

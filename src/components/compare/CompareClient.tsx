@@ -1,11 +1,54 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 
 import type { CompareRow } from "@/lib/compareTypes";
 import { METRICS, MobileCard } from "@/components/compare/compareMetrics";
+
+function CompareChart({ tickers }: { tickers: string[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || tickers.length === 0) return;
+    el.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "tradingview-widget-container__widget";
+    el.appendChild(wrapper);
+
+    const compareSymbols = tickers.slice(1).map(t => ({ symbol: t, title: t }));
+
+    const script = document.createElement("script");
+    script.type    = "text/javascript";
+    script.async   = true;
+    script.src     = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.innerHTML = JSON.stringify({
+      autosize:          true,
+      symbol:            tickers[0],
+      interval:          "D",
+      timezone:          "America/New_York",
+      theme:             "light",
+      style:             "2",
+      locale:            "en",
+      hide_top_toolbar:  false,
+      save_image:        false,
+      hide_volume:       true,
+      studies:           ["RSI@tv-basicstudies"],
+      compare_symbols:   compareSymbols,
+      container_id:      `tv_compare_${tickers.join("_")}`,
+    });
+    el.appendChild(script);
+    return () => { el.innerHTML = ""; };
+  }, [tickers.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (tickers.length === 0) return null;
+  return (
+    <div ref={ref} className="tradingview-widget-container w-full" style={{ height: 380 }} />
+  );
+}
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 const MAX       = 3;
@@ -143,6 +186,15 @@ export function CompareClient({ initialTickers }: CompareClientProps) {
 
       {tickers.length > 0 && (
         <>
+          {/* TradingView comparison chart */}
+          <div className="border border-[#1F1A14] mb-6 overflow-hidden" style={{ boxShadow: "3px 3px 0 #1F1A14" }}>
+            <div className="px-3 py-2 bg-[#1F1A14] flex items-center gap-2">
+              <span className="text-xs font-bold text-white uppercase tracking-widest">Price Chart</span>
+              <span className="text-xs text-[#8A8378]">{tickers.join(" vs ")}</span>
+            </div>
+            <CompareChart tickers={tickers} />
+          </div>
+
           {/* Desktop: sticky-column table */}
           <div
             className="hidden sm:block overflow-x-auto border border-[#1F1A14]"
