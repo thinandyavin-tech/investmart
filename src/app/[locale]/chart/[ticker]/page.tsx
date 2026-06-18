@@ -1,13 +1,7 @@
-import { Metadata } from "next";
-import { Suspense } from "react";
+import type { Metadata } from "next";
 import { AppShell } from "@/components/AppShell";
 import { Link } from "@/i18n/navigation";
-import dynamic from "next/dynamic";
-
-const ChartStructureClient = dynamic(
-  () => import("@/components/chart/ChartStructureClient").then(m => m.ChartStructureClient),
-  { ssr: false },
-);
+import { ChartStructureWrapper } from "@/components/chart/ChartStructureWrapper";
 
 interface Props { params: Promise<{ ticker: string }> }
 
@@ -50,9 +44,7 @@ export default async function ChartPage({ params }: Props) {
         </div>
 
         {/* Chart */}
-        <Suspense fallback={<div className="h-96 bg-[#e9edc9] animate-pulse rounded-xl" />}>
-          <ChartStructureClient ticker={upper} />
-        </Suspense>
+        <ChartStructureWrapper ticker={upper} />
       </div>
     </AppShell>
   );
