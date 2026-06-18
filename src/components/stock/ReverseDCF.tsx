@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+
 import { Card } from "@/components/Card";
 import { computeRdcf, type RdcfResult, type RdcfSuccess } from "@/lib/rdcfMath";
 import { PERSONAS, type RdcfPreset } from "@/lib/personasData";

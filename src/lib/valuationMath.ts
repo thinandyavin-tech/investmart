@@ -1,7 +1,7 @@
 /**
  * Multiple-Growth 5Y model — EPS × P/E valuation.
  *
- * Replicates the "Multiple-Growth 5Y Template" by Earthh Evans / My Money Toolkit.
+ * Multiple-Growth 5Y Template — EPS-based valuation model.
  * Model: project EPS N years forward at CAGR g, multiply by target P/E,
  * discount back to present at cost-of-equity r.
  *
