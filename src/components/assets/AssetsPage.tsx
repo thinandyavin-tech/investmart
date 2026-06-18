@@ -7,6 +7,7 @@ import { useI18n }          from "@/lib/i18n";
 import { BuySellModal }     from "@/components/assets/BuySellModal";
 import { PortfolioAnalytics } from "@/components/assets/PortfolioAnalytics";
 import { ThesisCapture }    from "@/components/journal/ThesisCapture";
+import { StockLogo }        from "@/components/StockLogo";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
 
 type SortKey = "value" | "pnl" | "change1d" | "weight" | "name";
@@ -72,22 +73,9 @@ function Sparkline({ change1D }: { change1D: number }) {
   );
 }
 
+// TickerLogo → delegated to StockLogo (three-tier: provided URL → Parqet → avatar)
 function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: string | null; size?: number }) {
-  const [err, setErr] = useState(false);
-  if (logoUrl && !err) {
-    return (
-      <img src={logoUrl} alt="" width={size} height={size}
-        className="rounded-md object-contain bg-white flex-shrink-0"
-        onError={() => setErr(true)} />
-    );
-  }
-  return (
-    <div aria-hidden="true"
-      className="rounded-md bg-slate-100 flex items-center justify-center font-bold text-slate-500 flex-shrink-0"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.38) }}>
-      {ticker[0]}
-    </div>
-  );
+  return <StockLogo ticker={ticker} logoUrl={logoUrl} size={size} radius={6} />;
 }
 
 function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number; onTrade: (t: string, s: "BUY" | "SELL") => void }) {

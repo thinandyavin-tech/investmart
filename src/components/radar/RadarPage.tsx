@@ -5,9 +5,10 @@ import {
 } from "react";
 import { Link } from "@/i18n/navigation";
 import { useI18n } from "@/lib/i18n";
-import { CategoryBadge } from "@/components/radar/CategoryBadge";
-import { ScoreBadge } from "@/components/radar/ScoreBadge";
+import { CategoryBadge }  from "@/components/radar/CategoryBadge";
+import { ScoreBadge }     from "@/components/radar/ScoreBadge";
 import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
+import { StockLogo }      from "@/components/StockLogo";
 import type { StockMetrics, CapSize } from "@/lib/momentum";
 import type { Universe } from "@/lib/stockUniverse";
 import { ALL_SECTORS } from "@/lib/stockUniverse";
@@ -100,12 +101,15 @@ function StockRow({ s, rank, selected, onSelect }: StockRowProps) {
       aria-label={`${rank}. ${s.ticker} ${s.companyName} — ${fmtPct(s.change1D)} วันนี้`}
     >
       {/* Rank */}
-      <span className="w-6 text-[10px] font-mono text-slate-400 text-right flex-shrink-0">
+      <span className="w-5 text-[10px] font-mono text-slate-400 text-right flex-shrink-0">
         {rank}
       </span>
 
+      {/* Logo */}
+      <StockLogo ticker={s.ticker} name={s.companyName} size={28} radius={6} className="flex-shrink-0" />
+
       {/* Ticker + company */}
-      <div className="w-16 sm:w-20 flex-shrink-0">
+      <div className="w-14 sm:w-18 flex-shrink-0">
         <div className="text-xs font-bold font-mono text-slate-900">{s.ticker}</div>
         {s.isNew && (
           <span className="text-[9px] font-semibold text-violet-600 uppercase tracking-wide">new</span>

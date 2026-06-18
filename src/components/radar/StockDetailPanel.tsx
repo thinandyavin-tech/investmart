@@ -12,6 +12,7 @@ import { WhyMovingCard } from "@/components/stock/WhyMovingCard";
 import { useUser }        from "@/lib/userContext";
 import { useI18n }        from "@/lib/i18n";
 import { ThesisCapture }  from "@/components/journal/ThesisCapture";
+import { StockLogo }      from "@/components/StockLogo";
 import { useLiveQuote } from "@/hooks/useLiveQuote";
 import type { StockMetrics } from "@/lib/momentum";
 import type { MaConfig } from "@/components/PriceChart";
@@ -204,6 +205,7 @@ export function StockDetailPanel({ stock, timeframe: initialTf }: StockDetailPan
 
       {/* Header */}
       <div className="flex items-start gap-3" style={{ background: flashBg, transition: "background 0.3s" }}>
+        <StockLogo ticker={stock.ticker} name={profile?.name ?? stock.companyName} size={40} radius={8} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <p className="text-xs text-slate-500 uppercase tracking-wide truncate">

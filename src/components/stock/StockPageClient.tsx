@@ -13,6 +13,7 @@ import { StockInfographic } from "@/components/stock/StockInfographic";
 import { useUser } from "@/lib/userContext";
 import { useI18n } from "@/lib/i18n";
 import { PushNotificationSetup } from "@/components/PushNotificationSetup";
+import { StockLogo }             from "@/components/StockLogo";
 import { TradingViewChart } from "@/components/tradingview/TradingViewChart";
 
 const PriceChart = dynamic(
@@ -36,6 +37,7 @@ interface ProfileData {
   name?:                 string;
   finnhubIndustry?:      string;
   weburl?:               string;
+  logo?:                 string;
   marketCapitalization?: number;
   description?:          string;
   country?:              string;
@@ -226,7 +228,9 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
         ) : (
           <>
             <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
+              <div className="min-w-0 flex items-start gap-3">
+                <StockLogo ticker={ticker} name={companyName} logoUrl={profile?.logo ?? null} size={44} radius={10} />
+                <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-0.5">
                   <h1 className="text-sm font-bold truncate text-slate-900">{companyName}</h1>
                   {profile?.finnhubIndustry && (
@@ -259,7 +263,8 @@ export function StockPageClient({ ticker }: StockPageClientProps) {
                   {profile?.exchange && ` · ${profile.exchange}`}
                   {profile?.country  && ` · ${profile.country}`}
                 </p>
-              </div>
+              </div>{/* closes inner logo+text div */}
+              </div>{/* closes flex items-start gap-3 */}
 
               <div className="text-right flex-shrink-0">
                 {quote ? (
