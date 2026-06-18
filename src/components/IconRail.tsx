@@ -8,7 +8,7 @@ import {
   ArrowLeftRight, ClipboardList, Trophy, Search, Eye,
   SlidersHorizontal, Calculator, Crosshair, LayoutGrid, Users,
   Shield, SquarePen, Globe, TrendingUp, CalendarDays, Compass,
-  BookOpen, Route, BookMarked, Layers,
+  BookOpen, Route, BookMarked, Layers, BellRing,
 } from "lucide-react";
 import { RetroMenu }        from "@/components/RetroMenu";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -69,7 +69,8 @@ function Divider({ label }: { label: string }) {
 export function IconRail() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user }    = useUser();
-  const { t }       = useI18n();
+  const { t, lang } = useI18n();
+  const isEn        = lang === "en";
   const pathname    = usePathname();
   const isAdmin     = user?.isAdmin === true;
 
@@ -106,6 +107,7 @@ export function IconRail() {
   const SOCIAL: NavItem[] = [
     { href: "/leaderboard",label: t.nav.leaderboard,icon: <Trophy size={SZ} /> },
     { href: "/watchlist",  label: t.nav.watchlist,  icon: <Eye size={SZ} /> },
+    { href: "/alerts",     label: isEn ? "Alerts" : "แจ้งเตือน", icon: <BellRing size={SZ} /> },
     { href: "/exchange",   label: t.nav.exchange,   icon: <ArrowLeftRight size={SZ} /> },
     { href: "/history",    label: t.nav.history,    icon: <ClipboardList size={SZ} /> },
     { href: "/journal",    label: t.nav.journal,    icon: <BookOpen size={SZ} /> },

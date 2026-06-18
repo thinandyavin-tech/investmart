@@ -210,6 +210,13 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
           <p className="text-xs text-[#8A8378] italic border-t border-[#e9edc9] pt-2">
             {aiOutlook.disclaimer}
           </p>
+          <div className="flex flex-wrap gap-1 pt-1">
+            {["Finnhub · Price & Metrics", "Finnhub · News Headlines", "Finnhub · Analyst Ratings"].map(src => (
+              <span key={src} className="text-[9px] px-1.5 py-0.5 border border-[#ccd5ae] text-[#8A8378] rounded">
+                📊 {src}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </Card>

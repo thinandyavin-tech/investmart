@@ -20,10 +20,12 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useI18n } from "@/lib/i18n";
 import { JourneyProgressBar } from "@/components/journey/JourneyProgressBar";
+import { MacroPulse }         from "@/components/home/MacroPulse";
 
 export function HomeMobile() {
   const { user, loading } = useUser();
   const { t, lang } = useI18n();
+  const isEn = lang === "en";
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen]   = useState(false);
   const [noticeVisible, setNoticeVisible] = useState(true);
@@ -37,6 +39,7 @@ export function HomeMobile() {
     { href: "/history",     label: t.home.quickActions.history,      icon: "📋" },
     { href: "/leaderboard", label: t.home.quickActions.leaderboard,  icon: "🏆" },
     { href: "/watchlist",   label: t.home.quickActions.watchlist,    icon: "👁️" },
+    { href: "/alerts",      label: isEn ? "Alerts" : "แจ้งเตือน",   icon: "🔔" },
     { href: "/mail",        label: t.home.quickActions.mail,         icon: "✉️" },
   ];
 
@@ -145,6 +148,7 @@ export function HomeMobile() {
       <JourneyProgressBar />
 
       <DailyDigestCard />
+      <MacroPulse />
       <TrendingTickerBar />
       <div className="mx-3 mb-3">
         <EarningsCalendarCard />

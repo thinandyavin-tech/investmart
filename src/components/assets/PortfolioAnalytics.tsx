@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
+import type { PortfolioAnalysis } from "@/app/api/portfolio/ai-analysis/route";
 
 const CHART_COLORS = [
   "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6",
@@ -151,6 +152,125 @@ function PerformanceChart({ snapshots }: { snapshots: Snapshot[] }) {
   );
 }
 
+function MartinReviewCard({ holdingCount }: { holdingCount: number }) {
+  const [data,    setData]    = useState<PortfolioAnalysis | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone]    = useState(false);
+
+  async function load(refresh = false) {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/portfolio/ai-analysis${refresh ? "?refresh=true" : ""}`);
+      const json = (await res.json()) as PortfolioAnalysis & { error?: string };
+      if (!json.error) setData(json);
+    } catch { /* ignore */ } finally {
+      setLoading(false);
+      setDone(true);
+    }
+  }
+
+  const score = data?.healthScore ?? 0;
+  const scoreColor = score >= 70 ? "#16A34A" : score >= 40 ? "#D97706" : "#DC2626";
+  const scoreLabel = score >= 70 ? "แข็งแกร่ง" : score >= 40 ? "ปานกลาง" : "ต้องปรับ";
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#ccd5ae] overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-900">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-slate-800 border border-violet-500/40 flex items-center justify-center">
+            <span className="text-violet-400 text-xs">✦</span>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-white">Martin · วิเคราะห์พอร์ต</p>
+            <p className="text-xs text-slate-400">AI ตรวจสุขภาพพอร์ตทั้งหมด · ไม่ใช่คำแนะนำลงทุน</p>
+          </div>
+        </div>
+        {done && (
+          <button
+            onClick={() => void load(true)}
+            className="text-xs text-slate-400 hover:text-white transition-colors"
+            aria-label="รีเฟรชการวิเคราะห์"
+          >
+            ↺
+          </button>
+        )}
+      </div>
+
+      <div className="p-4">
+        {!done && !loading && (
+          holdingCount === 0 ? (
+            <p className="text-xs text-slate-400 text-center py-4">ซื้อหุ้นแรกก่อนเพื่อให้ Martin วิเคราะห์</p>
+          ) : (
+            <button
+              onClick={() => void load()}
+              className="w-full py-2.5 text-xs font-bold text-violet-700 border border-violet-200 rounded-xl bg-violet-50 hover:bg-violet-100 transition-colors"
+            >
+              ✦ ให้ Martin วิเคราะห์พอร์ต {holdingCount} หุ้น
+            </button>
+          )
+        )}
+
+        {loading && (
+          <div className="flex flex-col gap-2 py-2">
+            {[80, 60, 70].map(w => (
+              <div key={w} className="h-2 bg-[#e9edc9] animate-pulse rounded" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+        )}
+
+        {data && !loading && (
+          <div className="flex flex-col gap-3">
+            {/* Health score */}
+            <div className="flex items-center gap-3">
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                style={{ background: scoreColor }}
+              >
+                {score}
+              </div>
+              <div>
+                <p className="text-xs font-bold" style={{ color: scoreColor }}>{scoreLabel}</p>
+                <p className="text-xs text-slate-700 leading-snug">{data.headline}</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">{data.summary}</p>
+
+            {data.highlights.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">จุดเด่น</p>
+                {data.highlights.map((h, i) => (
+                  <div key={i} className="flex gap-1.5 text-xs text-slate-700 mb-0.5">
+                    <span className="text-emerald-500 flex-shrink-0">✓</span>
+                    <span>{h}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {data.risks.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">ความเสี่ยง</p>
+                {data.risks.map((r, i) => (
+                  <div key={i} className="flex gap-1.5 text-xs text-slate-700 mb-0.5">
+                    <span className="text-red-500 flex-shrink-0">!</span>
+                    <span>{r}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-[9px] text-slate-400 border-t border-[#e9edc9] pt-2">
+              📊 ข้อมูล: Finnhub (ราคาปัจจุบัน) · เพื่อการศึกษาเท่านั้น
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StatRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="bg-[#e9edc9] rounded-xl p-3">
@@ -206,6 +326,9 @@ export function PortfolioAnalytics({ data }: PortfolioAnalyticsProps) {
 
   return (
     <div className="space-y-5 pb-24 lg:pb-8">
+      {/* Martin AI portfolio review */}
+      <MartinReviewCard holdingCount={holdings.length} />
+
       {/* Allocation donut */}
       <div className="bg-white rounded-2xl border border-[#ccd5ae] p-4">
         <div className="flex items-center justify-between mb-4">
