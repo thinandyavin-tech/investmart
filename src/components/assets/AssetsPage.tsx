@@ -8,6 +8,7 @@ import { BuySellModal }     from "@/components/assets/BuySellModal";
 import { PortfolioAnalytics } from "@/components/assets/PortfolioAnalytics";
 import { ThesisCapture }    from "@/components/journal/ThesisCapture";
 import { StockLogo }        from "@/components/StockLogo";
+import { InfoTooltip }      from "@/components/InfoTooltip";
 import type { AssetsPayload, EnrichedHolding } from "@/app/api/portfolio/assets/route";
 
 type SortKey = "value" | "pnl" | "change1d" | "weight" | "name";
@@ -112,14 +113,17 @@ function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number
       {open && (
         <div className="px-4 pb-4 pt-1 bg-[#e9edc9] space-y-3">
           <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            {[
-              [ac.row.currentPrice, usd(h.currentPrice)],
-              [ac.avgCost,          usd(h.avgCost)],
-              [ac.row.totalCost,    usd(h.totalCostUsd)],
-              [ac.shares,           ac.row.heldShares(h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 }))],
-            ].map(([label, val]) => (
-              <div key={label as string} className="bg-[#faedcd] rounded-xl p-2.5 border border-[#ccd5ae]">
-                <div className="text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">{label}</div>
+            {([
+              [ac.row.currentPrice, usd(h.currentPrice), "underlying-price"],
+              [ac.avgCost,          usd(h.avgCost),      "avg-cost"],
+              [ac.row.totalCost,    usd(h.totalCostUsd), "total-cost"],
+              [ac.shares,           ac.row.heldShares(h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })), null],
+            ] as [string, string, string | null][]).map(([label, val, termId]) => (
+              <div key={label} className="bg-[#faedcd] rounded-xl p-2.5 border border-[#ccd5ae]">
+                <div className="flex items-center gap-1 text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">
+                  {label}
+                  {termId && <InfoTooltip termId={termId} size={12} />}
+                </div>
                 <div className="font-mono font-bold text-slate-800 text-xs">{val}</div>
               </div>
             ))}
@@ -383,6 +387,7 @@ export function AssetsPage() {
           {/* Label row */}
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">มูลค่าพอร์ตทั้งหมด</span>
+            <InfoTooltip termId="total-asset-value" size={13} />
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 font-semibold">เงินเสมือน</span>
             <span className="text-xs text-slate-400 ml-auto">อัพเดต {asOfTime}</span>
           </div>
@@ -402,14 +407,14 @@ export function AssetsPage() {
               <p className={`text-xs ${clr(change1DPct)}`}>{pctFmt(change1DPct)}</p>
             </div>
             <div className="bg-[#faedcd] rounded-xl px-3 py-2.5 border border-[#ccd5ae]">
-              <p className="text-xs text-slate-500 mb-0.5">กำไร/ขาดทุนรวม</p>
+              <p className="text-xs text-slate-500 mb-0.5 flex items-center gap-1">กำไร/ขาดทุนรวม <InfoTooltip termId="unrealized-pnl" size={12} /></p>
               <p className={`text-base font-bold font-mono ${clr(unrealizedPnlThb)}`}>
                 {unrealizedPnlThb >= 0 ? "+" : ""}{thb(unrealizedPnlThb)}
               </p>
               <p className={`text-xs ${clr(unrealizedPnlPct)}`}>{pctFmt(unrealizedPnlPct)}</p>
             </div>
             <div className="sm:flex-none bg-[#faedcd] rounded-xl px-3 py-2.5 border border-[#ccd5ae] col-span-2 sm:col-span-1">
-              <p className="text-xs text-slate-500 mb-0.5">อัตราแลกเปลี่ยน</p>
+              <p className="text-xs text-slate-500 mb-0.5 flex items-center gap-1">อัตราแลกเปลี่ยน <InfoTooltip termId="exchange-rate" size={12} /></p>
               <p className="text-sm font-semibold font-mono text-slate-700">1 USD = {fxRate.toFixed(2)} THB</p>
             </div>
           </div>

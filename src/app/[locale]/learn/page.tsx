@@ -14,8 +14,8 @@ const SECTIONS = [
     href:  "/glossary",
     icon:  "📖",
     title: "คำศัพท์การลงทุน",
-    desc:  "คำนิยามสั้นชัดของคำศัพท์ที่แอปนี้ใช้จริง เช่น RSI, P/E, Momentum Score, Breakout — อธิบายภาษาไทยพร้อมตัวอย่าง ค้นหาได้",
-    tag:   "ค้นหาได้",
+    desc:  "คำนิยามสั้นชัดของคำศัพท์ที่แอปนี้ใช้จริง เช่น RSI, P/E, Momentum Score, Breakout, Options Greeks — อธิบายภาษาไทยพร้อมตัวอย่าง ค้นหาได้",
+    tag:   "30+ terms",
   },
   {
     href:  "/learn/radar",
@@ -31,6 +31,14 @@ const SECTIONS = [
     title: "บทเรียนสั้น",
     desc:  "3 บทสั้น: Paper trading คืออะไร · อ่านกราฟหุ้นอย่างไร · AI วิเคราะห์ได้แค่ไหน ใช้เวลาอ่านบทละ 2–3 นาที",
     tag:   "3 บท",
+  },
+  {
+    href:  "/learn/options",
+    icon:  "📦",
+    title: "Options Basics — สัญญาออปชัน",
+    desc:  "เข้าใจ Call/Put, Strike, Premium, Breakeven, ITM/OTM, Theta Decay และเกิดอะไรขึ้นเมื่อออปชันหมดอายุ — พร้อมตัวอย่างจริง",
+    tag:   "5 บท",
+    tagColor: "#7C3AED",
   },
 ] as const;
 
