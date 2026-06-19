@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { generateText } from "@/lib/aiService";
 import { applyRateLimit } from "@/lib/rateLimit";
+import { siteCacheGet, siteCacheSet, isSiteCacheStale } from "@/lib/siteCache";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
 interface CacheEntry { reason: string; ts: number }
-const cache = new Map<string, CacheEntry>();
-const TTL   = 60 * 60 * 1000; // 1 hour
+const l1Cache = new Map<string, CacheEntry>();
+const L1_TTL  = 15 * 60 * 1000;     // 15 min in-process
+const DB_TTL  = 2 * 60 * 60 * 1000; // 2 hr SiteCache
 
 interface FinnhubNewsItem { headline: string; summary: string }
 interface FinnhubQuote    { c: number; dp: number; d: number; h: number; l: number; o: number; pc: number }
@@ -36,9 +38,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "invalid symbol" }, { status: 400 });
   }
 
-  const cached = cache.get(symbol);
-  if (cached && Date.now() - cached.ts < TTL) {
-    return NextResponse.json({ reason: cached.reason, symbol });
+  const locale = (req.nextUrl.searchParams.get("locale") ?? "th") === "en" ? "en" as const : "th" as const;
+
+  // L1: in-process
+  const l1Key = `${symbol}:${locale}`;
+  const l1 = l1Cache.get(l1Key);
+  if (l1 && Date.now() - l1.ts < L1_TTL) {
+    return NextResponse.json({ reason: l1.reason, symbol });
+  }
+
+  // L2: SiteCache (survives cold starts)
+  const dbKey = `whymoving:${symbol}:${locale}`;
+  const db = await siteCacheGet<{ reason: string }>(dbKey);
+  if (db && !isSiteCacheStale(db.savedAt, DB_TTL)) {
+    l1Cache.set(l1Key, { reason: db.data.reason, ts: Date.now() });
+    return NextResponse.json({ reason: db.data.reason, symbol });
   }
 
   const apiKey = process.env.FINNHUB_API_KEY;
@@ -124,7 +138,14 @@ ${newsBlock}
     }
   }
 
-  if (!reason) return NextResponse.json({ error: "AI unavailable" }, { status: 503 });
-  cache.set(symbol, { reason, ts: Date.now() });
+  if (!reason) {
+    const busy = locale === "en"
+      ? "Martin is currently busy. Please try again shortly."
+      : "Martin กำลังยุ่ง กรุณาลองใหม่อีกครั้ง";
+    return NextResponse.json({ reason: busy, symbol, martinBusy: true });
+  }
+
+  l1Cache.set(l1Key, { reason, ts: Date.now() });
+  siteCacheSet(dbKey, { reason }).catch(() => {});
   return NextResponse.json({ reason, symbol });
 }

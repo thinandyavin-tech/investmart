@@ -5,8 +5,7 @@ import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
 import { PERSONAS, getPersonaById } from "@/lib/personas";
 import type { PersonaId } from "@/lib/personas";
-
-const DISCLAIMER = "นี่คือการวิเคราะห์ AI เพื่อการศึกษา ไม่ใช่คำแนะนำการลงทุน ตลาดมีความไม่แน่นอนเสมอ";
+import { useI18n } from "@/lib/i18n";
 
 interface AiOutlook {
   thesis:            string;
@@ -33,10 +32,11 @@ const ERROR_OUTLOOK = (msg: string): AiOutlook => ({
   drivers:      [],
   risk:         "—",
   invalidation: "—",
-  disclaimer:   DISCLAIMER,
+  disclaimer:   "",
 });
 
 export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
+  const { lang } = useI18n();
   const [persona, setPersona]           = useState<PersonaId>(PERSONAS[0].id);
   const [aiOutlook, setAiOutlook]       = useState<AiOutlook | null>(null);
   const [loadingOutlook, setLoading]    = useState(false);
@@ -46,13 +46,13 @@ export function AiOutlookCard({ ticker }: AiOutlookCardProps) {
     if (loadingOutlook) return;
     setLoading(true);
     try {
-      const url = `/api/ai/outlook?ticker=${encodeURIComponent(ticker)}&persona=${p}${refresh ? "&refresh=true" : ""}`;
+      const url = `/api/ai/outlook?ticker=${encodeURIComponent(ticker)}&persona=${p}&locale=${lang}${refresh ? "&refresh=true" : ""}`;
       const res  = await fetch(url);
       const data = await res.json() as AiOutlook & { error?: string };
-      setAiOutlook(data.error ? ERROR_OUTLOOK(`ไม่สามารถโหลดการวิเคราะห์: ${data.error}`) : data);
+      setAiOutlook(data.error ? ERROR_OUTLOOK(lang === "en" ? `Could not load analysis: ${data.error}` : `ไม่สามารถโหลดการวิเคราะห์: ${data.error}`) : data);
       hasLoadedRef.current = true;
     } catch {
-      setAiOutlook(ERROR_OUTLOOK("ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้"));
+      setAiOutlook(ERROR_OUTLOOK(lang === "en" ? "Analysis unavailable right now" : "ไม่สามารถโหลดการวิเคราะห์ได้ในขณะนี้"));
     } finally {
       setLoading(false);
     }

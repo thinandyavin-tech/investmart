@@ -40,12 +40,16 @@ const PAGE_SIZE = 50;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function timeAgo(iso: string | null): string {
+function formatScanTime(iso: string | null): string {
   if (!iso) return "—";
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60)   return `${diff}s ที่แล้ว`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ที่แล้ว`;
-  return `${Math.floor(diff / 3600)}h ที่แล้ว`;
+  const d = new Date(iso);
+  const diffMs = Date.now() - d.getTime();
+  const hh = d.getHours().toString().padStart(2, "0");
+  const mm = d.getMinutes().toString().padStart(2, "0");
+  const stamp = `${hh}:${mm}`;
+  if (diffMs < 5 * 60 * 1000) return `as of ${stamp}`;
+  if (diffMs < 60 * 60 * 1000) return `${Math.floor(diffMs / 60_000)}m ago (${stamp})`;
+  return `${Math.floor(diffMs / 3_600_000)}h ago (${stamp})`;
 }
 
 function fmtPct(v: number): string {
@@ -392,7 +396,7 @@ export function RadarPage() {
                   : isRefreshing
                   ? `${allResults.length} · ${t.radar.updating}`
                   : filtered.length > 0
-                  ? t.radar.results(filtered.length, allResults.length, timeAgo(scannedAt))
+                  ? t.radar.results(filtered.length, allResults.length, formatScanTime(scannedAt))
                   : allResults.length > 0
                   ? t.radar.noResultsFilter
                   : t.radar.noResults}

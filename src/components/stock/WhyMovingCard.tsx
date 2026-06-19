@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { Card } from "@/components/Card";
 import { OffsetButton } from "@/components/OffsetButton";
+import { useI18n } from "@/lib/i18n";
 
 interface WhyMovingCardProps {
   ticker: string;
 }
 
 export function WhyMovingCard({ ticker }: WhyMovingCardProps) {
+  const { lang } = useI18n();
   const [reason, setReason]   = useState("");
   const [loading, setLoading] = useState(false);
   const [shown, setShown]     = useState(false);
@@ -19,7 +21,7 @@ export function WhyMovingCard({ ticker }: WhyMovingCardProps) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/stock/whymoving?symbol=${encodeURIComponent(ticker)}`);
+      const res = await fetch(`/api/stock/whymoving?symbol=${encodeURIComponent(ticker)}&locale=${lang}`);
       const data = (await res.json()) as { reason?: string; error?: string };
       if (!res.ok || !data.reason) {
         setError("ไม่สามารถโหลดข้อมูลได้");
