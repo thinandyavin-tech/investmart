@@ -20,6 +20,7 @@ interface SwotQuadrant {
 interface SwotData {
   ticker:      string;
   companyName: string;
+  assetType?:  string;
   price:       number;
   change1D:    number;
   pe:          string;
@@ -36,19 +37,23 @@ interface SwotData {
   generatedAt: string;
 }
 
+type RiskLevel = "low" | "medium" | "high" | "not_assessable";
+type OverallRisk = "low" | "medium" | "high" | "insufficient_data";
+
 interface RiskFactor {
   name:  string;
-  level: "low" | "medium" | "high";
+  level: RiskLevel;
   note:  string;
 }
 
 interface RiskData {
   ticker:      string;
   companyName: string;
+  assetType?:  string;
   price:       number;
   change1D:    number;
   risk: {
-    overallRisk: "low" | "medium" | "high";
+    overallRisk: OverallRisk;
     factors:     RiskFactor[];
     watchPoints: string[];
     disclaimer:  string;
@@ -60,16 +65,28 @@ interface RiskData {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const RISK_COLOR: Record<"low" | "medium" | "high", string> = {
-  low:    "#1F9D55",
-  medium: "#D97706",
-  high:   "#D64545",
+const RISK_COLOR: Record<RiskLevel | "insufficient_data", string> = {
+  low:              "#1F9D55",
+  medium:           "#D97706",
+  high:             "#D64545",
+  not_assessable:   "#9CA3AF",
+  insufficient_data: "#9CA3AF",
 };
 
-const RISK_LABEL: Record<"low" | "medium" | "high", Record<"en"|"th", string>> = {
-  low:    { en: "Low",    th: "ต่ำ" },
-  medium: { en: "Medium", th: "ปานกลาง" },
-  high:   { en: "High",   th: "สูง" },
+const RISK_LABEL: Record<RiskLevel | "insufficient_data", Record<"en"|"th", string>> = {
+  low:              { en: "Low",              th: "ต่ำ" },
+  medium:           { en: "Medium",           th: "ปานกลาง" },
+  high:             { en: "High",             th: "สูง" },
+  not_assessable:   { en: "Not Assessable",   th: "ไม่สามารถประเมิน" },
+  insufficient_data: { en: "Insufficient Data", th: "ข้อมูลไม่เพียงพอ" },
+};
+
+const ASSET_TYPE_LABEL: Record<string, Record<"en"|"th", string>> = {
+  stock:   { en: "Stock",   th: "หุ้นสามัญ" },
+  etf:     { en: "ETF",     th: "กองทุน ETF" },
+  reit:    { en: "REIT",    th: "REIT" },
+  adr:     { en: "ADR",     th: "ADR" },
+  unknown: { en: "Unknown", th: "ไม่ทราบ" },
 };
 
 function fmtChange(v: number) {
@@ -124,10 +141,11 @@ function SwotQuadrantCard({
 // ── Risk factor row ───────────────────────────────────────────────────────────
 
 function RiskFactorRow({ factor, lang }: { factor: RiskFactor; lang: "en"|"th" }) {
-  const clr = RISK_COLOR[factor.level];
-  const lbl = RISK_LABEL[factor.level][lang];
+  const clr = RISK_COLOR[factor.level] ?? RISK_COLOR.not_assessable;
+  const lbl = RISK_LABEL[factor.level]?.[lang] ?? RISK_LABEL.not_assessable[lang];
+  const isNA = factor.level === "not_assessable";
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-[#e9edc9] last:border-0">
+    <div className={`flex items-start gap-3 py-2 border-b border-[#e9edc9] last:border-0 ${isNA ? "opacity-60" : ""}`}>
       <div className="flex-1 min-w-0">
         <span className="text-xs font-bold text-[#1A1A1A]">{factor.name}</span>
         <p className="text-xs text-[#6B6B6B] mt-0.5 leading-relaxed">{factor.note}</p>
@@ -351,12 +369,23 @@ export default function HunterPage() {
                   <div className="flex gap-4 mt-2 flex-wrap">
                     <Metric label={isEn ? "Price" : "ราคา"}       value={`$${swot.price.toFixed(2)}`} />
                     <Metric label={isEn ? "1D" : "วันนี้"}        value={fmtChange(swot.change1D)} />
-                    <Metric label="P/E"                            value={swot.pe} />
-                    <Metric label="Beta"                           value={swot.beta} />
-                    <Metric label={isEn ? "Gross %" : "Gross M"}  value={swot.grossMargin} />
-                    <Metric label={isEn ? "Div Yield" : "ปันผล"} value={swot.divYield} />
-                    <Metric label={isEn ? "Rev 3Y" : "Rev 3Y"}    value={swot.revGrowth3Y} />
-                    <Metric label={isEn ? "EPS 3Y" : "EPS 3Y"}    value={swot.epsGrowth3Y} />
+                    {swot.assetType === "etf" ? (
+                      <>
+                        {swot.assetType && (
+                          <Metric label={isEn ? "Type" : "ประเภท"} value="ETF" />
+                        )}
+                        <Metric label={isEn ? "Div Yield" : "ปันผล"} value={swot.divYield} />
+                      </>
+                    ) : (
+                      <>
+                        <Metric label="P/E"                            value={swot.pe} />
+                        <Metric label="Beta"                           value={swot.beta} />
+                        <Metric label={isEn ? "Gross %" : "Gross M"}  value={swot.grossMargin} />
+                        <Metric label={isEn ? "Div Yield" : "ปันผล"} value={swot.divYield} />
+                        <Metric label={isEn ? "Rev 3Y" : "Rev 3Y"}    value={swot.revGrowth3Y} />
+                        <Metric label={isEn ? "EPS 3Y" : "EPS 3Y"}    value={swot.epsGrowth3Y} />
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-1.5 flex-shrink-0">
@@ -437,20 +466,25 @@ export default function HunterPage() {
                   </div>
                 ) : (
                   <>
-                    {/* Overall risk badge */}
-                    <div className="flex items-center gap-3 px-4 py-3" style={{ background: "#fefae0", border: "1px solid #ccd5ae" }}>
+                    {/* Asset type badge + Overall risk */}
+                    <div className="flex items-center gap-3 px-4 py-3 flex-wrap" style={{ background: "#fefae0", border: "1px solid #ccd5ae" }}>
+                      {risk.assetType && risk.assetType !== "stock" && (
+                        <span className="text-[10px] font-bold px-2 py-0.5" style={{ color: "#6D28D9", background: "#EDE9FE", border: "1px solid #C4B5FD" }}>
+                          {ASSET_TYPE_LABEL[risk.assetType]?.[lang] ?? risk.assetType}
+                        </span>
+                      )}
                       <span className="text-xs font-bold uppercase tracking-wide text-[#8A8378]">
                         {isEn ? "Overall risk" : "ความเสี่ยงรวม"}
                       </span>
                       <span
                         className="text-sm font-bold px-3 py-1"
                         style={{
-                          color:      RISK_COLOR[risk.risk.overallRisk],
-                          background: `${RISK_COLOR[risk.risk.overallRisk]}18`,
-                          border:     `1px solid ${RISK_COLOR[risk.risk.overallRisk]}`,
+                          color:      RISK_COLOR[risk.risk.overallRisk] ?? RISK_COLOR.insufficient_data,
+                          background: `${RISK_COLOR[risk.risk.overallRisk] ?? RISK_COLOR.insufficient_data}18`,
+                          border:     `1px solid ${RISK_COLOR[risk.risk.overallRisk] ?? RISK_COLOR.insufficient_data}`,
                         }}
                       >
-                        {RISK_LABEL[risk.risk.overallRisk][lang]}
+                        {RISK_LABEL[risk.risk.overallRisk]?.[lang] ?? RISK_LABEL.insufficient_data[lang]}
                       </span>
                     </div>
 

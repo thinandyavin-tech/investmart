@@ -6,6 +6,8 @@ import { extractJson }   from "@/lib/ai/utils";
 import { hasAiProvider } from "@/lib/ai/utils";
 import { applyRateLimit } from "@/lib/rateLimit";
 import { prisma }        from "@/lib/prisma";
+import { detectAssetType, assetTypeLabel } from "@/lib/assetType";
+import type { AssetType } from "@/lib/assetType";
 
 export const dynamic     = "force-dynamic";
 export const maxDuration = 45;
@@ -56,12 +58,12 @@ interface FinnhubNewsItem { headline: string; source: string; datetime: number; 
 
 export interface RiskFactor {
   name:  string;
-  level: "low" | "medium" | "high";
+  level: "low" | "medium" | "high" | "not_assessable";
   note:  string;
 }
 
 export interface RiskAnalysis {
-  overallRisk: "low" | "medium" | "high";
+  overallRisk: "low" | "medium" | "high" | "insufficient_data";
   factors:     RiskFactor[];
   watchPoints: string[];
   disclaimer:  string;
@@ -70,6 +72,7 @@ export interface RiskAnalysis {
 export interface RiskData {
   ticker:      string;
   companyName: string;
+  assetType:   AssetType;
   price:       number;
   change1D:    number;
   risk:        RiskAnalysis;
@@ -109,6 +112,25 @@ function fmtNum(v: number | null | undefined, suffix = "", decimals = 2): string
   return `${v.toFixed(decimals)}${suffix}`;
 }
 
+// ── Stock risk factors (existing company analysis) ───────────────────────────
+
+const STOCK_RISK_DIMENSIONS = [
+  { name: "Valuation Risk",   note: "cite P/E and what it suggests" },
+  { name: "Volatility Risk",  note: "cite beta; compare to market average 1.0" },
+  { name: "Earnings Quality", note: "cite margins, EPS/revenue growth" },
+  { name: "Leverage Risk",    note: "cite debt/equity and current ratio" },
+  { name: "Price Momentum",   note: "cite distance from 52W high/low" },
+  { name: "News & Event Risk", note: "cite recent headlines" },
+] as const;
+
+// ── ETF risk factors (replaces company-fundamental dimensions) ───────────────
+
+const ETF_RISK_DIMENSIONS = [
+  { name: "Price Momentum",       note: "cite distance from 52W high/low and recent returns" },
+  { name: "Volatility",           note: "cite 3-month return standard deviation and price swings" },
+  { name: "News & Event Risk",    note: "cite recent headlines; market or sector events" },
+] as const;
+
 // ── Core builder ──────────────────────────────────────────────────────────────
 
 async function buildRisk(ticker: string, locale: "en" | "th"): Promise<RiskData> {
@@ -133,23 +155,13 @@ async function buildRisk(ticker: string, locale: "en" | "th"): Promise<RiskData>
   const profile = profileR.status === "fulfilled" ? profileR.value : null;
   const news    = newsR.status    === "fulfilled"  ? newsR.value   : null;
 
-  const price    = quote?.c  ?? 0;
-  const change1D = quote?.dp ?? 0;
+  const assetType = detectAssetType(profile);
+  const price     = quote?.c  ?? 0;
+  const change1D  = quote?.dp ?? 0;
+  const companyName = profile?.name ?? ticker;
 
-  const companyName  = profile?.name ?? ticker;
-  const industry     = profile?.finnhubIndustry ?? "N/A";
-  const beta         = fmtNum(metrics?.beta, "", 2);
-  const pe           = metrics?.peBasicExclExtraTTM != null ? `${metrics.peBasicExclExtraTTM.toFixed(1)}x` : "N/A";
-  const grossMargin  = fmtPct(metrics?.grossMarginTTM);
-  const netMargin    = fmtPct(metrics?.netMarginTTM ?? metrics?.netProfitMarginTTM);
-  const roe          = fmtPct(metrics?.roeTTM);
-  const revGrowth3Y  = fmtPct(metrics?.revenueGrowth3Y ?? metrics?.revenue3YGrowth);
-  const epsGrowth3Y  = fmtPct(metrics?.epsGrowth3Y);
-  const currentRatio = fmtNum(metrics?.currentRatioAnnual, "x", 2);
-  const debtEquity   = fmtNum(metrics?.["totalDebt/totalEquityAnnual"] ?? metrics?.["longTermDebt/equityAnnual"], "x", 2);
-  const week52High   = metrics?.["52WeekHigh"];
-  const week52Low    = metrics?.["52WeekLow"];
-
+  const week52High = metrics?.["52WeekHigh"];
+  const week52Low  = metrics?.["52WeekLow"];
   const pctFrom52H = (week52High && price > 0)
     ? `${(((price - week52High) / week52High) * 100).toFixed(1)}%`
     : "N/A";
@@ -158,11 +170,65 @@ async function buildRisk(ticker: string, locale: "en" | "th"): Promise<RiskData>
     : "N/A";
 
   const topHeadlines = (news ?? []).slice(0, 6).map(n => n.headline).join("\n- ") || "N/A";
-
   const lang = locale === "th" ? "Thai" : "English";
+  const typeLabel = assetTypeLabel(assetType, "en");
 
-  const dataBlock = `
+  // ── Build data block per asset type ──────────────────────────────────────
+
+  let dataBlock: string;
+  let dimensions: readonly { name: string; note: string }[];
+
+  if (assetType === "etf") {
+    const retStd3M  = metrics?.["3MonthADReturnStd"] as number | undefined;
+    const ret13W    = metrics?.["13WeekPriceReturnDaily"] as number | undefined;
+    const ret26W    = metrics?.["26WeekPriceReturnDaily"] as number | undefined;
+    const ret52W    = metrics?.["52WeekPriceReturnDaily"] as number | undefined;
+    const retYtd    = metrics?.["yearToDatePriceReturnDaily"] as number | undefined;
+    const avgVol10D = metrics?.["10DayAverageTradingVolume"] as number | undefined;
+
+    dataBlock = `
 TICKER: ${ticker}
+ASSET TYPE: ETF / ETP
+NAME: ${companyName}
+
+PRICE:
+- Current: $${price.toFixed(2)} (${change1D >= 0 ? "+" : ""}${change1D.toFixed(2)}% today)
+- 52W High: ${week52High != null ? `$${week52High.toFixed(2)}` : "N/A"} (${pctFrom52H} from high)
+- 52W Low: ${week52Low != null ? `$${week52Low.toFixed(2)}` : "N/A"} (${pctFrom52L} from low)
+
+RETURNS:
+- YTD: ${retYtd != null ? `${retYtd.toFixed(2)}%` : "N/A"}
+- 13-Week: ${ret13W != null ? `${ret13W.toFixed(2)}%` : "N/A"}
+- 26-Week: ${ret26W != null ? `${ret26W.toFixed(2)}%` : "N/A"}
+- 52-Week: ${ret52W != null ? `${ret52W.toFixed(2)}%` : "N/A"}
+- 3-Month Return Std Dev: ${retStd3M != null ? `${retStd3M.toFixed(2)}` : "N/A"}
+
+TRADING:
+- 10-Day Avg Volume: ${avgVol10D != null ? `${avgVol10D.toFixed(2)}M shares` : "N/A"}
+
+NOTE: Company-fundamental metrics (P/E, EPS, margins, debt/equity) are NOT APPLICABLE to ETFs — they measure the fund wrapper, not individual companies. Do NOT assess these.
+
+NOTE: Distribution yield, expense ratio, AUM, and holdings data are not available from our current data source. Label these as "data unavailable" — do not estimate.
+
+RECENT NEWS (last 7 days):
+- ${topHeadlines}
+`.trim();
+    dimensions = ETF_RISK_DIMENSIONS;
+  } else {
+    const industry     = profile?.finnhubIndustry ?? "N/A";
+    const beta         = fmtNum(metrics?.beta, "", 2);
+    const pe           = metrics?.peBasicExclExtraTTM != null ? `${metrics.peBasicExclExtraTTM.toFixed(1)}x` : "N/A";
+    const grossMargin  = fmtPct(metrics?.grossMarginTTM);
+    const netMargin    = fmtPct(metrics?.netMarginTTM ?? metrics?.netProfitMarginTTM);
+    const roe          = fmtPct(metrics?.roeTTM);
+    const revGrowth3Y  = fmtPct(metrics?.revenueGrowth3Y ?? metrics?.revenue3YGrowth);
+    const epsGrowth3Y  = fmtPct(metrics?.epsGrowth3Y);
+    const currentRatio = fmtNum(metrics?.currentRatioAnnual, "x", 2);
+    const debtEquity   = fmtNum(metrics?.["totalDebt/totalEquityAnnual"] ?? metrics?.["longTermDebt/equityAnnual"], "x", 2);
+
+    dataBlock = `
+TICKER: ${ticker}
+ASSET TYPE: ${typeLabel}${assetType === "adr" ? " (foreign-listed, FX risk applies)" : ""}
 COMPANY: ${companyName}
 INDUSTRY: ${industry}
 
@@ -189,16 +255,26 @@ LEVERAGE:
 RECENT NEWS (last 7 days):
 - ${topHeadlines}
 `.trim();
+    dimensions = STOCK_RISK_DIMENSIONS;
+  }
+
+  // ── Prompt ──────────────────────────────────────────────────────────────
+
+  const factorsJson = dimensions
+    .map(d => `    {"name":"${d.name}","level":"low|medium|high|not_assessable","note":"${d.note}"}`)
+    .join(",\n");
 
   const systemPrompt = `You are Martin, InvestMart's risk analysis assistant. You identify real, data-grounded risk factors for ${lang}-speaking retail investors.
 
+ASSET TYPE: ${typeLabel}
+
 CRITICAL RULES:
 1. Every risk factor MUST reference specific data from the input. No fabrication.
-2. Where data is "N/A", acknowledge it — do not guess.
-3. This is EDUCATIONAL risk awareness, not financial advice. Never say "don't buy" or "sell."
-4. Use probabilistic language: "suggests", "may indicate", "could signal."
-5. Respond in ${lang} only.
-6. Risk levels: low/medium/high — based strictly on the data.`;
+2. If a metric is "N/A" or "not applicable", set that factor's level to "not_assessable" and explain why in the note. NEVER assign low/medium/high to a dimension that has no real data.
+3. overallRisk is computed ONLY from factors that have a real level (low/medium/high). If fewer than 2 factors are assessable, set overallRisk to "insufficient_data".
+4. This is EDUCATIONAL risk awareness, not financial advice. Never say "don't buy" or "sell."
+5. Use probabilistic language: "suggests", "may indicate", "could signal."
+6. Respond in ${lang} only.`;
 
   const userPrompt = `Analyze risk factors for ${ticker} using ONLY this data:
 
@@ -206,59 +282,29 @@ ${dataBlock}
 
 Return ONLY valid JSON:
 {
-  "overallRisk": "low" | "medium" | "high",
+  "overallRisk": "low" | "medium" | "high" | "insufficient_data",
   "factors": [
-    {
-      "name": "Valuation Risk",
-      "level": "low" | "medium" | "high",
-      "note": "1-2 sentences citing the P/E data and what it suggests"
-    },
-    {
-      "name": "Volatility Risk",
-      "level": "...",
-      "note": "cite beta value; compare to market average of 1.0"
-    },
-    {
-      "name": "Earnings Quality",
-      "level": "...",
-      "note": "cite margins, EPS/revenue growth; note N/A if unavailable"
-    },
-    {
-      "name": "Leverage Risk",
-      "level": "...",
-      "note": "cite debt/equity and current ratio; note N/A if unavailable"
-    },
-    {
-      "name": "Price Momentum",
-      "level": "...",
-      "note": "cite distance from 52W high/low; what this suggests"
-    },
-    {
-      "name": "News & Event Risk",
-      "level": "...",
-      "note": "cite recent headlines; if none, say data was not available"
-    }
+${factorsJson}
   ],
-  "watchPoints": [
-    "2-4 specific things an investor should monitor — tied to the data"
-  ],
+  "watchPoints": ["2-4 specific things to monitor — tied to the data"],
   "disclaimer": "One sentence in ${lang}: this is educational risk analysis based on ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} data, not investment advice."
 }`;
 
   let risk: RiskAnalysis;
   let riskError: string | undefined;
 
-  const RISK_LEVELS = new Set<string>(["low", "medium", "high"]);
+  const VALID_LEVELS = new Set<string>(["low", "medium", "high", "not_assessable"]);
+  const OVERALL_LEVELS = new Set<string>(["low", "medium", "high", "insufficient_data"]);
 
-  function isValidLevel(v: unknown): v is "low" | "medium" | "high" {
-    return typeof v === "string" && RISK_LEVELS.has(v);
+  function isValidFactorLevel(v: unknown): v is RiskFactor["level"] {
+    return typeof v === "string" && VALID_LEVELS.has(v);
   }
 
   if (!hasAiProvider()) {
     riskError = locale === "th"
       ? "ไม่มี AI provider — กรุณาตั้งค่า API key"
       : "No AI provider configured. Please set an API key.";
-    risk = { overallRisk: "medium", factors: [], watchPoints: [], disclaimer: "" };
+    risk = { overallRisk: "insufficient_data", factors: [], watchPoints: [], disclaimer: "" };
   } else {
     try {
       const raw    = await generateText(userPrompt, systemPrompt, {
@@ -278,13 +324,25 @@ Return ONLY valid JSON:
         .map((f): RiskFactor | null => {
           if (typeof f !== "object" || f === null) return null;
           const factor = f as Record<string, unknown>;
-          if (typeof factor.name !== "string" || !isValidLevel(factor.level) || typeof factor.note !== "string") return null;
+          if (typeof factor.name !== "string" || !isValidFactorLevel(factor.level) || typeof factor.note !== "string") return null;
           return { name: factor.name, level: factor.level, note: factor.note };
         })
         .filter((f): f is RiskFactor => f !== null);
 
+      // Post-process: ensure overall risk respects data availability
+      const assessable = factors.filter(f => f.level !== "not_assessable");
+      let overallRisk: RiskAnalysis["overallRisk"];
+      const rawOverall = parsed.overallRisk;
+      if (assessable.length < 2) {
+        overallRisk = "insufficient_data";
+      } else if (typeof rawOverall === "string" && OVERALL_LEVELS.has(rawOverall)) {
+        overallRisk = rawOverall as RiskAnalysis["overallRisk"];
+      } else {
+        overallRisk = "insufficient_data";
+      }
+
       risk = {
-        overallRisk: isValidLevel(parsed.overallRisk) ? parsed.overallRisk : "medium",
+        overallRisk,
         factors,
         watchPoints: (Array.isArray(parsed.watchPoints) ? parsed.watchPoints : [])
           .filter((w): w is string => typeof w === "string"),
@@ -296,12 +354,12 @@ Return ONLY valid JSON:
       riskError = locale === "th"
         ? "การวิเคราะห์ AI ไม่พร้อมใช้งานชั่วคราว กรุณาลองใหม่อีกครั้ง"
         : "AI analysis temporarily unavailable. Please try again.";
-      risk = { overallRisk: "medium", factors: [], watchPoints: [], disclaimer: "" };
+      risk = { overallRisk: "insufficient_data", factors: [], watchPoints: [], disclaimer: "" };
     }
   }
 
   return {
-    ticker, companyName, price, change1D,
+    ticker, companyName, assetType, price, change1D,
     risk, riskError, locale,
     generatedAt: new Date().toISOString(),
   };

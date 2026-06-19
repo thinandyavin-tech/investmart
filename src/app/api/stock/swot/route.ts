@@ -6,6 +6,8 @@ import { extractJson }   from "@/lib/ai/utils";
 import { hasAiProvider } from "@/lib/ai/utils";
 import { applyRateLimit } from "@/lib/rateLimit";
 import { prisma }        from "@/lib/prisma";
+import { detectAssetType, assetTypeLabel } from "@/lib/assetType";
+import type { AssetType } from "@/lib/assetType";
 
 export const dynamic     = "force-dynamic";
 export const maxDuration = 45;
@@ -66,6 +68,7 @@ interface SwotQuadrant {
 export interface SwotData {
   ticker:      string;
   companyName: string;
+  assetType:   AssetType;
   price:       number;
   change1D:    number;
   pe:          string;
@@ -157,14 +160,9 @@ async function buildSwot(ticker: string, locale: "en" | "th"): Promise<SwotData>
   const week52High  = metrics?.["52WeekHigh"] ?? null;
   const week52Low   = metrics?.["52WeekLow"]  ?? null;
 
+  const assetType   = detectAssetType(profile);
   const companyName = profile?.name ?? ticker;
-  const industry    = profile?.finnhubIndustry ?? "N/A";
-  const marketCap   = fmtMarketCap(profile?.marketCapitalization ?? metrics?.marketCapitalization ?? null);
-  const roe         = fmtPct(metrics?.roeTTM);
-  const netMargin   = fmtPct(metrics?.netMarginTTM ?? metrics?.netProfitMarginTTM);
-  const epsGrowth5Y = fmtPct(metrics?.epsGrowth5Y);
-  const currentRatio = fmtNum(metrics?.currentRatioAnnual, "x", 2);
-  const debtEquity   = fmtNum(metrics?.["totalDebt/totalEquityAnnual"] ?? metrics?.["longTermDebt/equityAnnual"], "x", 2);
+  const typeLabel   = assetTypeLabel(assetType, "en");
 
   const week52Range = (week52High && week52Low)
     ? `$${week52Low.toFixed(2)} – $${week52High.toFixed(2)}`
@@ -180,8 +178,54 @@ async function buildSwot(ticker: string, locale: "en" | "th"): Promise<SwotData>
 
   const lang = locale === "th" ? "Thai" : "English";
 
-  const dataBlock = `
+  let dataBlock: string;
+
+  if (assetType === "etf") {
+    const retStd3M  = metrics?.["3MonthADReturnStd"] as number | undefined;
+    const ret13W    = metrics?.["13WeekPriceReturnDaily"] as number | undefined;
+    const ret26W    = metrics?.["26WeekPriceReturnDaily"] as number | undefined;
+    const ret52W    = metrics?.["52WeekPriceReturnDaily"] as number | undefined;
+    const retYtd    = metrics?.["yearToDatePriceReturnDaily"] as number | undefined;
+    const avgVol10D = metrics?.["10DayAverageTradingVolume"] as number | undefined;
+
+    dataBlock = `
 TICKER: ${ticker}
+ASSET TYPE: ETF / ETP
+NAME: ${companyName}
+
+PRICE DATA:
+- Current Price: $${price.toFixed(2)} (${change1D >= 0 ? "+" : ""}${change1D.toFixed(2)}% today)
+- 52-Week Range: ${week52Range}
+- Distance from 52W High: ${pctFrom52H}
+
+RETURNS:
+- YTD: ${retYtd != null ? `${retYtd.toFixed(2)}%` : "N/A (data unavailable)"}
+- 13-Week: ${ret13W != null ? `${ret13W.toFixed(2)}%` : "N/A"}
+- 26-Week: ${ret26W != null ? `${ret26W.toFixed(2)}%` : "N/A"}
+- 52-Week: ${ret52W != null ? `${ret52W.toFixed(2)}%` : "N/A"}
+- 3-Month Return Std Dev: ${retStd3M != null ? `${retStd3M.toFixed(2)}` : "N/A"}
+
+TRADING:
+- 10-Day Avg Volume: ${avgVol10D != null ? `${avgVol10D.toFixed(2)}M shares` : "N/A"}
+
+IMPORTANT: This is an ETF, not a company. Company-fundamental metrics (P/E, EPS, margins, ROE, debt/equity) are NOT APPLICABLE — they describe the fund wrapper, not individual companies.
+Distribution yield, expense ratio, AUM, holdings, and issuer data are NOT AVAILABLE from our current data source.
+
+RECENT NEWS (last 7 days):
+- ${topHeadlines}
+`.trim();
+  } else {
+    const industry     = profile?.finnhubIndustry ?? "N/A";
+    const marketCap    = fmtMarketCap(profile?.marketCapitalization ?? metrics?.marketCapitalization ?? null);
+    const roe          = fmtPct(metrics?.roeTTM);
+    const netMargin    = fmtPct(metrics?.netMarginTTM ?? metrics?.netProfitMarginTTM);
+    const epsGrowth5Y  = fmtPct(metrics?.epsGrowth5Y);
+    const currentRatio = fmtNum(metrics?.currentRatioAnnual, "x", 2);
+    const debtEquity   = fmtNum(metrics?.["totalDebt/totalEquityAnnual"] ?? metrics?.["longTermDebt/equityAnnual"], "x", 2);
+
+    dataBlock = `
+TICKER: ${ticker}
+ASSET TYPE: ${typeLabel}${assetType === "adr" ? " (foreign-listed, FX risk may apply)" : ""}
 COMPANY: ${companyName}
 INDUSTRY: ${industry}
 MARKET CAP: ${marketCap}
@@ -207,27 +251,33 @@ FINANCIALS (TTM unless noted):
 RECENT NEWS (last 7 days):
 - ${topHeadlines}
 `.trim();
+  }
+
+  const etfSwotNote = assetType === "etf" ? `
+IMPORTANT: For ETFs, frame the SWOT around the fund's purpose, returns, volatility, and liquidity — NOT company fundamentals. Acknowledge that distribution yield, expense ratio, AUM, and holdings are unavailable from our data source. For income/covered-call ETFs, explain the strategy as education (e.g. covered calls cap upside for income). Never fabricate these values.` : "";
 
   const systemPrompt = `You are Martin, InvestMart's financial analysis assistant. You produce grounded, educational SWOT analyses in ${lang}.
 
+ASSET TYPE: ${typeLabel}
+
 CRITICAL RULES:
 1. Every point MUST be tied to a specific data point from the provided data.
-2. Where data shows "N/A", acknowledge uncertainty — never invent numbers.
-3. This is OBSERVATIONAL ANALYSIS for education, NOT investment advice.
-4. Be honest about data limitations. "N/A" means data was not available from our source.
+2. Where data shows "N/A" or is unavailable, acknowledge it honestly — never invent numbers.
+3. If a metric is NOT APPLICABLE to this asset type, say so — do not treat it as a weakness.
+4. This is OBSERVATIONAL ANALYSIS for education, NOT investment advice.
 5. Do not say "buy", "sell", or make any price predictions.
-6. Respond in ${lang} only.`;
+6. Respond in ${lang} only.${etfSwotNote}`;
 
-  const userPrompt = `Generate a SWOT analysis for ${ticker} using ONLY this data:
+  const userPrompt = `Generate a SWOT analysis for ${ticker} (${typeLabel}) using ONLY this data:
 
 ${dataBlock}
 
 Return ONLY valid JSON (no markdown, no preamble):
 {
   "strengths": ["2-4 items, each 1-2 sentences, citing specific data"],
-  "weaknesses": ["2-4 items, citing data or noting N/A where unavailable"],
-  "opportunities": ["2-4 items grounded in the data and sector context"],
-  "threats": ["2-4 items grounded in data — valuation, competition, macro, news"],
+  "weaknesses": ["2-4 items, citing data or noting what's unavailable — never treat NOT_APPLICABLE metrics as weakness"],
+  "opportunities": ["2-4 items grounded in the data"],
+  "threats": ["2-4 items grounded in data — volatility, strategy risk, market conditions, news"],
   "disclaimer": "One sentence in ${lang}: this is educational analysis based on ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} data, not investment advice."
 }`;
 
@@ -278,7 +328,7 @@ Return ONLY valid JSON (no markdown, no preamble):
   }
 
   return {
-    ticker, companyName, price, change1D,
+    ticker, companyName, assetType, price, change1D,
     pe, beta, grossMargin, divYield, revGrowth3Y, epsGrowth3Y,
     week52High, week52Low,
     swot, swotError, locale,
