@@ -80,70 +80,85 @@ function TickerLogo({ ticker, logoUrl, size = 32 }: { ticker: string; logoUrl: s
 }
 
 function HoldingRow({ h, fxRate, onTrade }: { h: EnrichedHolding; fxRate: number; onTrade: (t: string, s: "BUY" | "SELL") => void }) {
-  const { t: i18nT } = useI18n();
+  const { t: i18nT, lang } = useI18n();
   const ac = i18nT.assets;
   const [open, setOpen] = useState(false);
 
+  const pnlBadgeCls = h.unrealizedPnlUsd >= 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600";
+
   return (
     <div className="border-b border-[#ccd5ae] last:border-0">
+      {/* ── Collapsed row ── */}
       <button
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#faedcd] transition-colors text-left"
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#faedcd] transition-colors text-left min-h-[56px]"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={`${h.companyName} ${open ? ac.row.hideDetail : ac.row.showDetail}`}
       >
-        <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={36} />
+        <TickerLogo ticker={h.ticker} logoUrl={h.logoUrl} size={32} />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-sm font-mono text-slate-900">{h.ticker}</span>
-            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${h.unrealizedPnlUsd >= 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-xs font-mono text-slate-900">{h.ticker}</span>
+            <span className={`text-[10px] font-semibold px-1 py-0.5 rounded ${pnlBadgeCls}`}>
               {pctFmt(h.unrealizedPnlPct)}
             </span>
           </div>
-          <div className="text-xs text-slate-500 truncate">{h.companyName} · {h.weight.toFixed(1)}% ของพอร์ต</div>
+          <div className="text-[10px] text-slate-500 truncate">
+            {h.companyName}
+          </div>
         </div>
-        <Sparkline change1D={h.change1D} />
         <div className="text-right flex-shrink-0">
-          <div className="text-sm font-bold font-mono text-slate-900">{thb(h.holdingValueThb)}</div>
-          <div className={`text-xs font-semibold ${clr(h.change1D)}`}>{pctFmt(h.change1D)} วันนี้</div>
+          <div className="text-xs font-bold font-mono text-slate-900">{thb(h.holdingValueThb)}</div>
+          <div className={`text-[10px] font-semibold ${clr(h.change1D)}`}>{pctFmt(h.change1D)}</div>
         </div>
-        <span className={`text-slate-400 text-xs ml-1 transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▾</span>
+        <span className={`text-slate-400 text-[10px] ml-0.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▾</span>
       </button>
 
-      {open && (
-        <div className="px-4 pb-4 pt-1 bg-[#e9edc9] space-y-3">
-          <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+      {/* ── Expanded detail (animated) ── */}
+      <div
+        className="overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out"
+        style={{ maxHeight: open ? 320 : 0, opacity: open ? 1 : 0 }}
+      >
+        <div className="px-3 pb-3 pt-1 bg-[#e9edc9] space-y-2.5">
+          {/* Metrics grid */}
+          <div className="grid grid-cols-2 gap-1.5 text-xs sm:grid-cols-4">
             {([
-              [ac.row.currentPrice, usd(h.currentPrice), "underlying-price"],
-              [ac.avgCost,          usd(h.avgCost),      "avg-cost"],
-              [ac.row.totalCost,    usd(h.totalCostUsd), "total-cost"],
-              [ac.shares,           ac.row.heldShares(h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 })), null],
+              [lang === "en" ? "Price" : "ราคา",      usd(h.currentPrice), "underlying-price"],
+              [lang === "en" ? "Avg Cost" : "ต้นทุน",  usd(h.avgCost),      "avg-cost"],
+              [lang === "en" ? "Total Cost" : "รวม",   usd(h.totalCostUsd), "total-cost"],
+              [lang === "en" ? "Shares" : "หุ้น",      h.shares.toLocaleString("en-US", { maximumFractionDigits: 4 }), null],
+              [lang === "en" ? "Value" : "มูลค่า",     `${usd(h.holdingValueUsd)}`, "holding-value"],
+              [lang === "en" ? "P/L" : "กำไร/ขาดทุน",  `${h.unrealizedPnlUsd >= 0 ? "+" : ""}${usd(h.unrealizedPnlUsd)}`, "unrealized-pnl"],
+              [lang === "en" ? "Weight" : "สัดส่วน",    `${h.weight.toFixed(1)}%`, null],
+              [lang === "en" ? "1D Change" : "วันนี้",  pctFmt(h.change1D), "change-1d"],
             ] as [string, string, string | null][]).map(([label, val, termId]) => (
-              <div key={label} className="bg-[#faedcd] rounded-xl p-2.5 border border-[#ccd5ae]">
-                <div className="flex items-center gap-1 text-slate-500 text-[10px] uppercase tracking-wide mb-0.5">
+              <div key={label} className="bg-[#faedcd] rounded-lg p-2 border border-[#ccd5ae]">
+                <div className="flex items-center gap-0.5 text-slate-500 text-[9px] uppercase tracking-wide mb-0.5">
                   {label}
-                  {termId && <InfoTooltip termId={termId} size={12} />}
+                  {termId && <InfoTooltip termId={termId} size={11} />}
                 </div>
-                <div className="font-mono font-bold text-slate-800 text-xs">{val}</div>
+                <div className="font-mono font-bold text-slate-800 text-[11px]">{val}</div>
               </div>
             ))}
           </div>
+
+          {/* Action buttons */}
           <div className="flex gap-2">
             <button onClick={() => onTrade(h.ticker, "BUY")}
-              className="flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors shadow-sm">
-              ซื้อเพิ่ม
+              className="flex-1 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-semibold transition-colors shadow-sm">
+              {lang === "en" ? "Buy More" : "ซื้อเพิ่ม"}
             </button>
             <Link href={`/stock/${h.ticker}`}
-              className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors text-center shadow-sm">
-              ดูกราฟ
+              className="flex-1 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold transition-colors text-center shadow-sm">
+              {lang === "en" ? "Chart" : "ดูกราฟ"}
             </Link>
             <button onClick={() => onTrade(h.ticker, "SELL")}
-              className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors shadow-sm">
-              ขาย
+              className="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors shadow-sm">
+              {lang === "en" ? "Sell" : "ขาย"}
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -189,11 +204,19 @@ function DesktopTable({ holdings, cashUsd, onTrade }: { holdings: EnrichedHoldin
             {th("name",     ac.col.name,     "text-left")}
             {th("weight",   ac.col.weight)}
             <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.shares}</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.avgCost}</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">{ac.row.totalCost}</th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">
+              <span className="inline-flex items-center gap-1">{ac.avgCost} <InfoTooltip termId="avg-cost" size={11} /></span>
+            </th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400">
+              <span className="inline-flex items-center gap-1">{ac.row.totalCost} <InfoTooltip termId="total-cost" size={11} /></span>
+            </th>
             {th("change1d", ac.col.change1d)}
             {th("value",    ac.col.value)}
-            {th("pnl",      ac.col.pnl)}
+            <th className="px-3 py-2 text-right text-xs font-medium text-slate-400 cursor-pointer hover:text-slate-700 select-none whitespace-nowrap" onClick={() => toggleSort("pnl")}>
+              <span className="inline-flex items-center gap-1">
+                {ac.col.pnl}{sortBy === "pnl" ? (sortDir === -1 ? " ▾" : " ▴") : ""} <InfoTooltip termId="unrealized-pnl" size={11} />
+              </span>
+            </th>
             <th className="px-3 py-2" />
           </tr>
         </thead>
