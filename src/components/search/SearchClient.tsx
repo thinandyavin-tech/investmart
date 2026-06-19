@@ -9,7 +9,7 @@ import { StockDetailPanel } from "@/components/radar/StockDetailPanel";
 import { useI18n }   from "@/lib/i18n";
 import type { StockMetrics } from "@/lib/momentum";
 
-interface QuoteData { c: number; pc: number; v: number; }
+interface QuoteData { c: number; pc: number; v: number; source?: string; }
 
 interface Suggestion {
   ticker:   string;
@@ -124,9 +124,12 @@ export function SearchClient() {
         fetch(`/api/stock/quote?symbol=${encodeURIComponent(t)}`),
         fetch(`/api/stock/profile?symbol=${encodeURIComponent(t)}`),
       ]);
+      if (!quoteRes.ok) { setError(sc.networkError); return; }
       const quote   = (await quoteRes.json()) as QuoteData;
       const profRes = (await profileRes.json()) as { profile?: { name?: string; exchange?: string; marketCapitalization?: number } };
-      if (!quote.c) { setError(sc.notFound(t)); return; }
+      // c=0 can mean rate-limited upstream OR temporarily unavailable — only show "not found"
+      // when profile also has no data (ticker genuinely unknown)
+      if (!quote.c && !profRes.profile?.name) { setError(sc.notFound(t)); return; }
       const change1D = quote.pc > 0 ? ((quote.c - quote.pc) / quote.pc) * 100 : 0;
       setStock({
         ticker: t, price: quote.c, change1D,
