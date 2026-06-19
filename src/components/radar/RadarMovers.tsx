@@ -26,11 +26,13 @@ type Tab = "gainers" | "losers" | "actives";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function fmtPct(v: number): string {
+function fmtPct(v: number | null | undefined): string {
+  if (v == null) return "—";
   return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 }
 
-function fmtPrice(v: number): string {
+function fmtPrice(v: number | null | undefined): string {
+  if (v == null) return "—";
   if (v >= 1000) return `$${v.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
   return `$${v.toFixed(2)}`;
 }
@@ -72,7 +74,7 @@ function SkeletonRows() {
 // ── Mover row ────────────────────────────────────────────────────────────────
 
 function MoverRow({ m, rank }: { m: Mover; rank: number }) {
-  const up    = m.changesPercentage >= 0;
+  const up    = (m.changesPercentage ?? 0) >= 0;
   const color = up ? "#16A34A" : "#DC2626";
 
   return (
