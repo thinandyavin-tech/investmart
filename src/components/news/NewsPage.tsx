@@ -67,9 +67,19 @@ export function NewsPage() {
   return (
     <div className="flex flex-col page-fullheight bg-transparent">
       {/* Header */}
-      <div className="border-b border-[#ccd5ae] bg-[#faedcd] px-4 py-2.5 flex-shrink-0">
-        <h1 className="text-xs font-bold uppercase tracking-widest">{nt.pageTitle}</h1>
-        <p className="text-xs text-slate-500 mt-0.5">{nt.pageSubtitle}</p>
+      <div className="border-b border-[#ccd5ae] bg-[#faedcd] px-4 py-2.5 flex-shrink-0 flex items-center justify-between gap-2">
+        <div>
+          <h1 className="text-xs font-bold uppercase tracking-widest">{nt.pageTitle}</h1>
+          <p className="text-xs text-slate-500 mt-0.5">{nt.pageSubtitle}</p>
+        </div>
+        <button
+          onClick={() => void loadNews(activeTab)}
+          disabled={loading}
+          aria-label="Refresh news"
+          className="flex-shrink-0 text-xs font-semibold px-2 py-1 border border-[#ccd5ae] rounded-lg text-slate-500 hover:bg-[#e9edc9] disabled:opacity-40 transition-colors"
+        >
+          {loading ? "…" : "↻"}
+        </button>
       </div>
 
       {/* Industry tabs */}

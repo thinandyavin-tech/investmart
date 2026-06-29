@@ -127,9 +127,9 @@ export function SearchClient() {
       if (!quoteRes.ok) { setError(sc.networkError); return; }
       const quote   = (await quoteRes.json()) as QuoteData;
       const profRes = (await profileRes.json()) as { profile?: { name?: string; exchange?: string; marketCapitalization?: number } };
-      // c=0 can mean rate-limited upstream OR temporarily unavailable — only show "not found"
-      // when profile also has no data (ticker genuinely unknown)
-      if (!quote.c && !profRes.profile?.name) { setError(sc.notFound(t)); return; }
+      // If Finnhub and Yahoo both have no data, navigate to the stock page
+      // which shows a TradingView fallback chart — never block on missing quote
+      if (!quote.c && !profRes.profile?.name) { router.push(`/stock/${t}`); return; }
       const change1D = quote.pc > 0 ? ((quote.c - quote.pc) / quote.pc) * 100 : 0;
       setStock({
         ticker: t, price: quote.c, change1D,

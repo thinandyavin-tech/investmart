@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 // Guest emails use a unique UUID per browser — never a shared account
 const GUEST_EMAIL_PREFIX = "guest_";
-const GUEST_EMAIL_SUFFIX = "@investneet.guest";
+const GUEST_EMAIL_SUFFIX = "@investmart.guest";
 
 export function guestEmail(guestId: string): string {
   return `${GUEST_EMAIL_PREFIX}${guestId}${GUEST_EMAIL_SUFFIX}`;
