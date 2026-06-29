@@ -6,7 +6,8 @@ import { getMarketInfo, type MarketStatus } from "@/lib/marketHours";
 
 const FLASH_DURATION_MS   = 800;
 const MARKET_CHECK_MS     = 30_000;
-const FALLBACK_POLL_MS    = 15_000;
+const FALLBACK_POLL_MS    = 5_000;   // REST fallback when SSE is down
+const SYNC_POLL_MS        = 30_000;  // periodic REST sync even when SSE is active
 const REDUCED_MOTION_MQ   = "(prefers-reduced-motion: reduce)";
 
 // Keep the exact same exported interface as the previous implementation
@@ -108,6 +109,7 @@ export function useLiveQuote(ticker: string | null): LiveQuoteResult {
   const flashTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const esRef             = useRef<EventSource | null>(null);
   const pollTimerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
+  const syncTimerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Read once at mount — never changes during a session
   const reducedMotion = useRef(
@@ -159,6 +161,20 @@ export function useLiveQuote(ticker: string | null): LiveQuoteResult {
     if (pollTimerRef.current) {
       clearInterval(pollTimerRef.current);
       pollTimerRef.current = null;
+    }
+  }, []);
+
+  // Periodic REST sync — runs alongside SSE to catch price drift and
+  // Vercel function-timeout gaps (SSE sessions are capped at maxDuration)
+  const startSyncPoll = useCallback((): void => {
+    if (syncTimerRef.current) return;
+    syncTimerRef.current = setInterval(() => void fetchQuote(), SYNC_POLL_MS);
+  }, [fetchQuote]);
+
+  const stopSyncPoll = useCallback((): void => {
+    if (syncTimerRef.current) {
+      clearInterval(syncTimerRef.current);
+      syncTimerRef.current = null;
     }
   }, []);
 
@@ -257,9 +273,11 @@ export function useLiveQuote(ticker: string | null): LiveQuoteResult {
 
     if (active) {
       openEventSource();
+      startSyncPoll(); // REST sync runs alongside SSE as safety net
     } else {
       closeEventSource();
       stopFallbackPoll();
+      stopSyncPoll();
     }
 
     return () => {
@@ -272,9 +290,10 @@ export function useLiveQuote(ticker: string | null): LiveQuoteResult {
     return () => {
       closeEventSource();
       stopFallbackPoll();
+      stopSyncPoll();
       if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
     };
-  }, [ticker, closeEventSource, stopFallbackPoll]);
+  }, [ticker, closeEventSource, stopFallbackPoll, stopSyncPoll]);
 
   return { quote, loading, error, isLive, marketStatus, lastUpdated, flash };
 }

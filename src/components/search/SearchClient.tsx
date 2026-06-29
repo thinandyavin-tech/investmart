@@ -95,6 +95,23 @@ export function SearchClient() {
 
   useEffect(() => { setRecent(loadRecent()); }, []);
 
+  // Live price refresh for the inline stock panel — polls every 5s while a stock is shown
+  useEffect(() => {
+    if (!stock) return;
+    const ticker = stock.ticker;
+    const id = setInterval(() => {
+      fetch(`/api/stock/quote?symbol=${encodeURIComponent(ticker)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((q: QuoteData | null) => {
+          if (!q?.c) return;
+          const change1D = q.pc > 0 ? ((q.c - q.pc) / q.pc) * 100 : 0;
+          setStock((prev) => prev?.ticker === ticker ? { ...prev, price: q.c, change1D } : prev);
+        })
+        .catch(() => {});
+    }, 5_000);
+    return () => clearInterval(id);
+  }, [stock?.ticker]);
+
   useEffect(() => {
     setActiveIdx(-1);
     if (debouncedQuery.length < 1) { setSuggestions([]); setShowSugg(false); return; }

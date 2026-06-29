@@ -2,8 +2,9 @@ import { type NextRequest } from "next/server";
 
 import { getWsManager } from "@/lib/finnhubWs";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const runtime     = "nodejs";
+export const dynamic     = "force-dynamic";
+export const maxDuration = 300; // 5-min SSE sessions on Vercel Pro
 
 const MAX_SYMBOLS    = 50;
 const HEARTBEAT_MS   = 25_000;

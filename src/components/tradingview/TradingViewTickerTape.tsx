@@ -38,7 +38,7 @@ export function TradingViewTickerTape({ className = "" }: TradingViewTickerTapeP
     async function load() {
       const results = await Promise.allSettled(
         TICKERS.map(t =>
-          fetch(`/api/stock/quote?ticker=${t.symbol}`)
+          fetch(`/api/stock/quote?symbol=${encodeURIComponent(t.symbol)}`)
             .then(r => r.json() as Promise<{ c?: number; dp?: number }>)
         )
       );
@@ -51,7 +51,7 @@ export function TradingViewTickerTape({ className = "" }: TradingViewTickerTapeP
       }));
     }
     void load();
-    const id = setInterval(() => void load(), 60_000);
+    const id = setInterval(() => void load(), 15_000); // refresh every 15s
     return () => clearInterval(id);
   }, []);
 

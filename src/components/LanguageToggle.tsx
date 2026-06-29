@@ -1,25 +1,13 @@
 "use client";
 
-import { useI18n }                from "@/lib/i18n";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import type { AppLocale }         from "@/i18n/routing";
+import { useI18n } from "@/lib/i18n";
 
 interface LanguageToggleProps {
   size?: "sm" | "md";
 }
 
 export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
-  const { lang } = useI18n();
-  const router   = useRouter();
-  const pathname = usePathname();
-
-  function toggle() {
-    const nextLocale: AppLocale = lang === "en" ? "th" : "en";
-    try {
-      document.cookie = `NEXT_LOCALE=${nextLocale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
-    } catch { /* private browsing */ }
-    router.replace(pathname, { locale: nextLocale });
-  }
+  const { lang, toggle } = useI18n();
 
   const isEn = lang === "en";
 
@@ -47,7 +35,7 @@ export function LanguageToggle({ size = "sm" }: LanguageToggleProps) {
       role="group"
       aria-label="Language"
     >
-      {(["en", "th"] as AppLocale[]).map((locale) => {
+      {(["en", "th"] as ("en" | "th")[]).map((locale) => {
         const active = lang === locale;
         return (
           <button

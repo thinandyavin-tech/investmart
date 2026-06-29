@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 import { useLocale } from "next-intl";
@@ -33,22 +34,24 @@ const I18nContext = createContext<I18nContextValue>({
 
 interface I18nProviderProps {
   children:       ReactNode;
-  initialLocale?: Lang; // kept for compat; next-intl context is authoritative
+  initialLocale?: Lang;
 }
 
 export function I18nProvider({ children }: I18nProviderProps) {
-  // useLocale() reads from NextIntlClientProvider — always in sync with the URL
-  const rawLocale = useLocale();
-  const lang: Lang = rawLocale === "th" ? "th" : "en";
+  // Seed from URL locale (SSR-consistent) but hold in state so toggle is instant
+  const rawLocale  = useLocale();
+  const seedLang: Lang = rawLocale === "th" ? "th" : "en";
+
+  const [lang, setLangState] = useState<Lang>(seedLang);
 
   const setLang = useCallback((l: Lang) => {
+    setLangState(l);
     try {
       document.cookie = `${COOKIE_NAME}=${l};path=/;max-age=${COOKIE_MAX_AGE};SameSite=Lax`;
     } catch { /* private browsing */ }
   }, []);
 
   const toggle = useCallback(() => {
-    // LanguageToggle handles navigation; this just persists cookie for backward compat
     setLang(lang === "en" ? "th" : "en");
   }, [lang, setLang]);
 
