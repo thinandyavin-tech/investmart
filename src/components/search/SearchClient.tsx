@@ -124,11 +124,11 @@ export function SearchClient() {
         fetch(`/api/stock/quote?symbol=${encodeURIComponent(t)}`),
         fetch(`/api/stock/profile?symbol=${encodeURIComponent(t)}`),
       ]);
-      if (!quoteRes.ok) { setError(sc.networkError); return; }
+      // On any API failure (rate limit, upstream error) go straight to the stock page
+      if (!quoteRes.ok) { router.push(`/stock/${t}`); return; }
       const quote   = (await quoteRes.json()) as QuoteData;
       const profRes = (await profileRes.json()) as { profile?: { name?: string; exchange?: string; marketCapitalization?: number } };
-      // If Finnhub and Yahoo both have no data, navigate to the stock page
-      // which shows a TradingView fallback chart — never block on missing quote
+      // No price AND no profile → stock page (TradingView fallback covers it)
       if (!quote.c && !profRes.profile?.name) { router.push(`/stock/${t}`); return; }
       const change1D = quote.pc > 0 ? ((quote.c - quote.pc) / quote.pc) * 100 : 0;
       setStock({
@@ -141,7 +141,7 @@ export function SearchClient() {
         companyName: profRes.profile?.name ?? t,
         exchange: profRes.profile?.exchange ?? "US",
       });
-    } catch { setError(sc.networkError); }
+    } catch { router.push(`/stock/${t}`); }
     finally { setLoading(false); }
   }, [sc]);
 
