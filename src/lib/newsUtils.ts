@@ -49,30 +49,59 @@ export function stripHtml(raw: string): string {
     .trim();
 }
 
-// Topics that appear in company-news feeds but are not about the stock or its business
+// Topics that appear in company-news feeds but are not about a company's business
 const OFFSIDE_KEYWORDS = [
-  // sports leagues
+  // sports competitions
   "premier league", "champions league", "la liga", "bundesliga", "serie a", "ligue 1",
-  "europa league", "fa cup", "world cup", "euro 2024", "euro 2025", "euro 2026",
-  "nfl", "nba", "mlb", "nhl", "mls", "ncaa", "march madness",
-  "wimbledon", "us open", "french open", "australian open", "olympic", "olympics",
-  "super bowl", "superbowl", "nascar", "formula 1", "f1 race",
-  "cricket", "rugby", "golf tournament", "pga tour",
+  "europa league", "conference league", "fa cup", "carabao cup",
+  "world cup", "fifa world cup", "copa america", "africa cup",
+  "euro 2024", "euro 2025", "euro 2026", "euro 2027",
+  "nfl draft", "nba draft", "mlb draft", "nfl game", "nba game",
+  "nhl game", "mls cup", "ncaa tournament", "march madness",
+  "wimbledon", "us open tennis", "french open", "australian open",
+  "super bowl", "superbowl", "nascar race", "formula 1 grand prix", "f1 grand prix",
+  "cricket match", "cricket world cup", "rugby world cup", "rugby match",
+  "golf tournament", "pga tour", "masters tournament",
+  "olympic games", "olympics 2024", "olympics 2026",
+  "world athletics", "tour de france",
   // entertainment / celebrity
-  "box office", "emmy", "grammy", "oscar", "golden globe",
-  "taylor swift", "beyoncé", "kardashian",
-  // unrelated business but recurring false positives
-  "real madrid", "manchester", "arsenal fc", "chelsea fc", "liverpool fc",
-  "barcelona fc", "juventus", "inter milan",
+  "box office", "emmy award", "grammy award", "oscar award", "golden globe",
+  "academy award", "billboard chart", "music video",
+  "taylor swift", "beyoncé", "kardashian", "celebrity",
+  // football clubs (often tagged as sponsors)
+  "real madrid", "manchester united", "manchester city",
+  "arsenal fc", "chelsea fc", "liverpool fc", "tottenham",
+  "barcelona fc", "atletico madrid", "juventus", "inter milan", "ac milan",
+  "paris saint-germain", "psg fc", "borussia dortmund", "rb leipzig",
+  "elimination round", "knockout round", "group stage", "semifinal match", "final match",
+  "vs.", "versus", // sport score/matchup headlines (e.g. "Brazil vs. Argentina")
+];
+
+// At least one of these must appear in a stock-news article
+const FINANCIAL_KEYWORDS = [
+  "stock", "share", "equity", "market", "trading", "investor", "investment",
+  "earnings", "revenue", "profit", "loss", "income", "ebitda", "margin",
+  "quarterly", "annual", "fiscal", "q1", "q2", "q3", "q4",
+  "ceo", "cfo", "board", "acquisition", "merger", "ipo", "buyback", "dividend",
+  "analyst", "upgrade", "downgrade", "price target", "rating", "outlook",
+  "guidance", "forecast", "valuation", "pe ratio", "eps",
+  "billion", "million", "fund", "portfolio", "hedge", "etf",
+  "nasdaq", "nyse", "s&p", "dow jones", "russell",
+  "rally", "decline", "surge", "plunge", "soar", "tumble", "gain", "fell",
+  "inflation", "interest rate", "fed", "federal reserve", "treasury",
+  "crypto", "bitcoin", "blockchain", "defi",
+  "sales", "growth", "layoff", "hire", "contract", "deal", "partnership",
 ];
 
 /**
- * Returns false for articles whose headline or summary are clearly not
- * about stocks, companies, or financial markets.
+ * Returns false for articles that are clearly not about stocks or financial markets.
+ * Two-stage filter: blocklist for obvious non-stock content, then require at least
+ * one financial keyword so sponsored-content leakage is caught even without a matching block term.
  */
 export function isStockRelated(headline: string, summary: string): boolean {
   const text = `${headline} ${summary}`.toLowerCase();
-  return !OFFSIDE_KEYWORDS.some(kw => text.includes(kw));
+  if (OFFSIDE_KEYWORDS.some(kw => text.includes(kw))) return false;
+  return FINANCIAL_KEYWORDS.some(kw => text.includes(kw));
 }
 
 const TEASER_MAX = 180;
