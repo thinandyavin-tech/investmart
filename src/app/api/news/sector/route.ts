@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { newsTeaser }               from "@/lib/newsUtils";
+import { NextRequest, NextResponse }              from "next/server";
+import { newsTeaser, isStockRelated }            from "@/lib/newsUtils";
 
 export const dynamic    = "force-dynamic";
 export const revalidate = 300; // 5 min CDN TTL
@@ -23,9 +23,12 @@ interface SectorNewsArticle {
   ticker:   string | null;
 }
 
+// One flagship ticker per sector used for the "all" tab — guarantees stock-only news
+const ALL_TICKERS = ["AAPL", "MSFT", "NVDA", "JPM", "JNJ", "MRNA", "XOM", "AMZN", "GE", "COIN"];
+
 // Representative tickers per sector — small lists to stay within Finnhub rate limits
 const SECTOR_TICKERS: Record<string, string[]> = {
-  all:       [],                                          // use general market news endpoint instead
+  all:       ALL_TICKERS,
   tech:      ["AAPL", "MSFT", "NVDA", "GOOGL", "META"],
   finance:   ["JPM", "BAC", "GS", "V", "BLK"],
   health:    ["JNJ", "LLY", "PFE", "ABBV", "UNH"],
@@ -64,29 +67,6 @@ async function fetchCompanyNews(ticker: string, apiKey: string): Promise<SectorN
   }
 }
 
-async function fetchGeneralNews(apiKey: string): Promise<SectorNewsArticle[]> {
-  try {
-    const [g, m] = await Promise.all([
-      fetch(`https://finnhub.io/api/v1/news?category=general&token=${apiKey}`, { signal: AbortSignal.timeout(6000) }),
-      fetch(`https://finnhub.io/api/v1/news?category=merger&token=${apiKey}`,  { signal: AbortSignal.timeout(6000) }),
-    ]);
-    const parse = async (r: Response): Promise<FinnhubArticle[]> => {
-      if (!r.ok) return [];
-      const d = (await r.json()) as unknown;
-      return Array.isArray(d) ? (d as FinnhubArticle[]) : [];
-    };
-    const [gen, mer] = await Promise.all([parse(g), parse(m)]);
-    const seen = new Set<number>();
-    return [...gen, ...mer]
-      .filter(a => { if (!a.id || !a.headline || seen.has(a.id)) return false; seen.add(a.id); return true; })
-      .sort((a, b) => b.datetime - a.datetime)
-      .slice(0, 30)
-      .map(a => ({ ...a, ticker: null, summary: newsTeaser(a.summary ?? "") }));
-  } catch {
-    return [];
-  }
-}
-
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const sector = (req.nextUrl.searchParams.get("sector") ?? "all").toLowerCase();
   if (!VALID_SECTORS.has(sector)) {
@@ -96,7 +76,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) return NextResponse.json({ articles: [] });
 
-  // Serve from cache if fresh
   const cached = cache.get(sector);
   if (cached && Date.now() - cached.cachedAt < CACHE_TTL) {
     return NextResponse.json(
@@ -105,18 +84,18 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  let articles: SectorNewsArticle[];
-  if (sector === "all") {
-    articles = await fetchGeneralNews(apiKey);
-  } else {
-    const tickers = SECTOR_TICKERS[sector]!;
-    const results = await Promise.all(tickers.map(t => fetchCompanyNews(t, apiKey)));
-    const seen = new Set<number>();
-    articles = results.flat()
-      .filter(a => { if (!a.id || !a.headline || seen.has(a.id)) return false; seen.add(a.id); return true; })
-      .sort((a, b) => b.datetime - a.datetime)
-      .slice(0, 30);
-  }
+  const tickers = SECTOR_TICKERS[sector]!;
+  const results = await Promise.all(tickers.map(t => fetchCompanyNews(t, apiKey)));
+  const seen = new Set<number>();
+  const articles = results.flat()
+    .filter(a => {
+      if (!a.id || !a.headline || seen.has(a.id)) return false;
+      if (!isStockRelated(a.headline, a.summary ?? "")) return false;
+      seen.add(a.id);
+      return true;
+    })
+    .sort((a, b) => b.datetime - a.datetime)
+    .slice(0, 30);
 
   cache.set(sector, { articles, cachedAt: Date.now() });
   return NextResponse.json(

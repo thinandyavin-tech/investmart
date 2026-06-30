@@ -49,6 +49,32 @@ export function stripHtml(raw: string): string {
     .trim();
 }
 
+// Topics that appear in company-news feeds but are not about the stock or its business
+const OFFSIDE_KEYWORDS = [
+  // sports leagues
+  "premier league", "champions league", "la liga", "bundesliga", "serie a", "ligue 1",
+  "europa league", "fa cup", "world cup", "euro 2024", "euro 2025", "euro 2026",
+  "nfl", "nba", "mlb", "nhl", "mls", "ncaa", "march madness",
+  "wimbledon", "us open", "french open", "australian open", "olympic", "olympics",
+  "super bowl", "superbowl", "nascar", "formula 1", "f1 race",
+  "cricket", "rugby", "golf tournament", "pga tour",
+  // entertainment / celebrity
+  "box office", "emmy", "grammy", "oscar", "golden globe",
+  "taylor swift", "beyoncé", "kardashian",
+  // unrelated business but recurring false positives
+  "real madrid", "manchester", "arsenal fc", "chelsea fc", "liverpool fc",
+  "barcelona fc", "juventus", "inter milan",
+];
+
+/**
+ * Returns false for articles whose headline or summary are clearly not
+ * about stocks, companies, or financial markets.
+ */
+export function isStockRelated(headline: string, summary: string): boolean {
+  const text = `${headline} ${summary}`.toLowerCase();
+  return !OFFSIDE_KEYWORDS.some(kw => text.includes(kw));
+}
+
 const TEASER_MAX = 180;
 
 /**
