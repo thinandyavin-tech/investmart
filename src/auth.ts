@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import type { NextRequest } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -23,7 +25,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email:    { label: "Email",    type: "email"    },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        if (await applyRateLimit(request as NextRequest, "auth")) return null;
         const email    = (credentials?.email    as string | undefined)?.toLowerCase().trim();
         const password = (credentials?.password as string | undefined);
         if (!email || !password) return null;

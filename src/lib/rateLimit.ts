@@ -10,6 +10,7 @@ const TIERS = {
   scan:    { requests: 30, window: 60 },  // cache reads only — not expensive
   quote:   { requests: 30, window: 60 },  // moderate: market data
   write:   { requests: 20, window: 60 },  // mutations: trades, posts
+  auth:    { requests: 10, window: 300 }, // login + signup: stop password guessing
   default: { requests: 60, window: 60 },  // everything else
 } as const;
 
@@ -25,11 +26,9 @@ function buildKey(req: NextRequest, tier: RateLimitTier): string {
     req.headers.get("x-real-ip") ??
     "unknown";
 
-  // Extract user from JWT stored in session cookie — we only need identity,
-  // not full validation, so a best-effort header check is fine here.
-  const userId = req.headers.get("x-user-id") ?? null;
-  const identity = userId ? `u:${userId}` : `ip:${ip}`;
-  return `rl:${tier}:${identity}`;
+  // IP only: a client-supplied header (the old x-user-id) let anyone rotate ids and skip the limit.
+  // On Vercel x-forwarded-for is set by the platform, not the client.
+  return `rl:${tier}:ip:${ip}`;
 }
 
 // ---------------------------------------------------------------------------

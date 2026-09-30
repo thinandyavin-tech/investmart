@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -12,6 +13,9 @@ const SignupSchema = z.object({
 });
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "auth");
+  if (limited) return limited;
+
   const body = await req.json().catch(() => null);
   const parsed = SignupSchema.safeParse(body);
   if (!parsed.success) {
@@ -22,6 +26,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const { email, password, username } = parsed.data;
+  if (email.endsWith("@investmart.guest")) {
+    return NextResponse.json({ error: "อีเมลไม่ถูกต้อง" }, { status: 422 });
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {

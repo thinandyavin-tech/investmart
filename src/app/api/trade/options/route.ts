@@ -55,16 +55,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       ? Math.max(0, closePrice - pos.strikePrice) * pos.contracts * 100
       : Math.max(0, pos.strikePrice - closePrice) * pos.contracts * 100;
 
-    await prisma.$transaction([
-      prisma.optionPosition.update({
-        where: { id },
+    // Only the request that actually flips OPEN -> CLOSED gets paid (no double payout on a double click).
+    const closed = await prisma.$transaction(async (tx) => {
+      const r = await tx.optionPosition.updateMany({
+        where: { id, userId, status: "OPEN" },
         data:  { status: "CLOSED", closedAt: new Date(), closedPrice: closePrice },
-      }),
-      prisma.user.update({
+      });
+      if (r.count !== 1) return false;
+      await tx.user.update({
         where: { id: userId },
         data:  { cashUsd: { increment: returnUsd } },
-      }),
-    ]);
+      });
+      return true;
+    });
+    if (!closed) return NextResponse.json({ error: "ไม่พบ position" }, { status: 404 });
     return NextResponse.json({ ok: true, pnl });
   }
 

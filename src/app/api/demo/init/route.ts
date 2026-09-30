@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrCreateGuestUser }      from "@/lib/demoSession";
+import { signDemoCookie }                from "@/lib/demoCookie";
 import { cookies }                   from "next/headers";
 import { z }                         from "zod";
 
@@ -20,8 +21,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const user = await getOrCreateGuestUser(parsed.data.guestId);
 
   const jar = await cookies();
-  jar.set("demo_user_id", user.id, {
+  jar.set("demo_user_id", signDemoCookie(user.id), {
     httpOnly: true,
+    secure:   process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge:   60 * 60 * 24 * 30,
     path:     "/",
