@@ -85,9 +85,9 @@ export class OpenAICompatAdapter implements ProviderAdapter {
 
       if (!res.ok) {
         if (RETRYABLE_HTTP.has(res.status)) {
-          throw new RetryableError(`local: HTTP ${res.status}`, this.name);
+          throw new RetryableError(`${this.name}: HTTP ${res.status}`, this.name);
         }
-        throw new Error(`local: HTTP ${res.status}`);
+        throw new Error(`${this.name}: HTTP ${res.status}`);
       }
 
       const data = (await res.json()) as OpenAIResponse;
@@ -95,7 +95,7 @@ export class OpenAICompatAdapter implements ProviderAdapter {
     } catch (err) {
       if (err instanceof RetryableError) throw err;
       if (isNetworkError(err)) {
-        throw new RetryableError(`local: ${err instanceof Error ? err.message : String(err)}`, this.name);
+        throw new RetryableError(`${this.name}: ${err instanceof Error ? err.message : String(err)}`, this.name);
       }
       throw err;
     } finally {
@@ -128,9 +128,9 @@ export class OpenAICompatAdapter implements ProviderAdapter {
 
       if (!res.ok) {
         if (RETRYABLE_HTTP.has(res.status)) {
-          throw new RetryableError(`local: HTTP ${res.status}`, this.name);
+          throw new RetryableError(`${this.name}: HTTP ${res.status}`, this.name);
         }
-        throw new Error(`local: HTTP ${res.status}`);
+        throw new Error(`${this.name}: HTTP ${res.status}`);
       }
 
       if (!res.body) throw new Error("local: no response body for streaming");
@@ -164,7 +164,7 @@ export class OpenAICompatAdapter implements ProviderAdapter {
     } catch (err) {
       if (err instanceof RetryableError) throw err;
       if (isNetworkError(err)) {
-        throw new RetryableError(`local: ${err instanceof Error ? err.message : String(err)}`, this.name);
+        throw new RetryableError(`${this.name}: ${err instanceof Error ? err.message : String(err)}`, this.name);
       }
       throw err;
     } finally {

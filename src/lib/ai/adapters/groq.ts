@@ -3,7 +3,7 @@ import Groq from "groq-sdk";
 import { RetryableError } from "../types";
 import type { AIRequest, ProviderAdapter } from "../types";
 
-const DEFAULT_MODEL  = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL  = "openai/gpt-oss-120b";  // llama-3.3-70b-versatile was retired by Groq
 const TIMEOUT_MS     = 12_000;
 const RETRYABLE_HTTP = new Set([429, 500, 502, 503, 504]);
 
@@ -11,6 +11,11 @@ function isRetryable(err: unknown): boolean {
   if (err instanceof Groq.APIError) return RETRYABLE_HTTP.has(err.status);
   if (err instanceof Error) return err.name === "AbortError" || err.message.includes("timed out");
   return false;
+}
+
+// gpt-oss models think before answering; keep that short so answers stay fast and fit max_tokens.
+function reasoning(model: string): { reasoning_effort?: "low" } {
+  return model.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" } : {};
 }
 
 function errMsg(err: unknown): string {
@@ -40,6 +45,7 @@ export class GroqAdapter implements ProviderAdapter {
           messages:    req.messages.map((m) => ({ role: m.role, content: m.content })),
           max_tokens:  req.maxTokens   ?? 800,
           temperature: req.temperature ?? 0.3,
+          ...reasoning(model),
           ...(req.jsonMode ? { response_format: { type: "json_object" as const } } : {}),
         },
         { signal: ctrl.signal },
@@ -73,6 +79,7 @@ export class GroqAdapter implements ProviderAdapter {
           stream:      true,
           max_tokens:  req.maxTokens   ?? 1000,
           temperature: req.temperature ?? 0.35,
+          ...reasoning(model),
         },
         { signal: ctrl.signal },
       );

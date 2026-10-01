@@ -3,8 +3,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { RetryableError } from "../types";
 import type { AIMessage, AIRequest, ProviderAdapter } from "../types";
 
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-3.5-flash";  // gemini-2.0-flash was retired by Google
 const TIMEOUT_MS    = 15_000;
+// Gemini 3.x thinks by default and the thinking counts against maxOutputTokens,
+// which cut answers off mid-sentence. Not in this SDK's types, but it is sent as-is.
+const MINIMAL_THINKING = { thinkingConfig: { thinkingLevel: "minimal" } } as Record<string, unknown>;
 
 function isRetryable(err: unknown): boolean {
   if (err instanceof Error) {
@@ -52,6 +55,7 @@ export class GeminiAdapter implements ProviderAdapter {
         ...(req.jsonMode ? { responseMimeType: "application/json" } : { responseMimeType: "text/plain" }),
         maxOutputTokens: req.maxTokens   ?? 800,
         temperature:     req.temperature ?? 0.3,
+        ...MINIMAL_THINKING,
       },
     });
 
@@ -80,6 +84,7 @@ export class GeminiAdapter implements ProviderAdapter {
       generationConfig:  {
         maxOutputTokens: req.maxTokens   ?? 1000,
         temperature:     req.temperature ?? 0.35,
+        ...MINIMAL_THINKING,
       },
     });
 

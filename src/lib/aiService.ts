@@ -2,9 +2,9 @@ import { executeComplete, executeStream } from "./ai/chain";
 import type { AIMessage } from "./ai/types";
 
 // Re-export for callers that reference these constants directly
-export const GROQ_CHAT_MODEL     = process.env.GROQ_MODEL     ?? "llama-3.3-70b-versatile";
-export const GROQ_ANALYSIS_MODEL = process.env.GROQ_MODEL     ?? "llama-3.3-70b-versatile";
-export const GEMINI_MODEL        = process.env.GEMINI_MODEL   ?? "gemini-2.0-flash";
+export const GROQ_CHAT_MODEL     = process.env.GROQ_MODEL     ?? "openai/gpt-oss-120b";
+export const GROQ_ANALYSIS_MODEL = process.env.GROQ_MODEL     ?? "openai/gpt-oss-120b";
+export const GEMINI_MODEL        = process.env.GEMINI_MODEL   ?? "gemini-3.5-flash";
 
 export type { AIMessage as ChatMessage };
 

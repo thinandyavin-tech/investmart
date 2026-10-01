@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const GROQ_MODEL    = "llama-3.3-70b-versatile";
+const GROQ_MODEL    = "openai/gpt-oss-120b";
 const MAX_ARTICLES  = 10;
 const MAX_CARDS     = 8;
 const TICKER_RE     = /^[A-Z]{1,5}$/;
@@ -173,6 +173,7 @@ async function generateCards(
     ],
     response_format: { type: "json_object" },
     max_tokens:      1500,
+    reasoning_effort: "low",
     temperature:     0.3,
   });
 

@@ -142,12 +142,11 @@ export async function executeComplete(req: AIRequest): Promise<{ result: string;
       logCall(adapter.name, Date.now() - t0, i > 0);
       return { result, provider: adapter.name };
     } catch (err) {
-      if (err instanceof RetryableError) {
-        if (err.statusCode === 429) markCoolingDown(adapter.name);
-        errors.push(`${adapter.name}: ${err.message}`);
-        continue;
-      }
-      throw err;
+      // Any provider failure (out of credit 402, retired model 404, bad key 401, 429, 5xx)
+      // falls through to the next provider instead of breaking the feature.
+      if (err instanceof RetryableError && err.statusCode === 429) markCoolingDown(adapter.name);
+      errors.push(`${adapter.name}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
     }
   }
 
@@ -189,12 +188,10 @@ export async function *executeStream(
       }
       return;
     } catch (err) {
-      if (!hasYielded && err instanceof RetryableError) {
-        if (err.statusCode === 429) markCoolingDown(adapter.name);
-        errors.push(`${adapter.name}: ${err.message}`);
-        continue;
-      }
-      throw err;
+      if (hasYielded) throw err;
+      if (err instanceof RetryableError && err.statusCode === 429) markCoolingDown(adapter.name);
+      errors.push(`${adapter.name}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
     }
   }
 
