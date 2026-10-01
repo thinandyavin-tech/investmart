@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useI18n } from "@/lib/i18n";
+import { MartinActionButtons, splitActions } from "@/components/ai/MartinActions";
 
 const StockInfographic = dynamic(
   () => import("@/components/stock/StockInfographic").then(m => m.StockInfographic),
@@ -55,6 +56,9 @@ function suggestedPrompts(ticker?: string): string[] {
 }
 
 function MessageBubble({ role, content, infographic }: { role: "user" | "assistant"; content: string; infographic?: string }) {
+  const { lang } = useI18n();
+  const shown    = splitActions(content);
+
   if (role === "user") {
     return (
       <div className="flex justify-end">
@@ -109,8 +113,9 @@ function MessageBubble({ role, content, infographic }: { role: "user" | "assista
                 td:         ({ children }) => <td className="border border-[#ccd5ae] px-2 py-1">{children}</td>,
               }}
             >
-              {content}
+              {shown.text}
             </ReactMarkdown>
+            <MartinActionButtons actions={shown.actions} lang={lang} />
           </div>
         ) : (
           <p className="text-xs text-slate-400 animate-pulse">กำลังคิด...</p>

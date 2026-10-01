@@ -17,6 +17,7 @@
  *   NASDAQ100: ~100s  |  CEO: <15s  — SP500 is skipped when SKIP_SP500=true
  *   or set FINNHUB_BATCH_DELAY_MS=3000 to use Finnhub's free 60req/min plan.
  */
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextRequest, NextResponse } from "next/server";
 
 import { scanChunk, resetCursor } from "@/lib/radarScan";
@@ -35,13 +36,8 @@ const MAX_CHUNKS_PER_RUN = 20; // safety cap; normal runs complete in 3–4 chun
 const INTER_UNIVERSE_PAUSE_MS = 8_000;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = rejectUnlessCron(request);
+  if (denied) return denied;
 
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) {

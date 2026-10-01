@@ -7,6 +7,17 @@ import { applyRateLimit } from "@/lib/rateLimit";
 
 const FALLBACK_FX = 35.2;
 
+class TradeRejected extends Error {}
+
+function tradeError(e: unknown): NextResponse {
+  if (e instanceof TradeRejected) return NextResponse.json({ error: e.message }, { status: 400 });
+  // Serializable conflict (two trades at the same instant) — safe to retry.
+  if ((e as { code?: string })?.code === "P2034") {
+    return NextResponse.json({ error: "มีคำสั่งซ้อนกัน กรุณาลองใหม่" }, { status: 409 });
+  }
+  throw e;
+}
+
 async function recordSnapshot(userId: string): Promise<void> {
   try {
     const u = await prisma.user.findUnique({
@@ -79,7 +90,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "เงิน USD ไม่พอ" }, { status: 400 });
     }
 
-    const [updatedUser, holding, buyTrade] = await prisma.$transaction(async (tx) => {
+    let result;
+    try { result = await prisma.$transaction(async (tx) => {
+      // Take the cash only if it is still there (two quick taps can't both spend it).
+      const paid = await tx.user.updateMany({
+        where: { id: userId, cashUsd: { gte: total } },
+        data:  { cashUsd: { decrement: total } },
+      });
+      if (paid.count !== 1) throw new TradeRejected("เงิน USD ไม่พอ");
+
       const existing = await tx.holding.findUnique({
         where: { userId_ticker: { userId, ticker } },
       });
@@ -95,17 +114,16 @@ export async function POST(request: NextRequest) {
         update: { shares: newShares, avgCost: newAvgCost },
       });
 
-      const u = await tx.user.update({
-        where: { id: userId },
-        data:  { cashUsd: { decrement: total } },
-      });
+      const u = await tx.user.findUniqueOrThrow({ where: { id: userId } });
 
       const trade = await tx.trade.create({
         data: { userId, ticker, side, shares, price, total, currency: "USD" },
       });
 
       return [u, updated, trade] as const;
-    });
+    }, { isolationLevel: "Serializable" }); }
+    catch (e) { return tradeError(e); }
+    const [updatedUser, holding, buyTrade] = result;
 
     void recordSnapshot(userId);
     return NextResponse.json({
@@ -126,17 +144,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "หุ้นไม่พอขาย" }, { status: 400 });
   }
 
-  const [updatedUser, sellTrade] = await prisma.$transaction(async (tx) => {
-    const remaining = existing.shares - shares;
-
-    if (remaining <= 0.0001) {
-      await tx.holding.delete({ where: { userId_ticker: { userId, ticker } } });
-    } else {
-      await tx.holding.update({
-        where: { userId_ticker: { userId, ticker } },
-        data:  { shares: remaining },
-      });
-    }
+  let sold;
+  try { sold = await prisma.$transaction(async (tx) => {
+    // Remove the shares only if they are still there (no double sell on a double tap).
+    const took = await tx.holding.updateMany({
+      where: { userId, ticker, shares: { gte: shares } },
+      data:  { shares: { decrement: shares } },
+    });
+    if (took.count !== 1) throw new TradeRejected("หุ้นไม่พอขาย");
+    await tx.holding.deleteMany({ where: { userId, ticker, shares: { lte: 0.0001 } } });
 
     const u = await tx.user.update({
       where: { id: userId },
@@ -148,7 +164,9 @@ export async function POST(request: NextRequest) {
     });
 
     return [u, sellTrade] as const;
-  });
+  }, { isolationLevel: "Serializable" }); }
+  catch (e) { return tradeError(e); }
+  const [updatedUser, sellTrade] = sold;
 
   void recordSnapshot(userId);
   return NextResponse.json({

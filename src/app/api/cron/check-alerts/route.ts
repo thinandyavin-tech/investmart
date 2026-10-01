@@ -1,3 +1,4 @@
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPushToUser } from "@/lib/webPush";
@@ -22,13 +23,8 @@ async function fetchPrice(ticker: string, apiKey: string): Promise<number | null
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = rejectUnlessCron(request);
+  if (denied) return denied;
 
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "FINNHUB_API_KEY not set" }, { status: 503 });

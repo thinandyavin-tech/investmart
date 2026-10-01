@@ -1,13 +1,9 @@
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic    = "force-dynamic";
 export const maxDuration = 60;
 
-function isAuthorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
-  return req.headers.get("authorization") === `Bearer ${secret}`;
-}
 
 const SECTOR_TICKERS: Record<string, string[]> = {
   all:      [],
@@ -25,9 +21,8 @@ const SECTOR_TICKERS: Record<string, string[]> = {
 const POPULAR = ["AAPL", "NVDA", "TSLA", "MSFT", "META", "AMZN", "GOOGL", "AMD", "PLTR", "NFLX"];
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const denied = rejectUnlessCron(req);
+  if (denied) return denied;
 
   const base = req.nextUrl.origin;
 

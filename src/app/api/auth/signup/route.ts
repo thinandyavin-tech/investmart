@@ -26,7 +26,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const { email, password, username } = parsed.data;
-  if (email.endsWith("@investmart.guest")) {
+  // No email verification here, so never let anyone register the admin address or a guest address.
+  if (email.endsWith("@investmart.guest") || email === "thinandyavin@gmail.com") {
     return NextResponse.json({ error: "อีเมลไม่ถูกต้อง" }, { status: 422 });
   }
 

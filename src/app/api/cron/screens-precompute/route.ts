@@ -11,6 +11,7 @@
  * Set FINNHUB_BATCH_DELAY_MS in Vercel env.
  */
 
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextResponse }  from "next/server";
 import { prisma }        from "@/lib/prisma";
 import { getUniverseTickers } from "@/lib/stockUniverse";
@@ -123,7 +124,9 @@ async function fetchTickerData(
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
+  const denied = rejectUnlessCron(request);
+  if (denied) return denied;
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "FINNHUB_API_KEY not configured" }, { status: 503 });

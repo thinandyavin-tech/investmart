@@ -1,14 +1,9 @@
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// Protected with a secret so only Vercel cron (or manual call) can trigger it
-function isAuthorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
-  return req.headers.get("authorization") === `Bearer ${secret}`;
-}
 
 interface FinnhubQuote { c: number; pc: number; }
 interface FinnhubArticle { headline: string; source: string; url: string; }
@@ -58,9 +53,8 @@ async function getTopNews(apiKey: string): Promise<string> {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
+  const denied = rejectUnlessCron(req);
+  if (denied) return denied;
 
   const finnhubKey = process.env.FINNHUB_API_KEY;
   if (!finnhubKey) return NextResponse.json({ error: "API not configured" }, { status: 503 });

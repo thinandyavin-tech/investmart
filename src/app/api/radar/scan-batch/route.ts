@@ -6,7 +6,7 @@
  * Over several calls the full universe is scanned and refreshed continuously.
  *
  * Protected by CRON_SECRET (Authorization: Bearer <secret>).
- * If CRON_SECRET is not set, any call is accepted (dev / first-run convenience).
+ * If CRON_SECRET is not set, every call is refused.
  *
  * Query params:
  *   universe  SP500 | NASDAQ100 | CEO  (default: NASDAQ100)
@@ -18,6 +18,7 @@
  *   Header:   Authorization: Bearer <your CRON_SECRET value>
  *   Repeat for SP500 (every 3 min) and CEO (every 10 min, optional)
  */
+import { rejectUnlessCron } from "@/lib/cronAuth";
 import { NextRequest, NextResponse } from "next/server";
 
 import { scanChunk } from "@/lib/radarScan";
@@ -30,13 +31,8 @@ const VALID: Set<Universe> = new Set(["SP500", "NASDAQ100", "CEO"]);
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   // Auth check — reject without secret
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = rejectUnlessCron(request);
+  if (denied) return denied;
 
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) {
