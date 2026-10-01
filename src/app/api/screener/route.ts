@@ -4,6 +4,7 @@
  * This prevents the full-universe burst that exhausted the rate limit on cold starts.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { getUniverseTickers, getSector, type Universe } from "@/lib/stockUniverse";
 import { CATALOG } from "@/lib/stockCatalog";
 import { STOCK_INFO } from "@/lib/stockNames";
@@ -39,6 +40,8 @@ function resolveExchange(ticker: string): string {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
   const raw      = request.nextUrl.searchParams.get("universe") ?? "SP500";
   const universe = (["SP500","NASDAQ100","CEO","SET50"].includes(raw) ? raw : "SP500") as Universe;
 

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,9 @@ function toIsoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   if (cache && Date.now() < cache.expiresAt) {
     return NextResponse.json({ events: cache.data });
   }

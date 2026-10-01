@@ -9,6 +9,7 @@
  * GET /api/stock/infographic?ticker=NVDA&locale=en
  */
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { generateText } from "@/lib/aiService";
 import { extractJson } from "@/lib/ai/utils";
 
@@ -252,6 +253,8 @@ async function buildInfographic(
 // ─── Route ───────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
   const ticker = (request.nextUrl.searchParams.get("ticker") ?? "").toUpperCase();
   if (!TICKER_RE.test(ticker)) {
     return NextResponse.json({ error: "invalid ticker" }, { status: 400 });

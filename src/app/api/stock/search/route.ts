@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 interface FinnhubResult {
   description:   string;
@@ -24,6 +25,8 @@ const ALLOWED_TYPES = new Set([
 const US_TICKER_RE = /^[A-Z]{1,5}$/;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const q = request.nextUrl.searchParams.get("q")?.trim();
   if (!q || q.length < 1) {
     return NextResponse.json({ results: [] });

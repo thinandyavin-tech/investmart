@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
@@ -46,6 +47,8 @@ interface YahooResponse {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const symbol    = (request.nextUrl.searchParams.get("symbol") ?? "").toUpperCase();
   const timeframe = request.nextUrl.searchParams.get("timeframe") ?? "1M";
 

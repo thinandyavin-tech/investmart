@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -464,6 +465,8 @@ function calcConfluence(
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const params    = request.nextUrl.searchParams;
   const ticker    = params.get("ticker")?.toUpperCase() ?? "";
   const timeframe = params.get("tf") ?? "D";

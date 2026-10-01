@@ -5,6 +5,7 @@
  * Results cached in-memory per ticker for 60s to absorb rapid pagination.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { computeScores } from "@/lib/momentum";
 import { getSector } from "@/lib/stockUniverse";
 import { CATALOG } from "@/lib/stockCatalog";
@@ -115,6 +116,8 @@ async function fetchQuote(ticker: string, apiKey: string): Promise<QuoteResult |
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "API not configured" }, { status: 503 });
 

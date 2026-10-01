@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { CEO_PORTFOLIO_TICKERS } from "@/lib/stockUniverse";
 import { computeScores } from "@/lib/momentum";
 
@@ -36,7 +37,9 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   // Serve stale cache immediately — don't block on a slow scan
   if (cachedPick && Date.now() - cacheTime < TTL_MS) {
     return NextResponse.json(cachedPick);

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { isCoolingDown } from "@/lib/ai/health";
 
 export const dynamic    = "force-dynamic";
@@ -15,7 +16,9 @@ interface ProviderStatus {
  * Reports which AI providers are configured and their health status.
  * Safe to call from monitoring dashboards — no live AI calls.
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
   const primaryName  = (process.env.AI_PRIMARY  ?? "cerebras").toLowerCase();
   const fallbackName = (process.env.AI_FALLBACK ?? "groq,nvidia,gemini").toLowerCase();
 

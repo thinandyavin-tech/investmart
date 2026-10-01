@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,8 @@ function computePeg(pe: number | null | undefined, epsGrowth3Y: number | null | 
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const apiKey = process.env.FINNHUB_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "API not configured" }, { status: 500 });
 

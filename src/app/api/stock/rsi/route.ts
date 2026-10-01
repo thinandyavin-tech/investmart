@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 const TICKER_RE = /^[A-Z][A-Z.\-]{0,9}$/;
 
@@ -34,6 +35,8 @@ function computeRSI(closes: number[], period = 14): number {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "default");
+  if (limited) return limited;
   const symbol = req.nextUrl.searchParams.get("symbol")?.toUpperCase().trim();
   if (!symbol || !TICKER_RE.test(symbol)) {
     return NextResponse.json({ error: "invalid symbol" }, { status: 400 });

@@ -15,6 +15,7 @@
  * We never fabricate or silently serve wrong data.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic     = "force-dynamic";
@@ -231,6 +232,8 @@ async function fetchAndCache(fmpKey: string, finnhubKey: string | undefined): Pr
 // ── GET ───────────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const force      = request.nextUrl.searchParams.get("force") === "1";
   const fmpKey     = process.env.FMP_API_KEY?.trim();
   const finnhubKey = process.env.FINNHUB_API_KEY?.trim();
@@ -309,6 +312,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 // ── POST ──────────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const secret = process.env.CRON_SECRET;
   if (secret) {
     const auth = request.headers.get("authorization") ?? "";

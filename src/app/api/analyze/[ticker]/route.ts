@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { computeIndicators, type OHLCV } from "@/lib/indicators";
 import { generateText } from "@/lib/aiService";
 import { extractJson } from "@/lib/ai/utils";
@@ -464,6 +465,8 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ ticker: string }> },
 ): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
   const { ticker: rawTicker } = await params;
   const ticker = rawTicker.toUpperCase();
 

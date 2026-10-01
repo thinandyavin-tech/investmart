@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import Groq from "groq-sdk";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -191,7 +192,9 @@ async function generateCards(
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "ai");
+  if (limited) return limited;
   // 1. Serve in-memory cache if fresh (warm instance, most common path)
   if (cachedCards && Date.now() - cacheTime < CACHE_TTL_MS) {
     return NextResponse.json(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 
 import { searchCatalog } from "@/lib/stockCatalog";
 import { SET50_TICKERS } from "@/lib/stockUniverse";
@@ -81,6 +82,8 @@ async function searchFinnhub(query: string, apiKey: string): Promise<SuggestResu
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(request, "default");
+  if (limited) return limited;
   const q = request.nextUrl.searchParams.get("q")?.trim();
   if (!q || q.length < 1) return NextResponse.json({ results: [] });
 

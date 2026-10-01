@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse }              from "next/server";
+import { applyRateLimit } from "@/lib/rateLimit";
 import { newsTeaser, isStockRelated }            from "@/lib/newsUtils";
 
 export const dynamic    = "force-dynamic";
@@ -68,6 +69,8 @@ async function fetchCompanyNews(ticker: string, apiKey: string): Promise<SectorN
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const limited = await applyRateLimit(req, "default");
+  if (limited) return limited;
   const sector = (req.nextUrl.searchParams.get("sector") ?? "all").toLowerCase();
   if (!VALID_SECTORS.has(sector)) {
     return NextResponse.json({ error: "invalid sector" }, { status: 400 });

@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InvestMart
 
-## Getting Started
+**AI market-intelligence platform for US and Thai stocks** — live at **[investmart.vercel.app](https://investmart.vercel.app)**
 
-First, run the development server:
+InvestMart brings the S&P 500, NASDAQ 100 and SET50 into one app and uses AI to turn raw market data and headlines into something a regular investor can act on.
+
+## Features
+
+- **AI news engine** — summarises market headlines and rates each story's likely impact and momentum.
+- **Daily infographic** — auto-generates a shareable, at-a-glance snapshot of the day's top stories.
+- **"Martin" AI assistant** — answers stock questions grounded in real-time price and market data.
+- **Radar & screeners** — momentum scans, dividend/growth screens, movers and sector views.
+- **Stock lab** — valuation (DCF / reverse DCF), SWOT, risk, RSI and "why is it moving" analysis.
+- **Paper trading & social** — portfolios, watchlists, alerts (web push), journal, posts and leaderboard.
+- **Thai / English** UI.
+
+## Tech stack
+
+Next.js (App Router) · React · TypeScript · Prisma + Neon Postgres · NextAuth (Google + email) · Upstash Redis (rate limiting, caching) · lightweight-charts · Sentry · Vercel
+
+**AI:** a provider chain with automatic fallback (Cerebras → Groq → NVIDIA → Gemini) so the assistant keeps working when one provider is down or out of quota.
+**Data:** Finnhub (quotes, news, fundamentals) with server-side caching.
+
+## Security
+
+- All secrets live in environment variables (see `.env.example`); nothing sensitive is committed.
+- Per-IP rate limiting on every public and AI endpoint; scheduled jobs require a secret bearer token.
+- Strict security headers (CSP, HSTS, `frame-ancestors 'none'`), bcrypt password hashing, signed demo cookies, input validation with Zod.
+
+## Running locally
 
 ```bash
+cp .env.example .env.local   # fill in your own keys
+npm install
+npx prisma migrate dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by **Yavin Songkham** — [thinandyavin@gmail.com](mailto:thinandyavin@gmail.com)
